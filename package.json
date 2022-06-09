@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node --files src/main.ts"
+    "start:ts": "ts-node --files src/main.ts",
+    "start:js": "node src/main.mjs"
   },
   "keywords": [],
   "author": "",
