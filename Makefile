@@ -7,3 +7,6 @@ js:
 
 rs:
 	cargo +1.58.1 run
+
+ex:
+	elixir src/main.exs
