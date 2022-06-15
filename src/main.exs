@@ -1,72 +1,52 @@
 defmodule Solution do
-  @spec min_distance(word1 :: String.t, word2 :: String.t) :: integer
-  def min_distance(word1, word2) do
-    list1 = word1 |> String.graphemes |> Enum.with_index()
-    list2 = word2 |> String.graphemes |> Enum.with_index()
-    dp = %{0 => 0, prev: 0, list2: list2}
-
-    solve(list1, list2, dp)
+  @spec longest_str_chain(words :: [String.t]) :: integer
+  def longest_str_chain(words) do
+    words = Enum.sort_by(words, &String.length/1)
+    dp = %{result: 0}
+    solve(words, dp)
   end
 
-  def solve([{ch1, i} | _] = list1, [{ch2, j} | chs2], dp) when ch1 == ch2 do
-    dp = set_word_lens(dp, i, j)
-    next = j + 1
-    dp = set_default(dp, next)
-    val = max(dp[next], dp.prev + 1)
-    dp = update_prev(dp, next, val)
-    solve(list1, chs2, dp)
+  def solve([word | words], dp) do
+    dp = loopword(0, String.length(word), 1, word, dp)
+    solve(words, dp)
   end
 
-  def solve([{ch1, i} | _] = list1, [{ch2, j} | chs2], dp) when ch1 != ch2 do
-    dp = set_word_lens(dp, i, j)
-    next = j + 1
-    dp = set_default(dp, j)
-    dp = set_default(dp, next)
-    val = max(dp[next], dp[j])
-    dp = update_prev(dp, next, val)
-    solve(list1, chs2, dp)
+  def solve([], dp) do
+    dp.result
   end
 
-  def solve([_ | chs1], [], dp) do
-    dp = Map.put(dp, :prev, dp[0])
-    solve(chs1, dp.list2, dp)
+  def loopword(i, word_len, cur_len, word, dp) when i < word_len do
+    predecessor = "#{substring(word, 0, i - 1)}#{substring(word, i + 1, word_len)}"
+    pre_len = Map.get(dp, predecessor, -1)
+    cur_len = max(cur_len, pre_len + 1)
+    loopword(i + 1, word_len, cur_len, word, dp)
   end
 
-  def solve([], _, dp) do
-    dp.len1 + dp.len2 - (2 * dp[dp.len2])
+  def loopword(_, _, cur_len, word, dp) do
+    dp = Map.put(dp, word, cur_len)
+    Map.put(dp, :result, max(dp.result, cur_len))
   end
 
-  def update_prev(dp, k, v) do
-    Map.merge(dp, %{
-      k => v,
-      prev: dp[k]
-    })
-  end
-
-  def set_word_lens(dp, i, j) do
-    Map.merge(dp, %{ len1: i + 1, len2: j + 1 })
-  end
-
-  def set_default(dp, k) do
-    if Map.has_key?(dp, k) do
-      dp
+  def substring(word, i, j) do
+    if j < 0 do
+      ""
     else
-      Map.put(dp, k, 0)
+      String.slice(word, i..j)
     end
   end
 
   def main() do
     inputs = [
-      %{ word1: "sea", word2: "eat" },
-      %{ word1: "leetcode", word2: "etco" },
-      %{ word1: "ab", word2: "a" }
+      ["a", "b", "ba", "bca", "bda", "bdca"],
+      ["xbc", "pcxbcf", "xb", "cxbc", "pcxbc"],
+      ["abcd", "dbqca"]
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = min_distance(input.word1, input.word2)
+    result = longest_str_chain(input)
     IO.puts(result)
     main(remains)
   end
