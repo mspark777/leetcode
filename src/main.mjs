@@ -1,10 +1,15 @@
-function longestPalindrome (s: string): string {
+/**
+ * @param {string} s
+ * @return {string}
+ */
+const longestPalindrome = function (s) {
   if (s.length < 2) {
     return s
   } else if (s.length === 2) {
-    return (s.charCodeAt(0) === s.charCodeAt(1))
-      ? s
-      : s.substring(0, 1)
+    if (s.charCodeAt(0) === s.charCodeAt(1)) {
+      return s
+    }
+    return s.substring(0, 1)
   }
 
   const strLen = s.length
@@ -50,13 +55,10 @@ function longestPalindrome (s: string): string {
   return s.substring(start, maxLength + start)
 }
 
-async function main (): Promise<void> {
+async function main () {
   const inputs = [
     'babad',
-    'cbbd',
-    'aba',
-    'cc',
-    'ac'
+    'cbbd'
   ]
 
   for (const input of inputs) {
