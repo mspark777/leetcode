@@ -1,68 +1,74 @@
-/**
- * @param {string} s
- * @return {string}
- */
-const longestPalindrome = function (s) {
-  if (s.length < 2) {
-    return s
-  } else if (s.length === 2) {
-    if (s.charCodeAt(0) === s.charCodeAt(1)) {
-      return s
-    }
-    return s.substring(0, 1)
+import lodash from 'lodash'
+const { isEmpty } = lodash
+
+class TreeNode {
+  constructor (val, left, right) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
+
+const LEAF = 1
+const CAMERA = 2
+const NOCAMERA = 3
+
+class DFS {
+  constructor () {
+    this.depth = 0
   }
 
-  const strLen = s.length
-  let maxLength = 0
-  let start = 0
-  for (let i = 1; i < (strLen - 1); i += 1) {
-    const code = s.charCodeAt(i)
-    let low = i - 1
-    let high = i + 1
-
-    while (low > -1) {
-      if (s.charCodeAt(low) === code) {
-        low -= 1
-      } else {
-        break
-      }
+  travel (node) {
+    if (isEmpty(node)) {
+      return NOCAMERA
     }
 
-    while (high < strLen) {
-      if (s.charCodeAt(high) === code) {
-        high += 1
-      } else {
-        break
-      }
+    const left = this.travel(node.left)
+    const right = this.travel(node.right)
+    const statuses = [left, right]
+
+    if (statuses.includes(LEAF)) {
+      this.depth += 1
+      return CAMERA
+    } else if (statuses.includes(CAMERA)) {
+      return NOCAMERA
     }
 
-    while ((low > -1) && (high < strLen)) {
-      if (s.charCodeAt(low) === s.charCodeAt(high)) {
-        low -= 1
-        high += 1
-      } else {
-        break
-      }
-    }
+    return LEAF
+  }
+}
 
-    const length = high - low - 1
-    if (maxLength < length) {
-      maxLength = length
-      start = low + 1
-    }
+function minCameraCover (root) {
+  const dfs = new DFS()
+  const status = dfs.travel(root)
+  const depth = dfs.depth
+  return status === LEAF ? depth + 1 : depth
+}
+
+function arrToTree (arr, i) {
+  if (i >= arr.length) {
+    return null
   }
 
-  return s.substring(start, maxLength + start)
+  const val = arr[i]
+  if (val === null) {
+    return null
+  }
+
+  const node = new TreeNode(val)
+  node.left = arrToTree(arr, i * 2 + 1)
+  node.right = arrToTree(arr, (i + 1) * 2)
+  return node
 }
 
 async function main () {
   const inputs = [
-    'babad',
-    'cbbd'
+    [0, 0, null, 0, 0],
+    [0, 0, null, 0, null, 0, null, null, 0]
   ]
 
   for (const input of inputs) {
-    const result = longestPalindrome(input)
+    const result = minCameraCover(arrToTree(input, 0))
     console.log(result)
   }
 }

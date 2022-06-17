@@ -1,95 +1,65 @@
+defmodule TreeNode do
+  @type t :: %__MODULE__{
+          val: integer,
+          left: TreeNode.t() | nil,
+          right: TreeNode.t() | nil
+        }
+  defstruct val: 0, left: nil, right: nil
+end
+
 defmodule Solution do
-  @spec longest_palindrome(s :: String.t) :: String.t
-  def longest_palindrome(s) do
-    arr = s |> String.to_charlist |> List.to_tuple
-    slen = tuple_size(arr)
-    case slen do
-      1 -> s
-      2 -> twolen(arr)
-      _ -> solve(s, arr, slen, 1, 0, 0)
+  @spec min_camera_cover(root :: TreeNode.t | nil) :: integer
+  def min_camera_cover(root) do
+    case travel(root, 0) do
+      {:leaf, depth} -> depth + 1
+      {_, depth} -> depth
     end
   end
 
-  def solve(s, arr, slen, i, start, max_len) when i < (slen - 1) do
-    low = calc_low(arr, i, i - 1)
-    high = calc_high(arr, i, slen, i + 1)
-    {curstart, curlen} = calc_range(arr, slen, low, high)
-    if max_len < curlen do
-      solve(s, arr, slen, i + 1, curstart, curlen)
-    else
-      solve(s, arr, slen, i + 1, start, max_len)
+  def travel(nil, depth) do
+    {:nocamera, depth}
+  end
+
+  def travel(node, depth) do
+    {left, ldepth} = travel(node.left, depth)
+    {right, rdepth}  = travel(node.right, ldepth)
+    cond do
+      left == :leaf or right == :leaf -> {:camera, rdepth + 1}
+      left == :camera or right == :camera -> {:nocamera, rdepth}
+      true -> {:leaf, rdepth}
     end
   end
 
-  def solve(s, _, _, _, start, max_len) do
-    substring(s, start, start + max_len - 1)
-  end
 
-  def calc_range(arr, slen, low, high) when low > -1 and high < slen do
-    if elem(arr, low) == elem(arr, high) do
-      calc_range(arr, slen, low - 1, high + 1)
+
+  def arr_to_tree(arr, i) do
+    if i < tuple_size(arr) do
+      val = elem(arr, i)
+      if val == nil do
+        nil
+      else
+        %TreeNode{
+          val: elem(arr, i),
+          left: arr_to_tree(arr, i * 2 + 1),
+          right: arr_to_tree(arr, (i + 1) * 2)
+        }
+      end
     else
-      {low + 1, high - low - 1}
-    end
-  end
-
-  def calc_range(_, _, low, high) do
-    {low + 1, high - low - 1}
-  end
-
-  def calc_high(arr, i, slen, high) when high < slen do
-    if elem(arr, high) == elem(arr, i) do
-      calc_high(arr, i, slen, high + 1)
-    else
-      high
-    end
-  end
-
-  def calc_high(_, _, _, high) do
-    high
-  end
-
-  def calc_low(arr, i, low) when low > -1 do
-    if elem(arr, low) == elem(arr, i) do
-      calc_low(arr, i, low - 1)
-    else
-      low
-    end
-  end
-
-  def calc_low(_, _, low) do
-    low
-  end
-
-  def twolen(arr) do
-    left = elem(arr, 0)
-    right = elem(arr, 1)
-    if left == right do
-      List.to_string([left, right])
-    else
-      List.to_string([left])
-    end
-  end
-
-  def substring(s, i, j) do
-    if j < 0 do
-      ""
-    else
-      String.slice(s, i..j)
+      nil
     end
   end
 
   def main() do
     inputs = [
-"babad", "cbbd", "ac", "aba", "bb",
-"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+      [0, 0, nil, 0, 0],
+      [0, 0, nil, 0, nil, 0, nil, nil, 0]
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = longest_palindrome(input)
+    result = min_camera_cover(input |> List.to_tuple |> arr_to_tree(0))
     IO.puts(result)
     main(remains)
   end

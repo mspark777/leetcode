@@ -1,62 +1,106 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
 struct Solution {}
+
+enum Status {
+    LEAF,
+    CAMERA,
+    NOCAMERA,
+}
+
+struct DFS {
+    depth: i32,
+}
+
+impl DFS {
+    fn travel(&mut self, root: &Option<Rc<RefCell<TreeNode>>>) -> Status {
+        if let Some(node) = root {
+            self.travel2(node.clone())
+        } else {
+            Status::NOCAMERA
+        }
+    }
+
+    fn travel2(&mut self, node: Rc<RefCell<TreeNode>>) -> Status {
+        let left = self.travel(&node.borrow().left);
+        let right = self.travel(&node.borrow().right);
+        match (left, right) {
+            (Status::LEAF, _) | (_, Status::LEAF) => {
+                self.depth += 1;
+                Status::CAMERA
+            }
+            (Status::CAMERA, _) | (_, Status::CAMERA) => Status::NOCAMERA,
+            _ => Status::LEAF,
+        }
+    }
+}
+
 impl Solution {
-    pub fn longest_palindrome(s: String) -> String {
-        let mut s = s;
-        let bytes = s.as_bytes();
-        let slen = bytes.len() as i32;
-        if slen < 2 {
-            return s;
-        } else if slen == 2 {
-            return if bytes[0] == bytes[1] {
-                s
-            } else {
-                s.remove(0).to_string()
-            };
+    pub fn min_camera_cover(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        let mut dfs = DFS { depth: 0 };
+        let status = dfs.travel(&root);
+        let depth = dfs.depth;
+        match status {
+            Status::LEAF => depth + 1,
+            _ => depth,
         }
+    }
+}
 
-        let mut maxlen = 0;
-        let mut start = 0;
-        for i in 1..(slen - 1) {
-            let code = bytes[i as usize];
-            let mut low = i - 1;
+fn arr_to_tree(arr: &Vec<Option<i32>>, i: usize) -> Option<Rc<RefCell<TreeNode>>> {
+    if arr.len() <= i {
+        return None;
+    }
 
-            while (low > -1) && (bytes[low as usize] == code) {
-                low -= 1;
-            }
-
-            let mut high = i + 1;
-            while (high < slen) && (bytes[high as usize] == code) {
-                high += 1;
-            }
-
-            while (low > -1) && (high < slen) {
-                if bytes[low as usize] == bytes[high as usize] {
-                    low -= 1;
-                    high += 1;
-                } else {
-                    break;
-                }
-            }
-
-            let curlen = high - low - 1;
-            if maxlen < curlen {
-                maxlen = curlen;
-                start = low + 1;
-            }
-        }
-
-        let begin = start as usize;
-        let end = (start + maxlen) as usize;
-        let sub = &bytes[begin..end];
-        String::from_utf8(sub.to_vec()).expect("oops")
+    if let Some(val) = arr[i] {
+        let node = Rc::new(RefCell::new(TreeNode {
+            val,
+            left: arr_to_tree(&arr, i * 2 + 1),
+            right: arr_to_tree(&arr, (i + 1) * 2),
+        }));
+        Some(node)
+    } else {
+        None
     }
 }
 
 fn main() {
-    let inputs = ["babad", "cbbd", "ac", "aba"];
+    let inputs = [
+        vec![Some(0), Some(0), None, Some(0), Some(0)],
+        vec![
+            Some(0),
+            Some(0),
+            None,
+            Some(0),
+            None,
+            Some(0),
+            None,
+            None,
+            Some(0),
+        ],
+    ];
 
     for input in inputs {
-        let result = Solution::longest_palindrome(String::from(input));
+        let result = Solution::min_camera_cover(arr_to_tree(&input, 0));
         println!("{result:?}");
     }
 }
