@@ -8,58 +8,61 @@ defmodule TreeNode do
 end
 
 defmodule Solution do
-  @spec min_camera_cover(root :: TreeNode.t | nil) :: integer
-  def min_camera_cover(root) do
-    case travel(root, 0) do
-      {:leaf, depth} -> depth + 1
-      {_, depth} -> depth
-    end
-  end
-
-  def travel(nil, depth) do
-    {:nocamera, depth}
-  end
-
-  def travel(node, depth) do
-    {left, ldepth} = travel(node.left, depth)
-    {right, rdepth}  = travel(node.right, ldepth)
+  @spec min_depth(root :: TreeNode.t | nil) :: integer
+  def min_depth(root) do
     cond do
-      left == :leaf or right == :leaf -> {:camera, rdepth + 1}
-      left == :camera or right == :camera -> {:nocamera, rdepth}
-      true -> {:leaf, rdepth}
-    end
-  end
-
-
-
-  def arr_to_tree(arr, i) do
-    if i < tuple_size(arr) do
-      val = elem(arr, i)
-      if val == nil do
-        nil
-      else
-        %TreeNode{
-          val: elem(arr, i),
-          left: arr_to_tree(arr, i * 2 + 1),
-          right: arr_to_tree(arr, (i + 1) * 2)
-        }
-      end
-    else
-      nil
+      root == nil -> 0
+      root.left  != nil and root.right != nil -> min(min_depth(root.left), min_depth(root.right)) + 1
+      true -> max(min_depth(root.left), min_depth(root.right)) + 1
     end
   end
 
   def main() do
     inputs = [
-      [0, 0, nil, 0, 0],
-      [0, 0, nil, 0, nil, 0, nil, nil, 0]
+      %TreeNode{
+        val: 3,
+        left: %TreeNode {
+          val: 9, left: nil, right: nil
+        },
+        right: %TreeNode {
+          val: 20,
+          left: %TreeNode {
+            val: 15, left: nil, right: nil
+          },
+          right: %TreeNode {
+            val: 7, left: nil, right: nil
+          }
+        }
+      },
+
+      %TreeNode {
+        val: 2,
+        left: nil,
+        right: %TreeNode {
+          val: 3,
+          left: nil,
+          right: %TreeNode {
+            val: 4,
+            left: nil,
+            right: %TreeNode {
+              val: 5,
+              left: nil,
+              right: %TreeNode {
+                val: 6,
+                left: nil,
+                right: nil
+              }
+            }
+          }
+        }
+      }
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = min_camera_cover(input |> List.to_tuple |> arr_to_tree(0))
+    result = min_depth(input)
     IO.puts(result)
     main(remains)
   end

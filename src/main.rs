@@ -10,97 +10,70 @@ pub struct TreeNode {
 
 impl TreeNode {
     #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
+    pub fn new(
+        val: i32,
+        left: Option<Rc<RefCell<TreeNode>>>,
+        right: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Self {
+        TreeNode { val, left, right }
+    }
+
+    pub fn new2(
+        val: i32,
+        left: Option<Rc<RefCell<TreeNode>>>,
+        right: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<Self>>> {
+        Some(Rc::new(RefCell::new(Self::new(val, left, right))))
     }
 }
 
 struct Solution {}
-
-enum Status {
-    LEAF,
-    CAMERA,
-    NOCAMERA,
-}
-
-struct DFS {
-    depth: i32,
-}
-
-impl DFS {
-    fn travel(&mut self, root: &Option<Rc<RefCell<TreeNode>>>) -> Status {
-        if let Some(node) = root {
-            self.travel2(node.clone())
-        } else {
-            Status::NOCAMERA
-        }
-    }
-
-    fn travel2(&mut self, node: Rc<RefCell<TreeNode>>) -> Status {
-        let left = self.travel(&node.borrow().left);
-        let right = self.travel(&node.borrow().right);
-        match (left, right) {
-            (Status::LEAF, _) | (_, Status::LEAF) => {
-                self.depth += 1;
-                Status::CAMERA
-            }
-            (Status::CAMERA, _) | (_, Status::CAMERA) => Status::NOCAMERA,
-            _ => Status::LEAF,
-        }
-    }
-}
-
 impl Solution {
-    pub fn min_camera_cover(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
-        let mut dfs = DFS { depth: 0 };
-        let status = dfs.travel(&root);
-        let depth = dfs.depth;
-        match status {
-            Status::LEAF => depth + 1,
-            _ => depth,
+    pub fn min_depth(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        Self::min_depth2(&root)
+    }
+
+    pub fn min_depth2(node: &Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if let Some(n) = node {
+            let b = n.borrow();
+            match (&b.left, &b.right) {
+                (Some(_), Some(_)) => Self::min_depth2(&b.left).min(Self::min_depth2(&b.right)) + 1,
+                _ => Self::min_depth2(&b.left).max(Self::min_depth2(&b.right)) + 1,
+            }
+        } else {
+            0
         }
-    }
-}
-
-fn arr_to_tree(arr: &Vec<Option<i32>>, i: usize) -> Option<Rc<RefCell<TreeNode>>> {
-    if arr.len() <= i {
-        return None;
-    }
-
-    if let Some(val) = arr[i] {
-        let node = Rc::new(RefCell::new(TreeNode {
-            val,
-            left: arr_to_tree(&arr, i * 2 + 1),
-            right: arr_to_tree(&arr, (i + 1) * 2),
-        }));
-        Some(node)
-    } else {
-        None
     }
 }
 
 fn main() {
     let inputs = [
-        vec![Some(0), Some(0), None, Some(0), Some(0)],
-        vec![
-            Some(0),
-            Some(0),
+        TreeNode::new2(
+            3,
+            TreeNode::new2(9, None, None),
+            TreeNode::new2(
+                20,
+                TreeNode::new2(15, None, None),
+                TreeNode::new2(7, None, None),
+            ),
+        ),
+        TreeNode::new2(
+            2,
             None,
-            Some(0),
-            None,
-            Some(0),
-            None,
-            None,
-            Some(0),
-        ],
+            TreeNode::new2(
+                3,
+                None,
+                TreeNode::new2(
+                    4,
+                    None,
+                    TreeNode::new2(5, None, TreeNode::new2(6, None, None)),
+                ),
+            ),
+        ),
     ];
 
     for input in inputs {
-        let result = Solution::min_camera_cover(arr_to_tree(&input, 0));
+        let result = Solution::min_depth(input);
         println!("{result:?}");
     }
 }
