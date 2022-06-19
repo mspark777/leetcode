@@ -1,48 +1,42 @@
-use std::collections::HashMap;
+struct Solution {}
+impl Solution {
+    pub fn suggested_products(products: Vec<String>, search_word: String) -> Vec<Vec<String>> {
+        let mut products = products;
+        products.sort_unstable();
 
-struct WordFilter {
-    substirngs: HashMap<String, i32>,
-}
+        let search_word = search_word.as_bytes();
+        let mut results: Vec<Vec<String>> = vec![Vec::new(); search_word.len()];
 
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl WordFilter {
-    fn new(words: Vec<String>) -> Self {
-        let mut substirngs = HashMap::<String, i32>::new();
-
-        for i in 0..words.len() {
-            let word = &words[i];
-            for j in 1..=word.len() {
-                let prefix = &word[0..j];
-                for k in 0..word.len() {
-                    let suffix = &word[k..word.len()];
-                    let key = format!("{prefix}#{suffix}");
-                    substirngs.insert(key, i as i32);
+        for product in &products {
+            let bytes = product.as_bytes();
+            for i in 0..bytes.len().min(search_word.len()) {
+                if search_word[i] != bytes[i] {
+                    break;
+                } else if results[i].len() < 3 {
+                    results[i].push(product.clone());
                 }
             }
         }
 
-        WordFilter { substirngs }
-    }
-
-    fn f(&self, prefix: String, suffix: String) -> i32 {
-        let key = format!("{prefix}#{suffix}");
-        if let Some(i) = self.substirngs.get(&key) {
-            *i
-        } else {
-            -1
-        }
+        results
     }
 }
 
 fn main() {
-    let inputs = [[vec!["apple"], vec!["a", "e"]]];
+    let inputs = [
+        (
+            vec!["mobile", "mouse", "moneypot", "monitor", "mousepad"],
+            "mouse",
+        ),
+        (vec!["havana"], "havana"),
+        (vec!["havana"], "tatiana"),
+        (vec!["bags", "baggage", "banner", "box", "cloths"], "bags"),
+    ];
 
     for input in inputs {
-        let filter = WordFilter::new(input[0].iter().map(|s| String::from(*s)).collect());
-        let result = filter.f(String::from(input[1][0]), String::from(input[1][1]));
+        let products = input.0.iter().map(|s| String::from(*s)).collect();
+        let search_word = String::from(input.1);
+        let result = Solution::suggested_products(products, search_word);
         println!("{result:?}");
     }
 }

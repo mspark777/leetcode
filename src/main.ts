@@ -1,39 +1,37 @@
-class WordFilter {
-  private substrings: Map<string, number>
-  constructor (words: string[]) {
-    this.substrings = new Map<string, number>()
-    for (let i = 0; i < words.length; i += 1) {
-      const word = words[i]
-      for (let j = 1; j <= word.length; j += 1) {
-        const prefix = word.substring(0, j)
-        for (let k = 0; k < word.length; k += 1) {
-          const suffix = word.substring(k)
-          const key = this.joinKey(prefix, suffix)
-          this.substrings.set(key, i)
-        }
+function suggestedProducts (products: string[], searchWord: string): string[][] {
+  products.sort()
+
+  const results: string[][] = new Array(searchWord.length)
+  for (let i = 0; i < searchWord.length; i += 1) {
+    results[i] = []
+  }
+
+  for (const product of products) {
+    const len = Math.min(product.length, searchWord.length)
+    for (let i = 0; i < len; i += 1) {
+      if (product.charCodeAt(i) !== searchWord.charCodeAt(i)) {
+        break
+      } else if (results[i].length < 3) {
+        results[i].push(product)
       }
     }
   }
 
-  f (prefix: string, suffix: string): number {
-    const key = this.joinKey(prefix, suffix)
-    return this.substrings.get(key) ?? -1
-  }
-
-  private joinKey (prefix: string, suffix: string): string {
-    return [prefix, suffix].join('#')
-  }
+  return results
 }
 
 async function main (): Promise<void> {
   const inputs = [
-    [['apple'], ['a', 'e']]
+    { products: ['mobile', 'mouse', 'moneypot', 'monitor', 'mousepad'], searchWord: 'mouse' },
+    { products: ['havana'], searchWord: 'havana' },
+    { products: ['bags', 'baggage', 'banner', 'box', 'cloths'], searchWord: 'bags' }
   ]
 
   for (const input of inputs) {
-    const filter = new WordFilter(input[0])
-    const result = filter.f(input[1][0], input[1][1])
-    console.log(result)
+    const result = suggestedProducts(input.products, input.searchWord)
+    for (const r of result) {
+      console.log(r)
+    }
   }
 }
 

@@ -1,51 +1,37 @@
-class WordFilter {
-  /**
-   * @param {string[]} words
-   */
-  constructor (words) {
-    this.substrings = new Map()
-    for (let i = 0; i < words.length; i += 1) {
-      const word = words[i]
-      for (let j = 1; j <= word.length; j += 1) {
-        const prefix = word.substring(0, j)
-        for (let k = 0; k < word.length; k += 1) {
-          const suffix = word.substring(k)
-          const key = this.joinKey(prefix, suffix)
-          this.substrings.set(key, i)
-        }
+function suggestedProducts (products, searchWord) {
+  products.sort()
+
+  const results = new Array(searchWord.length)
+  for (let i = 0; i < searchWord.length; i += 1) {
+    results[i] = []
+  }
+
+  for (const product of products) {
+    const len = Math.min(product.length, searchWord.length)
+    for (let i = 0; i < len; i += 1) {
+      if (product.charCodeAt(i) !== searchWord.charCodeAt(i)) {
+        break
+      } else if (results[i].length < 3) {
+        results[i].push(product)
       }
     }
   }
 
-  /**
-   * @param {string} prefix
-   * @param {string} suffix
-   * @return {number}
-   */
-  f (prefix, suffix) {
-    const key = this.joinKey(prefix, suffix)
-    return this.substrings.get(key) ?? -1
-  }
-
-  /**
-   * @param {string} prefix
-   * @param {string} suffix
-   * @return {string}
-   */
-  joinKey (prefix, suffix) {
-    return [prefix, suffix].join('#')
-  }
+  return results
 }
 
 async function main () {
   const inputs = [
-    [['apple'], ['a', 'e']]
+    { products: ['mobile', 'mouse', 'moneypot', 'monitor', 'mousepad'], searchWord: 'mouse' },
+    { products: ['havana'], searchWord: 'havana' },
+    { products: ['bags', 'baggage', 'banner', 'box', 'cloths'], searchWord: 'bags' }
   ]
 
   for (const input of inputs) {
-    const filter = new WordFilter(input[0])
-    const result = filter.f(input[1][0], input[1][1])
-    console.log(result)
+    const result = suggestedProducts(input.products, input.searchWord)
+    for (const r of result) {
+      console.log(r)
+    }
   }
 }
 
