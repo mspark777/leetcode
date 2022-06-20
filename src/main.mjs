@@ -1,37 +1,28 @@
-function suggestedProducts (products, searchWord) {
-  products.sort()
-
-  const results = new Array(searchWord.length)
-  for (let i = 0; i < searchWord.length; i += 1) {
-    results[i] = []
-  }
-
-  for (const product of products) {
-    const len = Math.min(product.length, searchWord.length)
-    for (let i = 0; i < len; i += 1) {
-      if (product.charCodeAt(i) !== searchWord.charCodeAt(i)) {
-        break
-      } else if (results[i].length < 3) {
-        results[i].push(product)
-      }
+function minimumLengthEncoding (words) {
+  const filter = new Set(words)
+  for (const word of words) {
+    for (let i = 1; i < word.length; i += 1) {
+      filter.delete(word.substring(i))
     }
   }
 
-  return results
+  let result = 0
+  for (const word of filter) {
+    result += word.length + 1
+  }
+
+  return result
 }
 
 async function main () {
   const inputs = [
-    { products: ['mobile', 'mouse', 'moneypot', 'monitor', 'mousepad'], searchWord: 'mouse' },
-    { products: ['havana'], searchWord: 'havana' },
-    { products: ['bags', 'baggage', 'banner', 'box', 'cloths'], searchWord: 'bags' }
+    ['time', 'me', 'bell'],
+    ['t']
   ]
 
   for (const input of inputs) {
-    const result = suggestedProducts(input.products, input.searchWord)
-    for (const r of result) {
-      console.log(r)
-    }
+    const result = minimumLengthEncoding(input)
+    console.log(result)
   }
 }
 

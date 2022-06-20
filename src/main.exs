@@ -1,70 +1,55 @@
-defmodule WordFilter do
-  @spec init_(words :: [String.t]) :: any
-  def init_(words) do
-    pid = Process.whereis(__MODULE__)
-    if pid == nil do
-      Agent.start_link(fn -> words end, name: __MODULE__)
-    else
-      Agent.update(pid, fn _ -> words end)
-    end
-    pid = Process.whereis(__MODULE__)
-
-    parent = self()
-    wordslen = Enum.count(words)
-    Enum.with_index(words, fn word, i ->
-      spawn(fn ->
-        last = String.length(word) - 1
-        Enum.each(0..last, fn j ->
-          prefix = String.slice(word, 0..j)
-          Enum.each(0..last, fn k ->
-            suffix = String.slice(word, k..last)
-            key = Enum.join([prefix, suffix], "#")
-            Agent.update(pid, fn substirngs ->
-              index = Map.get(substirngs, key, -1)
-              if index < i do
-                Map.put(substirngs, key, i)
-              else
-                substirngs
-              end
-            end)
-          end)
-        end)
-        send(parent, :end)
-      end)
-    end)
-
-    wait(0, wordslen)
-  end
-
-  def wait(current, total) do
-    if current < total do
-      receive do
-        :end -> wait(current + 1, total)
-      end
-    end
-  end
-
-  @spec f(prefix :: String.t, suffix :: String.t) :: integer
-  def f(prefix, suffix) do
-    pid = Process.whereis(__MODULE__)
-    words = Agent.get(pid, fn words -> words end)
-    total = Enum.count(words)
-  end
-end
-
 defmodule Solution do
+  @spec minimum_length_encoding(words :: [String.t]) :: integer
+  def minimum_length_encoding(words) do
+    MapSet.new()
+    |> put_words(words)
+    |> remove_subwords(words)
+    |> MapSet.to_list
+    |> Enum.reduce(0, fn s, acc ->
+      acc + String.length(s) + 1
+    end)
+  end
+
+  def remove_subwords(filter, [word | words]) do
+    chars = String.to_charlist(word)
+    filter = remove_subword(filter, chars)
+    remove_subwords(filter, words)
+  end
+
+  def remove_subwords(filter, []) do
+    filter
+  end
+
+
+  def remove_subword(filter, [_ | chars]) do
+    str = to_string(chars)
+    filter = MapSet.delete(filter, str)
+    remove_subword(filter, chars)
+  end
+
+  def remove_subword(filter, []) do
+    filter
+  end
+
+  def put_words(filter, [word | words]) do
+    MapSet.put(filter, word) |> put_words(words)
+  end
+
+  def put_words(filter, []) do
+    filter
+  end
+
   def main() do
     inputs = [
-      %{words: ["apple"], ps: ["a", "e"]},
-      %{words: ["apple"], ps: ["a", "e"]}
+      ["time", "me", "bell"],
+      ["t"]
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    WordFilter.init_(input.words)
-    result = WordFilter.f(Enum.at(input.ps, 0), Enum.at(input.ps, 1))
+    result = minimum_length_encoding(input)
     IO.puts(result)
     main(remains)
   end
