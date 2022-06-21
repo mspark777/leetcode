@@ -9,4 +9,4 @@ rs:
 	cargo run
 
 ex:
-	elixir src/main.exs
+	mix compile
