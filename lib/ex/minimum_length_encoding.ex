@@ -1,4 +1,4 @@
-defmodule Solution do
+defmodule MinimumLengthEncoding do
   @spec minimum_length_encoding(words :: [String.t]) :: integer
   def minimum_length_encoding(words) do
     MapSet.new()
@@ -39,25 +39,4 @@ defmodule Solution do
     filter
   end
 
-  def main() do
-    inputs = [
-      ["time", "me", "bell"],
-      ["t"]
-    ]
-
-    main(inputs)
-  end
-
-  def main([input | remains]) do
-    result = minimum_length_encoding(input)
-    IO.puts(result)
-    main(remains)
-  end
-
-  def main([]) do
-    nil
-  end
 end
-
-Solution.main
-
