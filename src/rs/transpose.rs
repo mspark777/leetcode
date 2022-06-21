@@ -1,4 +1,7 @@
+#[allow(dead_code)]
 pub struct Transpose {}
+
+#[allow(dead_code)]
 impl Transpose {
     pub fn transpose(matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
         let row_len = matrix.len();

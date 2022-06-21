@@ -1,4 +1,7 @@
+#[allow(dead_code)]
 pub struct HasAllCodes {}
+
+#[allow(dead_code)]
 impl HasAllCodes {
     pub fn has_all_codes(s: String, k: i32) -> bool {
         let k = k as usize;

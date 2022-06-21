@@ -1,4 +1,7 @@
+#[allow(dead_code)]
 pub struct SuggestedProducts {}
+
+#[allow(dead_code)]
 impl SuggestedProducts {
     pub fn suggested_products(products: Vec<String>, search_word: String) -> Vec<Vec<String>> {
         let mut products = products;

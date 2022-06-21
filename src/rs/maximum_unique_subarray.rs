@@ -1,4 +1,7 @@
+#[allow(dead_code)]
 pub struct MaximumUniqueSubarray {}
+
+#[allow(dead_code)]
 impl MaximumUniqueSubarray {
     pub fn maximum_unique_subarray(nums: Vec<i32>) -> i32 {
         use std::collections::HashMap;

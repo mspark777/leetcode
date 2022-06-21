@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 pub struct LongestStrChain {}
+
+#[allow(dead_code)]
 impl LongestStrChain {
     pub fn longest_str_chain(words: Vec<String>) -> i32 {
         let mut result = 0;

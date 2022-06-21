@@ -1,4 +1,7 @@
+#[allow(dead_code)]
 pub struct MinOperations {}
+
+#[allow(dead_code)]
 impl MinOperations {
     pub fn min_operations(nums: Vec<i32>, x: i32) -> i32 {
         let mut target = -x;

@@ -31,7 +31,7 @@ fn main() {
     ];
 
     for input in inputs {
-        let result = rs::furthest_building::Solution::furthest_building(
+        let result = rs::furthest_building::FurthestBuilding::furthest_building(
             input.heights,
             input.bricks,
             input.leadders,

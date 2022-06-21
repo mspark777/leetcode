@@ -1,4 +1,7 @@
+#[allow(dead_code)]
 pub struct RemovePalindromeSub {}
+
+#[allow(dead_code)]
 impl RemovePalindromeSub {
     pub fn remove_palindrome_sub(s: String) -> i32 {
         let bytes = s.as_bytes();

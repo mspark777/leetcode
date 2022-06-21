@@ -1,6 +1,9 @@
 use std::collections::HashSet;
 
+#[allow(dead_code)]
 pub struct MinimumLengthEncoding {}
+
+#[allow(dead_code)]
 impl MinimumLengthEncoding {
     pub fn minimum_length_encoding(words: Vec<String>) -> i32 {
         let mut filter = HashSet::<String>::new();

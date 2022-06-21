@@ -2,12 +2,13 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq, Eq)]
-struct TreeNode {
+pub struct TreeNode {
     pub val: i32,
     pub left: Option<Rc<RefCell<TreeNode>>>,
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
+#[allow(dead_code)]
 impl TreeNode {
     #[inline]
     pub fn new(val: i32) -> Self {
@@ -19,16 +20,19 @@ impl TreeNode {
     }
 }
 
+#[allow(dead_code)]
 enum Status {
     LEAF,
     CAMERA,
     NOCAMERA,
 }
 
+#[allow(dead_code)]
 struct DFS {
     depth: i32,
 }
 
+#[allow(dead_code)]
 impl DFS {
     fn travel(&mut self, root: &Option<Rc<RefCell<TreeNode>>>) -> Status {
         if let Some(node) = root {
@@ -52,7 +56,10 @@ impl DFS {
     }
 }
 
+#[allow(dead_code)]
 pub struct MinCameraCover {}
+
+#[allow(dead_code)]
 impl MinCameraCover {
     pub fn min_camera_cover(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         let mut dfs = DFS { depth: 0 };
