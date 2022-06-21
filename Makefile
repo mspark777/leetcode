@@ -9,4 +9,4 @@ rs:
 	cargo run
 
 ex:
-	mix compile
+	mix run

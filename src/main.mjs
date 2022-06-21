@@ -1,4 +1,4 @@
-import { furthestBuilding } from './js/futhestBuilding.mjs'
+import { furthestBuilding } from './solution.mjs'
 
 async function main () {
   const inputs = [

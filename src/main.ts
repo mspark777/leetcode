@@ -1,4 +1,4 @@
-import { furthestBuilding } from './ts/furthestBuilding'
+import { furthestBuilding } from './solution'
 
 async function main (): Promise<void> {
   const inputs = [

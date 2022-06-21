@@ -1,10 +1,8 @@
 use std::collections::BinaryHeap;
 
-#[allow(dead_code)]
-pub struct FurthestBuilding {}
+pub struct Solution {}
 
-#[allow(dead_code)]
-impl FurthestBuilding {
+impl Solution {
     pub fn furthest_building(heights: Vec<i32>, bricks: i32, ladders: i32) -> i32 {
         let mut heap = BinaryHeap::<i32>::new();
         let mut bricks = bricks;

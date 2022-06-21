@@ -1,4 +1,6 @@
 defmodule Main do
+  import Solution
+
   def main() do
     inputs = [
       [4,2,4,5,6]
@@ -8,7 +10,6 @@ defmodule Main do
   end
 
   def main([input | remains]) do
-    import MaximumUniqueSubarray
     result = maximum_unique_subarray(input)
     IO.puts(result)
     main(remains)
