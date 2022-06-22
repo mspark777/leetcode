@@ -1,40 +1,35 @@
-function findMaxDiffIndex (arr: number[]):number {
-  let max = arr[0]
-  let result = 0
-  for (let i = 1; i < arr.length; i += 1) {
-    const val = arr[i]
-    if (max < val) {
-      max = val
-      result = i
-    }
-  }
-
-  return result
+function swap (nums: number[], left: number, right: number): void {
+  const t = nums[left]
+  nums[left] = nums[right]
+  nums[right] = t
 }
 
-export function furthestBuilding (heights: number[], bricks: number, ladders: number): number {
-  const maxHeap: number[] = []
-
-  for (let i = 1; i < heights.length; i += 1) {
-    const diff = heights[i] - heights[i - 1]
-    if (diff <= 0) {
-      continue
-    }
-
-    maxHeap.push(diff)
-    bricks -= diff
-    if (bricks < 0) {
-      const maxIndex = findMaxDiffIndex(maxHeap)
-      const max = maxHeap[maxIndex]
-      maxHeap.splice(maxIndex, 1)
-      bricks += max
-      ladders -= 1
-    }
-
-    if (ladders < 0) {
-      return i - 1
+function partition (nums: number[], left: number, right: number): number {
+  const pivot = nums[right]
+  let j = left
+  for (let i = left; i < right; i += 1) {
+    if (nums[i] < pivot) {
+      swap(nums, i, j)
+      j += 1
     }
   }
 
-  return heights.length - 1
+  swap(nums, j, right)
+  return j
+}
+
+export function findKthLargest (nums: number[], k: number): number {
+  const target = nums.length - k
+  let left = 0
+  let right = nums.length - 1
+  while (true) {
+    const mid = partition(nums, left, right)
+    if (mid > target) {
+      right = mid - 1
+    } else if (mid < target) {
+      left = mid + 1
+    } else {
+      return nums[target]
+    }
+  }
 }

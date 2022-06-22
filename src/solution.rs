@@ -1,32 +1,42 @@
-use std::collections::BinaryHeap;
-
 pub struct Solution {}
 
 impl Solution {
-    pub fn furthest_building(heights: Vec<i32>, bricks: i32, ladders: i32) -> i32 {
-        let mut heap = BinaryHeap::<i32>::new();
-        let mut bricks = bricks;
-        let mut ladders = ladders;
+    pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
+        let mut nums = nums;
+        let k = k as usize;
+        let target = nums.len() - k;
+        let mut left = 0;
+        let mut right = nums.len() - 1;
 
-        for i in 1..heights.len() {
-            let diff = heights[i] - heights[i - 1];
-            if diff <= 0 {
-                continue;
+        loop {
+            let mid = Self::partition(&mut nums, left, right);
+            if mid > target {
+                right = mid - 1;
+            } else if mid < target {
+                left = mid + 1;
+            } else {
+                return nums[target];
             }
+        }
+    }
 
-            heap.push(diff);
-            bricks -= diff;
-            if bricks < 0 {
-                let max = heap.pop().unwrap();
-                bricks += max;
-                ladders -= 1;
-            }
-
-            if ladders < 0 {
-                return (i as i32) - 1;
+    fn partition(nums: &mut Vec<i32>, left: usize, right: usize) -> usize {
+        let pivot = nums[right];
+        let mut j = left;
+        for i in left..right {
+            if nums[i] < pivot {
+                Self::swap(nums, i, j);
+                j += 1;
             }
         }
 
-        (heights.len() as i32) - 1
+        Self::swap(nums, j, right);
+        j
+    }
+
+    fn swap(nums: &mut Vec<i32>, i: usize, j: usize) {
+        let t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
     }
 }

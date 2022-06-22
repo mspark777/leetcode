@@ -1,16 +1,17 @@
-defmodule Main do
+defmodule Leetcode do
   import Solution
 
   def main() do
     inputs = [
-      [4,2,4,5,6]
+      %{ nums: [3, 2, 1, 5, 6, 4], k: 2 },
+      %{ nums: [3, 2, 3, 1, 2, 4, 5, 5, 6], k: 4 }
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = maximum_unique_subarray(input)
+    result = find_kth_largest(input.nums, input.k)
     IO.puts(result)
     main(remains)
   end
@@ -20,4 +21,4 @@ defmodule Main do
   end
 end
 
-Main.main()
+Leetcode.main()
