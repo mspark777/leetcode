@@ -9,4 +9,4 @@ rs:
 	cargo run
 
 ex:
-	mix run
+	mix run lib/main.ex

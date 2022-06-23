@@ -1,13 +1,18 @@
-import { findKthLargest } from './solution.mjs'
+import { createRequire } from 'module'
+import { scheduleCourse } from './solution.mjs'
+
+const require = createRequire(import.meta.url)
 
 async function main () {
   const inputs = [
-    { nums: [3, 2, 1, 5, 6, 4], k: 2 },
-    { nums: [3, 2, 3, 1, 2, 4, 5, 5, 6], k: 4 }
+    { courses: [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]] },
+    { courses: [[1, 2]] },
+    { courses: [[3, 2], [4, 3]] },
+    require('./data.json')
   ]
 
   for (const input of inputs) {
-    const result = findKthLargest(input.nums, input.k)
+    const result = scheduleCourse(input.courses)
     console.log(result)
   }
 }

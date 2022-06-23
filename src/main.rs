@@ -1,24 +1,41 @@
 mod solution;
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    courses: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: vec![3, 2, 1, 5, 6, 4],
-            k: 2,
+            courses: vec![
+                vec![100, 200],
+                vec![200, 1300],
+                vec![1000, 1250],
+                vec![2000, 3200],
+            ],
         },
         Input {
-            nums: vec![3, 2, 3, 1, 2, 4, 5, 5, 6],
-            k: 4,
+            courses: vec![vec![1, 2]],
+        },
+        Input {
+            courses: vec![vec![3, 2], vec![4, 3]],
+        },
+        Input {
+            courses: vec![
+                vec![5, 15],
+                vec![3, 19],
+                vec![6, 7],
+                vec![2, 10],
+                vec![5, 16],
+                vec![8, 14],
+                vec![10, 11],
+                vec![2, 19],
+            ],
         },
     ];
 
     for input in inputs {
-        let result = solution::Solution::find_kth_largest(input.nums, input.k);
+        let result = solution::Solution::schedule_course(input.courses);
         println!("{result:?}");
     }
 }

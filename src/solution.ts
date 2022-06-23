@@ -1,35 +1,58 @@
-function swap (nums: number[], left: number, right: number): void {
-  const t = nums[left]
-  nums[left] = nums[right]
-  nums[right] = t
-}
+class PriorityQueue {
+  readonly durations: number[]
+  constructor () {
+    this.durations = []
+  }
 
-function partition (nums: number[], left: number, right: number): number {
-  const pivot = nums[right]
-  let j = left
-  for (let i = left; i < right; i += 1) {
-    if (nums[i] < pivot) {
-      swap(nums, i, j)
-      j += 1
+  peek (): number {
+    return this.durations.at(-1) as number
+  }
+
+  dequeue (): number {
+    return this.durations.pop() as number
+  }
+
+  enqueue (duration: number) {
+    let contain = false
+    const durations = this.durations
+
+    for (let i = 0; i < durations.length; i += 1) {
+      if (durations[i] > duration) {
+        durations.splice(i, 0, duration)
+        contain = true
+        break
+      }
+    }
+
+    if (!contain) {
+      durations.push(duration)
     }
   }
 
-  swap(nums, j, right)
-  return j
+  isNotEmpty () {
+    return this.getLength() > 0
+  }
+
+  getLength (): number {
+    return this.durations.length
+  }
 }
 
-export function findKthLargest (nums: number[], k: number): number {
-  const target = nums.length - k
-  let left = 0
-  let right = nums.length - 1
-  while (true) {
-    const mid = partition(nums, left, right)
-    if (mid > target) {
-      right = mid - 1
-    } else if (mid < target) {
-      left = mid + 1
-    } else {
-      return nums[target]
+export function scheduleCourse (courses: number[][]): number {
+  courses.sort((a, b) => a[1] - b[1])
+  const queue = new PriorityQueue()
+
+  let time = 0
+  for (const [duration, last] of courses) {
+    const newTime = time + duration
+    if (newTime <= last) {
+      queue.enqueue(duration)
+      time = newTime
+    } else if (queue.isNotEmpty() && queue.peek() > duration) {
+      time += duration - queue.dequeue()
+      queue.enqueue(duration)
     }
   }
+
+  return queue.getLength()
 }
