@@ -8,8 +8,8 @@ defmodule PriorityQueue do
     nil
   end
 
-  def enqueue(queue, duration) do
-    [duration | queue]
+  def enqueue(queue, n) do
+    [n | queue]
   end
 
   defp findmax([head | tail], m, mi, i) do
@@ -26,39 +26,48 @@ defmodule PriorityQueue do
 end
 
 defmodule Solution do
-  @spec schedule_course(courses :: [[integer]]) :: integer
-  def schedule_course(courses) do
-    schedule_course2([], 0, Enum.sort(courses, fn [_, a], [_, b] -> b > a end))
+  @spec is_possible(target :: [integer]) :: boolean
+  def is_possible(target) do
+    {queue, sum} = enqueue_and_sum(target, [], 0)
+    top = PriorityQueue.dequeue(queue)
+    is_possible(top, sum)
   end
 
-  defp schedule_course2(queue, time, [[duration, last] | courses]) do
-    new_time = duration + time
-    if new_time <= last do
-      schedule_course2(
-        PriorityQueue.enqueue(queue, duration),
-        new_time,
-        courses
-      )
+  def is_possible(nil, _) do
+    true
+  end
+
+  def is_possible({_, top}, _) when top == 1 do
+    true
+  end
+
+  def is_possible({_, top}, sum) when top <= (sum - top) or sum < top + 1 do
+    false
+  end
+
+  def is_possible({queue, top}, sum)  do
+    sum = sum - top
+    top = rem(top, sum)
+    sum = sum + top
+    if top > 0 do
+      is_possible(
+        PriorityQueue.dequeue(
+          PriorityQueue.enqueue(queue, top)
+        ), sum)
     else
-      dequeued = PriorityQueue.dequeue(queue)
-      if dequeued == nil do
-        schedule_course2(queue, time, courses)
-      else
-        {newqueue, top} = dequeued
-        if top > duration do
-          schedule_course2(
-            PriorityQueue.enqueue(newqueue, duration),
-            time + duration - top,
-            courses
-          )
-        else
-          schedule_course2(queue, time, courses)
-        end
-      end
+      is_possible(
+        PriorityQueue.dequeue(
+          PriorityQueue.enqueue(queue, sum)
+        ), sum)
     end
   end
 
-  defp schedule_course2(queue, _, []) do
-    Enum.count(queue)
+
+  def enqueue_and_sum([head | tail], queue, sum) do
+    enqueue_and_sum(tail, PriorityQueue.enqueue(queue, head), sum + head)
+  end
+
+  def enqueue_and_sum([], queue, sum) do
+    {queue, sum}
   end
 end

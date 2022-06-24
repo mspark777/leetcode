@@ -1,58 +1,83 @@
+export function isPossible (target: number[]): boolean {
+  const queue = new PriorityQueue()
+  let sum = target.reduce((acc, cur) => {
+    queue.enqueue(cur)
+    return acc + cur
+  }, 0)
+
+  while (true) {
+    let top = queue.dequeue() as number
+    if (top === 1) {
+      break
+    }
+
+    sum -= top
+
+    if ((top <= sum) || (sum < 1)) {
+      return false
+    }
+
+    top %= sum
+    sum += top
+    if (top > 0) {
+      queue.enqueue(top)
+    } else {
+      queue.enqueue(sum)
+    }
+  }
+
+  return true
+}
+
 class PriorityQueue {
-  readonly durations: number[]
+  readonly nums: number[]
   constructor () {
-    this.durations = []
+    this.nums = []
   }
 
   peek (): number {
-    return this.durations.at(-1) as number
+    return this.nums.at(-1) as number
   }
 
   dequeue (): number {
-    return this.durations.pop() as number
+    return this.nums.pop() as number
   }
 
-  enqueue (duration: number) {
-    let contain = false
-    const durations = this.durations
+  enqueue (n: number): void {
+    const nums = this.nums
 
-    for (let i = 0; i < durations.length; i += 1) {
-      if (durations[i] > duration) {
-        durations.splice(i, 0, duration)
-        contain = true
-        break
+    if (this.isEmpty() || (this.peek() < n)) {
+      nums.push(n)
+      return
+    }
+
+    let begin = 0
+    let end = nums.length
+    while (begin < end) {
+      const pos = Math.trunc((end + begin) / 2)
+      const num = nums[pos]
+      if (num < n) {
+        begin = pos + 1
+      } else if (num > n) {
+        end = pos
+      } else {
+        nums.splice(pos, 0, n)
+        return
       }
     }
 
-    if (!contain) {
-      durations.push(duration)
-    }
+    nums.splice(begin, 0, n)
   }
 
-  isNotEmpty () {
-    return this.getLength() > 0
+  isEmpty (): boolean {
+    return this.getLength() < 1
+  }
+
+  isNotEmpty (): boolean {
+    return !this.isEmpty()
   }
 
   getLength (): number {
-    return this.durations.length
+    return this.nums.length
   }
-}
-
-export function scheduleCourse (courses: number[][]): number {
-  courses.sort((a, b) => a[1] - b[1])
-  const queue = new PriorityQueue()
-
-  let time = 0
-  for (const [duration, last] of courses) {
-    const newTime = time + duration
-    if (newTime <= last) {
-      queue.enqueue(duration)
-      time = newTime
-    } else if (queue.isNotEmpty() && queue.peek() > duration) {
-      time += duration - queue.dequeue()
-      queue.enqueue(duration)
-    }
-  }
-
-  return queue.getLength()
 }

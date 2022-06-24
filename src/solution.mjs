@@ -1,57 +1,82 @@
+export function isPossible (target) {
+  const queue = new PriorityQueue()
+  let sum = target.reduce((acc, cur) => {
+    queue.enqueue(cur)
+    return acc + cur
+  }, 0)
+
+  while (true) {
+    let top = queue.dequeue()
+    if (top === 1) {
+      break
+    }
+
+    sum -= top
+
+    if ((top <= sum) || (sum < 1)) {
+      return false
+    }
+
+    top %= sum
+    sum += top
+    if (top > 0) {
+      queue.enqueue(top)
+    } else {
+      queue.enqueue(sum)
+    }
+  }
+
+  return true
+}
+
 class PriorityQueue {
   constructor () {
-    this.durations = []
+    this.nums = []
   }
 
   peek () {
-    return this.durations.at(-1)
+    return this.nums.at(-1)
   }
 
   dequeue () {
-    return this.durations.pop()
+    return this.nums.pop()
   }
 
-  enqueue (duration) {
-    let contain = false
-    const durations = this.durations
+  enqueue (n) {
+    const nums = this.nums
 
-    for (let i = 0; i < durations.length; i += 1) {
-      if (durations[i] > duration) {
-        durations.splice(i, 0, duration)
-        contain = true
-        break
+    if (this.isEmpty() || (this.peek() < n)) {
+      nums.push(n)
+      return
+    }
+
+    let begin = 0
+    let end = nums.length
+    while (begin < end) {
+      const pos = Math.trunc((end + begin) / 2)
+      const num = nums[pos]
+      if (num < n) {
+        begin = pos + 1
+      } else if (num > n) {
+        end = pos
+      } else {
+        nums.splice(pos, 0, n)
+        return
       }
     }
 
-    if (!contain) {
-      durations.push(duration)
-    }
+    nums.splice(begin, 0, n)
+  }
+
+  isEmpty () {
+    return this.getLength() < 1
   }
 
   isNotEmpty () {
-    return this.getLength() > 0
+    return !this.isEmpty()
   }
 
   getLength () {
-    return this.durations.length
+    return this.nums.length
   }
-}
-
-export function scheduleCourse (courses) {
-  courses.sort((a, b) => a[1] - b[1])
-  const queue = new PriorityQueue()
-
-  let time = 0
-  for (const [duration, last] of courses) {
-    const newTime = time + duration
-    if (newTime <= last) {
-      queue.enqueue(duration)
-      time = newTime
-    } else if (queue.isNotEmpty() && queue.peek() > duration) {
-      time += duration - queue.dequeue()
-      queue.enqueue(duration)
-    }
-  }
-
-  return queue.getLength()
 }

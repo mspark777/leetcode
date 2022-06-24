@@ -1,18 +1,16 @@
-import { createRequire } from 'module'
-import { scheduleCourse } from './solution.mjs'
-
-const require = createRequire(import.meta.url)
+// import { createRequire } from 'module'
+import { isPossible } from './solution.mjs'
 
 async function main () {
   const inputs = [
-    { courses: [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]] },
-    { courses: [[1, 2]] },
-    { courses: [[3, 2], [4, 3]] },
-    require('./data.json')
+    { target: [9, 3, 5] },
+    { target: [1, 1, 1, 2] },
+    { target: [8, 5] },
+    { target: [1, 1000000000] }
   ]
 
   for (const input of inputs) {
-    const result = scheduleCourse(input.courses)
+    const result = isPossible(input.target)
     console.log(result)
   }
 }
