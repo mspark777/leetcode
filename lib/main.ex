@@ -7,10 +7,10 @@ defmodule Leetcode do
   def main() do
    # {:ok, data} = get_json('./src/data.json')
     inputs = [
-      %{ target: [9, 3, 5] },
-      %{ target: [1, 1, 1, 2] },
-      %{ target: [8, 5] },
-      %{ target: [1, 1000000000] },
+      %{ nums: [4, 2, 3] },
+      %{ nums: [4, 2, 1] },
+      %{ nums: [1] },
+      %{ nums: [1, 2] }
      # %{ target: data["target"]}
     ]
 
@@ -18,7 +18,7 @@ defmodule Leetcode do
   end
 
   def main([input | remains]) do
-    result = Solution.is_possible(input.target)
+    result = Solution.check_possibility(input.nums)
     IO.puts(result)
     main(remains)
   end

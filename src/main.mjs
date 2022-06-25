@@ -1,16 +1,14 @@
 // import { createRequire } from 'module'
-import { isPossible } from './solution.mjs'
+import { checkPossibility } from './solution.mjs'
 
 async function main () {
   const inputs = [
-    { target: [9, 3, 5] },
-    { target: [1, 1, 1, 2] },
-    { target: [8, 5] },
-    { target: [1, 1000000000] }
+    { nums: [4, 2, 3] },
+    { nums: [4, 2, 1] }
   ]
 
   for (const input of inputs) {
-    const result = isPossible(input.target)
+    const result = checkPossibility(input.nums)
     console.log(result)
   }
 }

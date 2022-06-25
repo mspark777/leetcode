@@ -1,35 +1,33 @@
-use std::collections::BinaryHeap;
-
 pub struct Solution {}
 
 impl Solution {
-    pub fn is_possible(target: Vec<i32>) -> bool {
-        let mut queue = BinaryHeap::<i32>::with_capacity(target.len());
+    pub fn check_possibility(nums: Vec<i32>) -> bool {
+        if nums.len() < 3 {
+            return true;
+        }
 
-        let mut sum = target.iter().fold(0, |acc, cur| {
-            queue.push(*cur);
-            acc + *cur
-        });
+        let mut nums = nums;
+        let mut count = 0;
+        for i in 1..nums.len() {
+            let prev = nums[i - 1];
+            let cur = nums[i];
+            if cur < prev {
+                count += 1;
+                if count > 1 {
+                    return false;
+                }
 
-        while let Some(top) = queue.pop() {
-            if top == 1 {
-                break;
-            }
-
-            sum -= top;
-            if (top <= sum) || (sum < 1) {
-                return false;
-            }
-
-            let top = top % sum;
-            sum += top;
-            if top > 0 {
-                queue.push(top);
-            } else {
-                queue.push(sum);
+                if i > 1 {
+                    let pprev = nums[i - 2];
+                    if pprev <= cur {
+                        nums[i - 1] = pprev;
+                    } else {
+                        nums[i] = prev;
+                    }
+                }
             }
         }
 
-        true
+        count < 2
     }
 }
