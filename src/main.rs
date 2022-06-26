@@ -1,21 +1,28 @@
 mod solution;
 
 struct Input {
-    nums: Vec<i32>,
+    card_points: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: vec![4, 2, 3],
+            card_points: vec![1, 2, 3, 4, 5, 6, 1],
+            k: 3,
         },
         Input {
-            nums: vec![4, 2, 1],
+            card_points: vec![2, 2, 2],
+            k: 2,
+        },
+        Input {
+            card_points: vec![9, 7, 7, 9, 7, 7, 9],
+            k: 7,
         },
     ];
 
     for input in inputs {
-        let result = solution::Solution::check_possibility(input.nums);
+        let result = solution::Solution::max_score(input.card_points, input.k);
         println!("{result:?}");
     }
 }

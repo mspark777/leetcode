@@ -1,14 +1,15 @@
 // import { createRequire } from 'module'
-import { checkPossibility } from './solution.mjs'
+import { maxScore } from './solution.mjs'
 
 async function main () {
   const inputs = [
-    { nums: [4, 2, 3] },
-    { nums: [4, 2, 1] }
+    { cardPoints: [1, 2, 3, 4, 5, 6, 1], k: 3 },
+    { cardPoints: [2, 2, 2], k: 2 },
+    { cardPoints: [9, 7, 7, 9, 7, 7, 9], k: 7 }
   ]
 
   for (const input of inputs) {
-    const result = checkPossibility(input.nums)
+    const result = maxScore(input.cardPoints, input.k)
     console.log(result)
   }
 }

@@ -1,27 +1,15 @@
-export function checkPossibility (nums) {
-  if (nums.length < 3) {
-    return true
+export function maxScore (cardPoints, k) {
+  const size = cardPoints.length - k
+  let min = cardPoints.slice(0, size).reduce((acc, cur) => acc + cur, 0)
+  let sum = min
+  let cur = min
+
+  for (let i = 0; i < k; i += 1) {
+    const p = cardPoints[i + size]
+    sum += p
+    cur += p - cardPoints[i]
+    min = Math.min(min, cur)
   }
 
-  let count = 0
-  for (let i = 1; i < nums.length; i += 1) {
-    const prev = nums[i - 1]
-    const cur = nums[i]
-    if (cur < prev) {
-      count += 1
-      if (count > 1) {
-        return false
-      }
-
-      if (i > 1) {
-        if ((nums[i - 2] <= cur)) {
-          nums[i - 1] = nums[i - 2]
-        } else {
-          nums[i] = prev
-        }
-      }
-    }
-  }
-
-  return count < 2
+  return sum - min
 }
