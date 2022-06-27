@@ -1,8 +1,18 @@
-export function minPartitions (n) {
-  let max = 0
-  for (const ch of n) {
-    max = Math.max(max, Number(ch))
+export class TreeNode {
+  constructor (val, left, right) {
+    this.val = val ?? 0
+    this.left = left ?? null
+    this.right = right ?? null
+  }
+}
+
+export function hasPathSum (root, targetSum) {
+  if (!root) {
+    return false
+  } else if (root.left === null && root.right === null) {
+    return root.val === targetSum
   }
 
-  return max
+  targetSum -= root.val
+  return hasPathSum(root.left, targetSum) || hasPathSum(root.right, targetSum)
 }
