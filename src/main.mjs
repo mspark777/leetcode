@@ -1,15 +1,16 @@
 // import { createRequire } from 'module'
-import { maxScore } from './solution.mjs'
+import { minPartitions } from './solution.mjs'
 
 async function main () {
   const inputs = [
-    { cardPoints: [1, 2, 3, 4, 5, 6, 1], k: 3 },
-    { cardPoints: [2, 2, 2], k: 2 },
-    { cardPoints: [9, 7, 7, 9, 7, 7, 9], k: 7 }
+    { n: '32' },
+    { n: '82734' },
+    { n: '27346209830709182346' },
+    { n: '135' }
   ]
 
   for (const input of inputs) {
-    const result = maxScore(input.cardPoints, input.k)
+    const result = minPartitions(input.n)
     console.log(result)
   }
 }

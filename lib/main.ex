@@ -1,24 +1,17 @@
 defmodule Leetcode do
-  def get_json(filename) do
-    with {:ok, body} <- File.read(filename),
-         {:ok, json} <- Poison.decode(body), do: {:ok, json}
-  end
-
   def main() do
-   # {:ok, data} = get_json('./src/data.json')
     inputs = [
-      %{ nums: [4, 2, 3] },
-      %{ nums: [4, 2, 1] },
-      %{ nums: [1] },
-      %{ nums: [1, 2] }
-     # %{ target: data["target"]}
+      %{ n: "32" },
+      %{ n: "82734" },
+      %{ n: "27346209830709182346" },
+      %{ n: "135" }
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = Solution.check_possibility(input.nums)
+    result = Solution.min_partitions(input.n)
     IO.puts(result)
     main(remains)
   end

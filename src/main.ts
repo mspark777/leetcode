@@ -1,19 +1,19 @@
-import { maxScore } from './solution'
+import { minPartitions } from './solution'
 
 interface Input {
-  readonly cardPoints: number[]
-  readonly k: number
+  readonly n: string
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
-    { cardPoints: [1, 2, 3, 4, 5, 6, 1], k: 3 },
-    { cardPoints: [2, 2, 2], k: 2 },
-    { cardPoints: [9, 7, 7, 9, 7, 7, 9], k: 7 }
+    { n: '32' },
+    { n: '82734' },
+    { n: '27346209830709182346' },
+    { n: '135' }
   ]
 
   for (const input of inputs) {
-    const result = maxScore(input.cardPoints, input.k)
+    const result = minPartitions(input.n)
     console.log(result)
   }
 }

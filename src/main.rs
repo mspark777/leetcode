@@ -1,28 +1,21 @@
 mod solution;
 
 struct Input {
-    card_points: Vec<i32>,
-    k: i32,
+    n: &'static str,
 }
 
 fn main() {
     let inputs = [
+        Input { n: "32" },
+        Input { n: "82734" },
         Input {
-            card_points: vec![1, 2, 3, 4, 5, 6, 1],
-            k: 3,
+            n: "27346209830709182346",
         },
-        Input {
-            card_points: vec![2, 2, 2],
-            k: 2,
-        },
-        Input {
-            card_points: vec![9, 7, 7, 9, 7, 7, 9],
-            k: 7,
-        },
+        Input { n: "135" },
     ];
 
     for input in inputs {
-        let result = solution::Solution::max_score(input.card_points, input.k);
+        let result = solution::Solution::min_partitions(String::from(input.n));
         println!("{result:?}");
     }
 }
