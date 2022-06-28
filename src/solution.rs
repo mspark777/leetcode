@@ -1,31 +1,33 @@
 pub struct Solution {}
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-use std::cell::RefCell;
-use std::rc::Rc;
 impl Solution {
-    pub fn has_path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> bool {
-        match root {
-            None => false,
-            Some(n) => {
-                let node = n.borrow();
-                let new_sum = target_sum - node.val;
-                match (&node.left, &node.right) {
-                    (None, None) => node.val == target_sum,
-                    (Some(left), None) => Self::has_path_sum(Some(left.clone()), new_sum),
-                    (None, Some(right)) => Self::has_path_sum(Some(right.clone()), new_sum),
-                    (Some(left), Some(right)) => {
-                        Self::has_path_sum(Some(left.clone()), new_sum)
-                            || Self::has_path_sum(Some(right.clone()), new_sum)
-                    }
-                }
-            }
+    pub fn min_deletions(s: String) -> i32 {
+        let mut frequency = [0; 26];
+        for ch in s.as_bytes() {
+            let code = *ch - b'a';
+            let i = code as usize;
+            frequency[i] += 1;
         }
+
+        frequency.sort_unstable_by(|a, b| b.cmp(a));
+
+        let mut result = 0;
+        let mut max = s.len() as i32;
+
+        for i in 0..frequency.len() {
+            let f = frequency[i];
+            if f < 1 {
+                break;
+            }
+
+            if f > max {
+                result += f - max;
+                frequency[i] = max;
+            }
+
+            max = 0.max(frequency[i] - 1);
+        }
+
+        result
     }
 }

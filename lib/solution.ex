@@ -1,25 +1,32 @@
-defmodule TreeNode do
-  @type t :: %__MODULE__{
-          val: integer,
-          left: TreeNode.t() | nil,
-          right: TreeNode.t() | nil
-        }
-  defstruct val: 0, left: nil, right: nil
-end
-
 defmodule Solution do
-  def has_path_sum(nil, _) do
-    false
+  @spec min_deletions(s :: String.t) :: integer
+  def min_deletions(s) do
+    s |> String.to_charlist |> count_frequency(%{}, 0)
   end
 
-  def has_path_sum(root, target_sum) when root.left == nil and root.right == nil do
-    root.val == target_sum
+  @spec count_frequency(chars :: list(char()), map :: %{char() => integer()}, max_f :: integer()) :: integer()
+  def count_frequency([ch | chars], map, max_f) do
+    f = Map.get(map, ch, 0)
+    count_frequency(chars, Map.put(map, ch, f + 1), max_f + 1)
   end
 
-  @spec has_path_sum(root :: TreeNode.t | nil, target_sum :: integer) :: boolean
-  def has_path_sum(root, target_sum) do
-    sum = target_sum - root.val
-    has_path_sum(root.left, sum) or has_path_sum(root.right, sum)
+  def count_frequency([], map, max_f) do
+    map |> Map.values |> Enum.sort(&(&1 > &2)) |> solve(max_f, 0)
   end
 
+  @spec count_frequency(frequency :: list(integer()), max_f :: integer(), result :: integer()) :: integer()
+  def solve([f | frequency], max_f, result) when f > max_f do
+    result = result + (f - max_f)
+    max_f = max(0, max_f - 1)
+    solve(frequency, max_f, result)
+  end
+
+  def solve([f | frequency], _, result)  do
+    max_f = max(0, f - 1)
+    solve(frequency, max_f, result)
+  end
+
+  def solve([], _, result)  do
+    result
+  end
 end

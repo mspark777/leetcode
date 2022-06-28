@@ -1,23 +1,27 @@
-export class TreeNode {
-  val: number
-  // eslint-disable-next-line no-use-before-define
-  left: TreeNode | null
-  // eslint-disable-next-line no-use-before-define
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = val ?? 0
-    this.left = left ?? null
-    this.right = right ?? null
-  }
-}
-
-export function hasPathSum (root: TreeNode | null, targetSum: number): boolean {
-  if (!root) {
-    return false
-  } else if (root.left === null && root.right === null) {
-    return root.val === targetSum
+export function minDeletions (s: string): number {
+  const frequency = new Array<number>(26).fill(0)
+  const acode = 'a'.charCodeAt(0)
+  for (let i = 0; i < s.length; i += 1) {
+    const code = s.charCodeAt(i)
+    frequency[code - acode] += 1
   }
 
-  targetSum -= root.val
-  return hasPathSum(root.left, targetSum) || hasPathSum(root.right, targetSum)
+  frequency.sort((a, b) => b - a)
+
+  let result = 0
+  let max = s.length
+  for (let i = 0; i < frequency.length; i += 1) {
+    const f = frequency[i]
+    if (f < 1) {
+      break
+    }
+
+    if (f > max) {
+      result += f - max
+      frequency[i] = max
+    }
+    max = Math.max(0, frequency[i] - 1)
+  }
+
+  return result
 }
