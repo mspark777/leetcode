@@ -1,26 +1,14 @@
-export function minDeletions (s: string): number {
-  const frequency = new Array<number>(26).fill(0)
-  const acode = 'a'.charCodeAt(0)
-  for (let i = 0; i < s.length; i += 1) {
-    const code = s.charCodeAt(i)
-    frequency[code - acode] += 1
-  }
+export function reconstructQueue (people: number[][]): number[][] {
+  const queue = people.map(value => [...value])
 
-  frequency.sort((a, b) => b - a)
+  queue.sort((a, b) => a[0] === b[0]
+    ? a[1] - b[1]
+    : b[0] - a[0]
+  )
 
-  let result = 0
-  let max = s.length
-  for (let i = 0; i < frequency.length; i += 1) {
-    const f = frequency[i]
-    if (f < 1) {
-      break
-    }
-
-    if (f > max) {
-      result += f - max
-      frequency[i] = max
-    }
-    max = Math.max(0, frequency[i] - 1)
+  const result: number[][] = []
+  for (const person of queue) {
+    result.splice(person[1], 0, person)
   }
 
   return result

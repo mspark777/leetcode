@@ -1,18 +1,17 @@
-import { minDeletions } from './solution'
+import { reconstructQueue } from './solution'
 
 interface Input {
-  readonly s: string
+  readonly people: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
-    { s: 'aab' },
-    { s: 'aaabbbcc' },
-    { s: 'ceabaacb' }
+    { people: [[7, 0], [4, 4], [7, 1], [5, 0], [6, 1], [5, 2]] },
+    { people: [[6, 0], [5, 0], [4, 0], [3, 2], [2, 2], [1, 4]] }
   ]
 
   for (const input of inputs) {
-    const result = minDeletions(input.s)
+    const result = reconstructQueue(input.people)
     console.log(result)
   }
 }

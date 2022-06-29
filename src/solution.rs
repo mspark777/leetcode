@@ -1,31 +1,17 @@
 pub struct Solution {}
 
 impl Solution {
-    pub fn min_deletions(s: String) -> i32 {
-        let mut frequency = [0; 26];
-        for ch in s.as_bytes() {
-            let code = *ch - b'a';
-            let i = code as usize;
-            frequency[i] += 1;
-        }
+    pub fn reconstruct_queue(people: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut queue: Vec<Vec<i32>> = people
+            .iter()
+            .map(|person| vec![person[0], person[1]])
+            .collect();
 
-        frequency.sort_unstable_by(|a, b| b.cmp(a));
+        queue.sort_unstable_by_key(|person| (-person[0], person[1]));
 
-        let mut result = 0;
-        let mut max = s.len() as i32;
-
-        for i in 0..frequency.len() {
-            let f = frequency[i];
-            if f < 1 {
-                break;
-            }
-
-            if f > max {
-                result += f - max;
-                frequency[i] = max;
-            }
-
-            max = 0.max(frequency[i] - 1);
+        let mut result = Vec::<Vec<i32>>::with_capacity(people.len());
+        for person in queue {
+            result.insert(person[1] as usize, person.clone());
         }
 
         result
