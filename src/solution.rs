@@ -1,19 +1,11 @@
 pub struct Solution {}
 
 impl Solution {
-    pub fn reconstruct_queue(people: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-        let mut queue: Vec<Vec<i32>> = people
-            .iter()
-            .map(|person| vec![person[0], person[1]])
-            .collect();
+    pub fn min_moves2(nums: Vec<i32>) -> i32 {
+        let mut nums = nums;
+        nums.sort_unstable();
 
-        queue.sort_unstable_by_key(|person| (-person[0], person[1]));
-
-        let mut result = Vec::<Vec<i32>>::with_capacity(people.len());
-        for person in queue {
-            result.insert(person[1] as usize, person.clone());
-        }
-
-        result
+        let mid = nums[nums.len() / 2];
+        nums.iter().fold(0, |acc, cur| acc + (mid - cur).abs())
     }
 }

@@ -3,35 +3,21 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    people: Vec<Vec<i32>>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            people: vec![
-                vec![7, 0],
-                vec![4, 4],
-                vec![7, 1],
-                vec![5, 0],
-                vec![6, 1],
-                vec![5, 2],
-            ],
+            nums: vec![1, 2, 3],
         },
         Input {
-            people: vec![
-                vec![6, 0],
-                vec![5, 0],
-                vec![4, 0],
-                vec![3, 2],
-                vec![2, 2],
-                vec![1, 4],
-            ],
+            nums: vec![1, 10, 2, 9],
         },
     ];
 
     for input in inputs {
-        let result = Solution::reconstruct_queue(input.people);
+        let result = Solution::min_moves2(input.nums);
         println!("{result:?}");
     }
 }

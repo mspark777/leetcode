@@ -1,15 +1,6 @@
-export function reconstructQueue (people) {
-  const queue = people.map(value => [...value])
-
-  queue.sort((a, b) => a[0] === b[0]
-    ? a[1] - b[1]
-    : b[0] - a[0]
-  )
-
-  const result = []
-  for (const person of queue) {
-    result.splice(person[1], 0, person)
-  }
-
-  return result
+export function minMoves2 (nums) {
+  nums.sort((a, b) => a - b)
+  const midIndex = Math.trunc(nums.length / 2)
+  const mid = nums[midIndex]
+  return nums.reduce((acc, cur) => acc + Math.abs(mid - cur), 0)
 }

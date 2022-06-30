@@ -1,13 +1,10 @@
 defmodule Solution do
-  @spec reconstruct_queue(people :: [[integer]]) :: [[integer]]
-  def reconstruct_queue(people) do
-    people
-    |> Enum.sort(fn [hi, ki], [hj, kj] -> if hi == hj, do: ki < kj, else: hi > hj end)
-    |> solve([])
+  @spec min_moves2(nums :: [integer]) :: integer
+  def min_moves2(nums) do
+    nums_len = Enum.count(nums)
+    mid_index  = div(nums_len, 2)
+    sorted = Enum.sort(nums)
+    mid = Enum.at(sorted, mid_index)
+    Enum.reduce(sorted, 0, &(&2 + abs(mid - &1)))
   end
-
-  def solve([[_, h] = person | people], result) do
-    solve(people, List.insert_at(result, h, person))
-  end
-  def solve([], result), do: result
 end
