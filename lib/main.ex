@@ -1,15 +1,15 @@
 defmodule Leetcode do
   def main() do
     inputs = [
-      %{ nums: [1, 2, 3] },
-      %{ nums: [1, 10, 2, 9] }
+      %{ box_types: [[1, 3], [2, 2], [3, 1]], truck_size: 4 },
+      %{ box_types: [[5, 10], [2, 5], [4, 7], [3, 9]], truck_size: 10 }
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = Solution.min_moves2(input.nums)
+    result = Solution.maximum_units(input.box_types, input.truck_size)
     IO.puts(result)
     main(remains)
   end
