@@ -3,24 +3,43 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    box_types: Vec<Vec<i32>>,
-    truck_size: i32,
+    h: i32,
+    w: i32,
+    horizontal_cuts: Vec<i32>,
+    vertical_cuts: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            box_types: vec![vec![1, 3], vec![2, 2], vec![3, 1]],
-            truck_size: 4,
+            h: 5,
+            w: 4,
+            horizontal_cuts: vec![1, 2, 4],
+            vertical_cuts: vec![1, 3],
         },
         Input {
-            box_types: vec![vec![5, 10], vec![2, 5], vec![4, 7], vec![3, 9]],
-            truck_size: 10,
+            h: 5,
+            w: 4,
+            horizontal_cuts: vec![3, 1],
+            vertical_cuts: vec![1],
+        },
+        Input {
+            h: 5,
+            w: 4,
+            horizontal_cuts: vec![3],
+            vertical_cuts: vec![3],
+        },
+        Input {
+            h: 1000000000,
+            w: 1000000000,
+            horizontal_cuts: vec![2],
+            vertical_cuts: vec![2],
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_units(input.box_types, input.truck_size);
+        let result =
+            Solution::max_area(input.h, input.w, input.horizontal_cuts, input.vertical_cuts);
         println!("{result:?}");
     }
 }

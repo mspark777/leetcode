@@ -1,14 +1,36 @@
 // import { createRequire } from 'module'
-import { maximumUnits } from './solution.mjs'
+import { maxArea } from './solution.mjs'
 
 async function main () {
   const inputs = [
-    { boxTypes: [[1, 3], [2, 2], [3, 1]], truckSize: 4 },
-    { boxTypes: [[5, 10], [2, 5], [4, 7], [3, 9]], truckSize: 10 }
+    {
+      h: 5,
+      w: 4,
+      horizontalCuts: [1, 2, 4],
+      verticalCuts: [1, 3]
+    },
+    {
+      h: 5,
+      w: 4,
+      horizontalCuts: [3, 1],
+      verticalCuts: [1]
+    },
+    {
+      h: 5,
+      w: 4,
+      horizontalCuts: [3],
+      verticalCuts: [3]
+    },
+    {
+      h: 1000000000,
+      w: 1000000000,
+      horizontalCuts: [2],
+      verticalCuts: [2]
+    }
   ]
 
   for (const input of inputs) {
-    const result = maximumUnits(input.boxTypes, input.truckSize)
+    const result = maxArea(input.h, input.w, input.horizontalCuts, input.verticalCuts)
     console.log(result)
   }
 }

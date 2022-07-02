@@ -1,23 +1,28 @@
 pub struct Solution {}
 
 impl Solution {
-    pub fn maximum_units(box_types: Vec<Vec<i32>>, truck_size: i32) -> i32 {
-        let mut box_types = box_types;
-        let mut truck_size = truck_size;
-        box_types.sort_unstable_by_key(|v| -v[1]);
+    pub fn max_area(h: i32, w: i32, horizontal_cuts: Vec<i32>, vertical_cuts: Vec<i32>) -> i32 {
+        let mut horizontal_cuts = horizontal_cuts;
+        horizontal_cuts.push(0);
+        horizontal_cuts.push(h);
+        horizontal_cuts.sort_unstable();
 
-        let mut result = 0;
-        for box_type in &box_types {
-            let count = box_type[0];
-            let units = box_type[1];
-            let min = truck_size.min(count);
-            result += units * min;
-            truck_size -= min;
-            if truck_size <= 0 {
-                break;
-            }
+        let mut max_h = 0;
+        for i in 1..horizontal_cuts.len() {
+            max_h = max_h.max(horizontal_cuts[i] - horizontal_cuts[i - 1]);
         }
 
-        result
+        let mut vertical_cuts = vertical_cuts;
+        vertical_cuts.push(0);
+        vertical_cuts.push(w);
+        vertical_cuts.sort_unstable();
+
+        let mut max_w = 0;
+        for i in 1..vertical_cuts.len() {
+            max_w = max_w.max(vertical_cuts[i] - vertical_cuts[i - 1]);
+        }
+
+        let result = (max_h as i64) * (max_w as i64) % 1000000007;
+        result as i32
     }
 }
