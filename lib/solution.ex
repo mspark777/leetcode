@@ -1,14 +1,21 @@
 defmodule Solution do
-  @spec max_area(h :: integer, w :: integer, horizontal_cuts :: [integer], vertical_cuts :: [integer]) :: integer
-  def max_area(h, w, horizontal_cuts, vertical_cuts) do
-    max_h = ([h] ++ horizontal_cuts) |> Enum.sort |> max_distance(0, 0)
-    max_w = ([w] ++ vertical_cuts) |> Enum.sort |> max_distance(0, 0)
-    rem(max_w * max_h, 1000000007)
+  @spec wiggle_max_length(nums :: [integer]) :: integer
+  def wiggle_max_length(nums) do
+    [prev | remains] = nums
+    wiggle_max_length(prev, remains, 1, 1)
   end
 
-  def max_distance([back | remains], front, result) do
-    max_distance(remains, back, max(result, back - front))
+  def wiggle_max_length(prev, [cur | nums], _, down) when cur > prev do
+    wiggle_max_length(cur, nums, down + 1, down)
   end
 
-  def max_distance([], _, result), do: result
+  def wiggle_max_length(prev, [cur | nums], up, _) when cur < prev do
+    wiggle_max_length(cur, nums, up, up + 1)
+  end
+
+  def wiggle_max_length(_, [cur | nums], up, down) do
+    wiggle_max_length(cur, nums, up, down)
+  end
+
+  def wiggle_max_length(_, [], up, down), do: max(up, down)
 end

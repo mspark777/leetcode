@@ -1,36 +1,21 @@
 // import { createRequire } from 'module'
-import { maxArea } from './solution.mjs'
+import { wiggleMaxLength } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      h: 5,
-      w: 4,
-      horizontalCuts: [1, 2, 4],
-      verticalCuts: [1, 3]
+      nums: [1, 7, 4, 9, 2, 5]
     },
     {
-      h: 5,
-      w: 4,
-      horizontalCuts: [3, 1],
-      verticalCuts: [1]
+      nums: [1, 17, 5, 10, 13, 15, 10, 5, 16, 8]
     },
     {
-      h: 5,
-      w: 4,
-      horizontalCuts: [3],
-      verticalCuts: [3]
-    },
-    {
-      h: 1000000000,
-      w: 1000000000,
-      horizontalCuts: [2],
-      verticalCuts: [2]
+      nums: [1, 2, 3, 4, 5, 6, 7, 8, 9]
     }
   ]
 
   for (const input of inputs) {
-    const result = maxArea(input.h, input.w, input.horizontalCuts, input.verticalCuts)
+    const result = wiggleMaxLength(input.nums)
     console.log(result)
   }
 }
