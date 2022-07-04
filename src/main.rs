@@ -3,24 +3,27 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    nums: Vec<i32>,
+    ratings: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: vec![1, 7, 4, 9, 2, 5],
+            ratings: vec![1, 0, 2],
         },
         Input {
-            nums: vec![1, 17, 5, 10, 13, 15, 10, 5, 16, 8],
+            ratings: vec![1, 2, 2],
         },
         Input {
-            nums: vec![1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ratings: vec![1, 2, 87, 87, 87, 2, 1],
+        },
+        Input {
+            ratings: vec![1, 2, 3, 5, 4, 3, 2, 1, 4, 3, 2, 1, 3, 2, 1, 1, 2, 3, 4],
         },
     ];
 
     for input in inputs {
-        let result = Solution::wiggle_max_length(input.nums);
+        let result = Solution::candy(input.ratings);
         println!("{result:?}");
     }
 }
