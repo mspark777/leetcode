@@ -1,4 +1,7 @@
 
+help:
+	@cat Makefile
+
 ts:
 	npm run start:ts
 
@@ -7,6 +10,3 @@ js:
 
 rs:
 	cargo run
-
-ex:
-	mix run lib/main.ex
