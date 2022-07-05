@@ -3,27 +3,21 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    ratings: Vec<i32>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            ratings: vec![1, 0, 2],
+            nums: vec![100, 4, 200, 1, 3, 2],
         },
         Input {
-            ratings: vec![1, 2, 2],
-        },
-        Input {
-            ratings: vec![1, 2, 87, 87, 87, 2, 1],
-        },
-        Input {
-            ratings: vec![1, 2, 3, 5, 4, 3, 2, 1, 4, 3, 2, 1, 3, 2, 1, 1, 2, 3, 4],
+            nums: vec![0, 3, 7, 2, 5, 8, 4, 6, 0, 1],
         },
     ];
 
     for input in inputs {
-        let result = Solution::candy(input.ratings);
+        let result = Solution::longest_consecutive(input.nums);
         println!("{result:?}");
     }
 }
