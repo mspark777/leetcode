@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "16.13.2"
+  },
   "scripts": {
     "start:ts": "ts-node --files src/main.ts",
     "start:js": "node src/main.mjs"

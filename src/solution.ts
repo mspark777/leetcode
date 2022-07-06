@@ -1,21 +1,16 @@
-export function longestConsecutive (nums: number[]): number {
-  const numSet = new Set(nums)
-  let longest = 0
-
-  for (const num of numSet) {
-    if (numSet.has(num - 1)) {
-      continue
-    }
-
-    let cur = num + 1
-    let count = 1
-    while (numSet.has(cur)) {
-      count += 1
-      cur += 1
-    }
-
-    longest = Math.max(longest, count)
+export function fib (n: number): number {
+  if (n < 2) {
+    return n
   }
 
-  return longest
+  let prev0 = 0
+  let prev1 = 1
+  let cur = 1
+  for (let i = 2; i <= n; i += 1) {
+    cur = prev1 + prev0
+    prev0 = prev1
+    prev1 = cur
+  }
+
+  return cur
 }

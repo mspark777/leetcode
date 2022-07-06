@@ -3,21 +3,19 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            nums: vec![100, 4, 200, 1, 3, 2],
-        },
-        Input {
-            nums: vec![0, 3, 7, 2, 5, 8, 4, 6, 0, 1],
-        },
+        Input { n: 2 },
+        Input { n: 3 },
+        Input { n: 4 },
+        Input { n: 9 },
     ];
 
     for input in inputs {
-        let result = Solution::longest_consecutive(input.nums);
+        let result = Solution::fib(input.n);
         println!("{result:?}");
     }
 }

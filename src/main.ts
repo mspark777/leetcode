@@ -1,21 +1,27 @@
-import { longestConsecutive } from './solution'
+import { fib } from './solution'
 
 interface Input {
-  readonly nums: number[]
+  readonly n: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [100, 4, 200, 1, 3, 2]
+      n: 2
     },
     {
-      nums: [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]
+      n: 3
+    },
+    {
+      n: 4
+    },
+    {
+      n: 9
     }
   ]
 
   for (const input of inputs) {
-    const result = longestConsecutive(input.nums)
+    const result = fib(input.n)
     console.log(result)
   }
 }
