@@ -1,27 +1,32 @@
-import { fib } from './solution'
+import { isInterleave } from './solution'
 
 interface Input {
-  readonly n: number
+  readonly s1: string
+  readonly s2: string
+  readonly s3: string
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      n: 2
+      s1: 'aabcc',
+      s2: 'dbbca',
+      s3: 'aadbbcbcac'
     },
     {
-      n: 3
+      s1: 'aabcc',
+      s2: 'dbbca',
+      s3: 'aadbbbaccc'
     },
     {
-      n: 4
-    },
-    {
-      n: 9
+      s1: '',
+      s2: '',
+      s3: ''
     }
   ]
 
   for (const input of inputs) {
-    const result = fib(input.n)
+    const result = isInterleave(input.s1, input.s2, input.s3)
     console.log(result)
   }
 }

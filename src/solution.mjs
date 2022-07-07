@@ -1,16 +1,26 @@
-export function fib (n) {
-  if (n < 2) {
-    return n
+export function isInterleave (s1, s2, s3) {
+  const s1Len = s1.length
+  const s2Len = s2.length
+  const s3Len = s3.length
+  if ((s1Len + s2Len) !== s3Len) {
+    return false
   }
 
-  let prev0 = 0
-  let prev1 = 1
-  let cur = 1
-  for (let i = 2; i <= n; i += 1) {
-    cur = prev1 + prev0
-    prev0 = prev1
-    prev1 = cur
+  const dp = new Array(s2Len + 1)
+  for (let i = 0; i <= s1Len; i += 1) {
+    for (let j = 0; j <= s2Len; j += 1) {
+      if ((i === 0) && (j === 0)) {
+        dp[j] = true
+      } else if (i === 0) {
+        dp[j] = dp[j - 1] && s2.charCodeAt(j - 1) === s3.charCodeAt(i + j - 1)
+      } else if (j === 0) {
+        dp[j] = dp[j] && s1.charCodeAt(i - 1) === s3.charCodeAt(i + j - 1)
+      } else {
+        dp[j] = (dp[j] && s1.charCodeAt(i - 1) === s3.charCodeAt(i + j - 1)) ||
+          (dp[j - 1] && s2.charCodeAt(j - 1) === s3.charCodeAt(i + j - 1))
+      }
+    }
   }
 
-  return cur
+  return dp[s2Len]
 }
