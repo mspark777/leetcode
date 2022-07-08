@@ -3,32 +3,52 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    s1: String,
-    s2: String,
-    s3: String,
+    houses: Vec<i32>,
+    cost: Vec<Vec<i32>>,
+    m: i32,
+    n: i32,
+    target: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s1: String::from("aabcc"),
-            s2: String::from("dbbca"),
-            s3: String::from("aadbbcbcac"),
+            houses: vec![0, 0, 0, 0, 0],
+            cost: vec![
+                vec![1, 10],
+                vec![10, 1],
+                vec![10, 1],
+                vec![1, 10],
+                vec![5, 1],
+            ],
+            m: 5,
+            n: 2,
+            target: 3,
         },
         Input {
-            s1: String::from("aabcc"),
-            s2: String::from("dbbca"),
-            s3: String::from("aadbbbaccc"),
+            houses: vec![0, 2, 1, 2, 0],
+            cost: vec![
+                vec![1, 10],
+                vec![10, 1],
+                vec![10, 1],
+                vec![1, 10],
+                vec![5, 1],
+            ],
+            m: 5,
+            n: 2,
+            target: 3,
         },
         Input {
-            s1: String::from(""),
-            s2: String::from(""),
-            s3: String::from(""),
+            houses: vec![3, 1, 2, 3],
+            cost: vec![vec![1, 1, 1], vec![1, 1, 1], vec![1, 1, 1], vec![1, 1, 1]],
+            m: 4,
+            n: 3,
+            target: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_interleave(input.s1, input.s2, input.s3);
+        let result = Solution::min_cost(input.houses, input.cost, input.m, input.n, input.target);
         println!("{result:?}");
     }
 }

@@ -1,27 +1,33 @@
 // import { createRequire } from 'module'
-import { isInterleave } from './solution.mjs'
+import { minCost } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      s1: 'aabcc',
-      s2: 'dbbca',
-      s3: 'aadbbcbcac'
+      houses: [0, 0, 0, 0, 0],
+      cost: [[1, 10], [10, 1], [10, 1], [1, 10], [5, 1]],
+      m: 5,
+      n: 2,
+      target: 3
     },
     {
-      s1: 'aabcc',
-      s2: 'dbbca',
-      s3: 'aadbbbaccc'
+      houses: [0, 2, 1, 2, 0],
+      cost: [[1, 10], [10, 1], [10, 1], [1, 10], [5, 1]],
+      m: 5,
+      n: 2,
+      target: 3
     },
     {
-      s1: '',
-      s2: '',
-      s3: ''
+      houses: [3, 1, 2, 3],
+      cost: [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]],
+      m: 4,
+      n: 3,
+      target: 3
     }
   ]
 
   for (const input of inputs) {
-    const result = isInterleave(input.s1, input.s2, input.s3)
+    const result = minCost(input.houses, input.cost, input.m, input.n, input.target)
     console.log(result)
   }
 }

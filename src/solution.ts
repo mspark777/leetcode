@@ -1,27 +1,53 @@
-export function isInterleave (s1: string, s2: string, s3: string): boolean {
-  const s1Len = s1.length
-  const s2Len = s2.length
-  const s3Len = s3.length
-  if ((s1Len + s2Len) !== s3Len) {
-    return false
+function createMemo (row: number, col: number, val: number): number[][] {
+  const memo = new Array<number[]>(row)
+  for (let i = 0; i < row; i += 1) {
+    memo[i] = new Array<number>(col).fill(val)
   }
 
-  const dp = new Array<boolean>(s2Len + 1)
+  return memo
+}
 
-  for (let i = 0; i <= s1Len; i += 1) {
-    for (let j = 0; j <= s2Len; j += 1) {
-      if ((i === 0) && (j === 0)) {
-        dp[j] = true
-      } else if (i === 0) {
-        dp[j] = dp[j - 1] && s2.charCodeAt(j - 1) === s3.charCodeAt(i + j - 1)
-      } else if (j === 0) {
-        dp[j] = dp[j] && s1.charCodeAt(i - 1) === s3.charCodeAt(i + j - 1)
-      } else {
-        dp[j] = (dp[j] && s1.charCodeAt(i - 1) === s3.charCodeAt(i + j - 1)) ||
-          (dp[j - 1] && s2.charCodeAt(j - 1) === s3.charCodeAt(i + j - 1))
-      }
+export function minCost (houses: number[], cost: number[][], m: number, n: number, target: number): number {
+  const MAX_COST = 1000001
+  let prevMemo = createMemo(target + 1, n, MAX_COST)
+
+  for (let color = 1; color <= n; color += 1) {
+    if (houses[0] === color) {
+      prevMemo[1][color - 1] = 0
+    } else if (!houses[0]) {
+      prevMemo[1][color - 1] = cost[0][color - 1]
     }
   }
 
-  return dp[s2Len]
+  for (let house = 1; house < m; house += 1) {
+    const memo = createMemo(target + 1, n, MAX_COST)
+
+    for (let neighborhoods = 1; neighborhoods <= Math.min(target, house + 1); neighborhoods += 1) {
+      for (let color = 1; color <= n; color += 1) {
+        if (houses[house] && color !== houses[house]) {
+          continue
+        }
+
+        let currCost = MAX_COST
+        for (let prevColor = 1; prevColor <= n; prevColor += 1) {
+          if (prevColor !== color) {
+            currCost = Math.min(currCost, prevMemo[neighborhoods - 1][prevColor - 1])
+          } else {
+            currCost = Math.min(currCost, prevMemo[neighborhoods][color - 1])
+          }
+        }
+
+        const costToPaint = houses[house] ? 0 : cost[house][color - 1]
+        memo[neighborhoods][color - 1] = currCost + costToPaint
+      }
+    }
+    prevMemo = memo
+  }
+
+  let minCost = MAX_COST
+  for (let color = 1; color <= n; color += 1) {
+    minCost = Math.min(minCost, prevMemo[target][color - 1])
+  }
+
+  return minCost === MAX_COST ? -1 : minCost
 }
