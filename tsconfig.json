@@ -4,6 +4,10 @@
     "rootDir": "./src",
     "target": "ES2021",
     "module": "CommonJS",
+    "declaration": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
     "strict": true,
     "allowJs": false,
     "esModuleInterop": true,
@@ -11,8 +15,10 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "resolveJsonModule": false,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": false,
     "types": ["@types/node"]
   },
   "exclude": [
