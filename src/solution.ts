@@ -1,18 +1,11 @@
-export function maxResult (nums: number[], k: number): number {
-  const dp = new Array(nums.length)
-  dp[0] = nums[0]
-  const dequeue: number[] = [0]
-  for (let i = 1; i < nums.length; i += 1) {
-    if (dequeue[0] < (i - k)) {
-      dequeue.shift()
-    }
-    dp[i] = nums[i] + dp[dequeue[0]]
-    while (dequeue.length > 0 && dp[dequeue.at(-1)!] <= dp[i]) {
-      dequeue.pop()
-    }
-
-    dequeue.push(i)
+export function minCostClimbingStairs (cost: number[]): number {
+  let step0 = cost[0]
+  let step1 = cost[1]
+  for (let i = 2; i < cost.length; i += 1) {
+    const cur = cost[i] + Math.min(step0, step1)
+    step0 = step1
+    step1 = cur
   }
 
-  return dp.at(-1) as number
+  return Math.min(step0, step1)
 }
