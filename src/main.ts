@@ -1,24 +1,21 @@
-import { createTreeFromArray, rightSideView } from './solution'
+import { generate } from './solution'
 
 interface Input {
-  readonly root: (number | null)[]
+  readonly numRows: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: [1, 2, 3, null, 5, null, 4]
+      numRows: 5
     },
     {
-      root: [1, null, 3]
-    },
-    {
-      root: []
+      numRows: 1
     }
   ]
 
   for (const input of inputs) {
-    const result = rightSideView(createTreeFromArray(input.root))
+    const result = generate(input.numRows)
     console.log(result)
   }
 }

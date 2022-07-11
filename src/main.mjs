@@ -1,21 +1,18 @@
 // import { createRequire } from 'module'
-import { createTreeFromArray, rightSideView } from './solution.mjs'
+import { generate } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      root: [1, 2, 3, null, 5, null, 4]
+      numRows: 5
     },
     {
-      root: [1, null, 3]
-    },
-    {
-      root: []
+      numRows: 1
     }
   ]
 
   for (const input of inputs) {
-    const result = rightSideView(createTreeFromArray(input.root))
+    const result = generate(input.numRows)
     console.log(result)
   }
 }
