@@ -1,18 +1,21 @@
 // import { createRequire } from 'module'
-import { minCostClimbingStairs } from './solution.mjs'
+import { createTreeFromArray, rightSideView } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      cost: [10, 15, 20]
+      root: [1, 2, 3, null, 5, null, 4]
     },
     {
-      cost: [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+      root: [1, null, 3]
+    },
+    {
+      root: []
     }
   ]
 
   for (const input of inputs) {
-    const result = minCostClimbingStairs(input.cost)
+    const result = rightSideView(createTreeFromArray(input.root))
     console.log(result)
   }
 }

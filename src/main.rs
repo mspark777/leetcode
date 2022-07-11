@@ -1,23 +1,25 @@
 mod solution;
 
 use solution::Solution;
+use solution::TreeNode;
 
 struct Input {
-    cost: Vec<i32>,
+    root: Vec<Option<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            cost: vec![10, 15, 20],
+            root: vec![Some(1), Some(2), Some(3), None, Some(5), None, Some(4)],
         },
         Input {
-            cost: vec![1, 100, 1, 1, 1, 100, 1, 1, 100, 1],
+            root: vec![Some(1), None, Some(3)],
         },
+        Input { root: vec![] },
     ];
 
     for input in inputs {
-        let result = Solution::min_cost_climbing_stairs(input.cost);
+        let result = Solution::right_side_view(TreeNode::create_tree_from_vec(input.root));
         println!("{result:?}");
     }
 }
