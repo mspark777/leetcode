@@ -1,21 +1,24 @@
-import { generate } from './solution'
+import { makesquare } from './solution'
 
 interface Input {
-  readonly numRows: number
+  readonly matchsticks: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      numRows: 5
+      matchsticks: [1, 1, 2, 2, 2]
     },
     {
-      numRows: 1
+      matchsticks: [3, 3, 3, 3, 4]
+    },
+    {
+      matchsticks: [6, 6, 6, 6, 4, 2, 2]
     }
   ]
 
   for (const input of inputs) {
-    const result = generate(input.numRows)
+    const result = makesquare(input.matchsticks)
     console.log(result)
   }
 }

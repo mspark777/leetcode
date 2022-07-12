@@ -1,22 +1,34 @@
 pub struct Solution {}
 
 impl Solution {
-    pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
-        let num_rows = num_rows as usize;
-        let mut rows = Vec::<Vec<i32>>::with_capacity(num_rows);
-        for i in 0..num_rows {
-            let mut row = vec![1; i + 1];
-            let i = i as i32;
-            let prev = i - 1;
-            for j in 1..i {
-                let j = j as usize;
-                let prev = prev as usize;
-                row[j] = rows[prev][j - 1] + rows[prev][j];
-            }
-
-            rows.push(row);
+    pub fn makesquare(matchsticks: Vec<i32>) -> bool {
+        let sum = matchsticks.iter().fold(0, |acc, cur| acc + cur);
+        if (sum % 4) != 0 {
+            return false;
         }
 
-        rows
+        let mut nums = matchsticks;
+        nums.sort_unstable_by(|a, b| b.cmp(a));
+        Self::dfs(&nums, &mut [0, 0, 0, 0], 0, sum / 4)
+    }
+
+    fn dfs(nums: &Vec<i32>, sums: &mut [i32; 4], index: usize, target: i32) -> bool {
+        if index >= nums.len() {
+            return sums.iter().skip(1).all(|v| *v == target);
+        }
+
+        for i in 0..4 {
+            if (sums[i] + nums[index]) > target {
+                continue;
+            }
+
+            sums[i] += nums[index];
+            if Self::dfs(nums, sums, index + 1, target) {
+                return true;
+            }
+            sums[i] -= nums[index];
+        }
+
+        false
     }
 }
