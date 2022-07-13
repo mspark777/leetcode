@@ -1,30 +1,24 @@
-import { levelOrder, TreeNode } from './solution'
+import { getRow } from './solution'
 
 interface Input {
-  readonly root: TreeNode | null
+  readonly rowIndex: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: new TreeNode(3,
-        new TreeNode(9),
-        new TreeNode(20,
-          new TreeNode(15),
-          new TreeNode(7)
-        )
-      )
+      rowIndex: 3
     },
     {
-      root: new TreeNode(1)
+      rowIndex: 0
     },
     {
-      root: null
+      rowIndex: 1
     }
   ]
 
   for (const input of inputs) {
-    const result = levelOrder(input.root)
+    const result = getRow(input.rowIndex)
     console.log(result)
   }
 }

@@ -1,38 +1,20 @@
 mod solution;
 
-use std::{cell::RefCell, rc::Rc};
-
-use solution::{Solution, TreeNode};
+use solution::Solution;
 
 struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
-}
-
-fn create_node(
-    val: i32,
-    left: Option<Rc<RefCell<TreeNode>>>,
-    right: Option<Rc<RefCell<TreeNode>>>,
-) -> Option<Rc<RefCell<TreeNode>>> {
-    Some(Rc::new(RefCell::new(TreeNode { val, right, left })))
+    row_index: i32,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            root: create_node(
-                3,
-                create_node(9, None, None),
-                create_node(20, create_node(15, None, None), create_node(7, None, None)),
-            ),
-        },
-        Input {
-            root: create_node(1, None, None),
-        },
-        Input { root: None },
+        Input { row_index: 3 },
+        Input { row_index: 0 },
+        Input { row_index: 1 },
     ];
 
     for input in inputs {
-        let result = Solution::level_order(input.root);
+        let result = Solution::get_row(input.row_index);
         println!("{result:?}");
     }
 }
