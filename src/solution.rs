@@ -1,34 +1,49 @@
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+use std::cell::RefCell;
+use std::collections::VecDeque;
+use std::rc::Rc;
 pub struct Solution {}
-
 impl Solution {
-    pub fn makesquare(matchsticks: Vec<i32>) -> bool {
-        let sum = matchsticks.iter().fold(0, |acc, cur| acc + cur);
-        if (sum % 4) != 0 {
-            return false;
-        }
+    pub fn level_order(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        if let Some(r) = root {
+            let mut queue = VecDeque::<Rc<RefCell<TreeNode>>>::new();
+            queue.push_back(r);
+            let mut result = Vec::<Vec<i32>>::new();
 
-        let mut nums = matchsticks;
-        nums.sort_unstable_by(|a, b| b.cmp(a));
-        Self::dfs(&nums, &mut [0, 0, 0, 0], 0, sum / 4)
-    }
+            let mut depth = 0;
+            while !queue.is_empty() {
+                depth += 1;
+                let count = queue.len();
+                let mut level = Vec::<i32>::with_capacity(depth);
+                for _ in 0..count {
+                    if let Some(n) = queue.pop_front() {
+                        let node = n.borrow();
+                        level.push(node.val);
 
-    fn dfs(nums: &Vec<i32>, sums: &mut [i32; 4], index: usize, target: i32) -> bool {
-        if index >= nums.len() {
-            return sums.iter().skip(1).all(|v| *v == target);
-        }
+                        if let Some(left) = &node.left {
+                            queue.push_back(left.clone());
+                        }
 
-        for i in 0..4 {
-            if (sums[i] + nums[index]) > target {
-                continue;
+                        if let Some(right) = &node.right {
+                            queue.push_back(right.clone());
+                        }
+                    }
+                }
+
+                if !level.is_empty() {
+                    result.push(level);
+                }
             }
 
-            sums[i] += nums[index];
-            if Self::dfs(nums, sums, index + 1, target) {
-                return true;
-            }
-            sums[i] -= nums[index];
+            result
+        } else {
+            Vec::new()
         }
-
-        false
     }
 }

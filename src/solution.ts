@@ -1,29 +1,43 @@
-function dfs (nums: number[], sums: number[], index: number, target: number): boolean {
-  if (index >= nums.length) {
-    return sums.slice(1).every(s => s === target)
+
+export class TreeNode {
+  val: number
+  // eslint-disable-next-line no-use-before-define
+  left: TreeNode | null
+  // eslint-disable-next-line no-use-before-define
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
-
-  for (let i = 0; i < 4; i += 1) {
-    if ((sums[i] + nums[index]) > target) {
-      continue
-    }
-
-    sums[i] += nums[index]
-    if (dfs(nums, sums, index + 1, target)) {
-      return true
-    }
-    sums[i] -= nums[index]
-  }
-
-  return false
 }
 
-export function makesquare (matchsticks: number[]): boolean {
-  const sum = matchsticks.reduce((acc, cur) => acc + cur, 0)
-  if ((sum % 4) !== 0) {
-    return false
+export function levelOrder (root: TreeNode | null): number[][] {
+  if (!root) {
+    return []
   }
 
-  matchsticks.sort((a, b) => b - a)
-  return dfs(matchsticks, [0, 0, 0, 0], 0, Math.trunc(sum / 4))
+  const result: number[][] = []
+  const queue = [root]
+
+  while (queue.length > 0) {
+    const count = queue.length
+    const level: number[] = []
+    for (let i = 0; i < count; i += 1) {
+      const node = queue.shift() as TreeNode
+      level.push(node.val)
+
+      if (node.left) {
+        queue.push(node.left)
+      }
+
+      if (node.right) {
+        queue.push(node.right)
+      }
+    }
+
+    result.push(level)
+  }
+
+  return result
 }

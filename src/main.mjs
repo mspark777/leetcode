@@ -1,21 +1,27 @@
 // import { createRequire } from 'module'
-import { makesquare } from './solution.mjs'
+import { levelOrder, TreeNode } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      matchsticks: [1, 1, 2, 2, 2]
+      root: new TreeNode(3,
+        new TreeNode(9),
+        new TreeNode(20,
+          new TreeNode(15),
+          new TreeNode(7)
+        )
+      )
     },
     {
-      matchsticks: [3, 3, 3, 3, 4]
+      root: new TreeNode(1)
     },
     {
-      matchsticks: [6, 6, 6, 6, 4, 2, 2]
+      root: null
     }
   ]
 
   for (const input of inputs) {
-    const result = makesquare(input.matchsticks)
+    const result = levelOrder(input.root)
     console.log(result)
   }
 }
