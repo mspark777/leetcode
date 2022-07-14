@@ -3,18 +3,24 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    row_index: i32,
+    preorder: Vec<i32>,
+    inorder: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
-        Input { row_index: 3 },
-        Input { row_index: 0 },
-        Input { row_index: 1 },
+        Input {
+            preorder: vec![3, 9, 20, 15, 7],
+            inorder: vec![9, 3, 15, 20, 7],
+        },
+        Input {
+            preorder: vec![-1],
+            inorder: vec![-1],
+        },
     ];
 
     for input in inputs {
-        let result = Solution::get_row(input.row_index);
+        let result = Solution::build_tree(input.preorder, input.inorder);
         println!("{result:?}");
     }
 }

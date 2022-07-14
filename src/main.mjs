@@ -1,21 +1,20 @@
 // import { createRequire } from 'module'
-import { getRow } from './solution.mjs'
+import { buildTree } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      rowIndex: 3
+      preorder: [3, 9, 20, 15, 7],
+      inorder: [9, 3, 15, 20, 7]
     },
     {
-      rowIndex: 0
-    },
-    {
-      rowIndex: 1
+      preorder: [-1],
+      inorder: [-1]
     }
   ]
 
   for (const input of inputs) {
-    const result = getRow(input.rowIndex)
+    const result = buildTree(input.preorder, input.inorder)
     console.log(result)
   }
 }

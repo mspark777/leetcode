@@ -1,11 +1,30 @@
-export function getRow (rowIndex) {
-  const result = new Array(rowIndex + 1).fill(1)
-
-  for (let i = 0; i <= rowIndex; i += 1) {
-    for (let j = i - 1; j > 0; j -= 1) {
-      result[j] += result[j - 1]
-    }
+class TreeNode {
+  constructor (val, left, right) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
+}
 
-  return result
+export function buildTree (preorder, inorder) {
+  preorder.reverse()
+  inorder.reverse()
+
+  const build = bound => {
+    if (
+      (inorder.length < 1) ||
+      ((bound !== null) && (inorder.at(-1) === bound))
+    ) {
+      return null
+    }
+
+    const node = new TreeNode(preorder.pop())
+    node.left = build(node.val)
+
+    inorder.pop()
+    node.right = build(bound)
+
+    return node
+  }
+  return build(null)
 }

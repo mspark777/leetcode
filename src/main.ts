@@ -1,24 +1,24 @@
-import { getRow } from './solution'
+import { buildTree } from './solution'
 
 interface Input {
-  readonly rowIndex: number
+  readonly preorder: number[]
+  readonly inorder: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      rowIndex: 3
+      preorder: [3, 9, 20, 15, 7],
+      inorder: [9, 3, 15, 20, 7]
     },
     {
-      rowIndex: 0
-    },
-    {
-      rowIndex: 1
+      preorder: [-1],
+      inorder: [-1]
     }
   ]
 
   for (const input of inputs) {
-    const result = getRow(input.rowIndex)
+    const result = buildTree(input.preorder, input.inorder)
     console.log(result)
   }
 }
