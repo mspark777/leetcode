@@ -1,49 +1,56 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
 pub struct Solution {}
-use std::cell::RefCell;
-use std::rc::Rc;
 impl Solution {
-    pub fn build_tree(preorder: Vec<i32>, inorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
-        let mut preorder = preorder;
-        let mut inorder = inorder;
+    pub fn max_area_of_island(grid: Vec<Vec<i32>>) -> i32 {
+        let row_count = grid.len();
+        let col_count = grid[0].len();
+        let mut seen = vec![vec![false; col_count]; row_count];
 
-        preorder.reverse();
-        inorder.reverse();
-        Self::build(&mut preorder, &mut inorder, None)
+        let dr = [1, -1, 0, 0];
+        let dc = [0, 0, 1, -1];
+
+        let mut result = 0;
+        let mut stack = Vec::<(i32, i32)>::with_capacity(row_count);
+        for r in 0..row_count {
+            for c in 0..col_count {
+                if (grid[r][c] == 0) || seen[r][c] {
+                    continue;
+                }
+
+                let mut shape = 0;
+                stack.push((r as i32, c as i32));
+                seen[r][c] = true;
+                while !stack.is_empty() {
+                    let (row, col) = stack.pop().unwrap();
+                    shape += 1;
+                    for i in 0..4 {
+                        let nr = row + dr[i];
+                        let nc = col + dc[i];
+                        if Self::out_range(nr, row_count) {
+                            continue;
+                        } else if Self::out_range(nc, col_count) {
+                            continue;
+                        }
+
+                        let nr = nr as usize;
+                        let nc = nc as usize;
+                        if grid[nr][nc] == 0 {
+                            continue;
+                        } else if seen[nr][nc] {
+                            continue;
+                        }
+
+                        stack.push((nr as i32, nc as i32));
+                        seen[nr][nc] = true;
+                    }
+                }
+                result = result.max(shape);
+            }
+        }
+        result
     }
 
-    fn build(
-        preorder: &mut Vec<i32>,
-        inorder: &mut Vec<i32>,
-        bound: Option<i32>,
-    ) -> Option<Rc<RefCell<TreeNode>>> {
-        if inorder.is_empty() || (bound.is_some() && (*inorder.last().unwrap() == bound.unwrap())) {
-            return None;
-        }
-
-        let mut node = TreeNode::new(preorder.pop().unwrap());
-        node.left = Self::build(preorder, inorder, Some(node.val));
-
-        inorder.pop();
-        node.right = Self::build(preorder, inorder, bound);
-
-        Some(Rc::new(RefCell::new(node)))
+    #[inline]
+    fn out_range(n: i32, end: usize) -> bool {
+        (n < 0) || (n >= end as i32)
     }
 }

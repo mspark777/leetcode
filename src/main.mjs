@@ -1,20 +1,30 @@
 // import { createRequire } from 'module'
-import { buildTree } from './solution.mjs'
+import { maxAreaOfIsland } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      preorder: [3, 9, 20, 15, 7],
-      inorder: [9, 3, 15, 20, 7]
+      grid: [
+        [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+        [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+      ]
     },
     {
-      preorder: [-1],
-      inorder: [-1]
+      grid: [[0, 0, 0, 0, 0, 0, 0, 0]]
+    },
+    {
+      grid: [[1, 1, 0, 0, 0], [1, 1, 0, 0, 0], [0, 0, 0, 1, 1], [0, 0, 0, 1, 1]]
     }
   ]
 
   for (const input of inputs) {
-    const result = buildTree(input.preorder, input.inorder)
+    const result = maxAreaOfIsland(input.grid)
     console.log(result)
   }
 }

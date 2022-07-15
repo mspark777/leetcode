@@ -3,24 +3,38 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    preorder: Vec<i32>,
-    inorder: Vec<i32>,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            preorder: vec![3, 9, 20, 15, 7],
-            inorder: vec![9, 3, 15, 20, 7],
+            grid: vec![
+                vec![0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                vec![0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+                vec![0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                vec![0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+                vec![0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+                vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                vec![0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+                vec![0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+            ],
         },
         Input {
-            preorder: vec![-1],
-            inorder: vec![-1],
+            grid: vec![vec![0, 0, 0, 0, 0, 0, 0, 0]],
+        },
+        Input {
+            grid: vec![
+                vec![1, 1, 0, 0, 0],
+                vec![1, 1, 0, 0, 0],
+                vec![0, 0, 0, 1, 1],
+                vec![0, 0, 0, 1, 1],
+            ],
         },
     ];
 
     for input in inputs {
-        let result = Solution::build_tree(input.preorder, input.inorder);
+        let result = Solution::max_area_of_island(input.grid);
         println!("{result:?}");
     }
 }

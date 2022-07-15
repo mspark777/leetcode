@@ -1,24 +1,33 @@
-import { buildTree } from './solution'
+import { maxAreaOfIsland } from './solution'
 
 interface Input {
-  readonly preorder: number[]
-  readonly inorder: number[]
+  readonly grid: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      preorder: [3, 9, 20, 15, 7],
-      inorder: [9, 3, 15, 20, 7]
+      grid: [
+        [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+        [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+      ]
     },
     {
-      preorder: [-1],
-      inorder: [-1]
+      grid: [[0, 0, 0, 0, 0, 0, 0, 0]]
+    },
+    {
+      grid: [[1, 1, 0, 0, 0], [1, 1, 0, 0, 0], [0, 0, 0, 1, 1], [0, 0, 0, 1, 1]]
     }
   ]
 
   for (const input of inputs) {
-    const result = buildTree(input.preorder, input.inorder)
+    const result = maxAreaOfIsland(input.grid)
     console.log(result)
   }
 }
