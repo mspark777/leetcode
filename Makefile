@@ -10,3 +10,6 @@ js:
 
 rs:
 	cargo run
+
+go:
+	go run src/main.go
