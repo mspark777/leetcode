@@ -1,56 +1,62 @@
 pub struct Solution {}
 impl Solution {
-    pub fn max_area_of_island(grid: Vec<Vec<i32>>) -> i32 {
-        let row_count = grid.len();
-        let col_count = grid[0].len();
-        let mut seen = vec![vec![false; col_count]; row_count];
+    pub fn find_paths(m: i32, n: i32, max_move: i32, start_row: i32, start_column: i32) -> i32 {
+        let m = m as usize;
+        let n = n as usize;
+        let start_row = start_row as usize;
+        let start_column = start_column as usize;
 
-        let dr = [1, -1, 0, 0];
-        let dc = [0, 0, 1, -1];
+        const MODULO: i32 = 1000000007;
+        let mut dp = vec![vec![0; n]; m];
+        dp[start_row][start_column] = 1;
 
-        let mut result = 0;
-        let mut stack = Vec::<(i32, i32)>::with_capacity(row_count);
-        for r in 0..row_count {
-            for c in 0..col_count {
-                if (grid[r][c] == 0) || seen[r][c] {
-                    continue;
-                }
-
-                let mut shape = 0;
-                stack.push((r as i32, c as i32));
-                seen[r][c] = true;
-                while !stack.is_empty() {
-                    let (row, col) = stack.pop().unwrap();
-                    shape += 1;
-                    for i in 0..4 {
-                        let nr = row + dr[i];
-                        let nc = col + dc[i];
-                        if Self::out_range(nr, row_count) {
-                            continue;
-                        } else if Self::out_range(nc, col_count) {
-                            continue;
-                        }
-
-                        let nr = nr as usize;
-                        let nc = nc as usize;
-                        if grid[nr][nc] == 0 {
-                            continue;
-                        } else if seen[nr][nc] {
-                            continue;
-                        }
-
-                        stack.push((nr as i32, nc as i32));
-                        seen[nr][nc] = true;
+        let mut count = 0;
+        for _ in 0..max_move {
+            let mut temp = vec![vec![0; n]; m];
+            for i in 0..m {
+                for j in 0..n {
+                    if i == (m - 1) {
+                        count = (count + dp[i][j]) % MODULO;
                     }
-                }
-                result = result.max(shape);
-            }
-        }
-        result
-    }
 
-    #[inline]
-    fn out_range(n: i32, end: usize) -> bool {
-        (n < 0) || (n >= end as i32)
+                    if j == (n - 1) {
+                        count = (count + dp[i][j]) % MODULO;
+                    }
+
+                    if i == 0 {
+                        count = (count + dp[i][j]) % MODULO;
+                    }
+
+                    if j == 0 {
+                        count = (count + dp[i][j]) % MODULO;
+                    }
+
+                    let mut ti = 0;
+                    if i > 0 {
+                        ti += dp[i - 1][j];
+                    }
+
+                    if i < (m - 1) {
+                        ti += dp[i + 1][j];
+                    }
+                    ti %= MODULO;
+
+                    let mut tj = 0;
+                    if j > 0 {
+                        tj += dp[i][j - 1];
+                    }
+
+                    if j < (n - 1) {
+                        tj += dp[i][j + 1];
+                    }
+                    tj %= MODULO;
+
+                    temp[i][j] = (ti + tj) % MODULO;
+                }
+            }
+            dp = temp;
+        }
+
+        count
     }
 }
