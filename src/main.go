@@ -5,22 +5,22 @@ import (
 	"leetcode/src/solution"
 )
 
-type Input struct {
+type input struct {
 	n int
 	k int
 }
 
 func main() {
-	inputs := []Input{
-		Input{
+	inputs := []input{
+		{
 			n: 3,
 			k: 0,
 		},
-		Input{
+		{
 			n: 3,
 			k: 1,
 		},
-		Input{
+		{
 			n: 3,
 			k: 3,
 		},
