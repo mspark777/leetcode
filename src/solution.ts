@@ -1,61 +1,25 @@
-export function findPaths (m: number, n: number, maxMove: number, startRow: number, startColumn: number): number {
+export function kInversePairs (n: number, k: number): number {
+  let dp = new Array<number>(k + 1).fill(0)
   const MODULO = 1000000007
-  const createDP = (): number[][] => {
-    const dp: number[][] = new Array(m)
-    for (let i = 0; i < m; i += 1) {
-      dp[i] = new Array(n).fill(0)
-    }
-    return dp
-  }
-  let dp = createDP()
-  dp[startRow][startColumn] = 1
-  let count = 0
-  for (let moves = 1; moves <= maxMove; moves += 1) {
-    const temp = createDP()
-    for (let i = 0; i < m; i += 1) {
-      for (let j = 0; j < n; j += 1) {
-        if (i === (m - 1)) {
-          count = (count + dp[i][j]) % MODULO
-        }
 
-        if (j === (n - 1)) {
-          count = (count + dp[i][j]) % MODULO
-        }
-
-        if (i === 0) {
-          count = (count + dp[i][j]) % MODULO
-        }
-
-        if (j === 0) {
-          count = (count + dp[i][j]) % MODULO
-        }
-
-        let ti = 0
-        if (i > 0) {
-          ti += dp[i - 1][j]
-        }
-
-        if (i < (m - 1)) {
-          ti += dp[i + 1][j]
-        }
-        ti %= MODULO
-
-        let tj = 0
-        if (j > 0) {
-          tj += dp[i][j - 1]
-        }
-
-        if (j < (n - 1)) {
-          tj += dp[i][j + 1]
-        }
-        tj %= MODULO
-
-        temp[i][j] = (ti + tj) % MODULO
+  for (let i = 1; i <= n; i += 1) {
+    const temp = new Array<number>(k + 1).fill(0)
+    temp[0] = 1
+    for (let j = 1; j <= k; j += 1) {
+      let v = dp[j] + MODULO
+      if (j >= i) {
+        v -= dp[j - i]
       }
+      v %= MODULO
+      temp[j] = (temp[j - 1] + v) % MODULO
     }
-
     dp = temp
   }
 
-  return count
+  let result = dp[k] + MODULO
+  if (k > 0) {
+    result -= dp[k - 1]
+  }
+
+  return result % MODULO
 }

@@ -1,68 +1,33 @@
 package solution
 
-func FindPaths(m int, n int, maxMove int, startRow int, startColumn int) int {
-	return findPaths(m, n, maxMove, startRow, startColumn)
+func KInversePairs(n int, k int) int {
+	return kInversePairs(n, k)
 }
 
-func findPaths(m int, n int, maxMove int, startRow int, startColumn int) int {
+func kInversePairs(n int, k int) int {
+	dp := make([]int, k+1)
 	const MODULO = 1000000007
-	createDP := func() [][]int {
-		dp := make([][]int, m)
-		for i := range dp {
-			dp[i] = make([]int, n)
-		}
-		return dp
-	}
 
-	dp := createDP()
-	dp[startRow][startColumn] = 1
-	count := 0
-
-	for moves := 0; moves < maxMove; moves += 1 {
-		temp := createDP()
-		for i := 0; i < m; i += 1 {
-			for j := 0; j < n; j += 1 {
-				if i == (m - 1) {
-					count = (count + dp[i][j]) % MODULO
-				}
-
-				if j == (n - 1) {
-					count = (count + dp[i][j]) % MODULO
-				}
-
-				if i == 0 {
-					count = (count + dp[i][j]) % MODULO
-				}
-
-				if j == 0 {
-					count = (count + dp[i][j]) % MODULO
-				}
-
-				ti := 0
-				if i > 0 {
-					ti += dp[i-1][j]
-				}
-
-				if i < (m - 1) {
-					ti += dp[i+1][j]
-				}
-				ti %= MODULO
-
-				tj := 0
-				if j > 0 {
-					tj += dp[i][j-1]
-				}
-
-				if j < (n - 1) {
-					tj += dp[i][j+1]
-				}
-				tj %= MODULO
-
-				temp[i][j] = (ti + tj) % MODULO
+	for i := 1; i <= n; i += 1 {
+		temp := make([]int, k+1)
+		temp[0] = 1
+		for j := 1; j <= k; j += 1 {
+			v := dp[j] + MODULO
+			if j >= i {
+				v -= dp[j-i]
 			}
+
+			v %= MODULO
+			temp[j] = (temp[j-1] + v) % MODULO
 		}
+
 		dp = temp
 	}
 
-	return count
+	result := dp[k] + MODULO
+	if k > 0 {
+		result -= dp[k-1]
+	}
+
+	return result % MODULO
 }
