@@ -1,20 +1,24 @@
 // import { createRequire } from 'module'
-import { kInversePairs } from './solution.mjs'
+import { numSubmatrixSumTarget } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      n: 3,
-      k: 0
+      matrix: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
+      target: 0
     },
     {
-      n: 3,
-      k: 1
+      matrix: [[1, -1], [-1, 1]],
+      target: 0
+    },
+    {
+      matrix: [[904]],
+      target: 0
     }
   ]
 
   for (const input of inputs) {
-    const result = kInversePairs(input.n, input.k)
+    const result = numSubmatrixSumTarget(input.matrix, input.target)
     console.log(result)
   }
 }

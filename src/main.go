@@ -6,28 +6,28 @@ import (
 )
 
 type input struct {
-	n int
-	k int
+	matrix [][]int
+	target int
 }
 
 func main() {
 	inputs := []input{
 		{
-			n: 3,
-			k: 0,
+			matrix: [][]int{{0, 1, 0}, {1, 1, 1}, {0, 1, 0}},
+			target: 0,
 		},
 		{
-			n: 3,
-			k: 1,
+			matrix: [][]int{{1, -1}, {-1, 1}},
+			target: 0,
 		},
 		{
-			n: 3,
-			k: 3,
+			matrix: [][]int{{904}},
+			target: 0,
 		},
 	}
 
 	for _, input := range inputs {
-		result := solution.KInversePairs(input.n, input.k)
+		result := solution.NumSubmatrixSumTarget(input.matrix, input.target)
 		fmt.Printf("%v\n", result)
 	}
 }
