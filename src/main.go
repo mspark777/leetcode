@@ -2,32 +2,27 @@ package main
 
 import (
 	"fmt"
-	"leetcode/src/solution"
 )
 
 type input struct {
-	matrix [][]int
-	target int
+	prices []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			matrix: [][]int{{0, 1, 0}, {1, 1, 1}, {0, 1, 0}},
-			target: 0,
+			prices: []int{7, 1, 5, 3, 6, 4},
 		},
 		{
-			matrix: [][]int{{1, -1}, {-1, 1}},
-			target: 0,
+			prices: []int{7, 6, 4, 3, 1},
 		},
 		{
-			matrix: [][]int{{904}},
-			target: 0,
+			prices: []int{3, 3, 5, 0, 0, 3, 1, 4},
 		},
 	}
 
 	for _, input := range inputs {
-		result := solution.NumSubmatrixSumTarget(input.matrix, input.target)
+		result := maxProfit(input.prices)
 		fmt.Printf("%v\n", result)
 	}
 }

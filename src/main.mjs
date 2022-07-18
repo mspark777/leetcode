@@ -1,24 +1,18 @@
 // import { createRequire } from 'module'
-import { numSubmatrixSumTarget } from './solution.mjs'
+import { maxProfit } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      matrix: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-      target: 0
+      prices: [7, 1, 5, 3, 6, 4]
     },
     {
-      matrix: [[1, -1], [-1, 1]],
-      target: 0
-    },
-    {
-      matrix: [[904]],
-      target: 0
+      prices: [7, 6, 4, 3, 1]
     }
   ]
 
   for (const input of inputs) {
-    const result = numSubmatrixSumTarget(input.matrix, input.target)
+    const result = maxProfit(input.prices)
     console.log(result)
   }
 }

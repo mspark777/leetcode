@@ -12,4 +12,4 @@ rs:
 	cargo run
 
 go:
-	go run src/main.go
+	go run src/main.go src/solution.go

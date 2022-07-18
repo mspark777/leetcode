@@ -1,28 +1,24 @@
-import { numSubmatrixSumTarget } from './solution'
+import { maxProfit } from './solution'
 
 interface Input {
-  readonly matrix: number[][]
-  readonly target: number
+  readonly prices: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      matrix: [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-      target: 0
+      prices: [7, 1, 5, 3, 6, 4]
     },
     {
-      matrix: [[1, -1], [-1, 1]],
-      target: 0
+      prices: [7, 6, 4, 3, 1]
     },
     {
-      matrix: [[904]],
-      target: 0
+      prices: [3, 3, 5, 0, 0, 3, 1, 4]
     }
   ]
 
   for (const input of inputs) {
-    const result = numSubmatrixSumTarget(input.matrix, input.target)
+    const result = maxProfit(input.prices)
     console.log(result)
   }
 }
