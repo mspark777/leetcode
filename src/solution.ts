@@ -1,10 +1,16 @@
-export function maxProfit (prices: number[]): number {
-  let minPrice = Number.MAX_SAFE_INTEGER
-  let maxProfit = 0
-  for (const price of prices) {
-    minPrice = Math.min(minPrice, price)
-    maxProfit = Math.max(maxProfit, price - minPrice)
+export function generate (numRows: number): number[][] {
+  const result: number[][] = []
+
+  for (let i = 0; i < numRows; i += 1) {
+    const row = new Array<number>(i + 1)
+    row[0] = 1
+    row[i] = 1
+    const prev = i - 1
+    for (let j = 1; j < i; j += 1) {
+      row[j] = result[prev][j - 1] + result[prev][j]
+    }
+    result.push(row)
   }
 
-  return maxProfit
+  return result
 }

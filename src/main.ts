@@ -1,24 +1,21 @@
-import { maxProfit } from './solution'
+import { generate } from './solution'
 
 interface Input {
-  readonly prices: number[]
+  readonly numRows: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      prices: [7, 1, 5, 3, 6, 4]
+      numRows: 5
     },
     {
-      prices: [7, 6, 4, 3, 1]
-    },
-    {
-      prices: [3, 3, 5, 0, 0, 3, 1, 4]
+      numRows: 1
     }
   ]
 
   for (const input of inputs) {
-    const result = maxProfit(input.prices)
+    const result = generate(input.numRows)
     console.log(result)
   }
 }

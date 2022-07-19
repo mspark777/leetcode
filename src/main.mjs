@@ -1,18 +1,18 @@
 // import { createRequire } from 'module'
-import { maxProfit } from './solution.mjs'
+import { generate } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      prices: [7, 1, 5, 3, 6, 4]
+      numRows: 5
     },
     {
-      prices: [7, 6, 4, 3, 1]
+      numRows: 1
     }
   ]
 
   for (const input of inputs) {
-    const result = maxProfit(input.prices)
+    const result = generate(input.numRows)
     console.log(result)
   }
 }

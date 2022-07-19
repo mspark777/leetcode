@@ -5,24 +5,21 @@ import (
 )
 
 type input struct {
-	prices []int
+	maxRows int
 }
 
 func main() {
 	inputs := []input{
 		{
-			prices: []int{7, 1, 5, 3, 6, 4},
+			maxRows: 5,
 		},
 		{
-			prices: []int{7, 6, 4, 3, 1},
-		},
-		{
-			prices: []int{3, 3, 5, 0, 0, 3, 1, 4},
+			maxRows: 1,
 		},
 	}
 
 	for _, input := range inputs {
-		result := maxProfit(input.prices)
+		result := generate(input.maxRows)
 		fmt.Printf("%v\n", result)
 	}
 }

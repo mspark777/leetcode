@@ -1,14 +1,21 @@
 pub struct Solution {}
 impl Solution {
-    pub fn max_profit(prices: Vec<i32>) -> i32 {
-        let mut min_price = i32::max_value();
-        let mut max_profit = 0;
+    pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
+        let num_rows = num_rows as usize;
+        let mut rows = Vec::<Vec<i32>>::with_capacity(num_rows);
+        for i in 0..num_rows {
+            let mut row = vec![1; i + 1];
+            let i = i as i32;
+            let prev = i - 1;
+            for j in 1..i {
+                let j = j as usize;
+                let prev = prev as usize;
+                row[j] = rows[prev][j - 1] + rows[prev][j];
+            }
 
-        for price in prices {
-            min_price = min_price.min(price);
-            max_profit = max_profit.max(price - min_price);
+            rows.push(row);
         }
 
-        max_profit
+        rows
     }
 }
