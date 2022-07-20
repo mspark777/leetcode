@@ -1,17 +1,31 @@
 package main
 
-func generate(numRows int) [][]int {
-	result := make([][]int, numRows)
-	for i := 0; i < numRows; i++ {
-		row := make([]int, i+1)
-		row[0] = 1
-		row[i] = 1
-		prev := i - 1
-		for j := 1; j < i; j++ {
-			row[j] = result[prev][j-1] + result[prev][j]
+func numMatchingSubseq(s string, words []string) int {
+	seen := make(map[string]bool)
+	result := 0
+
+	for _, word := range words {
+		if check, ok := seen[word]; ok {
+			if check {
+				result += 1
+			}
+			continue
 		}
 
-		result[i] = row
+		matched := 0
+		for i, j := 0, 0; i < len(s) && j < len(word); i += 1 {
+			if s[i] == word[j] {
+				matched += 1
+				j += 1
+			}
+		}
+
+		if matched == len(word) {
+			result += 1
+			seen[word] = true
+		} else {
+			seen[word] = false
+		}
 	}
 
 	return result

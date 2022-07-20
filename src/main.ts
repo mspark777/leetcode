@@ -1,21 +1,24 @@
-import { generate } from './solution'
+import { numMatchingSubseq } from './solution'
 
 interface Input {
-  readonly numRows: number
+  readonly s: string
+  readonly words: string[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      numRows: 5
+      s: 'abcde',
+      words: ['a', 'bb', 'acd', 'ace']
     },
     {
-      numRows: 1
+      s: 'dsahjpjauf',
+      words: ['ahjpjau', 'ja', 'ahbwzgqnuk', 'tnmlanowax']
     }
   ]
 
   for (const input of inputs) {
-    const result = generate(input.numRows)
+    const result = numMatchingSubseq(input.s, input.words)
     console.log(result)
   }
 }

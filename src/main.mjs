@@ -1,18 +1,20 @@
 // import { createRequire } from 'module'
-import { generate } from './solution.mjs'
+import { numMatchingSubseq } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      numRows: 5
+      s: 'abcde',
+      words: ['a', 'bb', 'acd', 'ace']
     },
     {
-      numRows: 1
+      s: 'dsahjpjauf',
+      words: ['ahjpjau', 'ja', 'ahbwzgqnuk', 'tnmlanowax']
     }
   ]
 
   for (const input of inputs) {
-    const result = generate(input.numRows)
+    const result = numMatchingSubseq(input.s, input.words)
     console.log(result)
   }
 }

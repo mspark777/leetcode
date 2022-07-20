@@ -5,21 +5,24 @@ import (
 )
 
 type input struct {
-	maxRows int
+	s     string
+	words []string
 }
 
 func main() {
 	inputs := []input{
 		{
-			maxRows: 5,
+			s:     "abcde",
+			words: []string{"a", "bb", "acd", "ace"},
 		},
 		{
-			maxRows: 1,
+			s:     "dsahjpjauf",
+			words: []string{"ahjpjau", "ja", "ahbwzgqnuk", "tnmlanowax"},
 		},
 	}
 
 	for _, input := range inputs {
-		result := generate(input.maxRows)
+		result := numMatchingSubseq(input.s, input.words)
 		fmt.Printf("%v\n", result)
 	}
 }
