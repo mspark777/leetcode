@@ -1,30 +1,40 @@
-export function numMatchingSubseq (s, words) {
-  const seen = new Map()
-  let result = 0
-  for (const word of words) {
-    const check = seen.get(word)
-    if (check === true) {
-      result += 1
-      continue
-    } else if (check === false) {
-      continue
-    }
+export class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
 
-    let matched = 0
-    for (let i = 0, j = 0; i < s.length && j < word.length; i += 1) {
-      if (s.charCodeAt(i) === word.charCodeAt(j)) {
-        matched += 1
-        j += 1
-      }
-    }
-
-    if (matched === word.length) {
-      result += 1
-      seen.set(word, true)
-    } else {
-      seen.set(word, false)
-    }
+export function reverseBetween (head, left, right) {
+  if (!head) {
+    return head
   }
 
-  return result
+  let cur = head
+  let prev = null
+  while (left > 1) {
+    prev = cur
+    cur = cur.next
+    left -= 1
+    right -= 1
+  }
+
+  const tail = cur
+  const con = prev
+  let third = null
+  while (right > 0) {
+    third = cur.next
+    cur.next = prev
+    prev = cur
+    cur = third
+    right -= 1
+  }
+
+  if (con) {
+    con.next = prev
+  } else {
+    head = prev
+  }
+  tail.next = cur
+  return head
 }

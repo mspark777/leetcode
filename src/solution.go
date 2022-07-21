@@ -1,32 +1,41 @@
 package main
 
-func numMatchingSubseq(s string, words []string) int {
-	seen := make(map[string]bool)
-	result := 0
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
 
-	for _, word := range words {
-		if check, ok := seen[word]; ok {
-			if check {
-				result += 1
-			}
-			continue
-		}
-
-		matched := 0
-		for i, j := 0, 0; i < len(s) && j < len(word); i += 1 {
-			if s[i] == word[j] {
-				matched += 1
-				j += 1
-			}
-		}
-
-		if matched == len(word) {
-			result += 1
-			seen[word] = true
-		} else {
-			seen[word] = false
-		}
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+	if head == nil {
+		return head
 	}
 
-	return result
+	cur := head
+	var prev *ListNode = nil
+	for left > 1 {
+		prev = cur
+		cur = cur.Next
+		left -= 1
+		right -= 1
+	}
+
+	tail := cur
+	con := prev
+	var third *ListNode = nil
+	for right > 0 {
+		third = cur.Next
+		cur.Next = prev
+		prev = cur
+		cur = third
+		right -= 1
+	}
+
+	if con != nil {
+		con.Next = prev
+	} else {
+		head = prev
+	}
+
+	tail.Next = cur
+	return head
 }
