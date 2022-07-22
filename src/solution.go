@@ -1,29 +1,34 @@
 package main
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
+import (
+	"strings"
+)
 
-func partition(head *ListNode, x int) *ListNode {
-	beforeHead := &ListNode{}
-	afterHead := &ListNode{}
-	before := beforeHead
-	after := afterHead
+func isPalindrome(s string) bool {
+	s = strings.ToLower(s)
 
-	for head != nil {
-		if head.Val < x {
-			before.Next = head
-			before = before.Next
-		} else {
-			after.Next = head
-			after = after.Next
+	i := 0
+	j := len(s) - 1
+	for i < j {
+		if !isAlphanumeric(s[i]) {
+			i += 1
+			continue
+		}
+		if !isAlphanumeric(s[j]) {
+			j -= 1
+			continue
 		}
 
-		head = head.Next
+		if s[i] != s[j] {
+			return false
+		}
+		i += 1
+		j -= 1
 	}
 
-	after.Next = nil
-	before.Next = afterHead.Next
-	return beforeHead.Next
+	return true
+}
+
+func isAlphanumeric(l uint8) bool {
+	return ((l >= 'a' && l <= 'z') || (l >= '0' && l <= '9'))
 }

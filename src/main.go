@@ -5,49 +5,24 @@ import (
 )
 
 type input struct {
-	head []int
-	x    int
-}
-
-func arrToList(arr []int) *ListNode {
-	head := &ListNode{}
-	tail := head
-	for _, v := range arr {
-		tail.Next = &ListNode{Val: v}
-		tail = tail.Next
-	}
-
-	return head.Next
-}
-
-func listToArr(node *ListNode) []int {
-	arr := []int{}
-	for node != nil {
-		arr = append(arr, node.Val)
-		node = node.Next
-	}
-
-	return arr
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			head: []int{1, 4, 3, 2, 5, 2},
-			x:    3,
+			s: "A man, a plan, a canal: Panama",
 		},
 		{
-			head: []int{2, 1},
-			x:    2,
+			s: "race a car",
 		},
 		{
-			head: []int{},
-			x:    1,
+			s: " ",
 		},
 	}
 
 	for _, input := range inputs {
-		result := partition(arrToList(input.head), input.x)
-		fmt.Printf("%v\n", listToArr(result))
+		result := isPalindrome(input.s)
+		fmt.Printf("%v\n", result)
 	}
 }

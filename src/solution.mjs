@@ -1,29 +1,15 @@
-export class ListNode {
-  constructor (val, next) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
-  }
-}
+export function isPalindrome (s) {
+  const test = s.replace(/[^0-9a-zA-Z]/g, '').toLowerCase()
 
-export function partition (head, x) {
-  const beforeHead = new ListNode(0)
-  const afterHead = new ListNode(0)
-  let before = beforeHead
-  let after = afterHead
-
-  while (head) {
-    if (head.val < x) {
-      before.next = head
-      before = before.next
-    } else {
-      after.next = head
-      after = after.next
+  let lo = 0
+  let hi = test.length - 1
+  while (lo <= hi) {
+    if (test[lo] !== test[hi]) {
+      return false
     }
-
-    head = head.next
+    lo += 1
+    hi -= 1
   }
-  after.next = null
-  before.next = afterHead.next
 
-  return beforeHead.next
+  return true
 }

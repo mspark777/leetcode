@@ -1,47 +1,22 @@
 // import { createRequire } from 'module'
-import { partition, ListNode } from './solution.mjs'
-
-function arrToList (arr) {
-  const head = new ListNode()
-  let tail = head
-
-  for (const n of arr) {
-    tail.next = new ListNode(n)
-    tail = tail.next
-  }
-
-  return head.next
-}
-
-function listToArr (node) {
-  const arr = []
-  while (node) {
-    arr.push(node.val)
-    node = node.next
-  }
-
-  return arr
-}
+import { isPalindrome } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      head: [1, 4, 3, 2, 5, 2],
-      x: 3
+      s: 'A man, a plan, a canal: Panama'
     },
     {
-      head: [2, 1],
-      x: 2
+      s: 'race a car'
     },
     {
-      head: [],
-      x: 1
+      s: ' '
     }
   ]
 
   for (const input of inputs) {
-    const result = partition(arrToList(input.head), input.x)
-    console.log(listToArr(result))
+    const result = isPalindrome(input.s)
+    console.log(result)
   }
 }
 

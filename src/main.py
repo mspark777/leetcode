@@ -3,41 +3,23 @@ main
 """
 
 from typing import Optional
-from solution import Solution, ListNode
-
-def arrtolist(arr: list[int]) -> Optional[ListNode]:
-    head = ListNode()
-    tail = head
-
-    for n in arr:
-        tail.next = ListNode(n)
-        tail = tail.next
-
-    return head.next
-
-def listtoarr(node: Optional[ListNode]) -> list[int]:
-    arr: list[int] = []
-    while node is not None:
-        arr.append(node.val)
-        node = node.next
-
-    return arr
+from solution import Solution
 
 class Input:
-    def __init__(self, head: list[int], x: int):
-        self.head = head
-        self.x = x
+    s: str
+    def __init__(self, s: str):
+        self.s = s
 
 def main():
     inputs = [
-            Input([1, 4, 3, 2, 5, 2], 3),
-            Input([2, 1], 2),
-            Input([], 1),
+            Input("A man, a plan, a canal: Panama"),
+            Input("race a car"),
+            Input(" "),
     ]
     sol = Solution()
     for i in inputs:
-        result = sol.partition(arrtolist(i.head), i.x)
-        print(listtoarr(result))
+        result = sol.isPalindrome(i.s)
+        print(result)
 
 
 

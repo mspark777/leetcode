@@ -1,32 +1,15 @@
-export class ListNode {
-  val: number
-  // eslint-disable-next-line no-use-before-define
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
-  }
-}
+export function isPalindrome (s: string): boolean {
+  const test = s.replace(/[^0-9a-zA-Z]/g, '').toLowerCase()
 
-export function partition (head: ListNode | null, x: number): ListNode | null {
-  const beforeHead = new ListNode(0)
-  const afterHead = new ListNode(0)
-  let before = beforeHead
-  let after = afterHead
-
-  while (head) {
-    if (head.val < x) {
-      before.next = head
-      before = before.next
-    } else {
-      after.next = head
-      after = after.next
+  let i = 0
+  let j = test.length - 1
+  while (i < j) {
+    if (test[i] !== test[j]) {
+      return false
     }
-
-    head = head.next
+    i += 1
+    j -= 1
   }
-  after.next = null
-  before.next = afterHead.next
 
-  return beforeHead.next
+  return true
 }
