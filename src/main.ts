@@ -1,9 +1,8 @@
-import { reverseBetween, ListNode } from './solution'
+import { partition, ListNode } from './solution'
 
 interface Input {
   readonly head: number[]
-  readonly left: number
-  readonly right: number
+  readonly x: number
 }
 
 function arrToList (arr: number[]): ListNode | null {
@@ -31,28 +30,21 @@ function listToArr (node: ListNode | null): number[] {
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      head: [1, 2, 3, 4, 5],
-      left: 2,
-      right: 4
+      head: [1, 4, 3, 2, 5, 2],
+      x: 3
     },
     {
-      head: [5],
-      left: 1,
-      right: 1
+      head: [2, 1],
+      x: 2
     },
     {
       head: [],
-      left: 1,
-      right: 100
+      x: 1
     }
   ]
 
   for (const input of inputs) {
-    const result = reverseBetween(
-      arrToList(input.head),
-      input.left,
-      input.right
-    )
+    const result = partition(arrToList(input.head), input.x)
     console.log(listToArr(result))
   }
 }

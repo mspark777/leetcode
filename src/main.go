@@ -5,9 +5,8 @@ import (
 )
 
 type input struct {
-	head  []int
-	left  int
-	right int
+	head []int
+	x    int
 }
 
 func arrToList(arr []int) *ListNode {
@@ -34,28 +33,21 @@ func listToArr(node *ListNode) []int {
 func main() {
 	inputs := []input{
 		{
-			head:  []int{1, 2, 3, 4, 5},
-			left:  2,
-			right: 4,
+			head: []int{1, 4, 3, 2, 5, 2},
+			x:    3,
 		},
 		{
-			head:  []int{5},
-			left:  1,
-			right: 1,
+			head: []int{2, 1},
+			x:    2,
 		},
 		{
-			head:  []int{},
-			left:  1,
-			right: 100,
+			head: []int{},
+			x:    1,
 		},
 	}
 
 	for _, input := range inputs {
-		result := reverseBetween(
-			arrToList(input.head),
-			input.left,
-			input.right,
-		)
+		result := partition(arrToList(input.head), input.x)
 		fmt.Printf("%v\n", listToArr(result))
 	}
 }

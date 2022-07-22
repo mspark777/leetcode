@@ -5,36 +5,25 @@ export class ListNode {
   }
 }
 
-export function reverseBetween (head, left, right) {
-  if (!head) {
-    return head
-  }
+export function partition (head, x) {
+  const beforeHead = new ListNode(0)
+  const afterHead = new ListNode(0)
+  let before = beforeHead
+  let after = afterHead
 
-  let cur = head
-  let prev = null
-  while (left > 1) {
-    prev = cur
-    cur = cur.next
-    left -= 1
-    right -= 1
-  }
+  while (head) {
+    if (head.val < x) {
+      before.next = head
+      before = before.next
+    } else {
+      after.next = head
+      after = after.next
+    }
 
-  const tail = cur
-  const con = prev
-  let third = null
-  while (right > 0) {
-    third = cur.next
-    cur.next = prev
-    prev = cur
-    cur = third
-    right -= 1
+    head = head.next
   }
+  after.next = null
+  before.next = afterHead.next
 
-  if (con) {
-    con.next = prev
-  } else {
-    head = prev
-  }
-  tail.next = cur
-  return head
+  return beforeHead.next
 }

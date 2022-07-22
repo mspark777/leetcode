@@ -19,7 +19,7 @@ defmodule Main do
   end
 
   def main([input | remains]) do
-    result = Solution.candy(input.ratings)
+    result = Solution.partition(input.ratings)
     IO.puts(result)
     main(remains)
   end

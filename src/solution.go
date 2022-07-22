@@ -5,37 +5,25 @@ type ListNode struct {
 	Next *ListNode
 }
 
-func reverseBetween(head *ListNode, left int, right int) *ListNode {
-	if head == nil {
-		return head
+func partition(head *ListNode, x int) *ListNode {
+	beforeHead := &ListNode{}
+	afterHead := &ListNode{}
+	before := beforeHead
+	after := afterHead
+
+	for head != nil {
+		if head.Val < x {
+			before.Next = head
+			before = before.Next
+		} else {
+			after.Next = head
+			after = after.Next
+		}
+
+		head = head.Next
 	}
 
-	cur := head
-	var prev *ListNode = nil
-	for left > 1 {
-		prev = cur
-		cur = cur.Next
-		left -= 1
-		right -= 1
-	}
-
-	tail := cur
-	con := prev
-	var third *ListNode = nil
-	for right > 0 {
-		third = cur.Next
-		cur.Next = prev
-		prev = cur
-		cur = third
-		right -= 1
-	}
-
-	if con != nil {
-		con.Next = prev
-	} else {
-		head = prev
-	}
-
-	tail.Next = cur
-	return head
+	after.Next = nil
+	before.Next = afterHead.Next
+	return beforeHead.Next
 }
