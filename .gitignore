@@ -1,5 +1,17 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+leetcode-*.tar
+/tmp/
+/.vscode
+
 /target
 /node_modules
 /_build
 /deps
 .tool-versions
+src/__pycache__

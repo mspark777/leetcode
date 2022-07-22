@@ -13,3 +13,9 @@ rs:
 
 go:
 	go run src/main.go src/solution.go
+
+py:
+	python src/main.py
+
+ex:
+	mix run
