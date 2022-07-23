@@ -1,24 +1,24 @@
-import { isPalindrome } from './solution'
+import { countSmaller } from './solution'
 
 interface Input {
-  readonly s: string
+  readonly nums: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      s: 'A man, a plan, a canal: Panama'
+      nums: [5, 2, 6, 1]
     },
     {
-      s: 'race a car'
+      nums: [-1]
     },
     {
-      s: ' '
+      nums: [-1, -1]
     }
   ]
 
   for (const input of inputs) {
-    const result = isPalindrome(input.s)
+    const result = countSmaller(input.nums)
     console.log(result)
   }
 }

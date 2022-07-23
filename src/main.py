@@ -2,23 +2,22 @@
 main
 """
 
-from typing import Optional
 from solution import Solution
 
 class Input:
-    s: str
-    def __init__(self, s: str):
-        self.s = s
+    nums: list[int]
+    def __init__(self, nums: list[int]):
+        self.nums = nums
 
 def main():
     inputs = [
-            Input("A man, a plan, a canal: Panama"),
-            Input("race a car"),
-            Input(" "),
+            Input([5, 2, 6, 1]),
+            Input([-1]),
+            Input([-1, -1]),
     ]
     sol = Solution()
     for i in inputs:
-        result = sol.isPalindrome(i.s)
+        result = sol.countSmaller(i.nums)
         print(result)
 
 

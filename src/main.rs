@@ -3,24 +3,20 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            s: String::from("A man, a plan, a canal: Panama"),
+            nums: vec![5, 2, 6, 1],
         },
-        Input {
-            s: String::from("race a car"),
-        },
-        Input {
-            s: String::from(" "),
-        },
+        Input { nums: vec![-1] },
+        Input { nums: vec![-1, -1] },
     ];
 
     for input in inputs {
-        let result = Solution::is_palindrome(input.s);
+        let result = Solution::count_smaller(input.nums);
         println!("{result:?}");
     }
 }

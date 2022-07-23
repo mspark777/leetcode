@@ -1,15 +1,70 @@
-export function isPalindrome (s: string): boolean {
-  const test = s.replace(/[^0-9a-zA-Z]/g, '').toLowerCase()
+interface Pair {
+  readonly n: number
+  readonly i: number
+}
 
-  let i = 0
-  let j = test.length - 1
-  while (i < j) {
-    if (test[i] !== test[j]) {
-      return false
+function merge (pairs: Pair[], l: number, mid: number, r: number, result: number[]): void {
+  let i = l
+  let j = mid + 1
+  let k = 0
+  const temp = new Array<Pair>(r - l + 1)
+  let count = 0
+
+  while (i <= mid && j <= r) {
+    const ip = pairs[i]
+    const jp = pairs[j]
+    if (ip.n <= jp.n) {
+      result[ip.i] += count
+      temp[k] = ip
+
+      i += 1
+      k += 1
+    } else {
+      count += 1
+      temp[k] = jp
+      k += 1
+      j += 1
     }
-    i += 1
-    j -= 1
   }
 
-  return true
+  while (i <= mid) {
+    const p = pairs[i]
+    result[p.i] += count
+    temp[k] = p
+    i += 1
+    k += 1
+  }
+
+  while (j <= r) {
+    temp[k] = pairs[j]
+    k += 1
+    j += 1
+  }
+
+  for (i = 0; i < temp.length; i += 1) {
+    pairs[l + i] = temp[i]
+  }
+}
+
+function mergesort (pairs: Pair[], l: number, r: number, result: number[]): void {
+  if (l >= r) {
+    return
+  }
+
+  const mid = Math.trunc((l + r) / 2)
+  mergesort(pairs, l, mid, result)
+  mergesort(pairs, mid + 1, r, result)
+  merge(pairs, l, mid, r, result)
+}
+
+export function countSmaller (nums: number[]): number[] {
+  const n = nums.length
+  const result = new Array<number>(n).fill(0)
+  const pairs = new Array<Pair>(n)
+  for (let i = n - 1; i >= 0; i -= 1) {
+    pairs[i] = { n: nums[i], i }
+  }
+
+  mergesort(pairs, 0, n - 1, result)
+  return result
 }

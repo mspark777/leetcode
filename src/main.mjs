@@ -1,21 +1,21 @@
 // import { createRequire } from 'module'
-import { isPalindrome } from './solution.mjs'
+import { countSmaller } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      s: 'A man, a plan, a canal: Panama'
+      nums: [5, 2, 6, 1]
     },
     {
-      s: 'race a car'
+      nums: [-1]
     },
     {
-      s: ' '
+      nums: [-1, -1]
     }
   ]
 
   for (const input of inputs) {
-    const result = isPalindrome(input.s)
+    const result = countSmaller(input.nums)
     console.log(result)
   }
 }

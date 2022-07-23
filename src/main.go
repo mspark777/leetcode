@@ -5,24 +5,24 @@ import (
 )
 
 type input struct {
-	s string
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "A man, a plan, a canal: Panama",
+			nums: []int{5, 2, 6, 1},
 		},
 		{
-			s: "race a car",
+			nums: []int{-1},
 		},
 		{
-			s: " ",
+			nums: []int{-1, -1},
 		},
 	}
 
 	for _, input := range inputs {
-		result := isPalindrome(input.s)
+		result := countSmaller(input.nums)
 		fmt.Printf("%v\n", result)
 	}
 }
