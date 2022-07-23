@@ -18,4 +18,5 @@ py:
 	python src/main.py
 
 ex:
+	mix clean
 	mix run
