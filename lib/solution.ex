@@ -1,17 +1,19 @@
 defmodule Solution do
-  @spec is_palindrome(s :: String.t) :: boolean
-  def is_palindrome(s) do
-    s0 = s
-      |> String.downcase
-      |> String.to_charlist
-      |> Enum.filter(&isalnum/1)
-      |> to_string
-
-    s0 == String.reverse(s0)
+  @spec contains_duplicate(nums :: [integer]) :: boolean
+  def contains_duplicate(nums) do
+    contains_duplicate(MapSet.new(), nums)
   end
 
-  @spec isalnum(ch :: char) :: boolean
-  def isalnum(ch) do
-    ((?a <= ch) and (ch <= ?z)) or ((?0 <= ch) and (ch <= ?9))
+  @spec contains_duplicate(set :: MapSet.t(integer), nums :: [integer]) :: boolean
+  def contains_duplicate(set, [num | nums]) do
+    if MapSet.member?(set, num) do
+      true
+    else
+      contains_duplicate(MapSet.put(set, num), nums)
+    end
+  end
+
+  def contains_duplicate(_, []) do
+    false
   end
 end

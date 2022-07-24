@@ -5,24 +5,24 @@ import (
 )
 
 type input struct {
-	matrix [][]int
-	target int
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			matrix: [][]int{{1, 4, 7, 11, 15}, {2, 5, 8, 12, 19}, {3, 6, 9, 16, 22}, {10, 13, 14, 17, 24}, {18, 21, 23, 26, 30}},
-			target: 5,
+			nums: []int{1, 2, 3, 1},
 		},
 		{
-			matrix: [][]int{{1, 4, 7, 11, 15}, {2, 5, 8, 12, 19}, {3, 6, 9, 16, 22}, {10, 13, 14, 17, 24}, {18, 21, 23, 26, 30}},
-			target: 20,
+			nums: []int{1, 2, 3, 4},
+		},
+		{
+			nums: []int{1, 1, 1, 3, 3, 4, 3, 2, 4, 2},
 		},
 	}
 
 	for _, input := range inputs {
-		result := searchMatrix(input.matrix, input.target)
+		result := containsDuplicate(input.nums)
 		fmt.Printf("%v\n", result)
 	}
 }

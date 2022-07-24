@@ -2,13 +2,13 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        s: "A man, a plan, a canal: Panama",
+        nums: [1, 2, 3, 1]
       },
       %{
-        s: "race a car",
+        nums: [1, 2, 3, 4]
       },
       %{
-        s: " ",
+        nums: [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]
       },
     ]
 
@@ -16,7 +16,7 @@ defmodule Main do
   end
 
   def main([input | remains]) do
-    result = Solution.is_palindrome(input.s)
+    result = Solution.contains_duplicate(input.nums)
     IO.puts(result)
     main(remains)
   end
