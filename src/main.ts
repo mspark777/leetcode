@@ -1,24 +1,24 @@
-import { countSmaller } from './solution'
+import { searchMatrix } from './solution'
 
 interface Input {
-  readonly nums: number[]
+  readonly matrix: number[][]
+  readonly target: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [5, 2, 6, 1]
+      matrix: [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]],
+      target: 5
     },
     {
-      nums: [-1]
-    },
-    {
-      nums: [-1, -1]
+      matrix: [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]],
+      target: 20
     }
   ]
 
   for (const input of inputs) {
-    const result = countSmaller(input.nums)
+    const result = searchMatrix(input.matrix, input.target)
     console.log(result)
   }
 }
