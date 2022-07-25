@@ -1,29 +1,21 @@
-function search (nums, target, first) {
-  let result = -1
-  let left = 0
-  let right = nums.length - 1
-  while (left <= right) {
-    const mid = Math.trunc((left + right) / 2)
-    const num = nums[mid]
-    if (num > target) {
-      right = mid - 1
-    } else if (num < target) {
-      left = mid + 1
-    } else {
-      result = mid
-      if (first) {
-        right = mid - 1
-      } else {
-        left = mid + 1
-      }
+export class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
+
+export function hasCycle (head) {
+  let fast = head
+  let slow = head
+
+  while (fast && fast.next) {
+    fast = fast.next.next
+    slow = slow.next
+    if (fast === slow) {
+      return true
     }
   }
 
-  return result
-}
-
-export function searchRange (nums, target) {
-  const first = search(nums, target, true)
-  const last = search(nums, target, false)
-  return [first, last]
+  return false
 }

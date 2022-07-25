@@ -2,31 +2,24 @@
 solution
 """
 from __future__ import annotations
+from typing import Optional
+
+class ListNode:
+    val: int
+    next: Optional[ListNode]
+    def __init__(self, x: int):
+        self.val = x
+        self.next = None
 
 class Solution:
-    def searchRange(self, nums: list[int], target: int) -> list[int]:
-        first = self.search(nums, target, True)
-        last = self.search(nums, target, False)
-        return [first, last]
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        fast = head
+        slow = head
 
-    def search(self, nums: list[int], target: int, first: bool) -> int:
-        result = -1
-        left = 0
-        right = len(nums) - 1
+        while (fast is not None) and (fast.next is not None):
+            fast = fast.next.next
+            slow = slow.next if slow is not None else None
+            if fast is slow:
+                return True
 
-        while left <= right:
-            mid = (left + right) // 2
-            num = nums[mid]
-
-            if num > target:
-                right = mid - 1
-            elif num < target:
-                left = mid + 1
-            else:
-                result = mid
-                if first:
-                    right = mid - 1
-                else:
-                    left = mid + 1
-
-        return result
+        return False

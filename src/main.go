@@ -5,25 +5,45 @@ import (
 )
 
 type input struct {
-	nums   []int
-	target int
+	head []int
+	pos  int
+}
+
+func arrtolist(nums []int, pos int) *ListNode {
+	head := &ListNode{}
+	tail := head
+	var cycle *ListNode = nil
+	for i, v := range nums {
+		node := &ListNode{Val: v}
+		tail.Next = node
+		tail = node
+		if i == pos {
+			cycle = node
+		}
+	}
+
+	tail.Next = cycle
+	return head.Next
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums: []int{5, 7, 7, 8, 8, 10}, target: 8,
+			head: []int{3, 2, 0, -4},
+			pos:  1,
 		},
 		{
-			nums: []int{5, 7, 7, 8, 8, 10}, target: 6,
+			head: []int{1, 2},
+			pos:  0,
 		},
 		{
-			nums: []int{}, target: 0,
+			head: []int{1},
+			pos:  -1,
 		},
 	}
 
 	for _, input := range inputs {
-		result := searchRange(input.nums, input.target)
+		result := hasCycle(arrtolist(input.head, input.pos))
 		fmt.Printf("%v\n", result)
 	}
 }
