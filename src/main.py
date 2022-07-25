@@ -6,18 +6,20 @@ from solution import Solution
 
 class Input:
     nums: list[int]
-    def __init__(self, nums: list[int]):
+    target: int
+    def __init__(self, nums: list[int], target: int):
         self.nums = nums
+        self.target = target
 
 def main():
     inputs = [
-            Input([1, 2, 3, 1]),
-            Input([1, 2, 3, 4]),
-            Input([1, 1, 1, 3, 3, 4, 3, 2, 4, 2]),
+            Input([5, 7, 7, 8, 8, 10], 8),
+            Input([5, 7, 7, 8, 8, 10], 6),
+            Input([],  0),
     ]
     sol = Solution()
     for i in inputs:
-        result = sol.containsDuplicate(i.nums)
+        result = sol.searchRange(i.nums, i.target)
         print(result)
 
 

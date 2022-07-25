@@ -1,24 +1,25 @@
-import { containsDuplicate } from './solution'
+import { searchRange } from './solution'
 
 interface Input {
   readonly nums: number[]
+  readonly target: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [1, 2, 3, 1]
+      nums: [5, 7, 7, 8, 8, 10], target: 8
     },
     {
-      nums: [1, 2, 3, 4]
+      nums: [5, 7, 7, 8, 8, 10], target: 6
     },
     {
-      nums: [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]
+      nums: [], target: 0
     }
   ]
 
   for (const input of inputs) {
-    const result = containsDuplicate(input.nums)
+    const result = searchRange(input.nums, input.target)
     console.log(result)
   }
 }

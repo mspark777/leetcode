@@ -2,22 +2,25 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        nums: [1, 2, 3, 1]
+        nums: [5, 7, 7, 8, 8, 10], target: 8
       },
       %{
-        nums: [1, 2, 3, 4]
+        nums: [5, 7, 7, 8, 8, 10], target: 6
       },
       %{
-        nums: [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]
+        nums: [], target: 0
       },
+      %{
+        nums: [1], target: 1
+      }
     ]
 
     main(inputs)
   end
 
   def main([input | remains]) do
-    result = Solution.contains_duplicate(input.nums)
-    IO.puts(result)
+    result = Solution.search_range(input.nums, input.target)
+    IO.puts(result |> Enum.join(", "))
     main(remains)
   end
 
@@ -25,4 +28,5 @@ defmodule Main do
     nil
   end
 end
+
 Main.main()
