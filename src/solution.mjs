@@ -6,19 +6,16 @@ export class TreeNode {
   }
 }
 
-export function lowestCommonAncestor (root, p, q) {
-  if (!root || (root === p) || (root === q)) {
-    return root
+function preorder (node, result) {
+  if (node) {
+    result.push(node.val)
+    preorder(node.left, result)
+    preorder(node.right, result)
   }
+}
 
-  const left = lowestCommonAncestor(root.left, p, q)
-  const right = lowestCommonAncestor(root.right, p, q)
-
-  if (!left) {
-    return right
-  } else if (!right) {
-    return left
-  } else {
-    return root
-  }
+export function preorderTraversal (root) {
+  const result = []
+  preorder(root, result)
+  return result
 }

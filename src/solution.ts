@@ -11,19 +11,16 @@ export class TreeNode {
   }
 }
 
-export function lowestCommonAncestor (root: TreeNode | null, p: TreeNode | null, q: TreeNode | null): TreeNode | null {
-  if (!root || (root === p) || (root === q)) {
-    return root
+function preorder (node: TreeNode | null, result: number[]): void {
+  if (node) {
+    result.push(node.val)
+    preorder(node.left, result)
+    preorder(node.right, result)
   }
+}
 
-  const left = lowestCommonAncestor(root.left, p, q)
-  const right = lowestCommonAncestor(root.right, p, q)
-
-  if (!left) {
-    return right
-  } else if (!right) {
-    return left
-  } else {
-    return root
-  }
+export function preorderTraversal (root: TreeNode | null): number[] {
+  const result: number[] = []
+  preorder(root, result)
+  return result
 }

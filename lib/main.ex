@@ -1,25 +1,32 @@
 defmodule Main do
+  @spec main() :: nil
   def main() do
     inputs = [
       %{
-        nums: [5, 7, 7, 8, 8, 10], target: 8
+        root: %TreeNode{
+          val: 1,
+          right: %TreeNode {
+            val: 2,
+            left: %TreeNode{val: 3}
+          }
+        }
       },
       %{
-        nums: [5, 7, 7, 8, 8, 10], target: 6
+        root: nil
       },
       %{
-        nums: [], target: 0
-      },
-      %{
-        nums: [1], target: 1
+        root: %TreeNode{
+          val: 1,
+        }
       }
     ]
 
     main(inputs)
   end
 
+  @spec main(list[any]) :: nil
   def main([input | remains]) do
-    result = Solution.search_range(input.nums, input.target)
+    result = Solution.preorder_traversal(input.root)
     IO.puts(result |> Enum.join(", "))
     main(remains)
   end

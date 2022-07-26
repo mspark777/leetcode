@@ -6,28 +6,6 @@ use solution::{Solution, TreeNode};
 
 struct Input {
     root: Option<Rc<RefCell<TreeNode>>>,
-    pv: i32,
-    qv: i32,
-    p: Option<Rc<RefCell<TreeNode>>>,
-    q: Option<Rc<RefCell<TreeNode>>>,
-}
-
-fn find_node(root: Option<Rc<RefCell<TreeNode>>>, v: i32) -> Option<Rc<RefCell<TreeNode>>> {
-    if let Some(r) = root {
-        let br = r.borrow();
-        if br.val == v {
-            return Some(r.clone());
-        }
-
-        let left = find_node(br.left.clone(), v);
-        if left.is_some() {
-            return left;
-        }
-
-        find_node(br.right.clone(), v)
-    } else {
-        None
-    }
 }
 
 fn create_node(
@@ -43,56 +21,18 @@ fn create_node(
 }
 
 fn main() {
-    let mut inputs: Vec<Input> = vec![
+    let inputs: Vec<Input> = vec![
         Input {
-            root: create_node(
-                3,
-                create_node(
-                    5,
-                    create_node(6, None, None),
-                    create_node(2, create_node(7, None, None), create_node(4, None, None)),
-                ),
-                create_node(1, create_node(0, None, None), create_node(8, None, None)),
-            ),
-            p: None,
-            q: None,
-            pv: 5,
-            qv: 1,
+            root: create_node(1, None, create_node(2, create_node(3, None, None), None)),
         },
+        Input { root: None },
         Input {
-            root: create_node(
-                3,
-                create_node(
-                    5,
-                    create_node(6, None, None),
-                    create_node(2, create_node(7, None, None), create_node(4, None, None)),
-                ),
-                create_node(1, create_node(0, None, None), create_node(8, None, None)),
-            ),
-            p: None,
-            q: None,
-            pv: 5,
-            qv: 4,
-        },
-        Input {
-            root: create_node(1, create_node(2, None, None), None),
-            p: None,
-            q: None,
-            pv: 1,
-            qv: 2,
+            root: create_node(1, None, None),
         },
     ];
 
-    for input in inputs.iter_mut() {
-        input.q = find_node(input.root.clone(), input.qv);
-        input.p = find_node(input.root.clone(), input.pv);
-        let result =
-            Solution::lowest_common_ancestor(input.root.clone(), input.p.clone(), input.q.clone());
-        let result: Option<i32> = if let Some(r) = result {
-            Some(r.borrow().val)
-        } else {
-            None
-        };
+    for input in inputs {
+        let result = Solution::preorder_traversal(input.root);
 
         println!("{result:?}");
     }

@@ -6,19 +6,21 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
-	if (root == nil) || (root == q) || (root == p) {
-		return root
-	}
+type temp struct {
+	result []int
+}
 
-	left := lowestCommonAncestor(root.Left, p, q)
-	right := lowestCommonAncestor(root.Right, p, q)
-
-	if left == nil {
-		return right
-	} else if right == nil {
-		return left
-	} else {
-		return root
+func preorder(root *TreeNode, temp *temp) {
+	if root != nil {
+		temp.result = append(temp.result, root.Val)
+		preorder(root.Left, temp)
+		preorder(root.Right, temp)
 	}
+}
+
+func preorderTraversal(root *TreeNode) []int {
+	temp := &temp{result: []int{}}
+	preorder(root, temp)
+
+	return temp.result
 }
