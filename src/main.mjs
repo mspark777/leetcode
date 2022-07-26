@@ -1,42 +1,70 @@
 // import { createRequire } from 'module'
-import { hasCycle, ListNode } from './solution.mjs'
+import { lowestCommonAncestor, TreeNode } from './solution.mjs'
 
-function arrtolist (arr, pos) {
-  const head = new ListNode()
-  let tail = head
-  let cycle = null
-  for (let i = 0; i < arr.length; i += 1) {
-    const node = new ListNode(arr[i])
-    tail.next = node
-    tail = node
-    if (i === pos) {
-      cycle = node
-    }
+function findNode (node, val) {
+  if (!node) {
+    return node
+  } else if (node.val === val) {
+    return node
   }
 
-  tail.next = cycle
-  return head.next
+  return findNode(node.left, val) ?? findNode(node.right, val)
 }
 
 async function main () {
   const inputs = [
     {
-      head: [3, 2, 0, -4],
-      pos: 1
+      root: new TreeNode(3,
+        new TreeNode(5,
+          new TreeNode(6),
+          new TreeNode(2,
+            new TreeNode(7),
+            new TreeNode(4)
+          )
+        ),
+        new TreeNode(1,
+          new TreeNode(0),
+          new TreeNode(8)
+        )
+      ),
+      p: null,
+      q: null,
+      pv: 5,
+      qv: 1
     },
     {
-      head: [1, 2],
-      pos: 0
+      root: new TreeNode(3,
+        new TreeNode(5,
+          new TreeNode(6),
+          new TreeNode(2,
+            new TreeNode(7),
+            new TreeNode(4)
+          )
+        ),
+        new TreeNode(1,
+          new TreeNode(0),
+          new TreeNode(8)
+        )
+      ),
+      p: null,
+      q: null,
+      pv: 5,
+      qv: 4
     },
     {
-      head: [1],
-      pos: -1
+      root: new TreeNode(1, new TreeNode(2)),
+      p: null,
+      q: null,
+      pv: 1,
+      qv: 2
     }
   ]
 
   for (const input of inputs) {
-    const result = hasCycle(arrtolist(input.head, input.pos))
-    console.log(result)
+    input.q = findNode(input.root, input.qv)
+    input.p = findNode(input.root, input.pv)
+    const result = lowestCommonAncestor(input.root, input.p, input.q)
+    console.log(result?.val)
   }
 }
 

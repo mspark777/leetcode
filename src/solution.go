@@ -1,21 +1,24 @@
 package main
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func hasCycle(head *ListNode) bool {
-	fast := head
-	slow := head
-
-	for (fast != nil) && (fast.Next != nil) {
-		fast = fast.Next.Next
-		slow = slow.Next
-		if fast == slow {
-			return true
-		}
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if (root == nil) || (root == q) || (root == p) {
+		return root
 	}
 
-	return false
+	left := lowestCommonAncestor(root.Left, p, q)
+	right := lowestCommonAncestor(root.Right, p, q)
+
+	if left == nil {
+		return right
+	} else if right == nil {
+		return left
+	} else {
+		return root
+	}
 }

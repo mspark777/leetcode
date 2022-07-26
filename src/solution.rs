@@ -1,46 +1,42 @@
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+
 pub struct Solution {}
 impl Solution {
-    pub fn search_range(nums: Vec<i32>, target: i32) -> Vec<i32> {
-        if nums.is_empty() {
-            return vec![-1, -1];
-        }
-
-        let first = Self::search(&nums, target, true);
-        let last = Self::search(&nums, target, false);
-
-        vec![first, last]
-    }
-
-    fn search(nums: &Vec<i32>, target: i32, first: bool) -> i32 {
-        let mut result = -1;
-        let mut left = 0usize;
-        let mut right = nums.len() - 1;
-
-        while left <= right {
-            let mid = (left + right) / 2;
-            let num = nums[mid];
-            if num > target {
-                if mid > 0 {
-                    right = mid - 1;
-                } else {
-                    break;
-                }
-            } else if num < target {
-                left = mid + 1;
-            } else {
-                result = mid as i32;
-                if first {
-                    if mid > 0 {
-                        right = mid - 1;
-                    } else {
-                        break;
-                    }
-                } else {
-                    left = mid + 1;
-                }
+    pub fn lowest_common_ancestor(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        let (root, p, q) = match (root, p, q) {
+            (Some(r), Some(p), Some(q)) => (r, p, q),
+            _ => {
+                return None;
             }
+        };
+
+        if Rc::ptr_eq(&root, &p) || Rc::ptr_eq(&root, &q) {
+            return Some(root.clone());
         }
 
-        result
+        let rb = (*root).borrow();
+        let left = Self::lowest_common_ancestor(rb.left.clone(), Some(p.clone()), Some(q.clone()));
+        let right =
+            Self::lowest_common_ancestor(rb.right.clone(), Some(p.clone()), Some(q.clone()));
+
+        if left.is_none() {
+            right.clone()
+        } else if right.is_none() {
+            left.clone()
+        } else {
+            Some(root.clone())
+        }
     }
 }

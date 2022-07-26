@@ -5,45 +5,83 @@ import (
 )
 
 type input struct {
-	head []int
-	pos  int
+	root *TreeNode
+	q    *TreeNode
+	p    *TreeNode
+	qv   int
+	pv   int
 }
 
-func arrtolist(nums []int, pos int) *ListNode {
-	head := &ListNode{}
-	tail := head
-	var cycle *ListNode = nil
-	for i, v := range nums {
-		node := &ListNode{Val: v}
-		tail.Next = node
-		tail = node
-		if i == pos {
-			cycle = node
-		}
+func findNode(node *TreeNode, v int) *TreeNode {
+	if node == nil {
+		return node
+	} else if node.Val == v {
+		return node
 	}
 
-	tail.Next = cycle
-	return head.Next
+	left := findNode(node.Left, v)
+	if left != nil {
+		return left
+	}
+
+	return findNode(node.Right, v)
 }
 
 func main() {
 	inputs := []input{
 		{
-			head: []int{3, 2, 0, -4},
-			pos:  1,
+			root: &TreeNode{
+				Val: 3,
+				Left: &TreeNode{
+					Val:  5,
+					Left: &TreeNode{Val: 6},
+					Right: &TreeNode{
+						Val:   2,
+						Left:  &TreeNode{Val: 7},
+						Right: &TreeNode{Val: 4},
+					},
+				},
+				Right: &TreeNode{
+					Val:   1,
+					Left:  &TreeNode{Val: 0},
+					Right: &TreeNode{Val: 8},
+				},
+			},
+			pv: 5,
+			qv: 1,
 		},
 		{
-			head: []int{1, 2},
-			pos:  0,
+			root: &TreeNode{
+				Val: 3,
+				Left: &TreeNode{
+					Val:  5,
+					Left: &TreeNode{Val: 6},
+					Right: &TreeNode{
+						Val:   2,
+						Left:  &TreeNode{Val: 7},
+						Right: &TreeNode{Val: 4},
+					},
+				},
+				Right: &TreeNode{
+					Val:   1,
+					Left:  &TreeNode{Val: 0},
+					Right: &TreeNode{Val: 8},
+				},
+			},
+			pv: 5,
+			qv: 4,
 		},
 		{
-			head: []int{1},
-			pos:  -1,
+			root: &TreeNode{Val: 1, Left: &TreeNode{Val: 2}},
+			pv:   1,
+			qv:   2,
 		},
 	}
 
 	for _, input := range inputs {
-		result := hasCycle(arrtolist(input.head, input.pos))
-		fmt.Printf("%v\n", result)
+		input.p = findNode(input.root, input.pv)
+		input.q = findNode(input.root, input.qv)
+		result := lowestCommonAncestor(input.root, input.p, input.q)
+		fmt.Printf("%v\n", result.Val)
 	}
 }

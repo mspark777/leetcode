@@ -1,24 +1,29 @@
-export class ListNode {
+export class TreeNode {
   val: number
   // eslint-disable-next-line no-use-before-define
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
+  left: TreeNode | null
+  // eslint-disable-next-line no-use-before-define
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
     this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
 }
 
-export function hasCycle (head: ListNode | null): boolean {
-  let fast = head
-  let slow = head
-
-  while (fast && fast.next) {
-    fast = fast.next.next
-    slow = slow!.next
-    if (fast === slow) {
-      return true
-    }
+export function lowestCommonAncestor (root: TreeNode | null, p: TreeNode | null, q: TreeNode | null): TreeNode | null {
+  if (!root || (root === p) || (root === q)) {
+    return root
   }
 
-  return false
+  const left = lowestCommonAncestor(root.left, p, q)
+  const right = lowestCommonAncestor(root.right, p, q)
+
+  if (!left) {
+    return right
+  } else if (!right) {
+    return left
+  } else {
+    return root
+  }
 }
