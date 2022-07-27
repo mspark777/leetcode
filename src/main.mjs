@@ -1,13 +1,27 @@
 // import { createRequire } from 'module'
-import { preorderTraversal, TreeNode } from './solution.mjs'
+import { flatten, TreeNode } from './solution.mjs'
+
+function treetoarr (node) {
+  const nums = []
+  while (node) {
+    nums.push(node.val)
+    node = node.right
+  }
+
+  return nums
+}
 
 async function main () {
   const inputs = [
     {
       root: new TreeNode(1,
-        null,
         new TreeNode(2,
-          new TreeNode(3)
+          new TreeNode(3),
+          new TreeNode(4)
+        ),
+        new TreeNode(5,
+          null,
+          new TreeNode(8)
         )
       )
     },
@@ -15,13 +29,13 @@ async function main () {
       root: null
     },
     {
-      root: new TreeNode(1)
+      root: new TreeNode(0)
     }
   ]
 
   for (const input of inputs) {
-    const result = preorderTraversal(input.root)
-    console.log(result)
+    flatten(input.root)
+    console.log(treetoarr(input.root))
   }
 }
 

@@ -1,16 +1,30 @@
-import { preorderTraversal, TreeNode } from './solution'
+import { flatten, TreeNode } from './solution'
 
 interface Input {
   readonly root: TreeNode | null
+}
+
+function treetoarr (node: TreeNode | null): number[] {
+  const nums: number[] = []
+  while (node) {
+    nums.push(node.val)
+    node = node.right
+  }
+
+  return nums
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
       root: new TreeNode(1,
-        null,
         new TreeNode(2,
-          new TreeNode(3)
+          new TreeNode(3),
+          new TreeNode(4)
+        ),
+        new TreeNode(5,
+          null,
+          new TreeNode(8)
         )
       )
     },
@@ -18,13 +32,13 @@ async function main (): Promise<void> {
       root: null
     },
     {
-      root: new TreeNode(1)
+      root: new TreeNode(0)
     }
   ]
 
   for (const input of inputs) {
-    const result = preorderTraversal(input.root)
-    console.log(result)
+    flatten(input.root)
+    console.log(treetoarr(input.root))
   }
 }
 

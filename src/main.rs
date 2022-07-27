@@ -20,20 +20,35 @@ fn create_node(
     })))
 }
 
+fn treetoarr(node: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
+    let mut node = node;
+    let mut nums = Vec::<i32>::new();
+    while let Some(n) = node {
+        nums.push(n.borrow().val);
+        node = n.borrow().right.clone();
+    }
+
+    nums
+}
+
 fn main() {
-    let inputs: Vec<Input> = vec![
+    let mut inputs: Vec<Input> = vec![
         Input {
-            root: create_node(1, None, create_node(2, create_node(3, None, None), None)),
+            root: create_node(
+                1,
+                create_node(2, create_node(3, None, None), create_node(4, None, None)),
+                create_node(5, None, create_node(8, None, None)),
+            ),
         },
         Input { root: None },
         Input {
-            root: create_node(1, None, None),
+            root: create_node(0, None, None),
         },
     ];
 
-    for input in inputs {
-        let result = Solution::preorder_traversal(input.root);
+    for input in inputs.iter_mut() {
+        Solution::flatten(&mut input.root);
 
-        println!("{result:?}");
+        println!("{:?}", treetoarr(input.root.clone()));
     }
 }

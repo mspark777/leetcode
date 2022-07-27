@@ -6,16 +6,19 @@ export class TreeNode {
   }
 }
 
-function preorder (node, result) {
-  if (node) {
-    result.push(node.val)
-    preorder(node.left, result)
-    preorder(node.right, result)
-  }
-}
+export function flatten (root) {
+  while (root) {
+    if (root.left) {
+      const right = root.right
+      let predecessor = root.left
+      while (predecessor.right) {
+        predecessor = predecessor.right
+      }
 
-export function preorderTraversal (root) {
-  const result = []
-  preorder(root, result)
-  return result
+      predecessor.right = right
+      root.right = root.left
+      root.left = null
+    }
+    root = root.right
+  }
 }

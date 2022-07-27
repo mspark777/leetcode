@@ -10,19 +10,27 @@ use std::rc::Rc;
 
 pub struct Solution {}
 impl Solution {
-    pub fn preorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
-        let mut result = Vec::<i32>::new();
-        Self::preorder(&root, &mut result);
+    pub fn flatten(root: &mut Option<Rc<RefCell<TreeNode>>>) {
+        let mut node: Option<Rc<RefCell<TreeNode>>> = root.clone();
 
-        result
-    }
+        while let Some(n) = node {
+            let mut n = n.borrow_mut();
+            if let Some(mut cur) = n.left.clone() {
+                loop {
+                    let right = cur.borrow().right.clone();
+                    if let Some(r) = right {
+                        cur = r;
+                    } else {
+                        break;
+                    }
+                }
 
-    fn preorder(node: &Option<Rc<RefCell<TreeNode>>>, result: &mut Vec<i32>) {
-        if let Some(n) = node {
-            let v = n.borrow();
-            result.push(v.val);
-            Self::preorder(&v.left, result);
-            Self::preorder(&v.right, result);
+                let mut b = cur.borrow_mut();
+                b.right = n.right.take();
+                n.right = n.left.take();
+            }
+
+            node = n.right.clone();
         }
     }
 }

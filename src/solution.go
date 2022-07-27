@@ -6,21 +6,20 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-type temp struct {
-	result []int
-}
+func flatten(root *TreeNode) {
+	for root != nil {
+		if root.Left != nil {
+			right := root.Right
+			predecessor := root.Left
+			for predecessor.Right != nil {
+				predecessor = predecessor.Right
+			}
 
-func preorder(root *TreeNode, temp *temp) {
-	if root != nil {
-		temp.result = append(temp.result, root.Val)
-		preorder(root.Left, temp)
-		preorder(root.Right, temp)
+			predecessor.Right = right
+			root.Right = root.Left
+			root.Left = nil
+		}
+
+		root = root.Right
 	}
-}
-
-func preorderTraversal(root *TreeNode) []int {
-	temp := &temp{result: []int{}}
-	preorder(root, temp)
-
-	return temp.result
 }

@@ -14,13 +14,19 @@ class TreeNode:
         self.right = right
 
 class Solution:
-    def preorderTraversal(self, root: Optional[TreeNode]) -> list[int]:
-        result: list[int] = []
-        self.preorder(root, result)
-        return result
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        while root is not None:
+            if root.left is not None:
+                right = root.right
+                predecessor = root.left
+                while predecessor.right is not None:
+                    predecessor = predecessor.right
 
-    def preorder(self, root: Optional[TreeNode], result: list[int]):
-        if root is not None:
-            result.append(root.val)
-            self.preorder(root.left, result)
-            self.preorder(root.right, result)
+                predecessor.right = right
+                root.right = root.left
+                root.left = None
+
+            root = root.right

@@ -11,25 +11,34 @@ class Input:
     def __init__(self, root: Optional[TreeNode]):
         self.root = root
 
+def treetoarr(node: Optional[TreeNode]):
+    nums = []
+    while node is not None:
+        nums.append(node.val)
+        node = node.right
+    return nums
 
 def main():
     inputs = [
             Input(
                 TreeNode(1,
-                    None,
                     TreeNode(2,
                         TreeNode(3, None, None),
-                        None
+                        TreeNode(4, None, None)
                     ),
-                ),
+                    TreeNode(5,
+                        None,
+                        TreeNode(8, None, None)
+                    )
+                )
             ),
             Input(None),
-            Input(TreeNode(1, None, None)),
+            Input(TreeNode(0, None, None)),
     ]
     sol = Solution()
     for i in inputs:
-        result = sol.preorderTraversal(i.root)
-        print(result)
+        sol.flatten(i.root)
+        print(treetoarr(i.root))
 
 
 
