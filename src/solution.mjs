@@ -1,24 +1,28 @@
-export class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+export function isAnagram (s, t) {
+  if (s.length !== t.length) {
+    return false
   }
-}
 
-export function flatten (root) {
-  while (root) {
-    if (root.left) {
-      const right = root.right
-      let predecessor = root.left
-      while (predecessor.right) {
-        predecessor = predecessor.right
-      }
+  const counter = new Map()
+  for (const ch of s) {
+    const count = counter.get(ch) ?? 0
+    counter.set(ch, count + 1)
+  }
 
-      predecessor.right = right
-      root.right = root.left
-      root.left = null
+  for (const ch of t) {
+    const count = counter.get(ch)
+    if (!count) {
+      return false
     }
-    root = root.right
+
+    if (count < 1) {
+      return false
+    } else if (count === 1) {
+      counter.delete(ch)
+    } else {
+      counter.set(ch, count - 1)
+    }
   }
+
+  return counter.size < 1
 }

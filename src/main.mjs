@@ -1,41 +1,19 @@
 // import { createRequire } from 'module'
-import { flatten, TreeNode } from './solution.mjs'
-
-function treetoarr (node) {
-  const nums = []
-  while (node) {
-    nums.push(node.val)
-    node = node.right
-  }
-
-  return nums
-}
+import { isAnagram } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      root: new TreeNode(1,
-        new TreeNode(2,
-          new TreeNode(3),
-          new TreeNode(4)
-        ),
-        new TreeNode(5,
-          null,
-          new TreeNode(8)
-        )
-      )
+      s: 'anagram', t: 'nagaram'
     },
     {
-      root: null
-    },
-    {
-      root: new TreeNode(0)
+      s: 'rat', t: 'car'
     }
   ]
 
   for (const input of inputs) {
-    flatten(input.root)
-    console.log(treetoarr(input.root))
+    const result = isAnagram(input.s, input.t)
+    console.log(result)
   }
 }
 

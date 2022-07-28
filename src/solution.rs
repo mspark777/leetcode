@@ -1,36 +1,31 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::collections::HashMap;
 
 pub struct Solution {}
 impl Solution {
-    pub fn flatten(root: &mut Option<Rc<RefCell<TreeNode>>>) {
-        let mut node: Option<Rc<RefCell<TreeNode>>> = root.clone();
+    pub fn is_anagram(s: String, t: String) -> bool {
+        let bs = s.as_bytes();
+        let mut counter = HashMap::<u8, i32>::with_capacity(bs.len());
 
-        while let Some(n) = node {
-            let mut n = n.borrow_mut();
-            if let Some(mut cur) = n.left.clone() {
-                loop {
-                    let right = cur.borrow().right.clone();
-                    if let Some(r) = right {
-                        cur = r;
-                    } else {
-                        break;
-                    }
-                }
-
-                let mut b = cur.borrow_mut();
-                b.right = n.right.take();
-                n.right = n.left.take();
+        for v in bs {
+            if let Some(count) = counter.get_mut(v) {
+                *count += 1;
+            } else {
+                counter.insert(*v, 1);
             }
-
-            node = n.right.clone();
         }
+
+        for v in t.as_bytes() {
+            if let Some(count) = counter.get_mut(v) {
+                if *count == 1 {
+                    counter.remove(v);
+                } else {
+                    *count -= 1;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        counter.len() < 1
     }
 }

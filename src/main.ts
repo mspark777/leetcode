@@ -1,44 +1,23 @@
-import { flatten, TreeNode } from './solution'
+import { isAnagram } from './solution'
 
 interface Input {
-  readonly root: TreeNode | null
-}
-
-function treetoarr (node: TreeNode | null): number[] {
-  const nums: number[] = []
-  while (node) {
-    nums.push(node.val)
-    node = node.right
-  }
-
-  return nums
+  readonly s: string
+  readonly t: string
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: new TreeNode(1,
-        new TreeNode(2,
-          new TreeNode(3),
-          new TreeNode(4)
-        ),
-        new TreeNode(5,
-          null,
-          new TreeNode(8)
-        )
-      )
+      s: 'anagram', t: 'nagaram'
     },
     {
-      root: null
-    },
-    {
-      root: new TreeNode(0)
+      s: 'rat', t: 'car'
     }
   ]
 
   for (const input of inputs) {
-    flatten(input.root)
-    console.log(treetoarr(input.root))
+    const result = isAnagram(input.s, input.t)
+    console.log(result)
   }
 }
 

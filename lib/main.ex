@@ -3,21 +3,12 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        root: %TreeNode{
-          val: 1,
-          right: %TreeNode {
-            val: 2,
-            left: %TreeNode{val: 3}
-          }
-        }
+        s: "anagram",
+        t: "nagaram",
       },
       %{
-        root: nil
-      },
-      %{
-        root: %TreeNode{
-          val: 1,
-        }
+        s: "rat",
+        t: "car",
       }
     ]
 
@@ -26,8 +17,8 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    result = Solution.preorder_traversal(input.root)
-    IO.puts(result |> Enum.join(", "))
+    result = Solution.is_anagram(input.s, input.t)
+    IO.puts(result)
     main(remains)
   end
 
