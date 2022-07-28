@@ -1,22 +1,44 @@
 package main
 
-func isAnagram(s string, t string) bool {
-	counter := make(map[byte]int)
-	for _, v := range []byte(s) {
-		counter[v] += 1
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func reverse(nums []int) {
+	l := len(nums)
+	mid := l / 2
+	for i := 0; i < mid; i += 1 {
+		j := l - (i + 1)
+		nums[i], nums[j] = nums[j], nums[i]
+	}
+}
+
+func postorderTraversal(root *TreeNode) []int {
+	result := []int{}
+	if root == nil {
+		return result
 	}
 
-	for _, v := range []byte(t) {
-		if count, ok := counter[v]; ok {
-			if count == 1 {
-				delete(counter, v)
-			} else {
-				counter[v] = count - 1
-			}
-		} else {
-			return false
+	stack := []*TreeNode{root}
+	for l := len(stack); l > 0; l = len(stack) {
+		top := l - 1
+		node := stack[top]
+		stack = stack[:top]
+
+		result = append(result, node.Val)
+		left := node.Left
+		if left != nil {
+			stack = append(stack, left)
+		}
+
+		right := node.Right
+		if right != nil {
+			stack = append(stack, right)
 		}
 	}
 
-	return len(counter) < 1
+	reverse(result)
+	return result
 }

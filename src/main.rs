@@ -1,26 +1,37 @@
 mod solution;
 
-use solution::Solution;
+use std::{cell::RefCell, rc::Rc};
+
+use solution::{Solution, TreeNode};
 
 struct Input {
-    s: String,
-    t: String,
+    root: Option<Rc<RefCell<TreeNode>>>,
+}
+
+fn create_node(
+    val: i32,
+    left: Option<Rc<RefCell<TreeNode>>>,
+    right: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            s: String::from("anagram"),
-            t: String::from("nagaram"),
+            root: create_node(1, None, create_node(2, create_node(3, None, None), None)),
+        },
+        Input { root: None },
+        Input {
+            root: create_node(1, None, None),
         },
         Input {
-            s: String::from("rat"),
-            t: String::from("car"),
+            root: create_node(1, create_node(2, None, None), None),
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_anagram(input.s, input.t);
+        let result = Solution::postorder_traversal(input.root);
         println!("{:?}", result);
     }
 }

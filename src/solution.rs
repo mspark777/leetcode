@@ -1,31 +1,39 @@
-use std::collections::HashMap;
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct Solution {}
 impl Solution {
-    pub fn is_anagram(s: String, t: String) -> bool {
-        let bs = s.as_bytes();
-        let mut counter = HashMap::<u8, i32>::with_capacity(bs.len());
+    pub fn postorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
+        let mut stack = Vec::<Rc<RefCell<TreeNode>>>::new();
+        let mut result = Vec::<i32>::new();
 
-        for v in bs {
-            if let Some(count) = counter.get_mut(v) {
-                *count += 1;
-            } else {
-                counter.insert(*v, 1);
+        if let Some(r) = root {
+            stack.push(r.clone());
+        } else {
+            return result;
+        }
+
+        while let Some(top) = stack.pop() {
+            let node = top.borrow();
+            result.push(node.val);
+
+            if let Some(left) = &node.left {
+                stack.push(left.clone());
+            }
+
+            if let Some(right) = &node.right {
+                stack.push(right.clone());
             }
         }
 
-        for v in t.as_bytes() {
-            if let Some(count) = counter.get_mut(v) {
-                if *count == 1 {
-                    counter.remove(v);
-                } else {
-                    *count -= 1;
-                }
-            } else {
-                return false;
-            }
-        }
-
-        counter.len() < 1
+        result.reverse();
+        result
     }
 }

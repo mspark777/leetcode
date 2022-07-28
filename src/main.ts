@@ -1,22 +1,29 @@
-import { isAnagram } from './solution'
+import { postorderTraversal, TreeNode } from './solution'
 
 interface Input {
-  readonly s: string
-  readonly t: string
+  readonly root: TreeNode | null
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      s: 'anagram', t: 'nagaram'
+      root: new TreeNode(1,
+        null,
+        new TreeNode(2,
+          new TreeNode(3)
+        )
+      )
     },
     {
-      s: 'rat', t: 'car'
+      root: null
+    },
+    {
+      root: new TreeNode(1)
     }
   ]
 
   for (const input of inputs) {
-    const result = isAnagram(input.s, input.t)
+    const result = postorderTraversal(input.root)
     console.log(result)
   }
 }

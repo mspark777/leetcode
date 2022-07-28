@@ -1,28 +1,31 @@
-export function isAnagram (s, t) {
-  if (s.length !== t.length) {
-    return false
+export class TreeNode {
+  constructor (val, left, right) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
+
+export function postorderTraversal (root) {
+  if (!root) {
+    return []
   }
 
-  const counter = new Map()
-  for (const ch of s) {
-    const count = counter.get(ch) ?? 0
-    counter.set(ch, count + 1)
-  }
+  const result = []
+  const stack = [root]
+  for (let node = stack.pop(); node; node = stack.pop()) {
+    result.push(node.val)
 
-  for (const ch of t) {
-    const count = counter.get(ch)
-    if (!count) {
-      return false
+    const left = node.left
+    if (left) {
+      stack.push(left)
     }
 
-    if (count < 1) {
-      return false
-    } else if (count === 1) {
-      counter.delete(ch)
-    } else {
-      counter.set(ch, count - 1)
+    const right = node.right
+    if (right) {
+      stack.push(right)
     }
   }
 
-  return counter.size < 1
+  return result.reverse()
 }

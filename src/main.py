@@ -3,24 +3,30 @@ main
 """
 
 from typing import Optional
-from solution import Solution
+from solution import Solution, TreeNode
 
 
 class Input:
-    s: str
-    t: str
-    def __init__(self, s: str, t: str):
-        self.s = s
-        self.t = t
+    root: Optional[TreeNode]
+    def __init__(self, root: Optional[TreeNode]):
+        self.root = root
 
 def main():
     inputs = [
-            Input(s = 'anagram', t = 'nagaram'),
-            Input(s = 'rat', t = 'car'),
+            Input(
+                TreeNode(1,
+                    None,
+                    TreeNode(2,
+                        TreeNode(3)
+                    )
+                )
+            ),
+            Input(None),
+            Input(TreeNode(1))
     ]
     sol = Solution()
     for i in inputs:
-        result = sol.isAnagram(i.s, i.t)
+        result = sol.postorderTraversal(i.root)
         print(result)
 
 

@@ -1,25 +1,44 @@
+defmodule TreeNode do
+  @type t :: %__MODULE__{
+          val: integer,
+          left: TreeNode.t() | nil,
+          right: TreeNode.t() | nil
+        }
+  defstruct val: 0, left: nil, right: nil
+end
+
 defmodule Solution do
-  @spec is_anagram(s :: String.t, t :: String.t) :: boolean
-  def is_anagram(s, t) do
-    counter = s |> String.to_charlist |> create_counter(%{})
-    t |> String.to_charlist |> remove_count(counter)
+  @spec postorder_traversal(root :: TreeNode.t | nil) :: [integer]
+  def postorder_traversal(root) when root == nil, do: []
+
+  def postorder_traversal(root) do
+    postorder([root], [])
   end
 
-  def create_counter([ch | s], counter) do
-    count = Map.get(counter, ch, 0)
-    create_counter(s, Map.put(counter, ch, count + 1))
+
+  def postorder([top | stack], result) when top.left != nil and top.right != nil do
+    val = top.val
+    left = top.left
+    right = top.right
+    postorder([right, left] ++ stack, [val | result])
   end
 
-  def create_counter([], counter), do: counter
-
-  def remove_count([ch | s], counter) do
-    count = Map.get(counter, ch)
-    cond do
-      count == nil -> false
-      count == 1 -> remove_count(s, Map.delete(counter, ch))
-      true -> remove_count(s, Map.put(counter, ch, count - 1))
-    end
+  def postorder([top | stack], result) when top.left == nil and top.right != nil do
+    val = top.val
+    right = top.right
+    postorder([right | stack], [val | result])
   end
 
-  def remove_count([], counter), do: map_size(counter) < 1
+  def postorder([top | stack], result) when top.left != nil and top.right == nil do
+    val = top.val
+    left = top.left
+    postorder([left | stack], [val | result])
+  end
+
+  def postorder([top | stack], result)  do
+    val = top.val
+    postorder(stack, [val | result])
+  end
+
+  def postorder([], result), do: result
 end

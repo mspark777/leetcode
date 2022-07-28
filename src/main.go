@@ -5,24 +5,27 @@ import (
 )
 
 type input struct {
-	s string
-	t string
+	root *TreeNode
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "anagram",
-			t: "nagaram",
+			root: &TreeNode{Val: 1, Right: &TreeNode{Val: 2, Left: &TreeNode{Val: 3}}},
 		},
 		{
-			s: "rat",
-			t: "car",
+			root: nil,
+		},
+		{
+			root: &TreeNode{Val: 1},
+		},
+		{
+			root: &TreeNode{Val: 1, Left: &TreeNode{Val: 2}},
 		},
 	}
 
 	for _, input := range inputs {
-		result := isAnagram(input.s, input.t)
+		result := postorderTraversal(input.root)
 		fmt.Printf("%v\n", result)
 	}
 }
