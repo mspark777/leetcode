@@ -1,44 +1,26 @@
 package main
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-func reverse(nums []int) {
-	l := len(nums)
-	mid := l / 2
-	for i := 0; i < mid; i += 1 {
-		j := l - (i + 1)
-		nums[i], nums[j] = nums[j], nums[i]
-	}
-}
-
-func postorderTraversal(root *TreeNode) []int {
-	result := []int{}
-	if root == nil {
-		return result
-	}
-
-	stack := []*TreeNode{root}
-	for l := len(stack); l > 0; l = len(stack) {
-		top := l - 1
-		node := stack[top]
-		stack = stack[:top]
-
-		result = append(result, node.Val)
-		left := node.Left
-		if left != nil {
-			stack = append(stack, left)
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	a := headA
+	b := headB
+	for a != b {
+		if a != nil {
+			a = a.Next
+		} else {
+			a = headB
 		}
 
-		right := node.Right
-		if right != nil {
-			stack = append(stack, right)
+		if b != nil {
+			b = b.Next
+		} else {
+			b = headA
 		}
 	}
 
-	reverse(result)
-	return result
+	return a
 }

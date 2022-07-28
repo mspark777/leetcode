@@ -1,31 +1,17 @@
-export class TreeNode {
-  constructor (val, left, right) {
+export class ListNode {
+  constructor (val, next) {
     this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+    this.next = (next === undefined ? null : next)
   }
 }
 
-export function postorderTraversal (root) {
-  if (!root) {
-    return []
+export function getIntersectionNode (headA, headB) {
+  let a = headA
+  let b = headB
+  while (a !== b) {
+    a = a ? a.next : headB
+    b = b ? b.next : headA
   }
 
-  const result = []
-  const stack = [root]
-  for (let node = stack.pop(); node; node = stack.pop()) {
-    result.push(node.val)
-
-    const left = node.left
-    if (left) {
-      stack.push(left)
-    }
-
-    const right = node.right
-    if (right) {
-      stack.push(right)
-    }
-  }
-
-  return result.reverse()
+  return a
 }

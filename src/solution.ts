@@ -1,36 +1,20 @@
-export class TreeNode {
+export class ListNode {
   val: number
   // eslint-disable-next-line no-use-before-define
-  left: TreeNode | null
-  // eslint-disable-next-line no-use-before-define
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+  next: ListNode | null
+  constructor (val?: number, next?: ListNode | null) {
     this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+    this.next = (next === undefined ? null : next)
   }
 }
 
-export function postorderTraversal (root: TreeNode | null): number[] {
-  if (!root) {
-    return []
+export function getIntersectionNode (headA: ListNode | null, headB: ListNode | null): ListNode | null {
+  let a = headA
+  let b = headB
+  while (a !== b) {
+    a = a ? a.next : headB
+    b = b ? b.next : headA
   }
 
-  const result: number[] = []
-  const stack: TreeNode[] = [root]
-  for (let node = stack.pop(); node; node = stack.pop()) {
-    result.push(node.val)
-
-    const left = node.left
-    if (left) {
-      stack.push(left)
-    }
-
-    const right = node.right
-    if (right) {
-      stack.push(right)
-    }
-  }
-
-  return result.reverse()
+  return a
 }
