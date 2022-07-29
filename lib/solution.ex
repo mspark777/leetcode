@@ -1,44 +1,56 @@
-defmodule TreeNode do
-  @type t :: %__MODULE__{
-          val: integer,
-          left: TreeNode.t() | nil,
-          right: TreeNode.t() | nil
-        }
-  defstruct val: 0, left: nil, right: nil
-end
-
 defmodule Solution do
-  @spec postorder_traversal(root :: TreeNode.t | nil) :: [integer]
-  def postorder_traversal(root) when root == nil, do: []
-
-  def postorder_traversal(root) do
-    postorder([root], [])
+  @spec find_and_replace_pattern(words :: [String.t], pattern :: String.t) :: [String.t]
+  def find_and_replace_pattern(words, pattern) do
+    find_and_replace_pattern(words, String.to_charlist(pattern), [])
   end
 
-
-  def postorder([top | stack], result) when top.left != nil and top.right != nil do
-    val = top.val
-    left = top.left
-    right = top.right
-    postorder([right, left] ++ stack, [val | result])
+  @spec find_and_replace_pattern(
+    words :: [String.t],
+    pattern :: charlist,
+    result :: [String.t]
+  ) :: [String.t]
+  defp find_and_replace_pattern([word | words], pattern, result) do
+    if find_pattern(String.to_charlist(word), pattern, %{}, %{}) do
+      find_and_replace_pattern(words, pattern, [word | result])
+    else
+      find_and_replace_pattern(words, pattern, result)
+    end
   end
 
-  def postorder([top | stack], result) when top.left == nil and top.right != nil do
-    val = top.val
-    right = top.right
-    postorder([right | stack], [val | result])
+  defp find_and_replace_pattern([], _, result), do: result
+
+  @spec find_pattern(
+    words :: charlist,
+    pattern :: charlist,
+    wmap :: %{char => char},
+    pmap :: %{char => char}
+  ) :: boolean
+  defp find_pattern([wc | word], [pc | pattern], wmap, pmap) do
+    wmap = updatemap(wmap, wc, pc)
+    pmap = updatemap(pmap, pc, wc)
+
+    check = Map.get(wmap, wc) != pc or Map.get(pmap, pc) != wc
+    if check do
+      false
+    else
+      find_pattern(word, pattern, wmap, pmap)
+    end
   end
 
-  def postorder([top | stack], result) when top.left != nil and top.right == nil do
-    val = top.val
-    left = top.left
-    postorder([left | stack], [val | result])
-  end
+  defp find_pattern([], [], _, _), do: true
+  defp find_pattern([], [_pc | _pattern], _, _), do: false
+  defp find_pattern([_wc | _word], [], _, _), do: false
 
-  def postorder([top | stack], result)  do
-    val = top.val
-    postorder(stack, [val | result])
+  @spec updatemap(
+    m :: %{char => char},
+    k :: char,
+    v :: char
+  ) :: %{char => char}
+  defp updatemap(m, k, v) do
+    if Map.has_key?(m, k) do
+      m
+    else
+      Map.put(m, k, v)
+    end
   end
-
-  def postorder([], result), do: result
 end

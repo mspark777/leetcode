@@ -1,37 +1,33 @@
 mod solution;
 
-use std::{cell::RefCell, rc::Rc};
-
-use solution::{Solution, TreeNode};
+use solution::Solution;
 
 struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
-}
-
-fn create_node(
-    val: i32,
-    left: Option<Rc<RefCell<TreeNode>>>,
-    right: Option<Rc<RefCell<TreeNode>>>,
-) -> Option<Rc<RefCell<TreeNode>>> {
-    Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
+    words: Vec<String>,
+    pattern: String,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            root: create_node(1, None, create_node(2, create_node(3, None, None), None)),
+            words: vec![
+                String::from("abc"),
+                String::from("deq"),
+                String::from("mee"),
+                String::from("aqq"),
+                String::from("dkd"),
+                String::from("ccc"),
+            ],
+            pattern: "abb".to_owned(),
         },
-        Input { root: None },
         Input {
-            root: create_node(1, None, None),
-        },
-        Input {
-            root: create_node(1, create_node(2, None, None), None),
+            words: vec!["a".to_owned(), "b".to_owned(), "c".to_owned()],
+            pattern: "a".to_owned(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::postorder_traversal(input.root);
+        let result = Solution::find_and_replace_pattern(input.words, input.pattern);
         println!("{:?}", result);
     }
 }
