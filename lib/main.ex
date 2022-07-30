@@ -3,12 +3,12 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        words:  ["abc", "deq", "mee", "aqq", "dkd", "ccc"],
-        pattern: "abb"
+          words1: ["amazon", "apple", "facebook", "google", "leetcode"],
+          words2: ["e", "o"],
       },
       %{
-        words: ["a", "b", "c"],
-        pattern: "a"
+          words1: ["amazon", "apple", "facebook", "google", "leetcode"],
+          words2: ["l", "e"],
       }
     ]
 
@@ -17,7 +17,7 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    result = Solution.find_and_replace_pattern(input.words, input.pattern)
+    result = Solution.word_subsets(input.words1, input.words2)
     IO.puts(result |> Enum.join(", "))
     main(remains)
   end

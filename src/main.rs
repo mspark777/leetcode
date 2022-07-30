@@ -3,31 +3,30 @@ mod solution;
 use solution::Solution;
 
 struct Input {
-    words: Vec<String>,
-    pattern: String,
+    words1: Vec<&'static str>,
+    words2: Vec<&'static str>,
+}
+
+fn strvec(strs: Vec<&'static str>) -> Vec<String> {
+    strs.iter().map(|s| String::from(*s)).collect()
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            words: vec![
-                String::from("abc"),
-                String::from("deq"),
-                String::from("mee"),
-                String::from("aqq"),
-                String::from("dkd"),
-                String::from("ccc"),
-            ],
-            pattern: "abb".to_owned(),
+            words1: vec!["amazon", "apple", "facebook", "google", "leetcode"],
+            words2: vec!["e", "o"],
         },
         Input {
-            words: vec!["a".to_owned(), "b".to_owned(), "c".to_owned()],
-            pattern: "a".to_owned(),
+            words1: vec!["amazon", "apple", "facebook", "google", "leetcode"],
+            words2: vec!["l", "e"],
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_and_replace_pattern(input.words, input.pattern);
+        let words1 = strvec(input.words1);
+        let words2 = strvec(input.words2);
+        let result = Solution::word_subsets(words1, words2);
         println!("{:?}", result);
     }
 }

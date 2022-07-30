@@ -7,27 +7,27 @@ from solution import Solution
 
 
 class Input:
-    wrods: list[str]
-    pattern: str
-    def __init__(self, words: list[str], pattern: str):
-        self.words = words
-        self.pattern = pattern
+    wrods1: list[str]
+    wrods2: list[str]
+    def __init__(self, words1: list[str], words2: list[str]):
+        self.words1 = words1
+        self.words2 = words2
 
 def main():
     inputs: list[Input] = [
             Input(
-                words = ["abc", "deq", "mee", "aqq", "dkd", "ccc"],
-                pattern = "abb"
+              words1 = ["amazon", "apple", "facebook", "google", "leetcode"],
+              words2= ["e", "o"]
             ),
             Input(
-                words = ["a", "b", "c"],
-                pattern = "a"
+              words1 =  ["amazon", "apple", "facebook", "google", "leetcode"],
+              words2 = ["l", "e"]
             )
     ]
 
     sol = Solution()
     for i in inputs:
-        result = sol.findAndReplacePattern(i.words, i.pattern)
+        result = sol.wordSubsets(i.words1, i.words2)
         print(result)
 
 

@@ -1,56 +1,21 @@
 defmodule Solution do
-  @spec find_and_replace_pattern(words :: [String.t], pattern :: String.t) :: [String.t]
-  def find_and_replace_pattern(words, pattern) do
-    find_and_replace_pattern(words, String.to_charlist(pattern), [])
+  @spec word_subsets(words1 :: [String.t], words2 :: [String.t]) :: [String.t]
+  def word_subsets(words1, words2) do
+    words1 = Stream.map(words1, &{&1, char_freqs(&1)})
+    words2 = words2 |> Stream.map(&char_freqs/1) |> Enum.uniq()
+    words1 |> Stream.filter(fn {_, h1} ->
+      Enum.all?(words2, &universal?(h1, &1))
+    end)
+    |> Enum.map(&elem(&1, 0))
   end
 
-  @spec find_and_replace_pattern(
-    words :: [String.t],
-    pattern :: charlist,
-    result :: [String.t]
-  ) :: [String.t]
-  defp find_and_replace_pattern([word | words], pattern, result) do
-    if find_pattern(String.to_charlist(word), pattern, %{}, %{}) do
-      find_and_replace_pattern(words, pattern, [word | result])
-    else
-      find_and_replace_pattern(words, pattern, result)
-    end
+  defp char_freqs(word) do
+    word |> String.to_charlist |> Enum.frequencies()
   end
 
-  defp find_and_replace_pattern([], _, result), do: result
-
-  @spec find_pattern(
-    words :: charlist,
-    pattern :: charlist,
-    wmap :: %{char => char},
-    pmap :: %{char => char}
-  ) :: boolean
-  defp find_pattern([wc | word], [pc | pattern], wmap, pmap) do
-    wmap = updatemap(wmap, wc, pc)
-    pmap = updatemap(pmap, pc, wc)
-
-    check = Map.get(wmap, wc) != pc or Map.get(pmap, pc) != wc
-    if check do
-      false
-    else
-      find_pattern(word, pattern, wmap, pmap)
-    end
-  end
-
-  defp find_pattern([], [], _, _), do: true
-  defp find_pattern([], [_pc | _pattern], _, _), do: false
-  defp find_pattern([_wc | _word], [], _, _), do: false
-
-  @spec updatemap(
-    m :: %{char => char},
-    k :: char,
-    v :: char
-  ) :: %{char => char}
-  defp updatemap(m, k, v) do
-    if Map.has_key?(m, k) do
-      m
-    else
-      Map.put(m, k, v)
-    end
+  defp universal?(h1, h2) do
+    Enum.all?(h2, fn {c, f2} ->
+      Map.get(h1, c, 0) >= f2
+    end)
   end
 end

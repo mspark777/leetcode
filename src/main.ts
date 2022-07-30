@@ -1,24 +1,24 @@
-import { findAndReplacePattern } from './solution'
+import { wordSubsets } from './solution'
 
 interface Input {
-  readonly words: string[]
-  readonly pattern: string
+  readonly words1: string[]
+  readonly words2: string[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      words: ['abc', 'deq', 'mee', 'aqq', 'dkd', 'ccc'],
-      pattern: 'abb'
+      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
+      words2: ['e', 'o']
     },
     {
-      words: ['a', 'b', 'c'],
-      pattern: 'a'
+      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
+      words2: ['l', 'e']
     }
   ]
 
   for (const input of inputs) {
-    const result = findAndReplacePattern(input.words, input.pattern)
+    const result = wordSubsets(input.words1, input.words2)
     console.log(result)
   }
 }

@@ -1,11 +1,29 @@
-use std::collections::HashMap;
+const LETTER_COUNT: usize = 26;
+const ACODE: usize = 'a' as usize;
 
 pub struct Solution {}
 impl Solution {
-    pub fn find_and_replace_pattern(words: Vec<String>, pattern: String) -> Vec<String> {
-        let mut result = Vec::<String>::with_capacity(words.len());
-        for word in words.iter() {
-            if Self::find_pattern(word, &pattern) {
+    pub fn word_subsets(words1: Vec<String>, words2: Vec<String>) -> Vec<String> {
+        let mut counts2 = Self::get_counts(&"".to_owned());
+        for word in words2.iter() {
+            let counts3 = Self::get_counts(word);
+            for i in 0..LETTER_COUNT {
+                counts2[i] = counts2[i].max(counts3[i]);
+            }
+        }
+
+        let mut result = Vec::<String>::new();
+        for word in words1.iter() {
+            let counts1 = Self::get_counts(word);
+            let mut ok = true;
+            for i in 0..LETTER_COUNT {
+                if counts1[i] < counts2[i] {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if ok {
                 result.push(word.clone());
             }
         }
@@ -13,36 +31,14 @@ impl Solution {
         result
     }
 
-    fn find_pattern(word: &String, pattern: &String) -> bool {
-        let mut wmap = HashMap::<char, char>::new();
-        let mut pmap = HashMap::<char, char>::new();
-
-        let mut pchars = pattern.chars();
-        for wc in word.chars() {
-            if let Some(pc) = pchars.next() {
-                if !wmap.contains_key(&wc) {
-                    wmap.insert(wc, pc);
-                }
-
-                if !pmap.contains_key(&pc) {
-                    pmap.insert(pc, wc);
-                }
-
-                let w = wmap.get(&wc).unwrap();
-                let p = pmap.get(&pc).unwrap();
-
-                if *w != pc {
-                    return false;
-                }
-
-                if *p != wc {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+    fn get_counts(word: &String) -> Vec<i32> {
+        let mut counts = vec![0; LETTER_COUNT];
+        for ch in word.chars() {
+            let c = ch as usize;
+            let i = c - ACODE;
+            counts[i] += 1;
         }
 
-        true
+        counts
     }
 }

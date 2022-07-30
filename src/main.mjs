@@ -1,20 +1,20 @@
 // import { createRequire } from 'module'
-import { findAndReplacePattern } from './solution.mjs'
+import { wordSubsets } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      words: ['abc', 'deq', 'mee', 'aqq', 'dkd', 'ccc'],
-      pattern: 'abb'
+      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
+      words2: ['e', 'o']
     },
     {
-      words: ['a', 'b', 'c'],
-      pattern: 'a'
+      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
+      words2: ['l', 'e']
     }
   ]
 
   for (const input of inputs) {
-    const result = findAndReplacePattern(input.words, input.pattern)
+    const result = wordSubsets(input.words1, input.words2)
     console.log(result)
   }
 }

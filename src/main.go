@@ -5,24 +5,24 @@ import (
 )
 
 type input struct {
-	words   []string
-	pattern string
+	words1 []string
+	words2 []string
 }
 
 func main() {
 	inputs := []*input{
 		{
-			words:   []string{"abc", "deq", "mee", "aqq", "dkd", "ccc"},
-			pattern: "abb",
+			words1: []string{"amazon", "apple", "facebook", "google", "leetcode"},
+			words2: []string{"e", "o"},
 		},
 		{
-			words:   []string{"a", "b", "c"},
-			pattern: "a",
+			words1: []string{"amazon", "apple", "facebook", "google", "leetcode"},
+			words2: []string{"l", "e"},
 		},
 	}
 
 	for _, input := range inputs {
-		result := findAndReplacePattern(input.words, input.pattern)
+		result := wordSubsets(input.words1, input.words2)
 		fmt.Printf("%v\n", result)
 	}
 }
