@@ -3,12 +3,10 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-          words1: ["amazon", "apple", "facebook", "google", "leetcode"],
-          words2: ["e", "o"],
+        nums: [1, 3, 5]
       },
       %{
-          words1: ["amazon", "apple", "facebook", "google", "leetcode"],
-          words2: ["l", "e"],
+        nums: [1, 3, 5]
       }
     ]
 
@@ -17,8 +15,10 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    result = Solution.word_subsets(input.words1, input.words2)
-    IO.puts(result |> Enum.join(", "))
+    NumArray.init_(input.nums)
+    IO.puts(NumArray.sum_range(0, 2))
+    NumArray.update(1, 2)
+    IO.puts(NumArray.sum_range(0, 2))
     main(remains)
   end
 
