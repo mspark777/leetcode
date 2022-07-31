@@ -4,35 +4,55 @@ solution
 from __future__ import annotations
 from typing import  Optional
 
-LETTER_COUNT = 26
-ACODE = ord('a')
+def build_tree(nums: list[int], length: int) -> list[int]:
+    tree = [0 for i in range(length * 2)]
+    for i in range(length):
+        tree[i + length] = nums[i]
 
-class Solution:
-    def wordSubsets(self, words1: list[str], words2: list[str]) -> list[str]:
-        counts2 = self.get_counts("")
-        for word in words2:
-            counts3 = self.get_counts(word)
-            for i in range(LETTER_COUNT):
-                counts2[i] = max(counts2[i], counts3[i])
+    for i in range(length - 1, 0, -1):
+        tree[i] = tree[i * 2] + tree[i * 2 + 1]
 
-        result: list[str] = []
-        for word in words1:
-            counts1 = self.get_counts(word)
-            ok = True
-            for i in range(LETTER_COUNT):
-                if counts1[i] < counts2[i]:
-                    ok = False
-                    break
+    return tree
 
-            if ok:
-                result.append(word)
+class NumArray:
+    length: int
+    tree: list[int]
+    def __init__(self, nums: list[int]):
+        self.length = len(nums)
+        self.tree = build_tree(nums, self.length)
 
-        return result
+    def update(self, index: int, val: int) -> None:
+        index += self.length
+        tree = self.tree
 
-    def get_counts(self, word: str) -> list[int]:
-        counts = [0 for i in range(LETTER_COUNT)]
-        for ch in word:
-            i = ord(ch) - ACODE
-            counts[i] += 1
+        tree[index] = val
+        while index > 0:
+            left = index
+            right = index
+            if index % 2 == 0:
+                right = index + 1
+            else:
+                left = index - 1
 
-        return counts
+            index = index // 2
+            tree[index] = tree[left] + tree[right]
+
+
+    def sumRange(self, left: int, right: int) -> int:
+        left += self.length
+        right += self.length
+        tree = self.tree
+        sum = 0
+        while left <= right:
+            if left % 2 == 1:
+                sum += tree[left]
+                left += 1
+
+            if right % 2 == 0:
+                sum += tree[right]
+                right -= 1
+
+            left //= 2
+            right //= 2
+
+        return sum

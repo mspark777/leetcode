@@ -3,32 +3,24 @@ main
 """
 
 from typing import Optional
-from solution import Solution
+from solution import NumArray
 
 
 class Input:
-    wrods1: list[str]
-    wrods2: list[str]
-    def __init__(self, words1: list[str], words2: list[str]):
-        self.words1 = words1
-        self.words2 = words2
+    nums: list[int]
+    def __init__(self, nums: list[int]):
+        self.nums = nums
 
 def main():
     inputs: list[Input] = [
-            Input(
-              words1 = ["amazon", "apple", "facebook", "google", "leetcode"],
-              words2= ["e", "o"]
-            ),
-            Input(
-              words1 =  ["amazon", "apple", "facebook", "google", "leetcode"],
-              words2 = ["l", "e"]
-            )
+            Input(nums = [-1])
     ]
 
-    sol = Solution()
     for i in inputs:
-        result = sol.wordSubsets(i.words1, i.words2)
-        print(result)
+        narr = NumArray(i.nums)
+        print(narr.sumRange(0, 0))
+        narr.update(0, 1)
+        print(narr.sumRange(0, 0))
 
 
 

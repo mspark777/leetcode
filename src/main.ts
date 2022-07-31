@@ -1,25 +1,21 @@
-import { wordSubsets } from './solution'
+import { NumArray } from './solution'
 
 interface Input {
-  readonly words1: string[]
-  readonly words2: string[]
+  readonly nums: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
-      words2: ['e', 'o']
-    },
-    {
-      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
-      words2: ['l', 'e']
+      nums: [1, 3, 5]
     }
   ]
 
   for (const input of inputs) {
-    const result = wordSubsets(input.words1, input.words2)
-    console.log(result)
+    const narr = new NumArray(input.nums)
+    console.log(narr.sumRange(0, 2))
+    narr.update(1, 2)
+    console.log(narr.sumRange(0, 2))
   }
 }
 

@@ -1,44 +1,70 @@
-const LETTER_COUNT: usize = 26;
-const ACODE: usize = 'a' as usize;
+pub struct NumArray {
+    tree: Vec<i32>,
+    len: usize,
+}
 
-pub struct Solution {}
-impl Solution {
-    pub fn word_subsets(words1: Vec<String>, words2: Vec<String>) -> Vec<String> {
-        let mut counts2 = Self::get_counts(&"".to_owned());
-        for word in words2.iter() {
-            let counts3 = Self::get_counts(word);
-            for i in 0..LETTER_COUNT {
-                counts2[i] = counts2[i].max(counts3[i]);
-            }
-        }
-
-        let mut result = Vec::<String>::new();
-        for word in words1.iter() {
-            let counts1 = Self::get_counts(word);
-            let mut ok = true;
-            for i in 0..LETTER_COUNT {
-                if counts1[i] < counts2[i] {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if ok {
-                result.push(word.clone());
-            }
-        }
-
-        result
+impl NumArray {
+    pub fn new(nums: Vec<i32>) -> Self {
+        return NumArray {
+            tree: Self::build_tree(&nums),
+            len: nums.len(),
+        };
     }
 
-    fn get_counts(word: &String) -> Vec<i32> {
-        let mut counts = vec![0; LETTER_COUNT];
-        for ch in word.chars() {
-            let c = ch as usize;
-            let i = c - ACODE;
-            counts[i] += 1;
+    pub fn update(&mut self, index: i32, val: i32) {
+        let mut index = (index as usize) + self.len;
+        let tree = &mut self.tree;
+
+        tree[index] = val;
+        while index > 0 {
+            let mut left = index;
+            let mut right = index;
+            if index % 2 == 0 {
+                right = index + 1;
+            } else {
+                left = index - 1;
+            }
+
+            index /= 2;
+            tree[index] = tree[left] + tree[right];
+        }
+    }
+
+    pub fn sum_range(&self, left: i32, right: i32) -> i32 {
+        let mut left = left + (self.len as i32);
+        let mut right = right + (self.len as i32);
+        let tree = &self.tree;
+
+        let mut sum = 0;
+        while left <= right {
+            if left % 2 == 1 {
+                sum += tree[left as usize];
+                left += 1;
+            }
+
+            if right % 2 == 0 {
+                sum += tree[right as usize];
+                right -= 1;
+            }
+
+            left /= 2;
+            right /= 2;
         }
 
-        counts
+        sum
+    }
+
+    fn build_tree(nums: &Vec<i32>) -> Vec<i32> {
+        let len = nums.len();
+        let mut tree = vec![0; len * 2];
+        for i in 0..len {
+            tree[i + len] = nums[i];
+        }
+
+        for i in (0..len).rev() {
+            tree[i] = tree[i * 2] + tree[i * 2 + 1];
+        }
+
+        tree
     }
 }

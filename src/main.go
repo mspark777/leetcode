@@ -5,24 +5,20 @@ import (
 )
 
 type input struct {
-	words1 []string
-	words2 []string
+	nums []int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			words1: []string{"amazon", "apple", "facebook", "google", "leetcode"},
-			words2: []string{"e", "o"},
-		},
-		{
-			words1: []string{"amazon", "apple", "facebook", "google", "leetcode"},
-			words2: []string{"l", "e"},
+			nums: []int{1, 3, 5},
 		},
 	}
 
 	for _, input := range inputs {
-		result := wordSubsets(input.words1, input.words2)
-		fmt.Printf("%v\n", result)
+		narr := Constructor(input.nums)
+		fmt.Printf("%v\n", narr.SumRange(0, 2))
+		narr.Update(1, 2)
+		fmt.Printf("%v\n", narr.SumRange(0, 2))
 	}
 }

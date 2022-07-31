@@ -1,21 +1,18 @@
 // import { createRequire } from 'module'
-import { wordSubsets } from './solution.mjs'
+import { NumArray } from './solution.mjs'
 
 async function main () {
   const inputs = [
     {
-      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
-      words2: ['e', 'o']
-    },
-    {
-      words1: ['amazon', 'apple', 'facebook', 'google', 'leetcode'],
-      words2: ['l', 'e']
+      nums: [1, 3, 5]
     }
   ]
 
   for (const input of inputs) {
-    const result = wordSubsets(input.words1, input.words2)
-    console.log(result)
+    const narr = new NumArray(input.nums)
+    console.log(narr.sumRange(0, 2))
+    narr.update(1, 2)
+    console.log(narr.sumRange(0, 2))
   }
 }
 
