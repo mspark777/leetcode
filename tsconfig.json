@@ -15,7 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "resolveJsonModule": false,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": false,

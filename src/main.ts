@@ -1,21 +1,37 @@
-import { NumArray } from './solution'
+function uniquePaths (m: number, n: number): number {
+  let total = m + n - 2
+  const r = Math.min(m, n) - 1
+
+  let steps = 1
+
+  for (let i = 1; i <= r; i += 1, total -= 1) {
+    steps = Math.trunc(steps * total / i)
+  }
+
+  return steps
+}
 
 interface Input {
-  readonly nums: number[]
+  readonly m: number
+  readonly n: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [1, 3, 5]
+      m: 3,
+      n: 7
+    },
+    {
+      m: 3,
+      n: 2
     }
   ]
 
   for (const input of inputs) {
-    const narr = new NumArray(input.nums)
-    console.log(narr.sumRange(0, 2))
-    narr.update(1, 2)
-    console.log(narr.sumRange(0, 2))
+    const { m, n } = input
+    const result = uniquePaths(m, n)
+    console.log(result)
   }
 }
 

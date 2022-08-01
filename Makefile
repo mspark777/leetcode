@@ -12,7 +12,7 @@ rs:
 	cargo run
 
 go:
-	go run src/main.go src/solution.go
+	go run src/main.go
 
 py:
 	python src/main.py

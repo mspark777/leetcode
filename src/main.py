@@ -3,24 +3,41 @@ main
 """
 
 from typing import Optional
-from solution import NumArray
+
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        total = m + n - 2
+        r = min(m, n) - 1
+
+        steps = 1
+
+        for i in range(1, r + 1, 1):
+            steps = (steps * total) // i
+            total -= 1
+
+        return steps
 
 
 class Input:
-    nums: list[int]
-    def __init__(self, nums: list[int]):
-        self.nums = nums
+    m: int
+    n: int
+    def __init__(self, m: int, n: int):
+        self.m = m
+        self.n = n
 
 def main():
     inputs: list[Input] = [
-            Input(nums = [-1])
+            Input(3, 7),
+            Input(3, 2)
     ]
 
+    sol = Solution()
     for i in inputs:
-        narr = NumArray(i.nums)
-        print(narr.sumRange(0, 0))
-        narr.update(0, 1)
-        print(narr.sumRange(0, 0))
+        m = i.m
+        n = i.n
+        result = sol.uniquePaths(m, n)
+        print(result)
+
 
 
 
