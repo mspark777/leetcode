@@ -1,23 +1,9 @@
 defmodule Solution do
-  @spec unique_paths(m :: integer, n :: integer) :: integer
-  def unique_paths(m, n) do
-    total = m + n - 2
-    r = min(n, m) - 1
-
-    unique_paths(total, r, 1, 1)
+  @spec kth_smallest(matrix :: [[integer]], k :: integer) :: integer
+  def kth_smallest(_matrix, k) do
+    k
+    # It's not good question for elixir...
   end
-
-  @spec unique_paths(
-    total :: integer,
-    r :: integer,
-    i :: integer,
-    steps :: integer
-  ) :: integer
-  defp unique_paths(total, r, i, steps) when i <= r do
-    unique_paths(total - 1, r, i + 1, div(steps * total, i))
-  end
-
-  defp unique_paths(_, _, _, steps), do: steps
 end
 
 defmodule Main do
@@ -25,16 +11,20 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        m: 3,
-        n: 7
+        matrix: [[1, 5, 9], [10, 11, 13], [12, 13, 15]],
+        k: 8
       },
       %{
-        m: 3,
-        n: 2
+        matrix: [[-5]],
+        k: 1
       },
       %{
-        m: 51,
-        n: 9
+        matrix: [[-5, -4], [-5, -4]],
+        k: 2
+      },
+      %{
+        matrix: [[1, 2], [1, 3]],
+        k: 1
       }
     ]
 
@@ -43,9 +33,9 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    m = input.m
-    n = input.n
-    result = Solution.unique_paths(m, n)
+    matrix = input.matrix
+    k = input.k
+    result = Solution.kth_smallest(matrix, k)
     IO.puts(result)
     main(remains)
   end

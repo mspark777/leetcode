@@ -1,36 +1,58 @@
-function uniquePaths (m: number, n: number): number {
-  let total = m + n - 2
-  const r = Math.min(m, n) - 1
+function kthSmallest (matrix: number[][], k: number): number {
+  const mlen = matrix.length
+  let left = matrix[0][0]
+  let right = matrix.at(-1)!.at(-1) as number
+  while (left < right) {
+    const mid = left + Math.trunc((right - left) / 2)
+    let count = 0
 
-  let steps = 1
+    for (let i = 0; i < mlen; i += 1) {
+      for (let j = mlen - 1; j >= 0; j -= 1) {
+        if (matrix[i][j] <= mid) {
+          count += j + 1
+          break
+        }
+      }
+    }
 
-  for (let i = 1; i <= r; i += 1, total -= 1) {
-    steps = Math.trunc(steps * total / i)
+    if (count < k) {
+      left = mid + 1
+    } else {
+      right = mid
+    }
   }
 
-  return steps
+  return left
 }
 
 interface Input {
-  readonly m: number
-  readonly n: number
+  readonly matrix: number[][]
+  readonly k: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      m: 3,
-      n: 7
+      matrix: [[1, 5, 9], [10, 11, 13], [12, 13, 15]],
+      k: 8
     },
     {
-      m: 3,
-      n: 2
+      matrix: [[-5]],
+      k: 1
+    },
+    {
+      matrix: [[-5, -4], [-5, -4]],
+      k: 2
+    },
+    {
+      matrix: [[1, 2], [1, 3]],
+      k: 1
     }
   ]
 
   for (const input of inputs) {
-    const { m, n } = input
-    const result = uniquePaths(m, n)
+    const { matrix, k } = input
+    const result = kthSmallest(matrix, k)
     console.log(result)
   }
 }
