@@ -1,42 +1,32 @@
-class MyCalendar {
-  constructor () {
-    /** @type number[][] */
-    this.books = []
+/**
+ * @param {number} p
+ * @param {number} q
+ * @return {number}
+ */
+function mirrorReflection (p, q) {
+  while (((p % 2) + (q % 2)) === 0) {
+    p = Math.trunc(p / 2)
+    q = Math.trunc(q / 2)
   }
 
-  /**
-   * @param {number} start
-   * @param {number} end
-   * @return {boolean}
-   */
-  book (start, end) {
-    const books = this.books
-    for (const [s, e] of books) {
-      const l = Math.max(start, s)
-      const r = Math.min(end, e)
-      if (l < r) {
-        return false
-      }
-    }
-
-    books.push([start, end])
-    return true
-  }
+  return (q % 2) - (p % 2) + 1
 }
 
 async function main () {
   const inputs = [
     {
-      book: [[10, 20], [15, 25], [20, 30]]
+      p: 2,
+      q: 1
+    },
+    {
+      p: 3,
+      q: 1
     }
   ]
 
-  const calendar = new MyCalendar()
-  for (const input of inputs) {
-    for (const [s, e] of input.book) {
-      const result = calendar.book(s, e)
-      console.log(result)
-    }
+  for (const { p, q } of inputs) {
+    const result = mirrorReflection(p, q)
+    console.log(result)
   }
 }
 

@@ -1,9 +1,10 @@
 defmodule Solution do
-  @spec kth_smallest(matrix :: [[integer]], k :: integer) :: integer
-  def kth_smallest(_matrix, k) do
-    k
-    # It's not good question for elixir...
+  @spec mirror_reflection(p :: integer, q :: integer) :: integer
+  def mirror_reflection(p, q) when (rem(p, 2) + rem(q, 2)) == 0 do
+    mirror_reflection(div(p, 2), div(q, 2))
   end
+
+  def mirror_reflection(p, q), do: rem(q, 2) - rem(p, 2) + 1
 end
 
 defmodule Main do
@@ -11,21 +12,13 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        matrix: [[1, 5, 9], [10, 11, 13], [12, 13, 15]],
-        k: 8
+        p: 2,
+        q: 1
       },
       %{
-        matrix: [[-5]],
-        k: 1
+        p: 3,
+        q: 1
       },
-      %{
-        matrix: [[-5, -4], [-5, -4]],
-        k: 2
-      },
-      %{
-        matrix: [[1, 2], [1, 3]],
-        k: 1
-      }
     ]
 
     main(inputs)
@@ -33,9 +26,9 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    matrix = input.matrix
-    k = input.k
-    result = Solution.kth_smallest(matrix, k)
+    p = input.p
+    q = input.q
+    result = Solution.mirror_reflection(p, q)
     IO.puts(result)
     main(remains)
   end

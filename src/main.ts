@@ -1,41 +1,32 @@
-class MyCalendar {
-  private readonly books: number[][]
-  constructor () {
-    this.books = []
+function mirrorReflection (p: number, q: number): number {
+  while (((p % 2) + (q % 2)) === 0) {
+    p = Math.trunc(p / 2)
+    q = Math.trunc(q / 2)
   }
 
-  book (start: number, end: number): boolean {
-    const books = this.books
-    for (const [s, e] of books) {
-      const l = Math.max(start, s)
-      const r = Math.min(end, e)
-      if (l < r) {
-        return false
-      }
-    }
-
-    books.push([start, end])
-    return true
-  }
+  return (q % 2) - (p % 2) + 1
 }
 
 interface Input {
-  readonly book: number[][]
+  readonly p: number
+  readonly q: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      book: [[10, 20], [15, 25], [20, 30]]
+      p: 2,
+      q: 1
+    },
+    {
+      p: 3,
+      q: 1
     }
   ]
 
-  const calendar = new MyCalendar()
-  for (const input of inputs) {
-    for (const [s, e] of input.book) {
-      const result = calendar.book(s, e)
-      console.log(result)
-    }
+  for (const { p, q } of inputs) {
+    const result = mirrorReflection(p, q)
+    console.log(result)
   }
 }
 
