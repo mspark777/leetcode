@@ -4,36 +4,41 @@ import (
 	"fmt"
 )
 
-func mirrorReflection(p int, q int) int {
-	for ((p % 2) + (q % 2)) == 0 {
-		p /= 2
-		q /= 2
+func combinationSum4(nums []int, target int) int {
+	result := make([]int, target+1)
+	result[0] = 1
+	for i := 1; i <= target; i += 1 {
+		for _, num := range nums {
+			if i >= num {
+				result[i] += result[i-num]
+			}
+		}
 	}
 
-	return (q % 2) - (p % 2) + 1
+	return result[target]
 }
 
 type input struct {
-	p int
-	q int
+	nums   []int
+	target int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			p: 2,
-			q: 1,
+			nums:   []int{1, 2, 3},
+			target: 4,
 		},
 		{
-			p: 3,
-			q: 1,
+			nums:   []int{9},
+			target: 3,
 		},
 	}
 
 	for _, input := range inputs {
-		p := input.p
-		q := input.q
-		result := mirrorReflection(p, q)
+		nums := input.nums
+		target := input.target
+		result := combinationSum4(nums, target)
 		fmt.Println(result)
 	}
 }

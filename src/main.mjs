@@ -1,31 +1,36 @@
 /**
- * @param {number} p
- * @param {number} q
+ * @param {number[]} nums
+ * @param {number} target
  * @return {number}
  */
-function mirrorReflection (p, q) {
-  while (((p % 2) + (q % 2)) === 0) {
-    p = Math.trunc(p / 2)
-    q = Math.trunc(q / 2)
+function combinationSum4 (nums, target) {
+  const result = new Array(target + 1).fill(0)
+  result[0] = 1
+  for (let i = 1; i <= target; i += 1) {
+    for (const num of nums) {
+      if (i >= num) {
+        result[i] += result[i - num]
+      }
+    }
   }
 
-  return (q % 2) - (p % 2) + 1
+  return result[target]
 }
 
 async function main () {
   const inputs = [
     {
-      p: 2,
-      q: 1
+      nums: [1, 2, 3],
+      target: 4
     },
     {
-      p: 3,
-      q: 1
+      nums: [9],
+      target: 3
     }
   ]
 
-  for (const { p, q } of inputs) {
-    const result = mirrorReflection(p, q)
+  for (const { nums, target } of inputs) {
+    const result = combinationSum4(nums, target)
     console.log(result)
   }
 }

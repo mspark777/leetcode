@@ -1,29 +1,44 @@
 struct Solution {}
 impl Solution {
-    pub fn mirror_reflection(p: i32, q: i32) -> i32 {
-        let mut p = p;
-        let mut q = q;
-        while ((p % 2) + (q % 2)) == 0 {
-            p /= 2;
-            q /= 2;
+    pub fn combination_sum4(nums: Vec<i32>, target: i32) -> i32 {
+        let dp_len = (target + 1) as usize;
+        let mut result = vec![0; dp_len];
+        result[0] = 1;
+
+        for i in 1..dp_len {
+            for num in nums.iter() {
+                let n = *num as usize;
+                if i >= n {
+                    result[i] += result[i - n];
+                }
+            }
         }
 
-        return (q % 2) - (p % 2) + 1;
+        result[dp_len - 1]
     }
 }
 
 struct Input {
-    p: i32,
-    q: i32,
+    nums: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![Input { p: 2, q: 1 }, Input { p: 3, q: 1 }];
+    let inputs: Vec<Input> = vec![
+        Input {
+            nums: vec![1, 2, 3],
+            target: 4,
+        },
+        Input {
+            nums: vec![9],
+            target: 3,
+        },
+    ];
 
     for input in inputs {
-        let p = input.p;
-        let q = input.q;
-        let result = Solution::mirror_reflection(p, q);
+        let nums = input.nums;
+        let target = input.target;
+        let result = Solution::combination_sum4(nums, target);
         println!("{:?}", result);
     }
 }
