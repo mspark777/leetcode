@@ -3,36 +3,33 @@ main
 """
 
 from typing import Optional, SupportsComplex
+from math import ceil, log
 
 class Solution:
-    def combinationSum4(self, nums: list[int], target: int) -> int:
-        result = [0 for n in range(target + 1)]
-        result[0] = 1
-
-        for i in range(1, target + 1):
-            result[i] = sum(result[i - num] for num in nums if i >= num)
-
-        return result[-1]
-
+    def poorPigs(self, buckets: int, minutesToDie: int, minutesToTest: int) -> int:
+        return ceil(log(buckets) / log(minutesToTest / minutesToDie + 1))
 
 
 
 class Input:
-    nums: list[int]
-    target: int
-    def __init__(self, nums: list[int], target: int):
-        self.nums = nums
-        self.target = target
+    buckets: int
+    minutesToDie: int
+    minutesToTest: int
+    def __init__(self, buckets: int, minutesToDie: int, minutesToTest: int):
+        self.buckets = buckets
+        self.minutesToDie = minutesToDie
+        self.minutesToTest = minutesToTest
 
 def main():
     inputs: list[Input] = [
-            Input([1, 2, 3], 4),
-            Input([9], 3),
+            Input(1000, 15, 60),
+            Input(4, 15, 15),
+            Input(4, 15, 30),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.combinationSum4(i.nums, i.target)
+        result = s.poorPigs(i.buckets, i.minutesToDie, i.minutesToTest)
         print(result)
 
 
