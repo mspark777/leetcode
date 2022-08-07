@@ -2,34 +2,46 @@
 main
 """
 
-from typing import Optional, SupportsComplex
-from math import ceil, log
+from typing import Optional
 
 class Solution:
-    def poorPigs(self, buckets: int, minutesToDie: int, minutesToTest: int) -> int:
-        return ceil(log(buckets) / log(minutesToTest / minutesToDie + 1))
+    def countVowelPermutation(self, n: int) -> int:
+        MOD = 1000000007
+        a, e, i, o, u = 1, 1, 1, 1, 1
+
+        for j in range(n - 1):
+            nexta = e + i + u
+            nexte = a + i
+            nexti = e + o
+            nexto = i
+            nextu = i + o
+
+            a = nexta % MOD
+            e = nexte % MOD
+            i = nexti % MOD
+            o = nexto % MOD
+            u = nextu % MOD
+
+        return (a + e + i + o + u) % MOD
 
 
 
 class Input:
-    buckets: int
-    minutesToDie: int
-    minutesToTest: int
-    def __init__(self, buckets: int, minutesToDie: int, minutesToTest: int):
-        self.buckets = buckets
-        self.minutesToDie = minutesToDie
-        self.minutesToTest = minutesToTest
+    n: int
+    def __init__(self, n: int):
+        self.n = n
 
 def main():
     inputs: list[Input] = [
-            Input(1000, 15, 60),
-            Input(4, 15, 15),
-            Input(4, 15, 30),
+            Input(1),
+            Input(2),
+            Input(5),
+            Input(144),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.poorPigs(i.buckets, i.minutesToDie, i.minutesToTest)
+        result = s.countVowelPermutation(i.n)
         print(result)
 
 

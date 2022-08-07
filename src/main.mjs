@@ -1,34 +1,51 @@
 /**
- * @param {number} buckets
- * @param {number} minutesToDie
- * @param {number} minutesToTest
+ * @param {number} n
  * @return {number}
  */
-function poorPigs (buckets, minutesToDie, minutesToTest) {
-  return Math.ceil(Math.log(buckets) / Math.log(minutesToTest / minutesToDie + 1))
+function countVowelPermutation (n) {
+  const MOD = 1000000007n
+
+  let a = 1n
+  let e = 1n
+  let i = 1n
+  let o = 1n
+  let u = 1n
+
+  for (let j = 1; j < n; j += 1) {
+    const nexta = e + i + u
+    const nexte = a + i
+    const nexti = e + o
+    const nexto = i
+    const nextu = i + o
+
+    a = nexta % MOD
+    e = nexte % MOD
+    i = nexti % MOD
+    o = nexto % MOD
+    u = nextu % MOD
+  }
+
+  return Number((a + e + i + o + u) % MOD)
 }
 
 async function main () {
   const inputs = [
     {
-      buckets: 1000,
-      minutesToDie: 15,
-      minutesToTest: 60
+      n: 1
     },
     {
-      buckets: 4,
-      minutesToDie: 15,
-      minutesToTest: 15
+      n: 2
     },
     {
-      buckets: 4,
-      minutesToDie: 15,
-      minutesToTest: 30
+      n: 5
+    },
+    {
+      n: 144
     }
   ]
 
-  for (const { buckets, minutesToDie, minutesToTest } of inputs) {
-    const result = poorPigs(buckets, minutesToDie, minutesToTest)
+  for (const { n } of inputs) {
+    const result = countVowelPermutation(n)
     console.log(result)
   }
 }

@@ -2,47 +2,57 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 
-func poorPigs(buckets int, minutesToDie int, minutesToTest int) int {
-	fb := float64(buckets)
-	fd := float64(minutesToDie)
-	ft := float64(minutesToTest)
-	result := math.Ceil(math.Log(fb) / math.Log(ft/fd+1))
-	return int(result)
+func countVowelPermutation(n int) int {
+	const MOD = 1000000007
+
+	a := 1
+	e := 1
+	i := 1
+	o := 1
+	u := 1
+
+	for j := 1; j < n; j += 1 {
+		nexta := e + i + u
+		nexte := a + i
+		nexti := e + o
+		nexto := i
+		nextu := i + o
+
+		a = nexta % MOD
+		e = nexte % MOD
+		i = nexti % MOD
+		o = nexto % MOD
+		u = nextu % MOD
+	}
+
+	return (a + e + i + o + u) % MOD
 }
 
 type input struct {
-	buckets       int
-	minutesToDie  int
-	minutesToTest int
+	n int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			buckets:       1000,
-			minutesToDie:  15,
-			minutesToTest: 60,
+			n: 1,
 		},
 		{
-			buckets:       4,
-			minutesToDie:  15,
-			minutesToTest: 15,
+			n: 2,
 		},
 		{
-			buckets:       4,
-			minutesToDie:  15,
-			minutesToTest: 30,
+			n: 5,
+		},
+		{
+			n: 144,
 		},
 	}
 
 	for _, input := range inputs {
-		buckets := input.buckets
-		minutesToDie := input.minutesToDie
-		minutesToTest := input.minutesToTest
-		result := poorPigs(buckets, minutesToDie, minutesToTest)
+		n := input.n
+		result := countVowelPermutation(n)
 		fmt.Println(result)
 	}
 }

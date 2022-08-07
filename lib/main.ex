@@ -1,9 +1,36 @@
 defmodule Solution do
-  @spec poor_pigs(buckets :: integer, minutes_to_die :: integer, minutes_to_test :: integer) :: integer
-  def poor_pigs(buckets, minutes_to_die, minutes_to_test) do
-    result = :math.ceil(:math.log(buckets) / :math.log(minutes_to_test / minutes_to_die + 1))
-    Kernel.trunc(result)
+  @spec count_vowel_permutation(n :: integer) :: integer
+  def count_vowel_permutation(n) do
+    count_vowel_permutation(1000000007, 1, 1, 1, 1, 1, n - 1)
   end
+
+  @spec count_vowel_permutation(
+    modulo :: integer,
+    a :: integer,
+    e :: integer,
+    i :: integer,
+    o :: integer,
+    u :: integer,
+    n :: integer
+  ) :: integer
+  def count_vowel_permutation(modulo, a, e, i, o, u, n) when n > 0 do
+    nexta = e + i + u
+    nexte = a + i
+    nexti = e + o
+    nexto = i
+    nextu = i + o
+    count_vowel_permutation(
+      modulo,
+      rem(nexta, modulo),
+      rem(nexte, modulo),
+      rem(nexti, modulo),
+      rem(nexto, modulo),
+      rem(nextu, modulo),
+      n - 1
+    )
+  end
+
+  def count_vowel_permutation(modulo, a, e, i, o, u, _), do: rem(a + e + i + o + u, modulo)
 end
 
 defmodule Main do
@@ -11,19 +38,16 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        buckets: 1000,
-        minutes_to_die: 15,
-        minutes_to_test: 60,
+        n: 1
       },
       %{
-        buckets: 4,
-        minutes_to_die: 15,
-        minutes_to_test: 15,
+        n: 2
       },
       %{
-        buckets: 4,
-        minutes_to_die: 15,
-        minutes_to_test: 30,
+        n: 5
+      },
+      %{
+        n: 144
       },
     ]
 
@@ -32,10 +56,8 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    buckets = input.buckets;
-    minutes_to_die = input.minutes_to_die;
-    minutes_to_test = input.minutes_to_test;
-    result = Solution.poor_pigs(buckets, minutes_to_die, minutes_to_test);
+    n = input.n
+    result = Solution.count_vowel_permutation(n)
     IO.puts(result)
     main(remains)
   end
