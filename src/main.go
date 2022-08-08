@@ -2,57 +2,45 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func countVowelPermutation(n int) int {
-	const MOD = 1000000007
+func lengthOfLIS(nums []int) int {
+	result := []int{}
 
-	a := 1
-	e := 1
-	i := 1
-	o := 1
-	u := 1
+	for _, num := range nums {
+		index := sort.SearchInts(result, num)
 
-	for j := 1; j < n; j += 1 {
-		nexta := e + i + u
-		nexte := a + i
-		nexti := e + o
-		nexto := i
-		nextu := i + o
-
-		a = nexta % MOD
-		e = nexte % MOD
-		i = nexti % MOD
-		o = nexto % MOD
-		u = nextu % MOD
+		if index == len(result) {
+			result = append(result, num)
+		} else if num < result[index] {
+			result[index] = num
+		}
 	}
 
-	return (a + e + i + o + u) % MOD
+	return len(result)
 }
 
 type input struct {
-	n int
+	nums []int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			n: 1,
+			nums: []int{10, 9, 2, 5, 3, 7, 101, 18},
 		},
 		{
-			n: 2,
+			nums: []int{0, 1, 0, 3, 2, 3},
 		},
 		{
-			n: 5,
-		},
-		{
-			n: 144,
+			nums: []int{7, 7, 7, 7, 7, 7, 7},
 		},
 	}
 
 	for _, input := range inputs {
-		n := input.n
-		result := countVowelPermutation(n)
+		nums := input.nums
+		result := lengthOfLIS(nums)
 		fmt.Println(result)
 	}
 }

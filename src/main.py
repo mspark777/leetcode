@@ -3,49 +3,36 @@ main
 """
 
 from typing import Optional
+from bisect import bisect_left
 
 class Solution:
-    def countVowelPermutation(self, n: int) -> int:
-        MOD = 1000000007
-        a, e, i, o, u = 1, 1, 1, 1, 1
-
-        for j in range(n - 1):
-            nexta = e + i + u
-            nexte = a + i
-            nexti = e + o
-            nexto = i
-            nextu = i + o
-
-            a = nexta % MOD
-            e = nexte % MOD
-            i = nexti % MOD
-            o = nexto % MOD
-            u = nextu % MOD
-
-        return (a + e + i + o + u) % MOD
-
-
+    def lengthOfLIS(self, nums: list[int]) -> int:
+        result = [nums[0]]
+        for i in range(1, len(nums)):
+            num = nums[i]
+            if num > result[-1]:
+                result.append(num)
+            else:
+                index =  bisect_left(result, num)
+                result[index] = num
+        return len(result)
 
 class Input:
-    n: int
-    def __init__(self, n: int):
-        self.n = n
+    nums: list[int]
+    def __init__(self, nums: list[int]):
+        self.nums = nums
 
 def main():
     inputs: list[Input] = [
-            Input(1),
-            Input(2),
-            Input(5),
-            Input(144),
+            Input([10, 9, 2, 5, 3, 7, 101, 18]),
+            Input([0, 1, 0, 3, 2, 3]),
+            Input([7, 7, 7, 7, 7, 7, 7]),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.countVowelPermutation(i.n)
+        result = s.lengthOfLIS(i.nums)
         print(result)
-
-
-
 
 if __name__ == "__main__":
     main()

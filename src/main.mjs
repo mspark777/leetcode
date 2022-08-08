@@ -1,51 +1,53 @@
-/**
- * @param {number} n
- * @return {number}
- */
-function countVowelPermutation (n) {
-  const MOD = 1000000007n
-
-  let a = 1n
-  let e = 1n
-  let i = 1n
-  let o = 1n
-  let u = 1n
-
-  for (let j = 1; j < n; j += 1) {
-    const nexta = e + i + u
-    const nexte = a + i
-    const nexti = e + o
-    const nexto = i
-    const nextu = i + o
-
-    a = nexta % MOD
-    e = nexte % MOD
-    i = nexti % MOD
-    o = nexto % MOD
-    u = nextu % MOD
+function binarySearch (nums, num) {
+  let left = 0
+  let right = nums.length - 1
+  while (left <= right) {
+    const mid = Math.trunc((right + left) / 2)
+    if (nums[mid] < num) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
   }
 
-  return Number((a + e + i + o + u) % MOD)
+  return left
+}
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+function lengthOfLIS (nums) {
+  const result = [nums[0]]
+
+  for (let i = 1; i < nums.length; i += 1) {
+    const num = nums[i]
+    if (num > result.at(-1)) {
+      result.push(num)
+    } else {
+      const index = binarySearch(result, num)
+      result[index] = num
+    }
+  }
+
+  return result.length
 }
 
 async function main () {
   const inputs = [
     {
-      n: 1
+      nums: [10, 9, 2, 5, 3, 7, 101, 18]
     },
     {
-      n: 2
+      nums: [0, 1, 0, 3, 2, 3]
     },
     {
-      n: 5
-    },
-    {
-      n: 144
+      nums: [7, 7, 7, 7, 7, 7, 7]
     }
   ]
 
-  for (const { n } of inputs) {
-    const result = countVowelPermutation(n)
+  for (const { nums } of inputs) {
+    const result = lengthOfLIS(nums)
     console.log(result)
   }
 }

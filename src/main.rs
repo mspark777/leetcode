@@ -1,46 +1,50 @@
 struct Solution {}
 impl Solution {
-    pub fn count_vowel_permutation(n: i32) -> i32 {
-        const MOD: u64 = 1000000007;
-        let mut a = 1u64;
-        let mut e = 1u64;
-        let mut i = 1u64;
-        let mut o = 1u64;
-        let mut u = 1u64;
+    pub fn length_of_lis(nums: Vec<i32>) -> i32 {
+        let mut result = Vec::<i32>::with_capacity(nums.len());
 
-        for _ in 1..n {
-            let nexta = e + i + u;
-            let nexte = a + i;
-            let nexti = e + o;
-            let nexto = i;
-            let nextu = i + o;
-
-            a = nexta % MOD;
-            e = nexte % MOD;
-            i = nexti % MOD;
-            o = nexto % MOD;
-            u = nextu % MOD;
+        for rnum in nums.iter() {
+            let num = *rnum;
+            match result.binary_search(rnum) {
+                Ok(i) => {
+                    if num < result[i] {
+                        result[i] = num;
+                    }
+                }
+                Err(i) => {
+                    if i == result.len() {
+                        result.push(num);
+                    } else if num < result[i] {
+                        result[i] = num;
+                    }
+                }
+            }
         }
 
-        ((a + e + i + o + u) % MOD) as i32
+        result.len() as i32
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input { n: 1 },
-        Input { n: 2 },
-        Input { n: 5 },
-        Input { n: 144 },
+        Input {
+            nums: vec![10, 9, 2, 5, 3, 7, 101, 18],
+        },
+        Input {
+            nums: vec![0, 1, 0, 3, 2, 3],
+        },
+        Input {
+            nums: vec![7, 7, 7, 7, 7, 7, 7],
+        },
     ];
 
     for input in inputs {
-        let n = input.n;
-        let result = Solution::count_vowel_permutation(n);
+        let nums = input.nums;
+        let result = Solution::length_of_lis(nums);
         println!("{:?}", result);
     }
 }

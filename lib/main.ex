@@ -1,36 +1,36 @@
 defmodule Solution do
-  @spec count_vowel_permutation(n :: integer) :: integer
-  def count_vowel_permutation(n) do
-    count_vowel_permutation(1000000007, 1, 1, 1, 1, 1, n - 1)
+  @spec length_of_lis(nums :: [integer]) :: integer
+  def length_of_lis(nums) do
+    length_of_lis(nums, [])
   end
 
-  @spec count_vowel_permutation(
-    modulo :: integer,
-    a :: integer,
-    e :: integer,
-    i :: integer,
-    o :: integer,
-    u :: integer,
-    n :: integer
-  ) :: integer
-  def count_vowel_permutation(modulo, a, e, i, o, u, n) when n > 0 do
-    nexta = e + i + u
-    nexte = a + i
-    nexti = e + o
-    nexto = i
-    nextu = i + o
-    count_vowel_permutation(
-      modulo,
-      rem(nexta, modulo),
-      rem(nexte, modulo),
-      rem(nexti, modulo),
-      rem(nexto, modulo),
-      rem(nextu, modulo),
-      n - 1
-    )
+  def length_of_lis([num | nums], result) do
+    reslen = length(result)
+    index = binary_serach(result, num, 0, reslen - 1)
+
+    cond do
+      index == reslen -> length_of_lis(nums, result ++ [num])
+      num < Enum.at(result, index) -> length_of_lis(
+          nums,
+          List.replace_at(result, index, num)
+      )
+      true -> length_of_lis(nums, result)
+    end
   end
 
-  def count_vowel_permutation(modulo, a, e, i, o, u, _), do: rem(a + e + i + o + u, modulo)
+  def length_of_lis([], result), do: length(result)
+
+  def binary_serach(nums, num, left, right) when left <= right do
+    mid = div(left + right, 2)
+    mvalue = Enum.at(nums, mid)
+    if mvalue < num do
+      binary_serach(nums, num, mid + 1, right)
+    else
+      binary_serach(nums, num, left, mid - 1)
+    end
+  end
+
+  def binary_serach(_, _, left, _), do: left
 end
 
 defmodule Main do
@@ -38,17 +38,14 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        n: 1
+        nums: [10, 9, 2, 5, 3, 7, 101, 18]
       },
       %{
-        n: 2
+        nums: [0, 1, 0, 3, 2, 3]
       },
       %{
-        n: 5
-      },
-      %{
-        n: 144
-      },
+        nums: [7, 7, 7, 7, 7, 7, 7]
+      }
     ]
 
     main(inputs)
@@ -56,8 +53,8 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    n = input.n
-    result = Solution.count_vowel_permutation(n)
+    nums = input.nums
+    result = Solution.length_of_lis(nums)
     IO.puts(result)
     main(remains)
   end
