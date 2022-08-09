@@ -3,19 +3,24 @@ main
 """
 
 from typing import Optional
-from bisect import bisect_left
 
 class Solution:
-    def lengthOfLIS(self, nums: list[int]) -> int:
-        result = [nums[0]]
-        for i in range(1, len(nums)):
-            num = nums[i]
-            if num > result[-1]:
-                result.append(num)
-            else:
-                index =  bisect_left(result, num)
-                result[index] = num
-        return len(result)
+    def numFactoredBinaryTrees(self, arr: list[int]) -> int:
+        MOD = 10 ** 9 + 7
+        LEN = len(arr)
+        arr.sort()
+
+        dp = [1] * LEN
+        index = {k: v for v, k in enumerate(arr)}
+        for i, parent in enumerate(arr):
+            for j in range(i):
+                left = arr[j]
+                if (parent % left) == 0:
+                    right = parent // left
+                    if right in index:
+                        dp[i] += dp[j] * dp[index[right]]
+                        dp[i] %= MOD
+        return sum(dp) % MOD
 
 class Input:
     nums: list[int]
@@ -24,14 +29,13 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-            Input([10, 9, 2, 5, 3, 7, 101, 18]),
-            Input([0, 1, 0, 3, 2, 3]),
-            Input([7, 7, 7, 7, 7, 7, 7]),
+            Input([2, 4]),
+            Input([2, 4, 5, 10]),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.lengthOfLIS(i.nums)
+        result = s.numFactoredBinaryTrees(i.nums)
         print(result)
 
 if __name__ == "__main__":

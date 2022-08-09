@@ -5,20 +5,39 @@ import (
 	"sort"
 )
 
-func lengthOfLIS(nums []int) int {
-	result := []int{}
+func numFactoredBinaryTrees(arr []int) int {
+	const MOD int64 = 1000000007
+	alen := len(arr)
+	sort.Ints(arr)
 
-	for _, num := range nums {
-		index := sort.SearchInts(result, num)
+	dp := make([]int64, alen)
+	index := make(map[int64]int64)
+	for i := 0; i < alen; i += 1 {
+		dp[i] = 1
 
-		if index == len(result) {
-			result = append(result, num)
-		} else if num < result[index] {
-			result[index] = num
+		key := int64(arr[i])
+		index[key] = int64(i)
+	}
+
+	for i := range arr {
+		parent := int64(arr[i])
+		for j := 0; j < i; j += 1 {
+			left := int64(arr[j])
+			if (parent % left) == 0 {
+				right := parent / left
+				if memo, ok := index[right]; ok {
+					dp[i] += (dp[j] * dp[memo]) % MOD
+				}
+			}
 		}
 	}
 
-	return len(result)
+	result := int64(0)
+	for _, memo := range dp {
+		result += memo
+	}
+
+	return int(result % MOD)
 }
 
 type input struct {
@@ -28,19 +47,16 @@ type input struct {
 func main() {
 	inputs := []*input{
 		{
-			nums: []int{10, 9, 2, 5, 3, 7, 101, 18},
+			nums: []int{2, 4},
 		},
 		{
-			nums: []int{0, 1, 0, 3, 2, 3},
-		},
-		{
-			nums: []int{7, 7, 7, 7, 7, 7, 7},
+			nums: []int{2, 4, 5, 10},
 		},
 	}
 
 	for _, input := range inputs {
 		nums := input.nums
-		result := lengthOfLIS(nums)
+		result := numFactoredBinaryTrees(nums)
 		fmt.Println(result)
 	}
 }

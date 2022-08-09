@@ -1,27 +1,36 @@
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn length_of_lis(nums: Vec<i32>) -> i32 {
-        let mut result = Vec::<i32>::with_capacity(nums.len());
+    pub fn num_factored_binary_trees(arr: Vec<i32>) -> i32 {
+        const MOD: usize = 1000000007;
+        let alen = arr.len();
 
-        for rnum in nums.iter() {
-            let num = *rnum;
-            match result.binary_search(rnum) {
-                Ok(i) => {
-                    if num < result[i] {
-                        result[i] = num;
-                    }
-                }
-                Err(i) => {
-                    if i == result.len() {
-                        result.push(num);
-                    } else if num < result[i] {
-                        result[i] = num;
+        let mut arr = arr;
+        arr.sort_unstable();
+
+        let mut dp = vec![1usize; alen];
+        let mut index = HashMap::<usize, usize>::with_capacity(alen);
+        for (k, v) in arr.iter().enumerate() {
+            let key = *v as usize;
+            index.insert(key, k);
+        }
+
+        for i in 0..alen {
+            let parent = arr[i] as usize;
+            for j in 0..i {
+                let left = arr[j] as usize;
+                if (parent % left) == 0 {
+                    let right = parent / left;
+                    if let Some(memo) = index.get(&right) {
+                        dp[i] += (dp[j] * dp[*memo]) % MOD
                     }
                 }
             }
         }
 
-        result.len() as i32
+        let result = dp.iter().fold(0, |acc, cur| acc + cur);
+        (result % MOD) as i32
     }
 }
 
@@ -31,20 +40,15 @@ struct Input {
 
 fn main() {
     let inputs: Vec<Input> = vec![
+        Input { nums: vec![2, 4] },
         Input {
-            nums: vec![10, 9, 2, 5, 3, 7, 101, 18],
-        },
-        Input {
-            nums: vec![0, 1, 0, 3, 2, 3],
-        },
-        Input {
-            nums: vec![7, 7, 7, 7, 7, 7, 7],
+            nums: vec![2, 4, 5, 10],
         },
     ];
 
     for input in inputs {
         let nums = input.nums;
-        let result = Solution::length_of_lis(nums);
+        let result = Solution::num_factored_binary_trees(nums);
         println!("{:?}", result);
     }
 }

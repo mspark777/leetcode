@@ -1,53 +1,51 @@
-function binarySearch (nums, num) {
-  let left = 0
-  let right = nums.length - 1
-  while (left <= right) {
-    const mid = Math.trunc((right + left) / 2)
-    if (nums[mid] < num) {
-      left = mid + 1
-    } else {
-      right = mid - 1
-    }
-  }
-
-  return left
-}
-
 /**
- * @param {number[]} nums
+ * @param {number[]} arr
  * @return {number}
  */
-function lengthOfLIS (nums) {
-  const result = [nums[0]]
+function numFactoredBinaryTrees (arr) {
+  const MOD = 1000000007n
+  const LEN = arr.length
 
-  for (let i = 1; i < nums.length; i += 1) {
-    const num = nums[i]
-    if (num > result.at(-1)) {
-      result.push(num)
-    } else {
-      const index = binarySearch(result, num)
-      result[index] = num
+  arr.sort((a, b) => a - b)
+
+  const dp = new Array(LEN).fill(1n)
+  const index = new Map()
+
+  for (let i = 0; i < LEN; i += 1) {
+    const key = BigInt(arr[i])
+    index.set(key, BigInt(i))
+  }
+
+  for (let i = 0; i < LEN; i += 1) {
+    const parent = BigInt(arr[i])
+    for (let j = 0; j < i; j += 1) {
+      const left = BigInt(arr[j])
+      if ((parent % left) === 0n) {
+        const right = parent / left
+        if (index.has(right)) {
+          const r = Number(index.get(right))
+          dp[i] = (dp[i] + dp[j] * dp[r]) % MOD
+        }
+      }
     }
   }
 
-  return result.length
+  const result = dp.reduce((acc, cur) => acc + cur, 0n)
+  return Number(result % MOD)
 }
 
 async function main () {
   const inputs = [
     {
-      nums: [10, 9, 2, 5, 3, 7, 101, 18]
+      arr: [2, 4]
     },
     {
-      nums: [0, 1, 0, 3, 2, 3]
-    },
-    {
-      nums: [7, 7, 7, 7, 7, 7, 7]
+      arr: [2, 4, 5, 10]
     }
   ]
 
-  for (const { nums } of inputs) {
-    const result = lengthOfLIS(nums)
+  for (const { arr } of inputs) {
+    const result = numFactoredBinaryTrees(arr)
     console.log(result)
   }
 }
