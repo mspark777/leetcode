@@ -1,51 +1,53 @@
-function numFactoredBinaryTrees (arr: number[]): number {
-  const MOD = 1000000007n
-  const LEN = arr.length
+class TreeNode {
+  val: number
+  // eslint-disable-next-line no-use-before-define
+  left: TreeNode | null
+  // eslint-disable-next-line no-use-before-define
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
 
-  arr.sort((a, b) => a - b)
-
-  const dp = new Array<bigint>(LEN).fill(1n)
-  const index = new Map<bigint, bigint>()
-
-  for (let i = 0; i < LEN; i += 1) {
-    const key = BigInt(arr[i])
-    index.set(key, BigInt(i))
+function travel (nums: number[], l: number, r: number): TreeNode | null {
+  if (l > r) {
+    return null
   }
 
-  for (let i = 0; i < LEN; i += 1) {
-    const parent = BigInt(arr[i])
-    for (let j = 0; j < i; j += 1) {
-      const left = BigInt(arr[j])
-      if ((parent % left) === 0n) {
-        const right = parent / left
-        if (index.has(right)) {
-          const r = Number(index.get(right))
-          dp[i] = (dp[i] + dp[j] * dp[r]) % MOD
-        }
-      }
-    }
+  if (l === r) {
+    return new TreeNode(nums[l])
   }
 
-  const result = dp.reduce((acc, cur) => acc + cur, 0n)
-  return Number(result % MOD)
+  const mid = Math.trunc((l + r) / 2)
+  return new TreeNode(
+    nums[mid],
+    travel(nums, l, mid - 1),
+    travel(nums, mid + 1, r)
+  )
+}
+
+function sortedArrayToBST (nums: number[]): TreeNode | null {
+  return travel(nums, 0, nums.length - 1)
 }
 
 interface Input {
-  readonly arr: number[]
+  readonly nums: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      arr: [2, 4]
+      nums: [-10, -3, 0, 5, 9]
     },
     {
-      arr: [2, 4, 5, 10]
+      nums: [1, 3]
     }
   ]
 
-  for (const { arr } of inputs) {
-    const result = numFactoredBinaryTrees(arr)
+  for (const { nums } of inputs) {
+    const result = sortedArrayToBST(nums)
     console.log(result)
   }
 }

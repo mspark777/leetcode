@@ -2,25 +2,32 @@
 main
 """
 
+from __future__ import annotations
 from typing import Optional
 
-class Solution:
-    def numFactoredBinaryTrees(self, arr: list[int]) -> int:
-        MOD = 10 ** 9 + 7
-        LEN = len(arr)
-        arr.sort()
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-        dp = [1] * LEN
-        index = {k: v for v, k in enumerate(arr)}
-        for i, parent in enumerate(arr):
-            for j in range(i):
-                left = arr[j]
-                if (parent % left) == 0:
-                    right = parent // left
-                    if right in index:
-                        dp[i] += dp[j] * dp[index[right]]
-                        dp[i] %= MOD
-        return sum(dp) % MOD
+class Solution:
+    def sortedArrayToBST(self, nums: list[int]) -> Optional[TreeNode]:
+        return self.travel(nums, 0, len(nums))
+
+    def travel(self, nums: list[int], l: int, r: int) -> Optional[TreeNode]:
+        if l >= r:
+            return None
+
+        mid = (l + r) // 2
+        return TreeNode(
+                nums[mid],
+                self.travel(nums, l, mid),
+                self.travel(nums, mid + 1, r)
+        )
 
 class Input:
     nums: list[int]
@@ -29,13 +36,13 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-            Input([2, 4]),
-            Input([2, 4, 5, 10]),
+            Input([-10, -3, 0, 5, 9]),
+            Input([1, 3]),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.numFactoredBinaryTrees(i.nums)
+        result = s.sortedArrayToBST(i.nums)
         print(result)
 
 if __name__ == "__main__":

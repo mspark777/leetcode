@@ -1,36 +1,29 @@
-use std::collections::HashMap;
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
+use std::cell::RefCell;
+use std::rc::Rc;
 struct Solution {}
 impl Solution {
-    pub fn num_factored_binary_trees(arr: Vec<i32>) -> i32 {
-        const MOD: usize = 1000000007;
-        let alen = arr.len();
+    pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+        Self::travel(&nums, 0, nums.len())
+    }
 
-        let mut arr = arr;
-        arr.sort_unstable();
-
-        let mut dp = vec![1usize; alen];
-        let mut index = HashMap::<usize, usize>::with_capacity(alen);
-        for (k, v) in arr.iter().enumerate() {
-            let key = *v as usize;
-            index.insert(key, k);
+    fn travel(nums: &Vec<i32>, l: usize, r: usize) -> Option<Rc<RefCell<TreeNode>>> {
+        if l >= r {
+            return None;
         }
 
-        for i in 0..alen {
-            let parent = arr[i] as usize;
-            for j in 0..i {
-                let left = arr[j] as usize;
-                if (parent % left) == 0 {
-                    let right = parent / left;
-                    if let Some(memo) = index.get(&right) {
-                        dp[i] += (dp[j] * dp[*memo]) % MOD
-                    }
-                }
-            }
-        }
-
-        let result = dp.iter().fold(0, |acc, cur| acc + cur);
-        (result % MOD) as i32
+        let mid = (l + r) / 2;
+        Some(Rc::new(RefCell::new(TreeNode {
+            val: nums[mid],
+            left: Self::travel(nums, l, mid),
+            right: Self::travel(nums, mid + 1, r),
+        })))
     }
 }
 
@@ -40,15 +33,15 @@ struct Input {
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input { nums: vec![2, 4] },
         Input {
-            nums: vec![2, 4, 5, 10],
+            nums: vec![-10, -3, 0, 5, 9],
         },
+        Input { nums: vec![1, 3] },
     ];
 
     for input in inputs {
         let nums = input.nums;
-        let result = Solution::num_factored_binary_trees(nums);
+        let result = Solution::sorted_array_to_bst(nums);
         println!("{:?}", result);
     }
 }

@@ -2,42 +2,29 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func numFactoredBinaryTrees(arr []int) int {
-	const MOD int64 = 1000000007
-	alen := len(arr)
-	sort.Ints(arr)
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
 
-	dp := make([]int64, alen)
-	index := make(map[int64]int64)
-	for i := 0; i < alen; i += 1 {
-		dp[i] = 1
-
-		key := int64(arr[i])
-		index[key] = int64(i)
+func travel(nums []int, l int, r int) *TreeNode {
+	if l >= r {
+		return nil
 	}
 
-	for i := range arr {
-		parent := int64(arr[i])
-		for j := 0; j < i; j += 1 {
-			left := int64(arr[j])
-			if (parent % left) == 0 {
-				right := parent / left
-				if memo, ok := index[right]; ok {
-					dp[i] += (dp[j] * dp[memo]) % MOD
-				}
-			}
-		}
+	mid := (l + r) / 2
+	return &TreeNode{
+		nums[mid],
+		travel(nums, l, mid),
+		travel(nums, mid+1, r),
 	}
+}
 
-	result := int64(0)
-	for _, memo := range dp {
-		result += memo
-	}
-
-	return int(result % MOD)
+func sortedArrayToBST(nums []int) *TreeNode {
+	return travel(nums, 0, len(nums))
 }
 
 type input struct {
@@ -47,16 +34,16 @@ type input struct {
 func main() {
 	inputs := []*input{
 		{
-			nums: []int{2, 4},
+			nums: []int{-10, -3, 0, 5, 9},
 		},
 		{
-			nums: []int{2, 4, 5, 10},
+			nums: []int{1, 3},
 		},
 	}
 
 	for _, input := range inputs {
 		nums := input.nums
-		result := numFactoredBinaryTrees(nums)
+		result := sortedArrayToBST(nums)
 		fmt.Println(result)
 	}
 }
