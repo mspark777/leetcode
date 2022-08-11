@@ -15,34 +15,55 @@ class TreeNode:
         self.right = right
 
 class Solution:
-    def sortedArrayToBST(self, nums: list[int]) -> Optional[TreeNode]:
-        return self.travel(nums, 0, len(nums))
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        if root is None:
+            return True
 
-    def travel(self, nums: list[int], l: int, r: int) -> Optional[TreeNode]:
-        if l >= r:
-            return None
+        pre: Optional[TreeNode] = None
+        stack: list[TreeNode] = []
 
-        mid = (l + r) // 2
-        return TreeNode(
-                nums[mid],
-                self.travel(nums, l, mid),
-                self.travel(nums, mid + 1, r)
-        )
+        while root is not None or len(stack) > 0:
+            while root is not None:
+                stack.append(root)
+                root = root.left
+
+            root = stack.pop()
+            if pre is not None and root.val <= pre.val:
+                return False
+
+            pre = root
+            root = root.right
+
+        return True
+
 
 class Input:
-    nums: list[int]
-    def __init__(self, nums: list[int]):
-        self.nums = nums
+    root: Optional[TreeNode]
+    def __init__(self, root: Optional[TreeNode]):
+        self.root = root
 
 def main():
     inputs: list[Input] = [
-            Input([-10, -3, 0, 5, 9]),
-            Input([1, 3]),
+            Input(
+                TreeNode(2,
+                    TreeNode(1),
+                    TreeNode(3)
+                )
+            ),
+            Input(
+                TreeNode(4,
+                    TreeNode(1),
+                    TreeNode(4,
+                        TreeNode(3),
+                        TreeNode(6)
+                    )
+                )
+            ),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.sortedArrayToBST(i.nums)
+        result = s.isValidBST(i.root)
         print(result)
 
 if __name__ == "__main__":

@@ -10,40 +10,64 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func travel(nums []int, l int, r int) *TreeNode {
-	if l >= r {
-		return nil
+func isValidBST(root *TreeNode) bool {
+	if root == nil {
+		return true
 	}
 
-	mid := (l + r) / 2
-	return &TreeNode{
-		nums[mid],
-		travel(nums, l, mid),
-		travel(nums, mid+1, r),
-	}
-}
+	var pre *TreeNode = nil
+	stack := []*TreeNode{}
 
-func sortedArrayToBST(nums []int) *TreeNode {
-	return travel(nums, 0, len(nums))
+	for (root != nil) || (len(stack) > 0) {
+		for root != nil {
+			stack = append(stack, root)
+			root = root.Left
+		}
+
+		top := len(stack) - 1
+		root = stack[top]
+		stack = stack[:top]
+
+		if (pre != nil) && (root.Val <= pre.Val) {
+			return false
+		}
+
+		pre = root
+		root = root.Right
+	}
+
+	return true
 }
 
 type input struct {
-	nums []int
+	root *TreeNode
 }
 
 func main() {
 	inputs := []*input{
 		{
-			nums: []int{-10, -3, 0, 5, 9},
+			root: &TreeNode{
+				Val:   2,
+				Left:  &TreeNode{Val: 1},
+				Right: &TreeNode{Val: 3},
+			},
 		},
 		{
-			nums: []int{1, 3},
+			root: &TreeNode{
+				Val:  4,
+				Left: &TreeNode{Val: 1},
+				Right: &TreeNode{
+					Val:   4,
+					Left:  &TreeNode{Val: 3},
+					Right: &TreeNode{Val: 6},
+				},
+			},
 		},
 	}
 
 	for _, input := range inputs {
-		nums := input.nums
-		result := sortedArrayToBST(nums)
+		root := input.root
+		result := isValidBST(root)
 		fmt.Println(result)
 	}
 }

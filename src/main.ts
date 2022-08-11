@@ -11,43 +11,55 @@ class TreeNode {
   }
 }
 
-function travel (nums: number[], l: number, r: number): TreeNode | null {
-  if (l > r) {
-    return null
+function isValidBST (root: TreeNode | null): boolean {
+  if (!root) {
+    return true
   }
 
-  if (l === r) {
-    return new TreeNode(nums[l])
+  let pre: TreeNode | null = null
+  const stack: TreeNode[] = []
+  while (root || (stack.length > 0)) {
+    while (root) {
+      stack.push(root)
+      root = root.left
+    }
+
+    root = stack.pop() as TreeNode
+    if (pre && (root.val <= pre.val)) {
+      return false
+    }
+    pre = root
+    root = root.right
   }
 
-  const mid = Math.trunc((l + r) / 2)
-  return new TreeNode(
-    nums[mid],
-    travel(nums, l, mid - 1),
-    travel(nums, mid + 1, r)
-  )
-}
-
-function sortedArrayToBST (nums: number[]): TreeNode | null {
-  return travel(nums, 0, nums.length - 1)
+  return true
 }
 
 interface Input {
-  readonly nums: number[]
+  root: TreeNode | null
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [-10, -3, 0, 5, 9]
+      root: new TreeNode(2,
+        new TreeNode(1),
+        new TreeNode(3)
+      )
     },
     {
-      nums: [1, 3]
+      root: new TreeNode(4,
+        new TreeNode(1),
+        new TreeNode(4,
+          new TreeNode(3),
+          new TreeNode(6)
+        )
+      )
     }
   ]
 
-  for (const { nums } of inputs) {
-    const result = sortedArrayToBST(nums)
+  for (const { root } of inputs) {
+    const result = isValidBST(root)
     console.log(result)
   }
 }

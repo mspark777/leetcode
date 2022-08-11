@@ -6,43 +6,55 @@ class TreeNode {
   }
 }
 
-function travel (nums, l, r) {
-  if (l > r) {
-    return null
-  }
-
-  if (l === r) {
-    return new TreeNode(nums[l])
-  }
-
-  const mid = Math.trunc((l + r) / 2)
-  return new TreeNode(
-    nums[mid],
-    travel(nums, l, mid - 1),
-    travel(nums, mid + 1, r)
-  )
-}
-
 /**
- * @param {number[]} nums
- * @return {TreeNode}
+ * @param {TreeNode} root
+ * @return {boolean}
  */
-function sortedArrayToBST (nums) {
-  return travel(nums, 0, nums.length - 1)
+function isValidBST (root) {
+  if (!root) {
+    return true
+  }
+
+  let pre = null
+  const stack = []
+  while (root || (stack.length > 0)) {
+    while (root) {
+      stack.push(root)
+      root = root.left
+    }
+
+    root = stack.pop()
+    if (pre && (root.val <= pre.val)) {
+      return false
+    }
+    pre = root
+    root = root.right
+  }
+
+  return true
 }
 
 async function main () {
   const inputs = [
     {
-      nums: [-10, -3, 0, 5, 9]
+      root: new TreeNode(2,
+        new TreeNode(1),
+        new TreeNode(3)
+      )
     },
     {
-      nums: [1, 3]
+      root: new TreeNode(4,
+        new TreeNode(1),
+        new TreeNode(4,
+          new TreeNode(3),
+          new TreeNode(6)
+        )
+      )
     }
   ]
 
-  for (const { nums } of inputs) {
-    const result = sortedArrayToBST(nums)
+  for (const { root } of inputs) {
+    const result = isValidBST(root)
     console.log(result)
   }
 }
