@@ -10,64 +10,40 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func isValidBST(root *TreeNode) bool {
-	if root == nil {
-		return true
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if (p == nil) || (q == nil) {
+		return nil
 	}
 
-	var pre *TreeNode = nil
-	stack := []*TreeNode{}
-
-	for (root != nil) || (len(stack) > 0) {
-		for root != nil {
-			stack = append(stack, root)
-			root = root.Left
+	pval := p.Val
+	qval := q.Val
+	cur := root
+	for cur != nil {
+		val := cur.Val
+		if (pval < val) && (qval < val) {
+			cur = cur.Left
+		} else if (pval > val) && (qval > val) {
+			cur = cur.Right
+		} else {
+			break
 		}
-
-		top := len(stack) - 1
-		root = stack[top]
-		stack = stack[:top]
-
-		if (pre != nil) && (root.Val <= pre.Val) {
-			return false
-		}
-
-		pre = root
-		root = root.Right
 	}
 
-	return true
+	return cur
 }
 
 type input struct {
 	root *TreeNode
+	qval int
+	pval int
 }
 
 func main() {
-	inputs := []*input{
-		{
-			root: &TreeNode{
-				Val:   2,
-				Left:  &TreeNode{Val: 1},
-				Right: &TreeNode{Val: 3},
-			},
-		},
-		{
-			root: &TreeNode{
-				Val:  4,
-				Left: &TreeNode{Val: 1},
-				Right: &TreeNode{
-					Val:   4,
-					Left:  &TreeNode{Val: 3},
-					Right: &TreeNode{Val: 6},
-				},
-			},
-		},
-	}
+	inputs := []*input{}
 
 	for _, input := range inputs {
 		root := input.root
-		result := isValidBST(root)
+		result := lowestCommonAncestor(root, nil, nil)
 		fmt.Println(result)
 	}
 }

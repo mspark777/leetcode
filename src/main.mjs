@@ -8,54 +8,95 @@ class TreeNode {
 
 /**
  * @param {TreeNode} root
- * @return {boolean}
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {TreeNode}
  */
-function isValidBST (root) {
+function lowestCommonAncestor (root, p, q) {
+  if (!p || !q) {
+    return null
+  }
+
+  const pval = p.val
+  const qval = q.val
+
+  let cur = root
+  while (cur) {
+    const val = cur.val
+    if ((pval < val) && (qval < val)) {
+      cur = cur.left
+    } else if ((pval > val) && (qval > val)) {
+      cur = cur.right
+    } else {
+      break
+    }
+  }
+
+  return cur
+}
+
+function getNode (root, val) {
   if (!root) {
-    return true
+    return null
   }
 
-  let pre = null
-  const stack = []
-  while (root || (stack.length > 0)) {
-    while (root) {
-      stack.push(root)
-      root = root.left
-    }
-
-    root = stack.pop()
-    if (pre && (root.val <= pre.val)) {
-      return false
-    }
-    pre = root
-    root = root.right
+  if (root.val === val) {
+    return root
   }
 
-  return true
+  return getNode(root.left, val) ?? getNode(root.right, val)
 }
 
 async function main () {
   const inputs = [
     {
-      root: new TreeNode(2,
-        new TreeNode(1),
-        new TreeNode(3)
-      )
+      root: new TreeNode(6,
+        new TreeNode(2,
+          new TreeNode(0),
+          new TreeNode(4,
+            new TreeNode(3),
+            new TreeNode(5)
+          )
+        ),
+        new TreeNode(8,
+          new TreeNode(7),
+          new TreeNode(9)
+        )
+      ),
+      pval: 2,
+      qval: 8
     },
     {
-      root: new TreeNode(4,
-        new TreeNode(1),
-        new TreeNode(4,
-          new TreeNode(3),
-          new TreeNode(6)
+      root: new TreeNode(6,
+        new TreeNode(2,
+          new TreeNode(0),
+          new TreeNode(4,
+            new TreeNode(3),
+            new TreeNode(5)
+          )
+        ),
+        new TreeNode(8,
+          new TreeNode(7),
+          new TreeNode(9)
         )
-      )
+      ),
+      pval: 2,
+      qval: 4
+    },
+    {
+      root: new TreeNode(2,
+        new TreeNode(1)
+      ),
+      pval: 2,
+      qval: 1
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = isValidBST(root)
-    console.log(result)
+  for (const { root, pval, qval } of inputs) {
+    const p = getNode(root, pval)
+    const q = getNode(root, qval)
+    const result = lowestCommonAncestor(root, p, q)
+    console.log(result?.val)
   }
 }
 

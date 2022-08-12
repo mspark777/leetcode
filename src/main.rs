@@ -9,39 +9,60 @@ use std::cell::RefCell;
 use std::rc::Rc;
 struct Solution {}
 impl Solution {
-    pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
-        Self::travel(&nums, 0, nums.len())
-    }
-
-    fn travel(nums: &Vec<i32>, l: usize, r: usize) -> Option<Rc<RefCell<TreeNode>>> {
-        if l >= r {
+    pub fn lowest_common_ancestor(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        if Self::q_or_p_is_none(&p, &q) {
             return None;
         }
 
-        let mid = (l + r) / 2;
-        Some(Rc::new(RefCell::new(TreeNode {
-            val: nums[mid],
-            left: Self::travel(nums, l, mid),
-            right: Self::travel(nums, mid + 1, r),
-        })))
+        let pval = Self::get_node_val(&p.unwrap());
+        let qval = Self::get_node_val(&q.unwrap());
+
+        let mut curnode = root.clone();
+        while let Some(cur) = curnode.clone() {
+            let val = Self::get_node_val(&cur);
+            if (pval < val) && (qval < val) {
+                curnode = cur.borrow().left.clone();
+            } else if (pval > val) && (qval > val) {
+                curnode = cur.borrow().right.clone();
+            } else {
+                break;
+            }
+        }
+
+        curnode
+    }
+
+    #[inline]
+    fn q_or_p_is_none(
+        p: &Option<Rc<RefCell<TreeNode>>>,
+        q: &Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        match (p, q) {
+            (Some(_), Some(_)) => false,
+            _ => true,
+        }
+    }
+
+    #[inline]
+    fn get_node_val(n: &Rc<RefCell<TreeNode>>) -> i32 {
+        n.borrow().val
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    root: Option<Rc<RefCell<TreeNode>>>,
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input {
-            nums: vec![-10, -3, 0, 5, 9],
-        },
-        Input { nums: vec![1, 3] },
-    ];
+    let inputs: Vec<Input> = vec![];
 
     for input in inputs {
-        let nums = input.nums;
-        let result = Solution::sorted_array_to_bst(nums);
+        let root = input.root;
+        let result = Solution::lowest_common_ancestor(root, None, None);
         println!("{:?}", result);
     }
 }

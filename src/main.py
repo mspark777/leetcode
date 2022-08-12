@@ -15,56 +15,100 @@ class TreeNode:
         self.right = right
 
 class Solution:
-    def isValidBST(self, root: Optional[TreeNode]) -> bool:
-        if root is None:
-            return True
+    def lowestCommonAncestor(self, root: Optional[TreeNode], p: Optional[TreeNode], q: Optional[TreeNode]) -> Optional[TreeNode]:
+        if p is None or q is None:
+            return None
 
-        pre: Optional[TreeNode] = None
-        stack: list[TreeNode] = []
+        pval = p.val
+        qval = q.val
 
-        while root is not None or len(stack) > 0:
-            while root is not None:
-                stack.append(root)
-                root = root.left
-
-            root = stack.pop()
-            if pre is not None and root.val <= pre.val:
-                return False
-
-            pre = root
-            root = root.right
-
-        return True
+        cur = root
+        while cur is not None:
+            val = cur.val
+            if (pval < val) and (qval < val):
+                cur = cur.left
+            elif (pval > val) and (qval > val):
+                cur = cur.right
+            else:
+                break
+        return cur
 
 
 class Input:
     root: Optional[TreeNode]
-    def __init__(self, root: Optional[TreeNode]):
+    p: Optional[TreeNode]
+    q: Optional[TreeNode]
+
+    def __init__(self, root: Optional[TreeNode], pval: int, qval: int):
         self.root = root
+        self.p = self.get_node(root, pval)
+        self.q = self.get_node(root, qval)
+
+    def get_node(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+        if root is None:
+            return None
+
+        if root.val == val:
+            return root
+
+        child = self.get_node(root.left, val)
+        if child is not None:
+            return child
+
+        return self.get_node(root.right, val)
 
 def main():
     inputs: list[Input] = [
             Input(
-                TreeNode(2,
-                    TreeNode(1),
-                    TreeNode(3)
-                )
+                TreeNode(6,
+                    TreeNode(2,
+                        TreeNode(0),
+                        TreeNode(4,
+                            TreeNode(3),
+                            TreeNode(5)
+                        )
+                    ),
+                    TreeNode(8,
+                        TreeNode(7),
+                        TreeNode(9)
+                    )
+                ),
+                2,
+                8
             ),
             Input(
-                TreeNode(4,
-                    TreeNode(1),
-                    TreeNode(4,
-                        TreeNode(3),
-                        TreeNode(6)
+                TreeNode(6,
+                    TreeNode(2,
+                        TreeNode(0),
+                        TreeNode(4,
+                            TreeNode(3),
+                            TreeNode(5)
+                        )
+                    ),
+                    TreeNode(8,
+                        TreeNode(7),
+                        TreeNode(9)
                     )
-                )
+                ),
+                2,
+                4
+            ),
+            Input(
+                TreeNode(2,
+                    TreeNode(1)
+                ),
+                2,
+                1
             ),
     ]
 
     s = Solution()
     for i in inputs:
-        result = s.isValidBST(i.root)
-        print(result)
+        result = s.lowestCommonAncestor(i.root, i.p, i.q)
+        if result is None:
+            print(None)
+        else:
+            print(result.val)
 
 if __name__ == "__main__":
     main()
