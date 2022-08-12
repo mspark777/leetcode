@@ -1,107 +1,57 @@
-class TreeNode {
-  val: number
-  // eslint-disable-next-line no-use-before-define
-  left: TreeNode | null
-  // eslint-disable-next-line no-use-before-define
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+function swap (nums: number[], i: number, j: number): void {
+  const temp = nums[i]
+  nums[i] = nums[j]
+  nums[j] = temp
+}
+
+function reverse (nums: number[], start: number): void {
+  let i = start
+  let j = nums.length - 1
+  while (i < j) {
+    swap(nums, i, j)
+    i += 1
+    j -= 1
   }
 }
 
-function lowestCommonAncestor (root: TreeNode | null, p: TreeNode | null, q: TreeNode | null): TreeNode | null {
-  if (!p || !q) {
-    return null
+function nextPermutation (nums: number[]): void {
+  let i = nums.length - 2
+  while ((i >= 0) && nums[i] >= nums[i + 1]) {
+    i -= 1
   }
 
-  const pval = p.val
-  const qval = q.val
-
-  let cur = root
-  while (cur) {
-    const val = cur.val
-    if ((pval < val) && (qval < val)) {
-      cur = cur.left
-    } else if ((pval > val) && (qval > val)) {
-      cur = cur.right
-    } else {
-      break
+  if (i >= 0) {
+    let j = nums.length - 1
+    while (nums[i] >= nums[j]) {
+      j -= 1
     }
+
+    swap(nums, i, j)
   }
 
-  return cur
+  reverse(nums, i + 1)
 }
 
 interface Input {
-  root: TreeNode | null
-  qval: number
-  pval: number
-}
-
-function getNode (root: TreeNode | null, val: number): TreeNode | null {
-  if (!root) {
-    return null
-  }
-
-  if (root.val === val) {
-    return root
-  }
-
-  return getNode(root.left, val) ?? getNode(root.right, val)
+  readonly nums: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: new TreeNode(6,
-        new TreeNode(2,
-          new TreeNode(0),
-          new TreeNode(4,
-            new TreeNode(3),
-            new TreeNode(5)
-          )
-        ),
-        new TreeNode(8,
-          new TreeNode(7),
-          new TreeNode(9)
-        )
-      ),
-      pval: 2,
-      qval: 8
+      nums: [1, 2, 3]
     },
     {
-      root: new TreeNode(6,
-        new TreeNode(2,
-          new TreeNode(0),
-          new TreeNode(4,
-            new TreeNode(3),
-            new TreeNode(5)
-          )
-        ),
-        new TreeNode(8,
-          new TreeNode(7),
-          new TreeNode(9)
-        )
-      ),
-      pval: 2,
-      qval: 4
+      nums: [3, 2, 1]
     },
     {
-      root: new TreeNode(2,
-        new TreeNode(1)
-      ),
-      pval: 2,
-      qval: 1
+      nums: [1, 1, 5]
     }
   ]
 
-  for (const { root, pval, qval } of inputs) {
-    const p = getNode(root, pval)
-    const q = getNode(root, qval)
-    const result = lowestCommonAncestor(root, p, q)
-    console.log(result?.val)
+  for (const { nums } of inputs) {
+    nextPermutation(nums)
+    console.log(nums)
   }
 }
 

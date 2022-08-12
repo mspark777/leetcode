@@ -1,68 +1,67 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-use std::cell::RefCell;
-use std::rc::Rc;
 struct Solution {}
 impl Solution {
-    pub fn lowest_common_ancestor(
-        root: Option<Rc<RefCell<TreeNode>>>,
-        p: Option<Rc<RefCell<TreeNode>>>,
-        q: Option<Rc<RefCell<TreeNode>>>,
-    ) -> Option<Rc<RefCell<TreeNode>>> {
-        if Self::q_or_p_is_none(&p, &q) {
-            return None;
+    pub fn next_permutation(nums: &mut Vec<i32>) {
+        let nlen = nums.len();
+        if nlen < 2 {
+            return;
         }
 
-        let pval = Self::get_node_val(&p.unwrap());
-        let qval = Self::get_node_val(&q.unwrap());
-
-        let mut curnode = root.clone();
-        while let Some(cur) = curnode.clone() {
-            let val = Self::get_node_val(&cur);
-            if (pval < val) && (qval < val) {
-                curnode = cur.borrow().left.clone();
-            } else if (pval > val) && (qval > val) {
-                curnode = cur.borrow().right.clone();
+        let mut i = nlen - 2;
+        while nums[i] >= nums[i + 1] {
+            if i > 0 {
+                i -= 1
             } else {
-                break;
+                return Self::reverse(nums, 0);
             }
         }
 
-        curnode
-    }
-
-    #[inline]
-    fn q_or_p_is_none(
-        p: &Option<Rc<RefCell<TreeNode>>>,
-        q: &Option<Rc<RefCell<TreeNode>>>,
-    ) -> bool {
-        match (p, q) {
-            (Some(_), Some(_)) => false,
-            _ => true,
+        let mut j = nlen - 1;
+        while nums[i] >= nums[j] {
+            j -= 1;
         }
+
+        Self::swap(nums, i, j);
+        Self::reverse(nums, i + 1)
     }
 
-    #[inline]
-    fn get_node_val(n: &Rc<RefCell<TreeNode>>) -> i32 {
-        n.borrow().val
+    fn swap(nums: &mut Vec<i32>, i: usize, j: usize) {
+        let temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    fn reverse(nums: &mut Vec<i32>, start: usize) {
+        let mut i = start;
+        let mut j = nums.len() - 1;
+
+        while i < j {
+            Self::swap(nums, i, j);
+            i += 1;
+            j -= 1;
+        }
     }
 }
 
 struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![];
+    let inputs: Vec<Input> = vec![
+        Input {
+            nums: vec![1, 2, 3],
+        },
+        Input {
+            nums: vec![3, 2, 1],
+        },
+        Input {
+            nums: vec![1, 1, 5],
+        },
+    ];
 
     for input in inputs {
-        let root = input.root;
-        let result = Solution::lowest_common_ancestor(root, None, None);
-        println!("{:?}", result);
+        let mut nums = input.nums;
+        Solution::next_permutation(&mut nums);
+        println!("{:?}", nums);
     }
 }

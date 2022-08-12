@@ -4,46 +4,59 @@ import (
 	"fmt"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
+func swap(nums []int, i, j int) {
+	temp := nums[i]
+	nums[i] = nums[j]
+	nums[j] = temp
 }
 
-func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
-	if (p == nil) || (q == nil) {
-		return nil
+func reverse(nums []int, start int) {
+	i := start
+	j := len(nums) - 1
+	for i < j {
+		swap(nums, i, j)
+		i += 1
+		j -= 1
+	}
+}
+
+func nextPermutation(nums []int) {
+	i := len(nums) - 2
+	for (i >= 0) && (nums[i] >= nums[i+1]) {
+		i -= 1
 	}
 
-	pval := p.Val
-	qval := q.Val
-	cur := root
-	for cur != nil {
-		val := cur.Val
-		if (pval < val) && (qval < val) {
-			cur = cur.Left
-		} else if (pval > val) && (qval > val) {
-			cur = cur.Right
-		} else {
-			break
+	if i >= 0 {
+		j := len(nums) - 1
+		for nums[i] >= nums[j] {
+			j -= 1
 		}
-	}
 
-	return cur
+		swap(nums, i, j)
+	}
+	reverse(nums, i+1)
 }
 
 type input struct {
-	root *TreeNode
-	qval int
-	pval int
+	nums []int
 }
 
 func main() {
-	inputs := []*input{}
+	inputs := []*input{
+		{
+			nums: []int{1, 2, 3},
+		},
+		{
+			nums: []int{3, 2, 1},
+		},
+		{
+			nums: []int{1, 1, 5},
+		},
+	}
 
 	for _, input := range inputs {
-		root := input.root
-		result := lowestCommonAncestor(root, nil, nil)
-		fmt.Println(result)
+		nums := input.nums
+		nextPermutation(nums)
+		fmt.Println(nums)
 	}
 }
