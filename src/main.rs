@@ -1,67 +1,93 @@
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn next_permutation(nums: &mut Vec<i32>) {
-        let nlen = nums.len();
-        if nlen < 2 {
-            return;
+    pub fn find_substring(s: String, words: Vec<String>) -> Vec<i32> {
+        let slen = s.len();
+        let words_len = words.len();
+        let word_len = words[0].len();
+        let window_size = words_len * word_len;
+
+        let mut result = Vec::<i32>::new();
+        if slen < window_size {
+            return result;
         }
 
-        let mut i = nlen - 2;
-        while nums[i] >= nums[i + 1] {
-            if i > 0 {
-                i -= 1
+        let mut word_count = HashMap::<String, usize>::new();
+        for word in words.iter() {
+            if let Some(cnt) = word_count.get_mut(word) {
+                *cnt += 1;
             } else {
-                return Self::reverse(nums, 0);
+                word_count.insert(word.clone(), 1);
             }
         }
 
-        let mut j = nlen - 1;
-        while nums[i] >= nums[j] {
-            j -= 1;
+        let last_window_index = slen - window_size;
+        for i in 0..=last_window_index {
+            let mut tword_count = word_count.clone();
+
+            for j in (i..slen).step_by(word_len) {
+                let substr = &s[j..j + word_len].to_string();
+                if let Some(cnt) = tword_count.get_mut(substr) {
+                    if *cnt == 0 {
+                        break;
+                    } else if *cnt == 1 {
+                        tword_count.remove(substr);
+                    } else {
+                        *cnt -= 1;
+                    }
+                } else {
+                    break;
+                }
+
+                if tword_count.is_empty() {
+                    break;
+                }
+            }
+
+            if tword_count.is_empty() {
+                result.push(i as i32);
+            }
         }
 
-        Self::swap(nums, i, j);
-        Self::reverse(nums, i + 1)
-    }
-
-    fn swap(nums: &mut Vec<i32>, i: usize, j: usize) {
-        let temp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = temp;
-    }
-
-    fn reverse(nums: &mut Vec<i32>, start: usize) {
-        let mut i = start;
-        let mut j = nums.len() - 1;
-
-        while i < j {
-            Self::swap(nums, i, j);
-            i += 1;
-            j -= 1;
-        }
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
+    words: Vec<String>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            nums: vec![1, 2, 3],
+            s: "barfoothefoobarman".to_string(),
+            words: vec!["foo".to_string(), "bar".to_string()],
         },
         Input {
-            nums: vec![3, 2, 1],
+            s: "wordgoodgoodgoodbestword".to_string(),
+            words: vec![
+                "word".to_string(),
+                "good".to_string(),
+                "best".to_string(),
+                "word".to_string(),
+            ],
         },
         Input {
-            nums: vec![1, 1, 5],
+            s: "barfoofoobarthefoobarman".to_string(),
+            words: vec!["bar".to_string(), "foo".to_string(), "the".to_string()],
+        },
+        Input {
+            s: "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab".to_string(),
+            words: vec!["ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba","ab","ba"].iter().map(|s| s.to_string()).collect(),
         },
     ];
 
     for input in inputs {
-        let mut nums = input.nums;
-        Solution::next_permutation(&mut nums);
-        println!("{:?}", nums);
+        let s = input.s;
+        let words = input.words;
+        let result = Solution::find_substring(s, words);
+        println!("{:?}", result);
     }
 }

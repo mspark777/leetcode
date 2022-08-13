@@ -6,54 +6,60 @@ from __future__ import annotations
 from typing import Optional
 
 class Solution:
-    def nextPermutation(self, nums: list[int]) -> None:
-        """
-        Do not return anything, modify nums in-place instead.
-        """
-        nlen = len(nums)
-        i = nlen - 2
-        while (i >= 0) and (nums[i] >= nums[i + 1]):
-            i -= 1
+    def findSubstring(self, s: str, words: list[str]) -> list[int]:
+        words_len = len(words)
+        word_len = len(words[0])
 
-        if i >= 0:
-            j = nlen - 1
-            while nums[i] >= nums[j]:
-                j -= 1
-            self.swap(nums, i, j)
-        self.reverse(nums, i + 1)
+        result: list[int] = []
+        word_count: dict[str, int] = dict()
+        for word in words:
+            if word not in word_count:
+                word_count[word] = 1
+            else:
+                word_count[word] += 1
 
+        last_window_index = len(s) - (words_len * word_len)
+        for i in range(last_window_index + 1):
+            tword_count = dict(word_count)
 
-    def swap(self, nums: list[int], i: int, j: int) -> None:
-        temp = nums[i]
-        nums[i] = nums[j]
-        nums[j] = temp
+            for j in range(i, len(s), word_len):
+                str = s[j:j+word_len]
+                if str not in tword_count:
+                    break
 
-    def reverse(self, nums: list[int], start: int) -> None:
-        i = start
-        j = len(nums) - 1
-        while i < j:
-            self.swap(nums, i, j)
-            i += 1
-            j -= 1
+                cnt = tword_count[str]
+                if cnt == 0:
+                    break
+                else:
+                    if cnt == 1:
+                        tword_count.pop(str)
+                    else:
+                        tword_count[str] = cnt - 1
+            if len(tword_count) == 0:
+                result.append(i)
+
+        return result
 
 
 class Input:
-    nums: list[int]
+    s: str
+    words: list[str]
 
-    def __init__(self, nums: list[int]):
-        self.nums = nums
+    def __init__(self, s: str, words: list[str]):
+        self.s = s
+        self.words = words
 
 def main():
     inputs: list[Input] = [
-            Input([1, 2, 3]),
-            Input([3, 2, 1]),
-            Input([1, 1, 5]),
+            Input("barfoothefoobarman", ["foo", "bar"]),
+            Input("wordgoodgoodgoodbestword", ["word", "good", "best", "word"]),
+            Input("barfoofoobarthefoobarman", ["bar", "foo", "the"]),
     ]
 
     s = Solution()
     for i in inputs:
-        s.nextPermutation(i.nums)
-        print(i.nums)
+        result = s.findSubstring(i.s, i.words)
+        print(result)
 
 if __name__ == "__main__":
     main()

@@ -4,59 +4,70 @@ import (
 	"fmt"
 )
 
-func swap(nums []int, i, j int) {
-	temp := nums[i]
-	nums[i] = nums[j]
-	nums[j] = temp
-}
+func findSubstring(s string, words []string) []int {
+	wordsLen := len(words)
+	wordLen := len(words[0])
 
-func reverse(nums []int, start int) {
-	i := start
-	j := len(nums) - 1
-	for i < j {
-		swap(nums, i, j)
-		i += 1
-		j -= 1
-	}
-}
-
-func nextPermutation(nums []int) {
-	i := len(nums) - 2
-	for (i >= 0) && (nums[i] >= nums[i+1]) {
-		i -= 1
+	result := []int{}
+	wordCount := make(map[string]int)
+	for _, word := range words {
+		wordCount[word] += 1
 	}
 
-	if i >= 0 {
-		j := len(nums) - 1
-		for nums[i] >= nums[j] {
-			j -= 1
+	lastWindowIndex := len(s) - (wordsLen * wordLen)
+	for i := 0; i <= lastWindowIndex; i += 1 {
+		twordCount := make(map[string]int)
+		for k, v := range wordCount {
+			twordCount[k] = v
 		}
 
-		swap(nums, i, j)
+		for j := i; (j < len(s)) && (len(twordCount) > 0); j += wordLen {
+			str := s[j : j+wordLen]
+			cnt := twordCount[str]
+			if cnt == 0 {
+				break
+			} else {
+				if cnt == 1 {
+					delete(twordCount, str)
+				} else {
+					twordCount[str] = cnt - 1
+				}
+			}
+		}
+
+		if len(twordCount) == 0 {
+			result = append(result, i)
+		}
 	}
-	reverse(nums, i+1)
+
+	return result
 }
 
 type input struct {
-	nums []int
+	s     string
+	words []string
 }
 
 func main() {
 	inputs := []*input{
 		{
-			nums: []int{1, 2, 3},
+			s:     "barfoothefoobarman",
+			words: []string{"foo", "bar"},
 		},
 		{
-			nums: []int{3, 2, 1},
+			s:     "wordgoodgoodgoodbestword",
+			words: []string{"word", "good", "best", "word"},
 		},
 		{
-			nums: []int{1, 1, 5},
+			s:     "barfoofoobarthefoobarman",
+			words: []string{"bar", "foo", "the"},
 		},
 	}
 
 	for _, input := range inputs {
-		nums := input.nums
-		nextPermutation(nums)
-		fmt.Println(nums)
+		s := input.s
+		words := input.words
+		result := findSubstring(s, words)
+		fmt.Println(result)
 	}
 }
