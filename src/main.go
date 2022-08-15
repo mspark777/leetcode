@@ -4,59 +4,58 @@ import (
 	"fmt"
 )
 
-func romanToInt(s string) int {
-	result := 0
-	num := 0
+func reverse(chars []rune) []rune {
+	i := 0
+	j := len(chars) - 1
+	for i < j {
+		temp := chars[i]
+		chars[i] = chars[j]
+		chars[j] = temp
 
-	for i := len(s) - 1; i >= 0; i -= 1 {
-		ch := s[i]
-		switch rune(ch) {
-		case 'I':
-			num = 1
-		case 'V':
-			num = 5
-		case 'X':
-			num = 10
-		case 'L':
-			num = 50
-		case 'C':
-			num = 100
-		case 'D':
-			num = 500
-		case 'M':
-			num = 1000
-		}
-
-		temp := num * 4
-		if temp < result {
-			result -= num
-		} else {
-			result += num
-		}
+		i += 1
+		j -= 1
 	}
 
-	return result
+	return chars
+}
+
+func convertToTitle(columnNumber int) string {
+	n := columnNumber
+	result := []rune{}
+	const ACODE rune = rune('A')
+	const SIZE int = 26
+
+	for n > 0 {
+		n -= 1
+
+		temp := ACODE + rune((n % SIZE))
+		result = append(result, temp)
+
+		n /= SIZE
+	}
+
+	return string(reverse(result))
 }
 
 type input struct {
-	s string
+	columnNumber int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			s: "III",
+			columnNumber: 1,
 		},
 		{
-			s: "LVIII",
+			columnNumber: 28,
 		},
 		{
-			s: "MCMXCIV",
+			columnNumber: 701,
 		},
 	}
 
 	for _, input := range inputs {
-		result := romanToInt(input.s)
+		result := convertToTitle(input.columnNumber)
 		fmt.Println(result)
 	}
 }

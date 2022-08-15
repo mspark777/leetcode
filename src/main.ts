@@ -1,57 +1,40 @@
-function romanToInt (s: string): number {
-  let result = 0
-  let num = 0
-  for (let i = s.length - 1; i >= 0; i -= 1) {
-    switch (s.charAt(i)) {
-      case 'I':
-        num = 1
-        break
-      case 'V':
-        num = 5
-        break
-      case 'X':
-        num = 10
-        break
-      case 'L':
-        num = 50
-        break
-      case 'C':
-        num = 100
-        break
-      case 'D':
-        num = 500
-        break
-      case 'M':
-        num = 1000
-        break
-    }
+function convertToTitle (columnNumber: number): string {
+  let n = BigInt(columnNumber)
+  const result: number[] = []
+  const ACODE = 'A'.charCodeAt(0)
+  const SIZE = 26n
 
-    const temp = num * 4
-    result += temp < result ? -num : num
+  while (n > 0n) {
+    n -= 1n
+
+    const temp = ACODE + Number((n % SIZE))
+    result.push(temp)
+
+    n /= 26n
   }
 
-  return result
+  return String.fromCharCode(...result.reverse())
 }
 
 interface Input {
-  readonly s: string
+  readonly columnNumber: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      s: 'III'
+      columnNumber: 1
     },
     {
-      s: 'LVIII'
+      columnNumber: 28
     },
     {
-      s: 'MCMXCIV'
+      columnNumber: 701
     }
   ]
 
-  for (const { s } of inputs) {
-    const result = romanToInt(s)
+  for (const { columnNumber } of inputs) {
+    const result = convertToTitle(columnNumber)
     console.log(result)
   }
 }

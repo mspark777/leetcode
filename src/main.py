@@ -7,52 +7,42 @@ from typing import Optional
 
 
 class Solution:
-    def romanToInt(self, s: str) -> int:
-        result = 0
-        num = 0
+    def convertToTitle(self, columnNumber: int) -> str:
+        ACODE = ord('A')
+        SIZE = 26
+        n = columnNumber
+        result: list[str] = []
 
-        for ch in reversed(s):
-            if ch == "I":
-                num = 1
-            elif ch == "V":
-                num = 5
-            elif ch == "X":
-                num = 10
-            elif ch == "L":
-                num = 50
-            elif ch == "C":
-                num = 100
-            elif ch == "D":
-                num = 500
-            elif ch == "M":
-                num = 1000
+        while n > 0:
+            n -= 1
 
-            temp = num * 4
-            if temp < result:
-                result -= num
-            else:
-                result += num
+            temp = ACODE + (n % SIZE)
+            result.append(chr(temp))
 
-        return result
+            n //= SIZE
+
+        result.reverse()
+        return "".join(result)
+
 
 
 class Input:
-    s: str
+    columnNumber: int
 
-    def __init__(self, s: str):
-        self.s = s
+    def __init__(self, columnNumber: int):
+        self.columnNumber = columnNumber
 
 
 def main():
     inputs: list[Input] = [
-        Input("III"),
-        Input("LVIII"),
-        Input("MCMXCIV"),
+        Input(1),
+        Input(28),
+        Input(701),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.romanToInt(i.s)
+        result = solution.convertToTitle(i.columnNumber)
         print(result)
 
 

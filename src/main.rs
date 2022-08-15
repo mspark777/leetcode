@@ -1,41 +1,38 @@
 struct Solution {}
 impl Solution {
-    pub fn roman_to_int(s: String) -> i32 {
-        let mut result = 0;
+    pub fn convert_to_title(column_number: i32) -> String {
+        let mut n = column_number;
+        const BASE: i32 = 26;
 
-        for ch in s.bytes().rev() {
-            let num = match ch {
-                b'I' => 1,
-                b'V' => 5,
-                b'X' => 10,
-                b'L' => 50,
-                b'C' => 100,
-                b'D' => 500,
-                b'M' => 1000,
-                _ => 0,
-            };
-            let temp = num * 4;
-            result += if temp < result { -num } else { num };
+        let mut result = Vec::<u8>::new();
+
+        while n > 0 {
+            n -= 1;
+
+            let temp = b'A' + ((n % BASE) as u8);
+            result.push(temp);
+
+            n /= BASE;
         }
 
-        result
+        result.reverse();
+        String::from_utf8(result).expect("No")
     }
 }
 
 struct Input {
-    s: &'static str,
+    column_number: i32,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input { s: "III" },
-        Input { s: "LVIII" },
-        Input { s: "MCMXCIV" },
+        Input { column_number: 1 },
+        Input { column_number: 28 },
+        Input { column_number: 701 },
     ];
 
     for input in inputs {
-        let s = input.s.to_string();
-        let result = Solution::roman_to_int(s);
+        let result = Solution::convert_to_title(input.column_number);
         println!("{:?}", result);
     }
 }

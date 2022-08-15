@@ -1,28 +1,16 @@
 defmodule Solution do
-  @spec roman_to_int(s :: String.t()) :: integer
-  def roman_to_int(s) do
-    s |> String.to_charlist() |> Enum.reverse() |> roman_to_int(0)
+  @spec convert_to_title(column_number :: integer) :: String.t()
+  def convert_to_title(column_number), do: convert_to_title(column_number, [])
+
+  @spec convert_to_title(n :: integer, result :: [char]) :: String.t()
+  def convert_to_title(n, result) when n > 0 do
+    n = n - 1
+    base = 26
+    temp = ?A + rem(n, base)
+    convert_to_title(div(n, base), [temp | result])
   end
 
-  @spec roman_to_int(s :: [char], result :: integer) :: integer
-  def roman_to_int([ch | chars], result) do
-    case ch do
-      ?I -> roman_to_int(chars, calc(result, 1))
-      ?V -> roman_to_int(chars, calc(result, 5))
-      ?X -> roman_to_int(chars, calc(result, 10))
-      ?L -> roman_to_int(chars, calc(result, 50))
-      ?C -> roman_to_int(chars, calc(result, 100))
-      ?D -> roman_to_int(chars, calc(result, 500))
-      ?M -> roman_to_int(chars, calc(result, 1000))
-      _ -> roman_to_int(chars, calc(result, 0))
-    end
-  end
-
-  def roman_to_int([], result), do: result
-
-  @spec calc(result :: integer, num :: integer) :: integer
-  def calc(result, num) when num * 4 < result, do: result - num
-  def calc(result, num), do: result + num
+  def convert_to_title(_, result), do: to_string(result)
 end
 
 defmodule Main do
@@ -30,13 +18,13 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        s: "III"
+        column_number: 1
       },
       %{
-        s: "LVIII"
+        column_number: 28
       },
       %{
-        s: "MCMXCIV"
+        column_number: 701
       }
     ]
 
@@ -45,8 +33,8 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    s = input.s
-    result = Solution.roman_to_int(s)
+    n = input.column_number
+    result = Solution.convert_to_title(n)
     IO.puts(result)
     main(remains)
   end
