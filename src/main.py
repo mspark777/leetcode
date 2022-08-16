@@ -3,37 +3,37 @@ main
 """
 
 from __future__ import annotations
-from collections import Counter
 from typing import Optional
 
 
 class Solution:
-    def firstUniqChar(self, s: str) -> int:
-        counter = Counter(s)
+    def majorityElement(self, nums: list[int]) -> int:
+        count = 0
+        candidate = nums[0]
 
-        for i, ch in enumerate(s):
-            if counter[ch] == 1:
-                return i
-        return -1
+        for num in nums:
+            if count < 1:
+                candidate = num
+            count += 1 if num == candidate else -1
+        return candidate
 
 
 class Input:
-    s: str
+    nums: list[int]
 
-    def __init__(self, s: str):
-        self.s = s
+    def __init__(self, nums: list[int]):
+        self.nums = nums
 
 
 def main():
     inputs: list[Input] = [
-        Input("leetcode"),
-        Input("loveleetcode"),
-        Input("aabb"),
+        Input([3, 2, 3]),
+        Input([2, 2, 1, 1, 1, 2, 2]),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.firstUniqChar(i.s)
+        result = solution.majorityElement(i.nums)
         print(result)
 
 

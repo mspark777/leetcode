@@ -4,41 +4,41 @@ import (
 	"fmt"
 )
 
-func firstUniqChar(s string) int {
-	memo := make(map[rune]int)
+func majorityElement(nums []int) int {
+	count := 0
+	candidate := nums[0]
 
-	for _, ch := range s {
-		memo[ch] = memo[ch] + 1
-	}
+	for _, num := range nums {
+		if count < 1 {
+			candidate = num
+		}
 
-	for i, ch := range s {
-		if memo[ch] == 1 {
-			return i
+		if num == candidate {
+			count += 1
+		} else {
+			count -= 1
 		}
 	}
 
-	return -1
+	return candidate
 }
 
 type input struct {
-	s string
+	nums []int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			s: "leetcode",
+			nums: []int{3, 2, 3},
 		},
 		{
-			s: "loveleetcode",
-		},
-		{
-			s: "aabb",
+			nums: []int{2, 2, 1, 1, 1, 2, 2},
 		},
 	}
 
 	for _, input := range inputs {
-		result := firstUniqChar(input.s)
+		result := majorityElement(input.nums)
 		fmt.Println(result)
 	}
 }

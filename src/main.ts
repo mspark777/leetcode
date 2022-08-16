@@ -1,39 +1,34 @@
-function firstUniqChar (s: string): number {
-  const memo = new Map<string, number>()
+function majorityElement (nums: number[]): number {
+  let count = 0
+  let candidate = nums[0]
 
-  for (const ch of s) {
-    const cnt = memo.get(ch) ?? 0
-    memo.set(ch, cnt + 1)
-  }
-
-  for (let i = 0; i < s.length; i += 1) {
-    const ch = s.charAt(i)
-    if (memo.get(ch) === 1) {
-      return i
+  for (const num of nums) {
+    if (count < 1) {
+      candidate = num
     }
+
+    count += (num === candidate) ? 1 : -1
   }
 
-  return -1
+  return candidate
 }
+
 interface Input {
-  readonly s: string
+  readonly nums: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      s: 'leetcode'
+      nums: [3, 2, 3]
     },
     {
-      s: 'loveleetcode'
-    },
-    {
-      s: 'aabb'
+      nums: [2, 2, 1, 1, 1, 2, 2]
     }
   ]
 
-  for (const { s } of inputs) {
-    const result = firstUniqChar(s)
+  for (const { nums } of inputs) {
+    const result = majorityElement(nums)
     console.log(result)
   }
 }

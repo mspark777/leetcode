@@ -1,38 +1,37 @@
 struct Solution {}
 impl Solution {
-    pub fn first_uniq_char(s: String) -> i32 {
-        const ACODE: u8 = b'a';
-        let mut memo = vec![0; 26];
+    pub fn majority_element(nums: Vec<i32>) -> i32 {
+        let mut count = 0;
+        let mut candidate = 0;
 
-        for ch in s.bytes() {
-            let i = (ch - ACODE) as usize;
-            memo[i] += 1;
-        }
-
-        for (i, ch) in s.bytes().enumerate() {
-            let j = (ch - ACODE) as usize;
-            if memo[j] == 1 {
-                return i as i32;
+        for num in nums {
+            if count < 1 {
+                candidate = num;
             }
+
+            count += if num == candidate { 1 } else { -1 }
         }
 
-        -1
+        candidate
     }
 }
 
 struct Input {
-    s: &'static str,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input { s: "leetcode" },
-        Input { s: "loveleetcode" },
-        Input { s: "aabb" },
+        Input {
+            nums: vec![3, 2, 3],
+        },
+        Input {
+            nums: vec![2, 2, 1, 1, 1, 2, 2],
+        },
     ];
 
     for input in inputs {
-        let result = Solution::first_uniq_char(input.s.to_string());
+        let result = Solution::majority_element(input.nums);
         println!("{:?}", result);
     }
 }

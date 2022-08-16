@@ -1,28 +1,16 @@
 defmodule Solution do
-  @spec first_uniq_char(s :: String.t()) :: integer
-  def first_uniq_char(s) do
-    chars = String.to_charlist(s)
-    memo = count(chars, %{})
-    check(chars, memo, 0)
+  @spec majority_element(nums :: [integer]) :: integer
+  def majority_element(nums), do: majority_element(nums, 0, 0)
+
+  @spec majority_element(nums :: [integer], count :: integer, candidate :: integer) :: integer
+  defp majority_element([num | nums], count, candidate) do
+    new_candidate = if count < 1, do: num, else: candidate
+    new_count = if num == new_candidate, do: count + 1, else: count - 1
+
+    majority_element(nums, new_count, new_candidate)
   end
 
-  @spec count(char :: [char], memo :: %{char => integer}) :: %{char => integer}
-  defp count([ch | chars], memo) do
-    cnt = Map.get(memo, ch, 0)
-    count(chars, Map.put(memo, ch, cnt + 1))
-  end
-
-  defp count([], memo), do: memo
-
-  @spec check(char :: [char], memo :: %{char => integer}, i :: integer) :: integer
-  defp check([ch | chars], memo, i) do
-    case Map.get(memo, ch) do
-      1 -> i
-      _ -> check(chars, memo, i + 1)
-    end
-  end
-
-  defp check([], _, _), do: -1
+  defp majority_element([], _, candidate), do: candidate
 end
 
 defmodule Main do
@@ -30,13 +18,10 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        s: "leetcode"
+        nums: [3, 2, 3]
       },
       %{
-        s: "loveleetcode"
-      },
-      %{
-        s: "aabb"
+        nums: [2, 2, 1, 1, 1, 2, 2]
       }
     ]
 
@@ -45,8 +30,8 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    s = input.s
-    result = Solution.first_uniq_char(s)
+    nums = input.nums
+    result = Solution.majority_element(nums)
     IO.puts(result)
     main(remains)
   end
