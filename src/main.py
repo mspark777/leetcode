@@ -3,46 +3,37 @@ main
 """
 
 from __future__ import annotations
+from collections import Counter
 from typing import Optional
 
 
 class Solution:
-    def convertToTitle(self, columnNumber: int) -> str:
-        ACODE = ord('A')
-        SIZE = 26
-        n = columnNumber
-        result: list[str] = []
+    def firstUniqChar(self, s: str) -> int:
+        counter = Counter(s)
 
-        while n > 0:
-            n -= 1
-
-            temp = ACODE + (n % SIZE)
-            result.append(chr(temp))
-
-            n //= SIZE
-
-        result.reverse()
-        return "".join(result)
-
+        for i, ch in enumerate(s):
+            if counter[ch] == 1:
+                return i
+        return -1
 
 
 class Input:
-    columnNumber: int
+    s: str
 
-    def __init__(self, columnNumber: int):
-        self.columnNumber = columnNumber
+    def __init__(self, s: str):
+        self.s = s
 
 
 def main():
     inputs: list[Input] = [
-        Input(1),
-        Input(28),
-        Input(701),
+        Input("leetcode"),
+        Input("loveleetcode"),
+        Input("aabb"),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.convertToTitle(i.columnNumber)
+        result = solution.firstUniqChar(i.s)
         print(result)
 
 

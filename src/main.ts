@@ -1,40 +1,39 @@
-function convertToTitle (columnNumber: number): string {
-  let n = BigInt(columnNumber)
-  const result: number[] = []
-  const ACODE = 'A'.charCodeAt(0)
-  const SIZE = 26n
+function firstUniqChar (s: string): number {
+  const memo = new Map<string, number>()
 
-  while (n > 0n) {
-    n -= 1n
-
-    const temp = ACODE + Number((n % SIZE))
-    result.push(temp)
-
-    n /= 26n
+  for (const ch of s) {
+    const cnt = memo.get(ch) ?? 0
+    memo.set(ch, cnt + 1)
   }
 
-  return String.fromCharCode(...result.reverse())
-}
+  for (let i = 0; i < s.length; i += 1) {
+    const ch = s.charAt(i)
+    if (memo.get(ch) === 1) {
+      return i
+    }
+  }
 
+  return -1
+}
 interface Input {
-  readonly columnNumber: number
+  readonly s: string
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      columnNumber: 1
+      s: 'leetcode'
     },
     {
-      columnNumber: 28
+      s: 'loveleetcode'
     },
     {
-      columnNumber: 701
+      s: 'aabb'
     }
   ]
 
-  for (const { columnNumber } of inputs) {
-    const result = convertToTitle(columnNumber)
+  for (const { s } of inputs) {
+    const result = firstUniqChar(s)
     console.log(result)
   }
 }

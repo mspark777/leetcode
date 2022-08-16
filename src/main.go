@@ -4,58 +4,41 @@ import (
 	"fmt"
 )
 
-func reverse(chars []rune) []rune {
-	i := 0
-	j := len(chars) - 1
-	for i < j {
-		temp := chars[i]
-		chars[i] = chars[j]
-		chars[j] = temp
+func firstUniqChar(s string) int {
+	memo := make(map[rune]int)
 
-		i += 1
-		j -= 1
+	for _, ch := range s {
+		memo[ch] = memo[ch] + 1
 	}
 
-	return chars
-}
-
-func convertToTitle(columnNumber int) string {
-	n := columnNumber
-	result := []rune{}
-	const ACODE rune = rune('A')
-	const SIZE int = 26
-
-	for n > 0 {
-		n -= 1
-
-		temp := ACODE + rune((n % SIZE))
-		result = append(result, temp)
-
-		n /= SIZE
+	for i, ch := range s {
+		if memo[ch] == 1 {
+			return i
+		}
 	}
 
-	return string(reverse(result))
+	return -1
 }
 
 type input struct {
-	columnNumber int
+	s string
 }
 
 func main() {
 	inputs := []*input{
 		{
-			columnNumber: 1,
+			s: "leetcode",
 		},
 		{
-			columnNumber: 28,
+			s: "loveleetcode",
 		},
 		{
-			columnNumber: 701,
+			s: "aabb",
 		},
 	}
 
 	for _, input := range inputs {
-		result := convertToTitle(input.columnNumber)
+		result := firstUniqChar(input.s)
 		fmt.Println(result)
 	}
 }

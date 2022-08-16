@@ -1,16 +1,28 @@
 defmodule Solution do
-  @spec convert_to_title(column_number :: integer) :: String.t()
-  def convert_to_title(column_number), do: convert_to_title(column_number, [])
-
-  @spec convert_to_title(n :: integer, result :: [char]) :: String.t()
-  def convert_to_title(n, result) when n > 0 do
-    n = n - 1
-    base = 26
-    temp = ?A + rem(n, base)
-    convert_to_title(div(n, base), [temp | result])
+  @spec first_uniq_char(s :: String.t()) :: integer
+  def first_uniq_char(s) do
+    chars = String.to_charlist(s)
+    memo = count(chars, %{})
+    check(chars, memo, 0)
   end
 
-  def convert_to_title(_, result), do: to_string(result)
+  @spec count(char :: [char], memo :: %{char => integer}) :: %{char => integer}
+  defp count([ch | chars], memo) do
+    cnt = Map.get(memo, ch, 0)
+    count(chars, Map.put(memo, ch, cnt + 1))
+  end
+
+  defp count([], memo), do: memo
+
+  @spec check(char :: [char], memo :: %{char => integer}, i :: integer) :: integer
+  defp check([ch | chars], memo, i) do
+    case Map.get(memo, ch) do
+      1 -> i
+      _ -> check(chars, memo, i + 1)
+    end
+  end
+
+  defp check([], _, _), do: -1
 end
 
 defmodule Main do
@@ -18,13 +30,13 @@ defmodule Main do
   def main() do
     inputs = [
       %{
-        column_number: 1
+        s: "leetcode"
       },
       %{
-        column_number: 28
+        s: "loveleetcode"
       },
       %{
-        column_number: 701
+        s: "aabb"
       }
     ]
 
@@ -33,8 +45,8 @@ defmodule Main do
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    n = input.column_number
-    result = Solution.convert_to_title(n)
+    s = input.s
+    result = Solution.first_uniq_char(s)
     IO.puts(result)
     main(remains)
   end

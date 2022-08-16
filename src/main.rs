@@ -1,38 +1,38 @@
 struct Solution {}
 impl Solution {
-    pub fn convert_to_title(column_number: i32) -> String {
-        let mut n = column_number;
-        const BASE: i32 = 26;
+    pub fn first_uniq_char(s: String) -> i32 {
+        const ACODE: u8 = b'a';
+        let mut memo = vec![0; 26];
 
-        let mut result = Vec::<u8>::new();
-
-        while n > 0 {
-            n -= 1;
-
-            let temp = b'A' + ((n % BASE) as u8);
-            result.push(temp);
-
-            n /= BASE;
+        for ch in s.bytes() {
+            let i = (ch - ACODE) as usize;
+            memo[i] += 1;
         }
 
-        result.reverse();
-        String::from_utf8(result).expect("No")
+        for (i, ch) in s.bytes().enumerate() {
+            let j = (ch - ACODE) as usize;
+            if memo[j] == 1 {
+                return i as i32;
+            }
+        }
+
+        -1
     }
 }
 
 struct Input {
-    column_number: i32,
+    s: &'static str,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input { column_number: 1 },
-        Input { column_number: 28 },
-        Input { column_number: 701 },
+        Input { s: "leetcode" },
+        Input { s: "loveleetcode" },
+        Input { s: "aabb" },
     ];
 
     for input in inputs {
-        let result = Solution::convert_to_title(input.column_number);
+        let result = Solution::first_uniq_char(input.s.to_string());
         println!("{:?}", result);
     }
 }
