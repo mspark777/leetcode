@@ -1,45 +1,70 @@
-/**
- * @param {number} n
- * @return {boolean}
- */
-function next (n) {
-  let result = 0n
-  for (let i = BigInt(n); i > 0n; i /= 10n) {
-    const d = i % 10n
-    result += d * d
+class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
   }
-
-  return Number(result)
 }
 
 /**
- * @param {number} n
- * @return {boolean}
+ * @param {ListNode} head
+ * @param {number} val
+ * @return {ListNode}
  */
-function isHappy (n) {
-  let slow = n
-  let fast = next(n)
-  while ((fast !== 1) && (slow !== fast)) {
-    slow = next(slow)
-    fast = next(next(fast))
+function removeElements (head, val) {
+  const dummy = new ListNode(-1, head)
+  let cur = dummy
+
+  while (cur != null) {
+    while ((cur.next != null) && (cur.next.val === val)) {
+      cur.next = cur.next.next
+    }
+
+    cur = cur.next
   }
 
-  return fast === 1
+  return dummy.next
+}
+
+function arrtolist (nums) {
+  const head = new ListNode()
+  let tail = head
+  for (const num of nums) {
+    tail.next = new ListNode(num)
+    tail = tail.next
+  }
+
+  return head.next
+}
+
+function listtoarr (node) {
+  const nums = []
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
+  }
+
+  return nums
 }
 
 async function main () {
   const inputs = [
     {
-      n: 19
+      val: 6,
+      head: arrtolist([1, 2, 6, 3, 4, 5, 6])
     },
     {
-      n: 2
+      val: 1,
+      head: arrtolist([])
+    },
+    {
+      val: 7,
+      head: arrtolist([7, 7, 7, 7])
     }
   ]
 
-  for (const { n } of inputs) {
-    const result = isHappy(n)
-    console.log(result)
+  for (const { head, val } of inputs) {
+    const result = removeElements(head, val)
+    console.log(listtoarr(result))
   }
 }
 

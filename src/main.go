@@ -4,46 +4,72 @@ import (
 	"fmt"
 )
 
-func getNext(n int) int {
-	result := 0
-	for n > 0 {
-		d := n % 10
-		result += d * d
-		n /= 10
-	}
-
-	return result
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-func isHappy(n int) bool {
-	slow := n
-	fast := getNext(n)
+func removeElements(head *ListNode, val int) *ListNode {
+	dummy := &ListNode{Val: -1, Next: head}
+	cur := dummy
+	for cur != nil {
+		for (cur.Next != nil) && (cur.Next.Val == val) {
+			cur.Next = cur.Next.Next
+		}
 
-	for (fast != 1) && (slow != fast) {
-		slow = getNext(slow)
-		fast = getNext(getNext(fast))
+		cur = cur.Next
 	}
 
-	return fast == 1
+	return dummy.Next
 }
 
 type input struct {
-	n int
+	head *ListNode
+	val  int
+}
+
+func arrToList(nums []int) *ListNode {
+	head := &ListNode{}
+	tail := head
+
+	for _, num := range nums {
+		tail.Next = &ListNode{Val: num}
+		tail = tail.Next
+	}
+
+	return head.Next
+}
+
+func listToArr(node *ListNode) []int {
+	nums := []int{}
+	for node != nil {
+		nums = append(nums, node.Val)
+		node = node.Next
+	}
+
+	return nums
 }
 
 func main() {
 	inputs := []*input{
 		{
-			n: 19,
+			val:  6,
+			head: arrToList([]int{1, 2, 6, 3, 4, 5, 6}),
 		},
 		{
-			n: 2,
+			val:  1,
+			head: arrToList([]int{}),
+		},
+		{
+			val:  7,
+			head: arrToList([]int{7, 7, 7, 7}),
 		},
 	}
 
 	for _, input := range inputs {
-		n := input.n
-		result := isHappy(n)
-		fmt.Println(result)
+		head := input.head
+		val := input.val
+		result := removeElements(head, val)
+		fmt.Println(listToArr(result))
 	}
 }
