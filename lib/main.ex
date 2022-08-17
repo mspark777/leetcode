@@ -1,11 +1,24 @@
 defmodule Solution do
-  @spec title_to_number(column_title :: String.t()) :: integer
-  def title_to_number(column_title) do
-    column_title
-    |> String.to_charlist()
-    |> Enum.map(&(&1 - ?A + 1))
-    |> Enum.reduce(&(&2 * 26 + &1))
+  @spec is_happy(n :: integer) :: boolean
+  def is_happy(n), do: is_happy(n, get_next(n, 0))
+
+  @spec is_happy(slow :: integer, fast :: integer) :: boolean
+  defp is_happy(slow, fast) when fast != 1 and slow != fast do
+    nslow = get_next(slow, 0)
+    nfast = fast |> get_next(0) |> get_next(0)
+
+    is_happy(nslow, nfast)
   end
+
+  defp is_happy(_, fast), do: fast == 1
+
+  @spec get_next(n :: integer, result :: integer) :: integer
+  defp get_next(n, result) when n > 0 do
+    d = rem(n, 10)
+    get_next(div(n, 10), result + d * d)
+  end
+
+  defp get_next(_, result), do: result
 end
 
 defmodule Main do
@@ -13,21 +26,18 @@ defmodule Main do
   def main() do
     main([
       %{
-        column_title: "A"
+        n: 19
       },
       %{
-        column_title: "AB"
-      },
-      %{
-        column_title: "ZY"
+        n: 2
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    column_title = input.column_title
-    result = Solution.title_to_number(column_title)
+    n = input.n
+    result = Solution.is_happy(n)
     IO.puts(result)
     main(remains)
   end

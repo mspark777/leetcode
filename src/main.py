@@ -7,14 +7,24 @@ from typing import Optional
 
 
 class Solution:
-    def reverseBits(self, n: int) -> int:
-        n = ((n & 0xFFFF0000) >> 16) | ((n & 0x0000FFFF) << 16)
-        n = ((n & 0xFF00FF00) >> 8) | ((n & 0x00FF00FF) << 8)
-        n = ((n & 0xF0F0F0F0) >> 4) | ((n & 0x0F0F0F0F) << 4)
-        n = ((n & 0xCCCCCCCC) >> 2) | ((n & 0x33333333) << 2)
-        n = ((n & 0xAAAAAAAA) >> 1) | ((n & 0x55555555) << 1)
+    def isHappy(self, n: int) -> bool:
+        slow = n
+        fast = self.next(n)
 
-        return n
+        while (fast != 1) and (slow != fast):
+            slow = self.next(slow)
+            fast = self.next(self.next(fast))
+
+        return fast == 1
+
+    def next(self, n: int) -> int:
+        result = 0
+        while n > 0:
+            d = n % 10
+            result += d * d
+            n //= 10
+
+        return result
 
 
 class Input:
@@ -26,13 +36,13 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-        Input(43261596),
-        Input(4294967293),
+        Input(19),
+        Input(2),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.reverseBits(i.n)
+        result = solution.isHappy(i.n)
         print(result)
 
 

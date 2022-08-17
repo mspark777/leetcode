@@ -1,12 +1,22 @@
-function reverseBits (n: number): number {
-  let i = BigInt(n)
-  i = ((i & BigInt(0xffff0000)) >> 16n) | ((i & BigInt(0x0000ffff)) << 16n)
-  i = ((i & BigInt(0xff00ff00)) >> 8n) | ((i & BigInt(0x00ff00ff)) << 8n)
-  i = ((i & BigInt(0xf0f0f0f0)) >> 4n) | ((i & BigInt(0x0f0f0f0f)) << 4n)
-  i = ((i & BigInt(0xcccccccc)) >> 2n) | ((i & BigInt(0x33333333)) << 2n)
-  i = ((i & BigInt(0xaaaaaaaa)) >> 1n) | ((i & BigInt(0x55555555)) << 1n)
+function next (n: number): number {
+  let result = 0n
+  for (let i = BigInt(n); i > 0n; i /= 10n) {
+    const d = i % 10n
+    result += d * d
+  }
 
-  return Number(i)
+  return Number(result)
+}
+
+function isHappy (n: number): boolean {
+  let slow = n
+  let fast = next(n)
+  while ((fast !== 1) && (slow !== fast)) {
+    slow = next(slow)
+    fast = next(next(fast))
+  }
+
+  return fast === 1
 }
 
 interface Input {
@@ -16,15 +26,15 @@ interface Input {
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      n: 43261596
+      n: 19
     },
     {
-      n: 4294967293
+      n: 2
     }
   ]
 
   for (const { n } of inputs) {
-    const result = reverseBits(n)
+    const result = isHappy(n)
     console.log(result)
   }
 }

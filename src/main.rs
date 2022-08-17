@@ -1,27 +1,43 @@
 struct Solution {}
 impl Solution {
-    pub fn reverse_bits(x: u32) -> u32 {
-        let mut num = x;
-        num = ((num & 0xFFFF0000) >> 16) | ((num & 0x0000FFFF) << 16);
-        num = ((num & 0xFF00FF00) >> 8) | ((num & 0x00FF00FF) << 8);
-        num = ((num & 0xF0F0F0F0) >> 4) | ((num & 0x0F0F0F0F) << 4);
-        num = ((num & 0xCCCCCCCC) >> 2) | ((num & 0x33333333) << 2);
-        num = ((num & 0xAAAAAAAA) >> 1) | ((num & 0x55555555) << 1);
+    pub fn is_happy(n: i32) -> bool {
+        let mut slow = n;
+        let mut fast = Self::get_next(n);
 
-        num
+        while (fast != 1) && (slow != fast) {
+            slow = Self::get_next(slow);
+            fast = Self::get_next(fast);
+            fast = Self::get_next(fast);
+        }
+
+        fast == 1
+    }
+
+    #[inline]
+    fn get_next(n: i32) -> i32 {
+        let mut n = n;
+        let mut result = 0;
+
+        while n > 0 {
+            let d = n % 10;
+            result += d * d;
+            n /= 10;
+        }
+
+        result
     }
 }
 
 struct Input {
-    x: u32,
+    n: i32,
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![Input { x: 43261596 }, Input { x: 4294967293 }];
+    let inputs: Vec<Input> = vec![Input { n: 19 }, Input { n: 2 }];
 
     for input in inputs {
-        let x = input.x;
-        let result = Solution::reverse_bits(x);
+        let n = input.n;
+        let result = Solution::is_happy(n);
         println!("{:?}", result);
     }
 }

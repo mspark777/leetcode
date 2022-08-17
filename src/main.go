@@ -4,33 +4,46 @@ import (
 	"fmt"
 )
 
-func reverseBits(num uint32) uint32 {
-	num = ((num & 0xFFFF0000) >> 16) | ((num & 0x0000FFFF) << 16)
-	num = ((num & 0xFF00FF00) >> 8) | ((num & 0x00FF00FF) << 8)
-	num = ((num & 0xF0F0F0F0) >> 4) | ((num & 0x0F0F0F0F) << 4)
-	num = ((num & 0xCCCCCCCC) >> 2) | ((num & 0x33333333) << 2)
-	num = ((num & 0xAAAAAAAA) >> 1) | ((num & 0x55555555) << 1)
+func getNext(n int) int {
+	result := 0
+	for n > 0 {
+		d := n % 10
+		result += d * d
+		n /= 10
+	}
 
-	return num
+	return result
+}
+
+func isHappy(n int) bool {
+	slow := n
+	fast := getNext(n)
+
+	for (fast != 1) && (slow != fast) {
+		slow = getNext(slow)
+		fast = getNext(getNext(fast))
+	}
+
+	return fast == 1
 }
 
 type input struct {
-	n uint32
+	n int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			n: 43261596,
+			n: 19,
 		},
 		{
-			n: 4294967293,
+			n: 2,
 		},
 	}
 
 	for _, input := range inputs {
 		n := input.n
-		result := reverseBits(n)
+		result := isHappy(n)
 		fmt.Println(result)
 	}
 }
