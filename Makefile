@@ -20,3 +20,6 @@ py:
 ex:
 	mix clean
 	mix run
+
+sh:
+	${SHELL} src/main.sh
