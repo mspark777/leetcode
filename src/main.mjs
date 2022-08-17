@@ -1,33 +1,30 @@
 /**
- * @param {string} columnTitle
- * @return {number}
+ * @param {number} n - a positive integer
+ * @return {number} - a positive integer
  */
-function titleToNumber (columnTitle) {
-  const factor = 'A'.charCodeAt(0) - 1
-  let result = 0
-  for (let i = 0; i < columnTitle.length; i += 1) {
-    const code = columnTitle.charCodeAt(i)
-    result = result * 26 + (code - factor)
-  }
+function reverseBits (n) {
+  let i = BigInt(n)
+  i = ((i & BigInt(0xffff0000)) >> 16n) | ((i & BigInt(0x0000ffff)) << 16n)
+  i = ((i & BigInt(0xff00ff00)) >> 8n) | ((i & BigInt(0x00ff00ff)) << 8n)
+  i = ((i & BigInt(0xf0f0f0f0)) >> 4n) | ((i & BigInt(0x0f0f0f0f)) << 4n)
+  i = ((i & BigInt(0xcccccccc)) >> 2n) | ((i & BigInt(0x33333333)) << 2n)
+  i = ((i & BigInt(0xaaaaaaaa)) >> 1n) | ((i & BigInt(0x55555555)) << 1n)
 
-  return result
+  return Number(i)
 }
 
 async function main () {
   const inputs = [
     {
-      columnTitle: 'A'
+      n: 43261596
     },
     {
-      columnTitle: 'AB'
-    },
-    {
-      columnTitle: 'ZY'
+      n: 4294967293
     }
   ]
 
-  for (const { columnTitle } of inputs) {
-    const result = titleToNumber(columnTitle)
+  for (const { n } of inputs) {
+    const result = reverseBits(n)
     console.log(result)
   }
 }

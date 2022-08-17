@@ -7,34 +7,32 @@ from typing import Optional
 
 
 class Solution:
-    def titleToNumber(self, columnTitle: str) -> int:
-        factor = ord("A") - 1
-        result = 0
+    def reverseBits(self, n: int) -> int:
+        n = ((n & 0xFFFF0000) >> 16) | ((n & 0x0000FFFF) << 16)
+        n = ((n & 0xFF00FF00) >> 8) | ((n & 0x00FF00FF) << 8)
+        n = ((n & 0xF0F0F0F0) >> 4) | ((n & 0x0F0F0F0F) << 4)
+        n = ((n & 0xCCCCCCCC) >> 2) | ((n & 0x33333333) << 2)
+        n = ((n & 0xAAAAAAAA) >> 1) | ((n & 0x55555555) << 1)
 
-        for ch in columnTitle:
-            code = ord(ch)
-            result = result * 26 + (code - factor)
-
-        return result
+        return n
 
 
 class Input:
-    columnTitle: str
+    n: int
 
-    def __init__(self, columnTitle: str):
-        self.columnTitle = columnTitle
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
     inputs: list[Input] = [
-        Input("A"),
-        Input("AB"),
-        Input("ZY"),
+        Input(43261596),
+        Input(4294967293),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.titleToNumber(i.columnTitle)
+        result = solution.reverseBits(i.n)
         print(result)
 
 

@@ -4,38 +4,33 @@ import (
 	"fmt"
 )
 
-func titleToNumber(columnTitle string) int {
-	factor := rune('A') - 1
-	result := 0
+func reverseBits(num uint32) uint32 {
+	num = ((num & 0xFFFF0000) >> 16) | ((num & 0x0000FFFF) << 16)
+	num = ((num & 0xFF00FF00) >> 8) | ((num & 0x00FF00FF) << 8)
+	num = ((num & 0xF0F0F0F0) >> 4) | ((num & 0x0F0F0F0F) << 4)
+	num = ((num & 0xCCCCCCCC) >> 2) | ((num & 0x33333333) << 2)
+	num = ((num & 0xAAAAAAAA) >> 1) | ((num & 0x55555555) << 1)
 
-	for _, code := range columnTitle {
-		diff := int(code - factor)
-		result = result*26 + diff
-	}
-
-	return result
+	return num
 }
 
 type input struct {
-	columnTitle string
+	n uint32
 }
 
 func main() {
 	inputs := []*input{
 		{
-			columnTitle: "A",
+			n: 43261596,
 		},
 		{
-			columnTitle: "AB",
-		},
-		{
-			columnTitle: "ZY",
+			n: 4294967293,
 		},
 	}
 
 	for _, input := range inputs {
-		columnTitle := input.columnTitle
-		result := titleToNumber(columnTitle)
+		n := input.n
+		result := reverseBits(n)
 		fmt.Println(result)
 	}
 }
