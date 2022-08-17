@@ -2,43 +2,49 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func majorityElement(nums []int) int {
-	count := 0
-	candidate := nums[0]
-
-	for _, num := range nums {
-		if count < 1 {
-			candidate = num
-		}
-
-		if num == candidate {
-			count += 1
-		} else {
-			count -= 1
-		}
+func uniqueMorseRepresentations(words []string) int {
+	morses := []string{
+		".-", "-...", "-.-.", "-..", ".", "..-.", "--.",
+		"....", "..", ".---", "-.-", ".-..", "--", "-.",
+		"---", ".--.", "--.-", ".-.", "...", "-", "..-",
+		"...-", ".--", "-..-", "-.--", "--..",
 	}
 
-	return candidate
+	seen := make(map[string]bool)
+	for _, word := range words {
+		codes := []string{}
+		for _, ch := range word {
+			i := ch - rune('a')
+			codes = append(codes, morses[i])
+		}
+
+		morse := strings.Join(codes, "")
+		seen[morse] = true
+	}
+
+	return len(seen)
 }
 
 type input struct {
-	nums []int
+	words []string
 }
 
 func main() {
 	inputs := []*input{
 		{
-			nums: []int{3, 2, 3},
+			words: []string{"gin", "zen", "gig", "msg"},
 		},
 		{
-			nums: []int{2, 2, 1, 1, 1, 2, 2},
+			words: []string{"a"},
 		},
 	}
 
 	for _, input := range inputs {
-		result := majorityElement(input.nums)
+		words := input.words
+		result := uniqueMorseRepresentations(words)
 		fmt.Println(result)
 	}
 }

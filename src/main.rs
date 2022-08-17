@@ -1,37 +1,45 @@
+use std::collections::HashSet;
+
 struct Solution {}
 impl Solution {
-    pub fn majority_element(nums: Vec<i32>) -> i32 {
-        let mut count = 0;
-        let mut candidate = 0;
+    pub fn unique_morse_representations(words: Vec<String>) -> i32 {
+        let morses = vec![
+            ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..",
+            "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
+            "-.--", "--..",
+        ];
 
-        for num in nums {
-            if count < 1 {
-                candidate = num;
+        let mut seen = HashSet::<String>::new();
+        for word in words.iter() {
+            let mut codes = Vec::<String>::new();
+            for ch in word.bytes() {
+                let i = (ch - b'a') as usize;
+                codes.push(morses[i].to_string());
             }
 
-            count += if num == candidate { 1 } else { -1 }
+            let morse = codes.join("");
+            seen.insert(morse);
         }
 
-        candidate
+        return seen.len() as i32;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    words: Vec<&'static str>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            nums: vec![3, 2, 3],
+            words: vec!["gin", "zen", "gig", "msg"],
         },
-        Input {
-            nums: vec![2, 2, 1, 1, 1, 2, 2],
-        },
+        Input { words: vec!["a"] },
     ];
 
     for input in inputs {
-        let result = Solution::majority_element(input.nums);
+        let words: Vec<String> = input.words.iter().map(|w| w.to_string()).collect();
+        let result = Solution::unique_morse_representations(words);
         println!("{:?}", result);
     }
 }

@@ -7,33 +7,55 @@ from typing import Optional
 
 
 class Solution:
-    def majorityElement(self, nums: list[int]) -> int:
-        count = 0
-        candidate = nums[0]
-
-        for num in nums:
-            if count < 1:
-                candidate = num
-            count += 1 if num == candidate else -1
-        return candidate
+    def uniqueMorseRepresentations(self, words: list[str]) -> int:
+        codes = [
+            ".-",
+            "-...",
+            "-.-.",
+            "-..",
+            ".",
+            "..-.",
+            "--.",
+            "....",
+            "..",
+            ".---",
+            "-.-",
+            ".-..",
+            "--",
+            "-.",
+            "---",
+            ".--.",
+            "--.-",
+            ".-.",
+            "...",
+            "-",
+            "..-",
+            "...-",
+            ".--",
+            "-..-",
+            "-.--",
+            "--..",
+        ]
+        seen = {"".join([codes[ord(ch) - ord("a")] for ch in word]) for word in words}
+        return len(seen)
 
 
 class Input:
-    nums: list[int]
+    words: list[str]
 
-    def __init__(self, nums: list[int]):
-        self.nums = nums
+    def __init__(self, words: list[str]):
+        self.words = words
 
 
 def main():
     inputs: list[Input] = [
-        Input([3, 2, 3]),
-        Input([2, 2, 1, 1, 1, 2, 2]),
+        Input(["gin", "zen", "gig", "msg"]),
+        Input(["a"]),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.majorityElement(i.nums)
+        result = solution.uniqueMorseRepresentations(i.words)
         print(result)
 
 

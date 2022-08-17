@@ -1,34 +1,40 @@
 /**
- * @param {number[]} nums
+ * @param {string[]} words
  * @return {number}
  */
-function majorityElement (nums) {
-  let count = 0
-  let candidate = nums[0]
-
-  for (const num of nums) {
-    if (count < 1) {
-      candidate = num
+function uniqueMorseRepresentations (words) {
+  const codes = [
+    '.-', '-...', '-.-.', '-..', '.', '..-.', '--.', '....', '..', '.---', '-.-',
+    '.-..', '--', '-.', '---', '.--.', '--.-', '.-.', '...', '-', '..-', '...-',
+    '.--', '-..-', '-.--', '--..'
+  ]
+  const acode = 'a'.charCodeAt(0)
+  const seen = new Set()
+  for (const word of words) {
+    const wcodes = []
+    for (let i = 0; i < word.length; i += 1) {
+      const j = word.charCodeAt(i) - acode
+      wcodes.push(codes[j])
     }
 
-    count += (num === candidate) ? 1 : -1
+    seen.add(wcodes.join(''))
   }
 
-  return candidate
+  return seen.size
 }
 
 async function main () {
   const inputs = [
     {
-      nums: [3, 2, 3]
+      words: ['gin', 'zen', 'gig', 'msg']
     },
     {
-      nums: [2, 2, 1, 1, 1, 2, 2]
+      words: ['a']
     }
   ]
 
-  for (const { nums } of inputs) {
-    const result = majorityElement(nums)
+  for (const { words } of inputs) {
+    const result = uniqueMorseRepresentations(words)
     console.log(result)
   }
 }

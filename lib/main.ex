@@ -1,44 +1,48 @@
 defmodule Solution do
-  @spec majority_element(nums :: [integer]) :: integer
-  def majority_element(nums), do: majority_element(nums, 0, 0)
+  @morses {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..",
+           "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
+           "-.--", "--.."}
 
-  @spec majority_element(nums :: [integer], count :: integer, candidate :: integer) :: integer
-  defp majority_element([num | nums], count, candidate) do
-    new_candidate = if count < 1, do: num, else: candidate
-    new_count = if num == new_candidate, do: count + 1, else: count - 1
-
-    majority_element(nums, new_count, new_candidate)
+  @spec unique_morse_representations(words :: [String.t()]) :: integer
+  def unique_morse_representations(words) do
+    words
+    |> Enum.map(&String.to_charlist/1)
+    |> Enum.map(&to_morse(&1, []))
+    |> MapSet.new()
+    |> MapSet.size()
   end
 
-  defp majority_element([], _, candidate), do: candidate
+  @spec to_morse(word :: [char], codes :: [String.t()]) :: String.t()
+  defp to_morse([ch | word], codes) do
+    code = elem(@morses, ch - ?a)
+    to_morse(word, [code | codes])
+  end
+
+  defp to_morse([], codes), do: codes |> Enum.reverse() |> Enum.join("")
 end
 
 defmodule Main do
   @spec main() :: nil
   def main() do
-    inputs = [
+    main([
       %{
-        nums: [3, 2, 3]
+        words: ["gin", "zen", "gig", "msg"]
       },
       %{
-        nums: [2, 2, 1, 1, 1, 2, 2]
+        words: ["a"]
       }
-    ]
-
-    main(inputs)
+    ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    nums = input.nums
-    result = Solution.majority_element(nums)
+    words = input.words
+    result = Solution.unique_morse_representations(words)
     IO.puts(result)
     main(remains)
   end
 
-  def main([]) do
-    nil
-  end
+  def main([]), do: nil
 end
 
 Main.main()
