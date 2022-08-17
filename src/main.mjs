@@ -1,40 +1,33 @@
 /**
- * @param {string[]} words
+ * @param {string} columnTitle
  * @return {number}
  */
-function uniqueMorseRepresentations (words) {
-  const codes = [
-    '.-', '-...', '-.-.', '-..', '.', '..-.', '--.', '....', '..', '.---', '-.-',
-    '.-..', '--', '-.', '---', '.--.', '--.-', '.-.', '...', '-', '..-', '...-',
-    '.--', '-..-', '-.--', '--..'
-  ]
-  const acode = 'a'.charCodeAt(0)
-  const seen = new Set()
-  for (const word of words) {
-    const wcodes = []
-    for (let i = 0; i < word.length; i += 1) {
-      const j = word.charCodeAt(i) - acode
-      wcodes.push(codes[j])
-    }
-
-    seen.add(wcodes.join(''))
+function titleToNumber (columnTitle) {
+  const factor = 'A'.charCodeAt(0) - 1
+  let result = 0
+  for (let i = 0; i < columnTitle.length; i += 1) {
+    const code = columnTitle.charCodeAt(i)
+    result = result * 26 + (code - factor)
   }
 
-  return seen.size
+  return result
 }
 
 async function main () {
   const inputs = [
     {
-      words: ['gin', 'zen', 'gig', 'msg']
+      columnTitle: 'A'
     },
     {
-      words: ['a']
+      columnTitle: 'AB'
+    },
+    {
+      columnTitle: 'ZY'
     }
   ]
 
-  for (const { words } of inputs) {
-    const result = uniqueMorseRepresentations(words)
+  for (const { columnTitle } of inputs) {
+    const result = titleToNumber(columnTitle)
     console.log(result)
   }
 }

@@ -1,45 +1,32 @@
-use std::collections::HashSet;
-
 struct Solution {}
 impl Solution {
-    pub fn unique_morse_representations(words: Vec<String>) -> i32 {
-        let morses = vec![
-            ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..",
-            "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
-            "-.--", "--..",
-        ];
+    pub fn title_to_number(column_title: String) -> i32 {
+        const FACTOR: u8 = b'A' - 1;
+        let mut result = 0;
 
-        let mut seen = HashSet::<String>::new();
-        for word in words.iter() {
-            let mut codes = Vec::<String>::new();
-            for ch in word.bytes() {
-                let i = (ch - b'a') as usize;
-                codes.push(morses[i].to_string());
-            }
-
-            let morse = codes.join("");
-            seen.insert(morse);
+        for code in column_title.as_bytes() {
+            let diff = (code - FACTOR) as i32;
+            result = result * 26 + diff;
         }
 
-        return seen.len() as i32;
+        result
     }
 }
 
 struct Input {
-    words: Vec<&'static str>,
+    column_title: &'static str,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input {
-            words: vec!["gin", "zen", "gig", "msg"],
-        },
-        Input { words: vec!["a"] },
+        Input { column_title: "A" },
+        Input { column_title: "AB" },
+        Input { column_title: "ZY" },
     ];
 
     for input in inputs {
-        let words: Vec<String> = input.words.iter().map(|w| w.to_string()).collect();
-        let result = Solution::unique_morse_representations(words);
+        let column_title = input.column_title.to_string();
+        let result = Solution::title_to_number(column_title);
         println!("{:?}", result);
     }
 }

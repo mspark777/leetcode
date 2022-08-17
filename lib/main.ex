@@ -1,24 +1,11 @@
 defmodule Solution do
-  @morses {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..",
-           "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
-           "-.--", "--.."}
-
-  @spec unique_morse_representations(words :: [String.t()]) :: integer
-  def unique_morse_representations(words) do
-    words
-    |> Enum.map(&String.to_charlist/1)
-    |> Enum.map(&to_morse(&1, []))
-    |> MapSet.new()
-    |> MapSet.size()
+  @spec title_to_number(column_title :: String.t()) :: integer
+  def title_to_number(column_title) do
+    column_title
+    |> String.to_charlist()
+    |> Enum.map(&(&1 - ?A + 1))
+    |> Enum.reduce(&(&2 * 26 + &1))
   end
-
-  @spec to_morse(word :: [char], codes :: [String.t()]) :: String.t()
-  defp to_morse([ch | word], codes) do
-    code = elem(@morses, ch - ?a)
-    to_morse(word, [code | codes])
-  end
-
-  defp to_morse([], codes), do: codes |> Enum.reverse() |> Enum.join("")
 end
 
 defmodule Main do
@@ -26,18 +13,21 @@ defmodule Main do
   def main() do
     main([
       %{
-        words: ["gin", "zen", "gig", "msg"]
+        column_title: "A"
       },
       %{
-        words: ["a"]
+        column_title: "AB"
+      },
+      %{
+        column_title: "ZY"
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    words = input.words
-    result = Solution.unique_morse_representations(words)
+    column_title = input.column_title
+    result = Solution.title_to_number(column_title)
     IO.puts(result)
     main(remains)
   end

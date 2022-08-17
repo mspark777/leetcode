@@ -2,49 +2,40 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func uniqueMorseRepresentations(words []string) int {
-	morses := []string{
-		".-", "-...", "-.-.", "-..", ".", "..-.", "--.",
-		"....", "..", ".---", "-.-", ".-..", "--", "-.",
-		"---", ".--.", "--.-", ".-.", "...", "-", "..-",
-		"...-", ".--", "-..-", "-.--", "--..",
+func titleToNumber(columnTitle string) int {
+	factor := rune('A') - 1
+	result := 0
+
+	for _, code := range columnTitle {
+		diff := int(code - factor)
+		result = result*26 + diff
 	}
 
-	seen := make(map[string]bool)
-	for _, word := range words {
-		codes := []string{}
-		for _, ch := range word {
-			i := ch - rune('a')
-			codes = append(codes, morses[i])
-		}
-
-		morse := strings.Join(codes, "")
-		seen[morse] = true
-	}
-
-	return len(seen)
+	return result
 }
 
 type input struct {
-	words []string
+	columnTitle string
 }
 
 func main() {
 	inputs := []*input{
 		{
-			words: []string{"gin", "zen", "gig", "msg"},
+			columnTitle: "A",
 		},
 		{
-			words: []string{"a"},
+			columnTitle: "AB",
+		},
+		{
+			columnTitle: "ZY",
 		},
 	}
 
 	for _, input := range inputs {
-		words := input.words
-		result := uniqueMorseRepresentations(words)
+		columnTitle := input.columnTitle
+		result := titleToNumber(columnTitle)
 		fmt.Println(result)
 	}
 }
