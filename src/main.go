@@ -2,74 +2,52 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
-
-func removeElements(head *ListNode, val int) *ListNode {
-	dummy := &ListNode{Val: -1, Next: head}
-	cur := dummy
-	for cur != nil {
-		for (cur.Next != nil) && (cur.Next.Val == val) {
-			cur.Next = cur.Next.Next
-		}
-
-		cur = cur.Next
+func minSetSize(arr []int) int {
+	freqs := make(map[int]int)
+	for _, num := range arr {
+		freqs[num] += 1
 	}
 
-	return dummy.Next
+	pqueue := []int{}
+	for _, freq := range freqs {
+		pqueue = append(pqueue, freq)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(pqueue)))
+
+	deleted := 0
+	result := 0
+	half := len(arr) / 2
+	for _, freq := range pqueue {
+		deleted += freq
+		result += 1
+		if deleted >= half {
+			return result
+		}
+	}
+
+	return -1
 }
 
 type input struct {
-	head *ListNode
-	val  int
-}
-
-func arrToList(nums []int) *ListNode {
-	head := &ListNode{}
-	tail := head
-
-	for _, num := range nums {
-		tail.Next = &ListNode{Val: num}
-		tail = tail.Next
-	}
-
-	return head.Next
-}
-
-func listToArr(node *ListNode) []int {
-	nums := []int{}
-	for node != nil {
-		nums = append(nums, node.Val)
-		node = node.Next
-	}
-
-	return nums
+	arr []int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			val:  6,
-			head: arrToList([]int{1, 2, 6, 3, 4, 5, 6}),
+			arr: []int{3, 3, 3, 3, 5, 5, 5, 2, 2, 7},
 		},
 		{
-			val:  1,
-			head: arrToList([]int{}),
-		},
-		{
-			val:  7,
-			head: arrToList([]int{7, 7, 7, 7}),
+			arr: []int{7, 7, 7, 7, 7, 7},
 		},
 	}
 
 	for _, input := range inputs {
-		head := input.head
-		val := input.val
-		result := removeElements(head, val)
-		fmt.Println(listToArr(result))
+		arr := input.arr
+		result := minSetSize(arr)
+		fmt.Println(result)
 	}
 }

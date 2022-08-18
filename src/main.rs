@@ -1,84 +1,62 @@
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub struct ListNode {
-    pub val: i32,
-    pub next: Option<Box<ListNode>>,
-}
+use std::collections::HashMap;
 
 struct Solution {}
 impl Solution {
-    pub fn remove_elements(head: Option<Box<ListNode>>, val: i32) -> Option<Box<ListNode>> {
-        let mut dummy = Box::new(ListNode {
-            val: -1,
-            next: head,
-        });
-        let mut cur = dummy.as_mut();
+    pub fn min_set_size(arr: Vec<i32>) -> i32 {
+        let freqs = {
+            let mut freqs = HashMap::<i32, i32>::new();
+            for n in arr.iter() {
+                if let Some(freq) = freqs.get_mut(n) {
+                    *freq += 1;
+                } else {
+                    freqs.insert(*n, 1);
+                }
+            }
+            freqs
+        };
 
-        while let Some(ncur) = cur.next.take() {
-            if ncur.val == val {
-                cur.next = ncur.next;
-            } else {
-                cur.next = Some(ncur);
-                cur = cur.next.as_mut().unwrap();
+        let pqueue = {
+            let mut q: Vec<i32> = freqs.values().map(|f| *f).collect();
+            q.sort_unstable_by(|a, b| b.cmp(a));
+            q
+        };
+
+        let mut deleted = 0;
+        let mut result = 0;
+        let half = (arr.len() / 2) as i32;
+        for freq in pqueue {
+            deleted += freq;
+            result += 1;
+
+            if deleted >= half {
+                return result;
             }
         }
 
-        dummy.next
+        -1
     }
 }
 
 struct Input {
-    head: Option<Box<ListNode>>,
-    val: i32,
-}
-
-fn arr_to_list(nums: Vec<i32>) -> Option<Box<ListNode>> {
-    let mut head = Box::new(ListNode { val: 0, next: None });
-    let mut tail = &mut head;
-
-    for num in nums {
-        tail.next = Some(Box::new(ListNode {
-            val: num,
-            next: None,
-        }));
-        tail = tail.next.as_mut().unwrap();
-    }
-
-    head.next
-}
-
-fn list_to_arr(node: Option<Box<ListNode>>) -> Vec<i32> {
-    let mut node = node;
-    let mut nums = Vec::<i32>::new();
-
-    while let Some(n) = node {
-        nums.push(n.val);
-        node = n.next;
-    }
-
-    nums
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            val: 6,
-            head: arr_to_list(vec![1, 2, 6, 3, 4, 5, 6]),
+            arr: vec![3, 3, 3, 3, 5, 5, 5, 2, 2, 7],
         },
         Input {
-            val: 1,
-            head: arr_to_list(vec![]),
+            arr: vec![7, 7, 7, 7, 7, 7],
         },
         Input {
-            val: 7,
-            head: arr_to_list(vec![7, 7, 7, 7]),
+            arr: vec![9, 77, 63, 22, 92, 9, 14, 54, 8, 38, 18, 19, 38, 68, 58, 19],
         },
     ];
 
     for input in inputs {
-        let val = input.val;
-        let head = input.head;
-        let result = Solution::remove_elements(head, val);
-        let result = list_to_arr(result);
+        let arr = input.arr;
+        let result = Solution::min_set_size(arr);
         println!("{:?}", result);
     }
 }

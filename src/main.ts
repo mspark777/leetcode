@@ -1,72 +1,46 @@
-class ListNode {
-  val: number
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
+function minSetSize (arr: number[]): number {
+  const freqs = new Map<number, number>()
+  for (const num of arr) {
+    const freq = freqs.get(num) ?? 0
+    freqs.set(num, freq + 1)
   }
-}
+  const pqueue: number[] = []
+  for (const freq of freqs.values()) {
+    pqueue.push(freq)
+  }
+  pqueue.sort((a, b) => b - a)
 
-function removeElements (head: ListNode | null, val: number): ListNode | null {
-  const dummy = new ListNode(-1, head)
-  let cur: ListNode | null = dummy
-
-  while (cur != null) {
-    while ((cur.next != null) && (cur.next.val === val)) {
-      cur.next = cur.next.next
+  let deleted = 0
+  let result = 0
+  const half = Math.trunc(arr.length / 2)
+  for (const freq of pqueue) {
+    deleted += freq
+    result += 1
+    if (deleted >= half) {
+      return result
     }
-
-    cur = cur.next
   }
 
-  return dummy.next
+  return -1
 }
 
 interface Input {
-  readonly head: ListNode | null
-  readonly val: number
-}
-
-function arrtolist (nums: number[]): ListNode | null {
-  const head = new ListNode()
-  let tail = head
-  for (const num of nums) {
-    tail.next = new ListNode(num)
-    tail = tail.next
-  }
-
-  return head.next
-}
-
-function listtoarr (node: ListNode | null): number[] {
-  const nums: number[] = []
-  while (node != null) {
-    nums.push(node.val)
-    node = node.next
-  }
-
-  return nums
+  readonly arr: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      val: 6,
-      head: arrtolist([1, 2, 6, 3, 4, 5, 6])
+      arr: [3, 3, 3, 3, 5, 5, 5, 2, 2, 7]
     },
     {
-      val: 1,
-      head: arrtolist([])
-    },
-    {
-      val: 7,
-      head: arrtolist([7, 7, 7, 7])
+      arr: [7, 7, 7, 7, 7, 7]
     }
   ]
 
-  for (const { head, val } of inputs) {
-    const result = removeElements(head, val)
-    console.log(listtoarr(result))
+  for (const { arr } of inputs) {
+    const result = minSetSize(arr)
+    console.log(result)
   }
 }
 

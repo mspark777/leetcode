@@ -4,67 +4,43 @@ main
 
 from __future__ import annotations
 from typing import Optional
-
-
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
+from collections import Counter
 
 
 class Solution:
-    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
-        dummy = ListNode(-1, head)
-        cur = dummy
+    def minSetSize(self, arr: list[int]) -> int:
+        freqs = Counter(arr)
+        pqueue = [x for x in freqs.values()]
+        pqueue.sort(reverse=True)
 
-        while cur is not None:
-            while (cur.next is not None) and (cur.next.val == val):
-                cur.next = cur.next.next
-            cur = cur.next
-        return dummy.next
+        deleted = 0
+        result = 0
+        half = len(arr) // 2
+        for freq in pqueue:
+            deleted += freq
+            result += 1
+            if deleted >= half:
+                return result
+        return -1
 
 
 class Input:
-    nums: list[int]
-    val: int
+    arr: list[int]
 
-    def __init__(self, nums: list[int], val: int):
-        self.nums = nums
-        self.val = val
-
-    def to_list(self) -> Optional[ListNode]:
-        head = ListNode()
-        tail = head
-
-        for num in self.nums:
-            tail.next = ListNode(num)
-            tail = tail.next
-
-        return head.next
-
-    def to_arr(self, head: Optional[ListNode]) -> list[int]:
-        nums: list[int] = []
-        while head is not None:
-            nums.append(head.val)
-            head = head.next
-
-        return nums
+    def __init__(self, arr: list[int]):
+        self.arr = arr
 
 
 def main():
     inputs: list[Input] = [
-        Input([1, 2, 6, 3, 4, 5, 6], 6),
-        Input([], 1),
-        Input([7, 7, 7, 7], 7),
+        Input([3, 3, 3, 3, 5, 5, 5, 2, 2, 7]),
+        Input([7, 7, 7, 7, 7, 7]),
     ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.removeElements(i.to_list(), i.val)
-        print(i.to_arr(result))
+        result = solution.minSetSize(i.arr)
+        print(result)
 
 
 if __name__ == "__main__":

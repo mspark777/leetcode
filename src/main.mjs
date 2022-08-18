@@ -1,70 +1,46 @@
-class ListNode {
-  constructor (val, next) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
-  }
-}
-
 /**
- * @param {ListNode} head
- * @param {number} val
- * @return {ListNode}
+ * @param {number[]} arr
+ * @return {number}
  */
-function removeElements (head, val) {
-  const dummy = new ListNode(-1, head)
-  let cur = dummy
+function minSetSize (arr) {
+  const freqs = new Map()
+  for (const num of arr) {
+    const freq = freqs.get(num) ?? 0
+    freqs.set(num, freq + 1)
+  }
+  const pqueue = []
+  for (const freq of freqs.values()) {
+    pqueue.push(freq)
+  }
+  pqueue.sort((a, b) => b - a)
 
-  while (cur != null) {
-    while ((cur.next != null) && (cur.next.val === val)) {
-      cur.next = cur.next.next
+  let deleted = 0
+  let result = 0
+  const half = Math.trunc(arr.length / 2)
+  for (const freq of pqueue) {
+    deleted += freq
+    result += 1
+    if (deleted >= half) {
+      return result
     }
-
-    cur = cur.next
   }
 
-  return dummy.next
-}
-
-function arrtolist (nums) {
-  const head = new ListNode()
-  let tail = head
-  for (const num of nums) {
-    tail.next = new ListNode(num)
-    tail = tail.next
-  }
-
-  return head.next
-}
-
-function listtoarr (node) {
-  const nums = []
-  while (node != null) {
-    nums.push(node.val)
-    node = node.next
-  }
-
-  return nums
+  return -1
 }
 
 async function main () {
   const inputs = [
     {
-      val: 6,
-      head: arrtolist([1, 2, 6, 3, 4, 5, 6])
+      arr: [3, 3, 3, 3, 5, 5, 5, 2, 2, 7]
     },
     {
-      val: 1,
-      head: arrtolist([])
-    },
-    {
-      val: 7,
-      head: arrtolist([7, 7, 7, 7])
+      arr: [7, 7, 7, 7, 7, 7]
     }
   ]
 
-  for (const { head, val } of inputs) {
-    const result = removeElements(head, val)
-    console.log(listtoarr(result))
+  for (const { arr } of inputs) {
+    const result = minSetSize(arr)
+    console.log(result)
   }
 }
 
