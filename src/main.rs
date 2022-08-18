@@ -2,61 +2,50 @@ use std::collections::HashMap;
 
 struct Solution {}
 impl Solution {
-    pub fn min_set_size(arr: Vec<i32>) -> i32 {
-        let freqs = {
-            let mut freqs = HashMap::<i32, i32>::new();
-            for n in arr.iter() {
-                if let Some(freq) = freqs.get_mut(n) {
-                    *freq += 1;
-                } else {
-                    freqs.insert(*n, 1);
-                }
-            }
-            freqs
-        };
+    pub fn is_isomorphic(s: String, t: String) -> bool {
+        return Self::transform(&s) == Self::transform(&t);
+    }
 
-        let pqueue = {
-            let mut q: Vec<i32> = freqs.values().map(|f| *f).collect();
-            q.sort_unstable_by(|a, b| b.cmp(a));
-            q
-        };
+    fn transform(s: &String) -> String {
+        let bytes = s.as_bytes();
+        let bytes_len = bytes.len();
+        let mut index_mapping = HashMap::<u8, usize>::with_capacity(bytes_len);
+        let mut result = Vec::<String>::with_capacity(bytes_len);
 
-        let mut deleted = 0;
-        let mut result = 0;
-        let half = (arr.len() / 2) as i32;
-        for freq in pqueue {
-            deleted += freq;
-            result += 1;
+        for i in 0..bytes_len {
+            let ch = bytes[i];
 
-            if deleted >= half {
-                return result;
+            if let Some(idx) = index_mapping.get(&ch) {
+                result.push(idx.to_string());
+            } else {
+                index_mapping.insert(ch, i);
+                result.push(i.to_string());
             }
         }
 
-        -1
+        result.join(" ")
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    s: &'static str,
+    t: &'static str,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
+        Input { s: "egg", t: "add" },
+        Input { s: "foo", t: "bar" },
         Input {
-            arr: vec![3, 3, 3, 3, 5, 5, 5, 2, 2, 7],
-        },
-        Input {
-            arr: vec![7, 7, 7, 7, 7, 7],
-        },
-        Input {
-            arr: vec![9, 77, 63, 22, 92, 9, 14, 54, 8, 38, 18, 19, 38, 68, 58, 19],
+            s: "paper",
+            t: "title",
         },
     ];
 
     for input in inputs {
-        let arr = input.arr;
-        let result = Solution::min_set_size(arr);
+        let s = input.s.to_string();
+        let t = input.t.to_string();
+        let result = Solution::is_isomorphic(s, t);
         println!("{:?}", result);
     }
 }

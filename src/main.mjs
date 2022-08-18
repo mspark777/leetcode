@@ -1,45 +1,47 @@
-/**
- * @param {number[]} arr
- * @return {number}
- */
-function minSetSize (arr) {
-  const freqs = new Map()
-  for (const num of arr) {
-    const freq = freqs.get(num) ?? 0
-    freqs.set(num, freq + 1)
-  }
-  const pqueue = []
-  for (const freq of freqs.values()) {
-    pqueue.push(freq)
-  }
-  pqueue.sort((a, b) => b - a)
+function transform (s) {
+  const result = new Array(s.length)
+  const indexMapping = new Map()
+  for (let i = 0; i < s.length; i += 1) {
+    const ch = s.charAt(i)
 
-  let deleted = 0
-  let result = 0
-  const half = Math.trunc(arr.length / 2)
-  for (const freq of pqueue) {
-    deleted += freq
-    result += 1
-    if (deleted >= half) {
-      return result
+    if (!indexMapping.has(ch)) {
+      indexMapping.set(ch, i)
     }
+
+    const idx = indexMapping.get(ch)
+    result[i] = idx
   }
 
-  return -1
+  return result.join(' ')
+}
+
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+function isIsomorphic (s, t) {
+  return transform(s) === transform(t)
 }
 
 async function main () {
   const inputs = [
     {
-      arr: [3, 3, 3, 3, 5, 5, 5, 2, 2, 7]
+      s: 'egg',
+      t: 'add'
     },
     {
-      arr: [7, 7, 7, 7, 7, 7]
+      s: 'foo',
+      t: 'bar'
+    },
+    {
+      s: 'paper',
+      t: 'title'
     }
   ]
 
-  for (const { arr } of inputs) {
-    const result = minSetSize(arr)
+  for (const { s, t } of inputs) {
+    const result = isIsomorphic(s, t)
     console.log(result)
   }
 }

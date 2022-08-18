@@ -2,52 +2,53 @@ package main
 
 import (
 	"fmt"
-	"sort"
+	"strings"
 )
 
-func minSetSize(arr []int) int {
-	freqs := make(map[int]int)
-	for _, num := range arr {
-		freqs[num] += 1
-	}
+func transform(s string) string {
+	result := make([]string, len(s))
+	indexMapping := make(map[rune]int)
 
-	pqueue := []int{}
-	for _, freq := range freqs {
-		pqueue = append(pqueue, freq)
-	}
-	sort.Sort(sort.Reverse(sort.IntSlice(pqueue)))
-
-	deleted := 0
-	result := 0
-	half := len(arr) / 2
-	for _, freq := range pqueue {
-		deleted += freq
-		result += 1
-		if deleted >= half {
-			return result
+	for i, ch := range s {
+		if _, ok := indexMapping[ch]; !ok {
+			indexMapping[ch] = i
 		}
+
+		result[i] = fmt.Sprint(indexMapping[ch])
 	}
 
-	return -1
+	return strings.Join(result, " ")
+}
+
+func isIsomorphic(s string, t string) bool {
+	return transform(s) == transform(t)
 }
 
 type input struct {
-	arr []int
+	s string
+	t string
 }
 
 func main() {
 	inputs := []*input{
 		{
-			arr: []int{3, 3, 3, 3, 5, 5, 5, 2, 2, 7},
+			s: "egg",
+			t: "add",
 		},
 		{
-			arr: []int{7, 7, 7, 7, 7, 7},
+			s: "foo",
+			t: "bar",
+		},
+		{
+			s: "paper",
+			t: "title",
 		},
 	}
 
 	for _, input := range inputs {
-		arr := input.arr
-		result := minSetSize(arr)
+		s := input.s
+		t := input.t
+		result := isIsomorphic(s, t)
 		fmt.Println(result)
 	}
 }

@@ -1,22 +1,29 @@
 defmodule Solution do
-  @spec min_set_size(arr :: [integer]) :: integer
-  def min_set_size(arr) do
-    half = length(arr) |> div(2)
+  @type chlist :: [{char, integer}]
+  @type index_map :: %{optional(char) => integer}
 
-    arr
-    |> Enum.frequencies()
-    |> Map.values()
-    |> Enum.sort(&(&1 >= &2))
+  @spec is_isomorphic(s :: String.t(), t :: String.t()) :: boolean
+  def is_isomorphic(s, t), do: transform(s) == transform(t)
+
+  @spec transform(s :: String.t()) :: String.t()
+  defp transform(s) do
+    s
+    |> String.to_charlist()
     |> Enum.with_index()
-    |> Enum.reduce_while(0, &reduce(&1, &2, half))
+    |> transform(%{}, [])
   end
 
-  @spec reduce(w :: {integer, integer}, acc :: integer, half :: integer) :: {atom, integer}
-  defp reduce({freq, idx}, acc, half) do
-    deleted = acc + freq
-
-    if deleted >= half, do: {:halt, idx + 1}, else: {:cont, deleted}
+  @spec transform(s :: chlist, mapping :: index_map, result :: [integer]) :: String.t()
+  defp transform([{ch, idx} | s], mapping, result) do
+    if Map.has_key?(mapping, ch) do
+      i = Map.get(mapping, ch)
+      transform(s, mapping, [i | result])
+    else
+      transform(s, Map.put(mapping, ch, idx), [idx | result])
+    end
   end
+
+  defp transform([], _, result), do: Enum.join(result, " ")
 end
 
 defmodule Main do
@@ -24,18 +31,25 @@ defmodule Main do
   def main() do
     main([
       %{
-        arr: [3, 3, 3, 3, 5, 5, 5, 2, 2, 7]
+        s: "egg",
+        t: "add"
       },
       %{
-        arr: [7, 7, 7, 7, 7, 7]
+        s: "foo",
+        t: "bar"
+      },
+      %{
+        s: "paper",
+        t: "title"
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    arr = input.arr
-    result = Solution.min_set_size(arr)
+    s = input.s
+    t = input.t
+    result = Solution.is_isomorphic(s, t)
     IO.puts(result)
     main(remains)
   end
