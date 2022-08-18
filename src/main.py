@@ -7,42 +7,28 @@ from typing import Optional
 
 
 class Solution:
-    def isIsomorphic(self, s: str, t: str) -> bool:
-        return self.transform(s) == self.transform(t)
-
-    def transform(self, s: str) -> str:
-        index_mapping: dict[str, int] = {}
-        result: list[str] = []
-
-        for i, ch in enumerate(s):
-            if ch not in index_mapping:
-                index_mapping[ch] = i
-            result.append(str(index_mapping[ch]))
-
-        return " ".join(result)
+    def isPowerOfTwo(self, n: int) -> bool:
+        return n & (n - 1) == 0 if n > 0 else False
 
 
 class Input:
-    s: str
-    t: str
+    n: int
 
-    def __init__(self, s: str, t: str):
-        self.s = s
-        self.t = t
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
     inputs: list[Input] = [
-        Input("egg", "add"),
-        Input("foo", "bar"),
-        Input("paper", "title"),
+        Input(1),
+        Input(16),
+        Input(3),
     ]
 
     solution = Solution()
     for i in inputs:
-        s = i.s
-        t = i.t
-        result = solution.isIsomorphic(s, t)
+        n = i.n
+        result = solution.isPowerOfTwo(i.n)
         print(result)
 
 

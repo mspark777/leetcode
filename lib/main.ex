@@ -1,29 +1,9 @@
 defmodule Solution do
-  @type chlist :: [{char, integer}]
-  @type index_map :: %{optional(char) => integer}
+  use Bitwise
 
-  @spec is_isomorphic(s :: String.t(), t :: String.t()) :: boolean
-  def is_isomorphic(s, t), do: transform(s) == transform(t)
-
-  @spec transform(s :: String.t()) :: String.t()
-  defp transform(s) do
-    s
-    |> String.to_charlist()
-    |> Enum.with_index()
-    |> transform(%{}, [])
-  end
-
-  @spec transform(s :: chlist, mapping :: index_map, result :: [integer]) :: String.t()
-  defp transform([{ch, idx} | s], mapping, result) do
-    if Map.has_key?(mapping, ch) do
-      i = Map.get(mapping, ch)
-      transform(s, mapping, [i | result])
-    else
-      transform(s, Map.put(mapping, ch, idx), [idx | result])
-    end
-  end
-
-  defp transform([], _, result), do: Enum.join(result, " ")
+  @spec is_power_of_two(n :: integer) :: boolean
+  def is_power_of_two(n) when n > 0, do: (n &&& n - 1) == 0
+  def is_power_of_two(_), do: false
 end
 
 defmodule Main do
@@ -31,25 +11,21 @@ defmodule Main do
   def main() do
     main([
       %{
-        s: "egg",
-        t: "add"
+        n: 1
       },
       %{
-        s: "foo",
-        t: "bar"
+        n: 16
       },
       %{
-        s: "paper",
-        t: "title"
+        n: 3
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    s = input.s
-    t = input.t
-    result = Solution.is_isomorphic(s, t)
+    n = input.n
+    result = Solution.is_power_of_two(n)
     IO.puts(result)
     main(remains)
   end

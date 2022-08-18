@@ -1,47 +1,27 @@
-function transform (s) {
-  const result = new Array(s.length)
-  const indexMapping = new Map()
-  for (let i = 0; i < s.length; i += 1) {
-    const ch = s.charAt(i)
-
-    if (!indexMapping.has(ch)) {
-      indexMapping.set(ch, i)
-    }
-
-    const idx = indexMapping.get(ch)
-    result[i] = idx
-  }
-
-  return result.join(' ')
-}
-
 /**
- * @param {string} s
- * @param {string} t
+ * @param {number} n
  * @return {boolean}
  */
-function isIsomorphic (s, t) {
-  return transform(s) === transform(t)
+function isPowerOfTwo (n) {
+  const b = BigInt(n)
+  return b <= 0 ? false : (b & (b - 1n)) === 0n
 }
 
 async function main () {
   const inputs = [
     {
-      s: 'egg',
-      t: 'add'
+      n: 1
     },
     {
-      s: 'foo',
-      t: 'bar'
+      n: 16
     },
     {
-      s: 'paper',
-      t: 'title'
+      n: 3
     }
   ]
 
-  for (const { s, t } of inputs) {
-    const result = isIsomorphic(s, t)
+  for (const { n } of inputs) {
+    const result = isPowerOfTwo(n)
     console.log(result)
   }
 }

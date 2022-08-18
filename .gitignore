@@ -8,6 +8,7 @@ erl_crash.dump
 leetcode-*.tar
 /tmp/
 /.vscode
+*.class
 
 /target
 /node_modules

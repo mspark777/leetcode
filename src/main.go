@@ -2,53 +2,36 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func transform(s string) string {
-	result := make([]string, len(s))
-	indexMapping := make(map[rune]int)
-
-	for i, ch := range s {
-		if _, ok := indexMapping[ch]; !ok {
-			indexMapping[ch] = i
-		}
-
-		result[i] = fmt.Sprint(indexMapping[ch])
+func isPowerOfTwo(n int) bool {
+	if n <= 0 {
+		return false
 	}
 
-	return strings.Join(result, " ")
-}
-
-func isIsomorphic(s string, t string) bool {
-	return transform(s) == transform(t)
+	return (n & (n - 1)) == 0
 }
 
 type input struct {
-	s string
-	t string
+	n int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			s: "egg",
-			t: "add",
+			n: 1,
 		},
 		{
-			s: "foo",
-			t: "bar",
+			n: 16,
 		},
 		{
-			s: "paper",
-			t: "title",
+			n: 3,
 		},
 	}
 
 	for _, input := range inputs {
-		s := input.s
-		t := input.t
-		result := isIsomorphic(s, t)
+		n := input.n
+		result := isPowerOfTwo(n)
 		fmt.Println(result)
 	}
 }
