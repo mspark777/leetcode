@@ -23,3 +23,9 @@ ex:
 
 sh:
 	${SHELL} src/main.sh
+
+java:
+	java src/main.java
+
+kt:
+	./gradlew run
