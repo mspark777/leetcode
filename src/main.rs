@@ -1,45 +1,18 @@
-use std::collections::HashMap;
-
 struct Solution {}
 impl Solution {
-    pub fn is_possible(nums: Vec<i32>) -> bool {
-        let mut counts = HashMap::<i32, i32>::with_capacity(nums.len());
+    pub fn move_zeroes(nums: &mut Vec<i32>) {
+        let mut last_zero = 0;
 
-        for num in nums.iter() {
-            let count = counts.entry(*num).or_default();
-            *count += 1;
-        }
-
-        for num in nums.iter() {
-            let mut left = if let Some(cnt) = counts.get(&num) {
-                *cnt
-            } else {
-                0
-            };
-
-            if left == 0 {
-                continue;
-            }
-
-            let mut count = 0;
-            let mut cur = *num;
-            while let Some(cnt) = counts.get(&cur) {
-                if *cnt < left {
-                    break;
-                }
-
-                left = *cnt;
-                *counts.entry(cur).or_default() -= 1;
-                count += 1;
-                cur += 1;
-            }
-
-            if count < 3 {
-                return false;
+        for i in 0..nums.len() {
+            if nums[i] != 0 {
+                nums[last_zero] = nums[i];
+                last_zero += 1;
             }
         }
 
-        true
+        for i in last_zero..nums.len() {
+            nums[i] = 0;
+        }
     }
 }
 
@@ -50,19 +23,14 @@ struct Input {
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            nums: vec![1, 2, 3, 3, 4, 5],
+            nums: vec![0, 1, 0, 3, 12],
         },
-        Input {
-            nums: vec![1, 2, 3, 3, 4, 4, 5, 5],
-        },
-        Input {
-            nums: vec![1, 2, 3, 4, 4, 5],
-        },
+        Input { nums: vec![0] },
     ];
 
     for input in inputs {
-        let nums = input.nums;
-        let result = Solution::is_possible(nums);
-        println!("{:?}", result);
+        let mut nums = input.nums;
+        Solution::move_zeroes(&mut nums);
+        println!("{:?}", nums);
     }
 }

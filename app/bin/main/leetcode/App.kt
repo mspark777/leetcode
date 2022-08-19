@@ -3,21 +3,63 @@
  */
 package leetcode
 
-data class Input(val n: Int)
+data class Input(val nums: IntArray)
 
 class Solution {
-  fun isPowerOfTwo(n: Int): Boolean {
-    return n > 0 && (n and (n - 1) == 0)
+  fun isPossible(nums: IntArray): Boolean {
+    var lefts = HashMap<Int, Int>()
+    var ends = HashMap<Int, Int>()
+
+    for (num in nums) {
+      lefts.put(num, lefts.getOrDefault(num, 0) + 1)
+    }
+
+    for (cur in nums) {
+      val left = lefts.getOrDefault(cur, 0)
+      if (left == 0) {
+        continue
+      }
+
+      lefts.put(cur, left - 1)
+
+      val before1 = cur - 1
+      val ebefore1 = ends.getOrDefault(before1, 0)
+      if (ebefore1 > 0) {
+        ends.put(before1, ebefore1 - 1)
+        ends.put(cur, ends.getOrDefault(cur, 0) + 1)
+        continue
+      }
+
+      val after1 = cur + 1
+      val after2 = cur + 2
+      val lafter1 = lefts.getOrDefault(after1, 0)
+      val lafter2 = lefts.getOrDefault(after2, 0)
+      if ((lafter1 > 0) && (lafter2 > 0)) {
+        lefts.put(after1, lafter1 - 1)
+        lefts.put(after2, lafter2 - 1)
+        ends.put(after2, ends.getOrDefault(after2, 0) + 1)
+        continue
+      }
+
+      return false
+    }
+
+    return true
   }
 }
 
 fun main() {
-  var inputs: Array<Input> = arrayOf(Input(1), Input(16), Input(3))
+  var inputs: Array<Input> =
+      arrayOf(
+          Input(intArrayOf(1, 2, 3, 3, 4, 5)),
+          Input(intArrayOf(1, 2, 3, 3, 4, 4, 5, 5)),
+          Input(intArrayOf(1, 2, 3, 4, 4, 5))
+      )
 
   var solution = Solution()
   for (input in inputs) {
-    var n = input.n
-    var result = solution.isPowerOfTwo(n)
+    var nums = input.nums
+    var result = solution.isPossible(nums)
     println(result)
   }
 }

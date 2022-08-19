@@ -6,60 +6,29 @@ package leetcode
 data class Input(val nums: IntArray)
 
 class Solution {
-  fun isPossible(nums: IntArray): Boolean {
-    var lefts = HashMap<Int, Int>()
-    var ends = HashMap<Int, Int>()
+  fun moveZeroes(nums: IntArray): Unit {
+    var lastZero = 0
 
-    for (num in nums) {
-      lefts.put(num, lefts.getOrDefault(num, 0) + 1)
+    for (i in 0..nums.lastIndex) {
+      if (nums[i] != 0) {
+        nums[lastZero] = nums[i]
+        lastZero += 1
+      }
     }
 
-    for (cur in nums) {
-      val left = lefts.getOrDefault(cur, 0)
-      if (left == 0) {
-        continue
-      }
-
-      lefts.put(cur, left - 1)
-
-      val before1 = cur - 1
-      val ebefore1 = ends.getOrDefault(before1, 0)
-      if (ebefore1 > 0) {
-        ends.put(before1, ebefore1 - 1)
-        ends.put(cur, ends.getOrDefault(cur, 0) + 1)
-        continue
-      }
-
-      val after1 = cur + 1
-      val after2 = cur + 2
-      val lafter1 = lefts.getOrDefault(after1, 0)
-      val lafter2 = lefts.getOrDefault(after2, 0)
-      if ((lafter1 > 0) && (lafter2 > 0)) {
-        lefts.put(after1, lafter1 - 1)
-        lefts.put(after2, lafter2 - 1)
-        ends.put(after2, ends.getOrDefault(after2, 0) + 1)
-        continue
-      }
-
-      return false
+    for (i in lastZero..nums.lastIndex) {
+      nums[i] = 0
     }
-
-    return true
   }
 }
 
 fun main() {
-  var inputs: Array<Input> =
-      arrayOf(
-          Input(intArrayOf(1, 2, 3, 3, 4, 5)),
-          Input(intArrayOf(1, 2, 3, 3, 4, 4, 5, 5)),
-          Input(intArrayOf(1, 2, 3, 4, 4, 5))
-      )
+  var inputs: Array<Input> = arrayOf(Input(intArrayOf(0, 1, 0, 3, 12)), Input(intArrayOf(0)))
 
   var solution = Solution()
   for (input in inputs) {
     var nums = input.nums
-    var result = solution.isPossible(nums)
-    println(result)
+    solution.moveZeroes(nums)
+    println(nums.joinToString() { it.toString() })
   }
 }

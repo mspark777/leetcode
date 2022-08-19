@@ -8,32 +8,19 @@ from collections import Counter
 
 
 class Solution:
-    def isPossible(self, nums: list[int]) -> bool:
-        lefts = Counter(nums)
-        ends = Counter()
+    def moveZeroes(self, nums: list[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        last_zero = 0
 
-        for cur in nums:
-            if lefts[cur] == 0:
-                continue
+        for i in range(len(nums)):
+            if nums[i] != 0:
+                nums[last_zero] = nums[i]
+                last_zero += 1
 
-            lefts[cur] -= 1
-
-            before1 = cur - 1
-            if ends[before1] > 0:
-                ends[before1] -= 1
-                ends[cur] += 1
-                continue
-
-            after1 = cur + 1
-            after2 = cur + 2
-            if lefts[after1] > 0 and lefts[after2] > 0:
-                lefts[after1] -= 1
-                lefts[after2] -= 1
-                ends[after2] += 1
-                continue
-
-            return False
-        return True
+        for i in range(last_zero, len(nums)):
+            nums[i] = 0
 
 
 class Input:
@@ -45,16 +32,15 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-        Input([1, 2, 3, 3, 4, 5]),
-        Input([1, 2, 3, 3, 4, 4, 5, 5]),
-        Input([1, 2, 3, 4, 4, 5]),
+        Input([0, 1, 0, 3, 12]),
+        Input([0]),
     ]
 
     solution = Solution()
     for i in inputs:
         nums = i.nums
-        result = solution.isPossible(nums)
-        print(result)
+        solution.moveZeroes(nums)
+        print(nums)
 
 
 if __name__ == "__main__":
