@@ -3,13 +3,21 @@
  */
 package leetcode
 
-class App {
-  val greeting: String
-    get() {
-      return "Hello World!"
-    }
+data class Input(val n: Int)
+
+class Solution {
+  fun isPowerOfTwo(n: Int): Boolean {
+    return n > 0 && (n and (n - 1) == 0)
+  }
 }
 
 fun main() {
-  println(App().greeting)
+  var inputs: Array<Input> = arrayOf(Input(1), Input(16), Input(3))
+
+  var solution = Solution()
+  for (input in inputs) {
+    var n = input.n
+    var result = solution.isPowerOfTwo(n)
+    println(result)
+  }
 }
