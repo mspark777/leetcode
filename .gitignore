@@ -17,6 +17,10 @@ leetcode-*.tar
 .tool-versions
 src/__pycache__
 
+/.settings
+/app/.settings
+/app/bin
+/app/.classpath
 # Ignore Gradle project-specific cache directory
 .gradle
 
