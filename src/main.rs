@@ -1,36 +1,92 @@
+use std::collections::BinaryHeap;
+
 struct Solution {}
 impl Solution {
-    pub fn move_zeroes(nums: &mut Vec<i32>) {
-        let mut last_zero = 0;
+    pub fn min_refuel_stops(target: i32, start_fuel: i32, stations: Vec<Vec<i32>>) -> i32 {
+        const NOT_FOUND: i32 = -1;
+        let mut queue = BinaryHeap::<i32>::with_capacity(stations.len());
+        let mut result = 0;
+        let mut prev = 0;
+        let mut tank = start_fuel;
 
-        for i in 0..nums.len() {
-            if nums[i] != 0 {
-                nums[last_zero] = nums[i];
-                last_zero += 1;
+        for station in stations.iter() {
+            let position = station[0];
+            tank -= position - prev;
+            result += Self::update_tank(&mut queue, &mut tank);
+            if tank < 0 {
+                return NOT_FOUND;
+            }
+
+            let fuel = station[1];
+            queue.push(fuel);
+            prev = position;
+        }
+
+        tank -= target - prev;
+        result += Self::update_tank(&mut queue, &mut tank);
+        if tank < 0 {
+            return NOT_FOUND;
+        }
+        result
+    }
+
+    fn update_tank(queue: &mut BinaryHeap<i32>, tank: &mut i32) -> i32 {
+        let mut result = 0;
+        let mut temptank = *tank;
+        while temptank < 0 {
+            if let Some(fuel) = queue.pop() {
+                temptank += fuel;
+                result += 1;
+            } else {
+                break;
             }
         }
 
-        for i in last_zero..nums.len() {
-            nums[i] = 0;
-        }
+        *tank = temptank;
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    target: i32,
+    start_fuel: i32,
+    stations: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            nums: vec![0, 1, 0, 3, 12],
+            target: 1,
+            start_fuel: 1,
+            stations: vec![],
         },
-        Input { nums: vec![0] },
+        Input {
+            target: 100,
+            start_fuel: 1,
+            stations: vec![vec![10, 100]],
+        },
+        Input {
+            target: 100,
+            start_fuel: 10,
+            stations: vec![vec![10, 60], vec![20, 30], vec![30, 30], vec![60, 40]],
+        },
+        Input {
+            target: 100,
+            start_fuel: 50,
+            stations: vec![vec![50, 50]],
+        },
+        Input {
+            target: 100,
+            start_fuel: 50,
+            stations: vec![vec![25, 50], vec![50, 25]],
+        },
     ];
 
     for input in inputs {
-        let mut nums = input.nums;
-        Solution::move_zeroes(&mut nums);
-        println!("{:?}", nums);
+        let target = input.target;
+        let start_fuel = input.start_fuel;
+        let stations = input.stations;
+        let result = Solution::min_refuel_stops(target, start_fuel, stations);
+        println!("{:?}", result);
     }
 }

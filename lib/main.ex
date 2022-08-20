@@ -1,51 +1,26 @@
 defmodule Solution do
-  @type mymap :: %{optional(integer) => integer}
-  @spec is_possible(nums :: [integer]) :: boolean
-  def is_possible(nums) do
-    lefts = Enum.frequencies(nums)
-    rights = %{}
-    loop(nums, lefts, rights)
+  @spec min_refuel_stops(target :: integer, start_fuel :: integer, stations :: [[integer]]) ::
+          integer
+  def min_refuel_stops(target, start_fuel, stations) do
+    (stations ++ [[target, 0]])
+    |> Enum.reduce_while({0, start_fuel, :gb_sets.new()}, &reduce(&1, &2))
+    |> elem(0)
   end
 
-  @spec loop(nums :: [integer], lefts :: mymap, rights :: mymap) :: boolean
-  defp loop([cur | nums], lefts, rights) do
-    if get_value(lefts, cur) == 0 do
-      loop(nums, lefts, rights)
+  defp reduce(station, {result, tank, queue}), do: refuel(tank, station, queue, result)
+
+  defp refuel(tank, [pos, fuel], queue, result) when tank >= pos do
+    {:cont, {result, tank, :gb_sets.add({fuel, pos}, queue)}}
+  end
+
+  defp refuel(tank, [pos, fuel], queue, result) do
+    if :gb_sets.is_empty(queue) do
+      {:halt, {-1}}
     else
-      new_lefts = inc_values(lefts, [{cur, -1}])
-      before1 = cur - 1
-
-      if get_value(rights, before1) > 0 do
-        loop(nums, new_lefts, inc_values(rights, [{before1, -1}, {cur, 1}]))
-      else
-        after1 = cur + 1
-        after2 = cur + 2
-
-        if get_value(new_lefts, after1) > 0 and get_value(new_lefts, after2) > 0 do
-          loop(
-            nums,
-            inc_values(new_lefts, [{after1, -1}, {after2, -1}]),
-            inc_values(rights, [{after2, 1}])
-          )
-        else
-          false
-        end
-      end
+      {{f, _}, queue} = :gb_sets.take_largest(queue)
+      refuel(tank + f, [pos, fuel], queue, result + 1)
     end
   end
-
-  defp loop([], _, _), do: true
-
-  @spec get_value(m :: mymap, k :: integer) :: integer
-  defp get_value(m, k), do: Map.get(m, k, 0)
-
-  @spec inc_values(m :: mymap, keys :: [{integer, integer}]) :: mymap
-  defp inc_values(m, [{k, v} | keys]) do
-    value = get_value(m, k)
-    inc_values(Map.put(m, k, value + v), keys)
-  end
-
-  defp inc_values(m, []), do: m
 end
 
 defmodule Main do
@@ -53,21 +28,34 @@ defmodule Main do
   def main() do
     main([
       %{
-        nums: [1, 2, 3, 3, 4, 5]
+        target: 1,
+        start_fuel: 1,
+        stations: []
       },
       %{
-        nums: [1, 2, 3, 3, 4, 4, 5, 5]
+        target: 100,
+        start_fuel: 1,
+        stations: [[10, 100]]
       },
       %{
-        nums: [1, 2, 3, 4, 4, 5]
+        target: 100,
+        start_fuel: 10,
+        stations: [[10, 60], [20, 30], [30, 30], [60, 40]]
+      },
+      %{
+        target: 100,
+        start_fuel: 50,
+        stations: [[50, 50]]
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    nums = input.nums
-    result = Solution.is_possible(nums)
+    target = input.target
+    start_fuel = input.start_fuel
+    stations = input.stations
+    result = Solution.min_refuel_stops(target, start_fuel, stations)
     IO.puts(result)
     main(remains)
   end

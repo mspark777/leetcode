@@ -1,35 +1,53 @@
 /**
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
+ * @param {number} target
+ * @param {number} startFuel
+ * @param {number[][]} stations
+ * @return {number}
  */
-function moveZeroes (nums) {
-  let lastZero = 0
+function minRefuelStops (target, startFuel, stations) {
+  const stationCount = stations.length
+  const dp = new Array(stationCount + 1).fill(0)
+  dp[0] = startFuel
 
-  for (let i = 0; i < nums.length; i += 1) {
-    if (nums[i] !== 0) {
-      nums[lastZero] = nums[i]
-      lastZero += 1
+  for (let i = 0; i < stationCount; i += 1) {
+    for (let t = i; t >= 0; t -= 1) {
+      const [position, fuel] = stations[i]
+      const memo = dp[t]
+      if (memo >= position) {
+        const next = t + 1
+        dp[next] = Math.max(dp[next], dp[t] + fuel)
+      }
     }
   }
 
-  for (let i = lastZero; i < nums.length; i += 1) {
-    nums[i] = 0
+  for (let i = 0; i <= stationCount; i += 1) {
+    if (dp[i] >= target) {
+      return i
+    }
   }
+
+  return -1
 }
 
 async function main () {
   const inputs = [
     {
-      nums: [0, 1, 0, 3, 12]
+      target: 1, startFuel: 1, stations: []
     },
     {
-      nums: [0]
+      target: 100, startFuel: 1, stations: [[10, 100]]
+    },
+    {
+      target: 100, startFuel: 10, stations: [[10, 60], [20, 30], [30, 30], [60, 40]]
+    },
+    {
+      target: 100, startFuel: 50, stations: [[50, 50]]
     }
   ]
 
-  for (const { nums } of inputs) {
-    moveZeroes(nums)
-    console.log(nums)
+  for (const { target, startFuel, stations } of inputs) {
+    const result = minRefuelStops(target, startFuel, stations)
+    console.log(result)
   }
 }
 

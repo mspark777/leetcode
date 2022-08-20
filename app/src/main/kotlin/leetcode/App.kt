@@ -3,32 +3,65 @@
  */
 package leetcode
 
-data class Input(val nums: IntArray)
+import java.util.ArrayList
+import java.util.Collections
+import java.util.PriorityQueue
 
 class Solution {
-  fun moveZeroes(nums: IntArray): Unit {
-    var lastZero = 0
+  fun minRefuelStops(target: Int, startFuel: Int, stations: Array<IntArray>): Int {
+    val NOT_FOUND = -1
+    val queue = PriorityQueue<Int>(Collections.reverseOrder())
+    var tank = startFuel
+    var result = 0
+    var list = ArrayList<IntArray>(stations.asList())
+    list.add(intArrayOf(target, 0))
 
-    for (i in 0..nums.lastIndex) {
-      if (nums[i] != 0) {
-        nums[lastZero] = nums[i]
-        lastZero += 1
+    for (station in list) {
+      val position = station[0]
+      while (tank < position) {
+        if (queue.isEmpty()) {
+          return NOT_FOUND
+        }
+
+        tank += queue.poll()
+        result += 1
       }
+
+      val fuel = station[1]
+      queue.add(fuel)
     }
 
-    for (i in lastZero..nums.lastIndex) {
-      nums[i] = 0
-    }
+    return result
   }
 }
 
+data class Input(val target: Int, val startFuel: Int, val stations: Array<IntArray>)
+
 fun main() {
-  var inputs: Array<Input> = arrayOf(Input(intArrayOf(0, 1, 0, 3, 12)), Input(intArrayOf(0)))
+  var inputs: Array<Input> =
+      arrayOf(
+          Input(1, 1, arrayOf()),
+          Input(100, 1, arrayOf(intArrayOf(10, 100))),
+          Input(
+              100,
+              10,
+              arrayOf(
+                  intArrayOf(10, 60),
+                  intArrayOf(20, 30),
+                  intArrayOf(30, 30),
+                  intArrayOf(60, 40)
+              )
+          ),
+          Input(100, 50, arrayOf(intArrayOf(50, 50))),
+          Input(100, 50, arrayOf(intArrayOf(25, 50), intArrayOf(50, 25)))
+      )
 
   var solution = Solution()
   for (input in inputs) {
-    var nums = input.nums
-    solution.moveZeroes(nums)
-    println(nums.joinToString() { it.toString() })
+    val target = input.target
+    val startFuel = input.startFuel
+    val stations = input.stations
+    val result = solution.minRefuelStops(target, startFuel, stations)
+    println(result)
   }
 }
