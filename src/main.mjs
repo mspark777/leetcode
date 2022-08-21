@@ -1,52 +1,90 @@
 /**
- * @param {number} target
- * @param {number} startFuel
- * @param {number[][]} stations
- * @return {number}
+ * @param {string} stamp
+ * @param {string} target
+ * @return {number[]}
  */
-function minRefuelStops (target, startFuel, stations) {
-  const stationCount = stations.length
-  const dp = new Array(stationCount + 1).fill(0)
-  dp[0] = startFuel
+function movesToStamp (stamp, target) {
+  const stampLen = stamp.length
+  const targetLen = target.length
+  const queue = []
+  const stack = []
+  const list = []
+  const dones = new Array(targetLen).fill(false)
 
-  for (let i = 0; i < stationCount; i += 1) {
-    for (let t = i; t >= 0; t -= 1) {
-      const [position, fuel] = stations[i]
-      const memo = dp[t]
-      if (memo >= position) {
-        const next = t + 1
-        dp[next] = Math.max(dp[next], dp[t] + fuel)
+  for (let i = 0; i <= targetLen - stampLen; i += 1) {
+    const made = new Set()
+    const todo = new Set()
+
+    for (let j = 0; j < stampLen; j += 1) {
+      const k = i + j
+      if (target.charCodeAt(k) === stamp.charCodeAt(j)) {
+        made.add(k)
+      } else {
+        todo.add(k)
+      }
+    }
+
+    list.push({ made, todo })
+    if (todo.size < 1) {
+      stack.push(i)
+      for (let j = i; j < i + stampLen; j += 1) {
+        if (!dones[j]) {
+          queue.push(j)
+          dones[j] = true
+        }
       }
     }
   }
 
-  for (let i = 0; i <= stationCount; i += 1) {
-    if (dp[i] >= target) {
-      return i
+  while (queue.length > 0) {
+    const i = queue.shift()
+    for (let j = Math.max(0, i - stampLen + 1); j <= Math.min(targetLen - stampLen, i); j += 1) {
+      const node = list[j]
+      const todo = node.todo
+      if (todo.has(i)) {
+        todo.delete(i)
+        if (todo.size < 1) {
+          stack.push(j)
+          for (const m of node.made) {
+            if (!dones[m]) {
+              queue.push(m)
+              dones[m] = true
+            }
+          }
+        }
+      }
     }
   }
 
-  return -1
+  for (const done of dones) {
+    if (!done) {
+      return []
+    }
+  }
+
+  const result = new Array(stack.length)
+  for (let i = 0; stack.length > 0; i += 1) {
+    result[i] = stack.pop()
+  }
+
+  return result
 }
 
 async function main () {
   const inputs = [
     {
-      target: 1, startFuel: 1, stations: []
+      stamp: 'abc', target: 'ababc'
     },
     {
-      target: 100, startFuel: 1, stations: [[10, 100]]
+      stamp: 'abca', target: 'aabcaca'
     },
     {
-      target: 100, startFuel: 10, stations: [[10, 60], [20, 30], [30, 30], [60, 40]]
-    },
-    {
-      target: 100, startFuel: 50, stations: [[50, 50]]
+      stamp: 'aye', target: 'eyeye'
     }
   ]
 
-  for (const { target, startFuel, stations } of inputs) {
-    const result = minRefuelStops(target, startFuel, stations)
+  for (const { target, stamp } of inputs) {
+    const result = movesToStamp(stamp, target)
     console.log(result)
   }
 }
