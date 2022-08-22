@@ -1,25 +1,9 @@
 defmodule Solution do
-  @spec min_refuel_stops(target :: integer, start_fuel :: integer, stations :: [[integer]]) ::
-          integer
-  def min_refuel_stops(target, start_fuel, stations) do
-    (stations ++ [[target, 0]])
-    |> Enum.reduce_while({0, start_fuel, :gb_sets.new()}, &reduce(&1, &2))
-    |> elem(0)
-  end
+  use Bitwise
 
-  defp reduce(station, {result, tank, queue}), do: refuel(tank, station, queue, result)
-
-  defp refuel(tank, [pos, fuel], queue, result) when tank >= pos do
-    {:cont, {result, tank, :gb_sets.add({fuel, pos}, queue)}}
-  end
-
-  defp refuel(tank, [pos, fuel], queue, result) do
-    if :gb_sets.is_empty(queue) do
-      {:halt, {-1}}
-    else
-      {{f, _}, queue} = :gb_sets.take_largest(queue)
-      refuel(tank + f, [pos, fuel], queue, result + 1)
-    end
+  @spec is_power_of_four(n :: integer) :: boolean
+  def is_power_of_four(n) do
+    n > 0 and (n &&& n - 1) == 0 and (n &&& 0x55555555) != 0
   end
 end
 
@@ -28,34 +12,21 @@ defmodule Main do
   def main() do
     main([
       %{
-        target: 1,
-        start_fuel: 1,
-        stations: []
+        n: 16
       },
       %{
-        target: 100,
-        start_fuel: 1,
-        stations: [[10, 100]]
+        n: 5
       },
       %{
-        target: 100,
-        start_fuel: 10,
-        stations: [[10, 60], [20, 30], [30, 30], [60, 40]]
-      },
-      %{
-        target: 100,
-        start_fuel: 50,
-        stations: [[50, 50]]
+        n: 1
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    target = input.target
-    start_fuel = input.start_fuel
-    stations = input.stations
-    result = Solution.min_refuel_stops(target, start_fuel, stations)
+    n = input.n
+    result = Solution.is_power_of_four(n)
     IO.puts(result)
     main(remains)
   end
