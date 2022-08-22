@@ -6,36 +6,36 @@ from __future__ import annotations
 from typing import Optional
 
 
-class Solution:
-    def containsNearbyDuplicate(self, nums: list[int], k: int) -> bool:
-        index_map: dict[int, int] = {}
-        for i, num in enumerate(nums):
-            if num in index_map and ((i - index_map[num]) <= k):
-                return True
-            index_map[num] = i
-        return False
+class MyStack:
+    queue: list[int]
 
+    def __init__(self):
+        self.queue = []
 
-class Input:
-    nums: list[int]
-    k: int
+    def push(self, x: int) -> None:
+        queue = self.queue
+        queue.append(x)
+        size = len(queue)
+        for i in range(1, size):
+            queue.append(queue.pop(0))
 
-    def __init__(self, nums: list[int], k: int):
-        self.nums = nums
-        self.k = k
+    def pop(self) -> int:
+        return self.queue.pop(0)
+
+    def top(self) -> int:
+        return self.queue[0]
+
+    def empty(self) -> bool:
+        return len(self.queue) < 1
 
 
 def main():
-    inputs: list[Input] = [
-        Input([1, 2, 3, 1], 3),
-        Input([1, 0, 1, 1], 1),
-        Input([1, 2, 3, 1, 2, 3], 2),
-    ]
-
-    solution = Solution()
-    for i in inputs:
-        result = solution.containsNearbyDuplicate(i.nums, i.k)
-        print(result)
+    my_stack = MyStack()
+    my_stack.push(1)
+    my_stack.push(2)
+    print(my_stack.top())
+    print(my_stack.pop())
+    print(my_stack.empty())
 
 
 if __name__ == "__main__":

@@ -1,43 +1,39 @@
-function containsNearbyDuplicate (nums: number[], k: number): boolean {
-  const indexMap = new Map<number, number>()
-  for (let i = 0; i < nums.length; i += 1) {
-    const key = nums[i]
-    const idx = indexMap.get(key)
-    if ((idx != null) && ((i - idx) <= k)) {
-      return true
-    }
-
-    indexMap.set(key, i)
+class MyStack {
+  private readonly queue: number[]
+  constructor () {
+    this.queue = []
   }
 
-  return false
-}
+  push (x: number): void {
+    const queue = this.queue
+    queue.push(x)
 
-interface Input {
-  readonly nums: number[]
-  readonly k: number
+    const size = queue.length
+    for (let i = 1; i < size; i += 1) {
+      queue.push(queue.shift() as number)
+    }
+  }
+
+  pop (): number {
+    return this.queue.shift() as number
+  }
+
+  top (): number {
+    return this.queue[0]
+  }
+
+  empty (): boolean {
+    return this.queue.length < 1
+  }
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    {
-      nums: [1, 2, 3, 1],
-      k: 3
-    },
-    {
-      nums: [1, 0, 1, 1],
-      k: 1
-    },
-    {
-      nums: [1, 2, 3, 1, 2, 3],
-      k: 2
-    }
-  ]
-
-  for (const { nums, k } of inputs) {
-    const result = containsNearbyDuplicate(nums, k)
-    console.log(result)
-  }
+  const myStack = new MyStack()
+  myStack.push(1)
+  myStack.push(2)
+  console.log(myStack.top())
+  console.log(myStack.pop())
+  console.log(myStack.empty())
 }
 
 main().catch(e => {

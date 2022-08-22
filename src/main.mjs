@@ -1,43 +1,51 @@
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {boolean}
- */
-function containsNearbyDuplicate (nums, k) {
-  const indexMap = new Map()
-  for (let i = 0; i < nums.length; i += 1) {
-    const key = nums[i]
-    const idx = indexMap.get(key)
-    if ((idx != null) && ((i - idx) <= k)) {
-      return true
-    }
-
-    indexMap.set(key, i)
+class MyStack {
+  constructor () {
+    this.queue = []
   }
 
-  return false
+  /**
+ * @param {number} x
+ * @return {void}
+ */
+  push (x) {
+    const queue = this.queue
+    queue.push(x)
+
+    const size = queue.length
+    for (let i = 1; i < size; i += 1) {
+      queue.push(queue.shift())
+    }
+  }
+
+  /**
+   * @returns {number}
+  */
+  pop () {
+    return this.queue.shift()
+  }
+
+  /**
+   * @return {number}
+  */
+  top () {
+    return this.queue[0]
+  }
+
+  /**
+   * @return {boolean}
+  */
+  empty () {
+    return this.queue.length < 1
+  }
 }
 
 async function main () {
-  const inputs = [
-    {
-      nums: [1, 2, 3, 1],
-      k: 3
-    },
-    {
-      nums: [1, 0, 1, 1],
-      k: 1
-    },
-    {
-      nums: [1, 2, 3, 1, 2, 3],
-      k: 2
-    }
-  ]
-
-  for (const { nums, k } of inputs) {
-    const result = containsNearbyDuplicate(nums, k)
-    console.log(result)
-  }
+  const myStack = new MyStack()
+  myStack.push(1)
+  myStack.push(2)
+  console.log(myStack.top())
+  console.log(myStack.pop())
+  console.log(myStack.empty())
 }
 
 main().catch(e => {

@@ -1,49 +1,45 @@
-use std::collections::HashMap;
-
-struct Solution {}
-impl Solution {
-    pub fn contains_nearby_duplicate(nums: Vec<i32>, k: i32) -> bool {
-        let k = k as usize;
-        let mut index_map = HashMap::<i32, usize>::with_capacity(nums.len());
-
-        for (i, num) in nums.iter().enumerate() {
-            if let Some(idx) = index_map.get(num) {
-                if (i - idx) <= k {
-                    return true;
-                }
-            }
-            index_map.insert(*num, i);
-        }
-
-        false
-    }
+struct MyStack {
+    queue: Vec<i32>,
 }
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl MyStack {
+    fn new() -> Self {
+        MyStack { queue: Vec::new() }
+    }
 
-struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    fn push(&mut self, x: i32) {
+        let queue = &mut self.queue;
+        queue.push(x);
+
+        let size = queue.len();
+        for _ in 1..size {
+            let top = queue.remove(0);
+            queue.push(top);
+        }
+    }
+
+    fn pop(&mut self) -> i32 {
+        self.queue.remove(0)
+    }
+
+    fn top(&self) -> i32 {
+        self.queue[0]
+    }
+
+    fn empty(&self) -> bool {
+        self.queue.is_empty()
+    }
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input {
-            nums: vec![1, 2, 3, 1],
-            k: 3,
-        },
-        Input {
-            nums: vec![1, 0, 1, 1],
-            k: 1,
-        },
-        Input {
-            nums: vec![1, 2, 3, 1, 2, 3],
-            k: 2,
-        },
-    ];
+    let mut my_stack = MyStack::new();
+    my_stack.push(1);
+    my_stack.push(2);
 
-    for input in inputs {
-        let nums = input.nums;
-        let k = input.k;
-        let result = Solution::contains_nearby_duplicate(nums, k);
-        println!("{:?}", result);
-    }
+    println!("{}", my_stack.top());
+    println!("{}", my_stack.pop());
+    println!("{}", my_stack.empty());
 }
