@@ -4,86 +4,45 @@ import (
 	"fmt"
 )
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
-
-func reverseRecursively(node *ListNode) *ListNode {
-	if node == nil {
-		return node
+func containsNearbyDuplicate(nums []int, k int) bool {
+	indexMap := make(map[int]int)
+	for i, num := range nums {
+		if idx, ok := indexMap[num]; ok {
+			if (i - idx) <= k {
+				return true
+			}
+		}
+		indexMap[num] = i
 	}
 
-	next := node.Next
-	if next == nil {
-		return node
-	}
-
-	newNode := reverseRecursively(next)
-	next.Next = node
-	node.Next = nil
-	return newNode
-}
-
-func reverseIteratively(node *ListNode) *ListNode {
-	var prev *ListNode = nil
-	for node != nil {
-		next := node.Next
-		node.Next = prev
-		prev = node
-		node = next
-	}
-
-	return prev
-}
-
-func reverseList(head *ListNode) *ListNode {
-	return reverseRecursively(head)
-}
-
-func arrToList(nums []int) *ListNode {
-	dummy := &ListNode{}
-	tail := dummy
-
-	for _, num := range nums {
-		tail.Next = &ListNode{Val: num}
-		tail = tail.Next
-	}
-
-	return dummy.Next
-}
-
-func listToArr(node *ListNode) []int {
-	nums := []int{}
-
-	for node != nil {
-		nums = append(nums, node.Val)
-		node = node.Next
-	}
-
-	return nums
+	return false
 }
 
 type input struct {
 	nums []int
+	k    int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			nums: []int{1, 2, 3, 4, 5},
+			nums: []int{1, 2, 3, 1},
+			k:    3,
 		},
 		{
-			nums: []int{1, 2},
+			nums: []int{1, 0, 1, 1},
+			k:    1,
 		},
 		{
-			nums: []int{},
+			nums: []int{1, 2, 3, 1, 2, 3},
+			k:    2,
 		},
 	}
 
 	for _, input := range inputs {
-		node := arrToList(input.nums)
-		result := reverseList(node)
-		fmt.Println(listToArr(result))
+		nums := input.nums
+		k := input.k
+		result := containsNearbyDuplicate(nums, k)
+		fmt.Println(result)
 	}
 }

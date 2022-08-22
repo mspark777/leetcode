@@ -6,72 +6,36 @@ from __future__ import annotations
 from typing import Optional
 
 
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-
 class Solution:
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        return self.reverse_recursively(head)
-
-    def reverse_iteratively(self, node: Optional[ListNode]) -> Optional[ListNode]:
-        prev: Optional[ListNode] = None
-
-        while node is not None:
-            next = node.next
-            node.next = prev
-            prev = node
-            node = next
-        return prev
-
-    def reverse_recursively(self, node: Optional[ListNode]) -> Optional[ListNode]:
-        if node is None:
-            return node
-
-        next = node.next
-        if next is None:
-            return node
-
-        new_node = self.reverse_recursively(next)
-        next.next = node
-        node.next = None
-        return new_node
+    def containsNearbyDuplicate(self, nums: list[int], k: int) -> bool:
+        index_map: dict[int, int] = {}
+        for i, num in enumerate(nums):
+            if num in index_map and ((i - index_map[num]) <= k):
+                return True
+            index_map[num] = i
+        return False
 
 
 class Input:
     nums: list[int]
+    k: int
 
-    def __init__(self, nums: list[int]):
+    def __init__(self, nums: list[int], k: int):
         self.nums = nums
-
-    def tolist(self) -> Optional[ListNode]:
-        dummy = ListNode()
-        tail = dummy
-        for num in self.nums:
-            tail.next = ListNode(num)
-            tail = tail.next
-        return dummy.next
-
-    def fromlist(self, node: Optional[ListNode]) -> list[int]:
-        nums: list[int] = []
-        while node is not None:
-            nums.append(node.val)
-            node = node.next
-        return nums
+        self.k = k
 
 
 def main():
-    inputs: list[Input] = [Input([1, 2, 3, 4, 5]), Input([1, 2]), Input([])]
+    inputs: list[Input] = [
+        Input([1, 2, 3, 1], 3),
+        Input([1, 0, 1, 1], 1),
+        Input([1, 2, 3, 1, 2, 3], 2),
+    ]
 
     solution = Solution()
     for i in inputs:
-        result = solution.reverseList(i.tolist())
-        print(i.fromlist(result))
+        result = solution.containsNearbyDuplicate(i.nums, i.k)
+        print(result)
 
 
 if __name__ == "__main__":
