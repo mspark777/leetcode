@@ -2,75 +2,52 @@ package main
 
 import "fmt"
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
+func summaryRanges(nums []int) []string {
+	result := []string{}
 
-func invertTree(root *TreeNode) *TreeNode {
-	stack := []*TreeNode{root}
+	for i := 0; i < len(nums); i += 1 {
+		head := nums[i]
+		for {
+			j := i + 1
+			if j >= len(nums) {
+				break
+			}
 
-	for len(stack) > 0 {
-		node := stack[0]
-		stack = stack[1:]
-		if node == nil {
-			continue
+			if (nums[i] + 1) != nums[j] {
+				break
+			}
+
+			i = j
 		}
 
-		left := node.Left
-		right := node.Right
-		node.Left = right
-		node.Right = left
-		stack = append(stack, left, right)
+		tail := nums[i]
+		if head == tail {
+			result = append(result, fmt.Sprint(head))
+		} else {
+			result = append(result, fmt.Sprintf("%d->%d", head, tail))
+		}
 	}
 
-	return root
+	return result
 }
 
 type input struct {
-	root *TreeNode
-}
-
-func createNode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{
-		Val:   val,
-		Left:  left,
-		Right: right,
-	}
-}
-
-func travelInorder(node *TreeNode) {
-	if node != nil {
-		travelInorder(node.Left)
-		fmt.Print(node.Val, " ")
-		travelInorder(node.Right)
-	}
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			root: createNode(4,
-				createNode(2, createNode(1, nil, nil), createNode(3, nil, nil)),
-				createNode(7, createNode(6, nil, nil), createNode(9, nil, nil)),
-			),
+			nums: []int{0, 1, 2, 4, 5, 7},
 		},
 		{
-			root: createNode(2,
-				createNode(1, nil, nil),
-				createNode(3, nil, nil),
-			),
-		},
-		{
-			root: nil,
+			nums: []int{0, 2, 3, 4, 6, 8, 9},
 		},
 	}
 
 	for _, input := range inputs {
-		root := input.root
-		result := invertTree(root)
-		travelInorder(result)
-		fmt.Println()
+		nums := input.nums
+		result := summaryRanges(nums)
+		fmt.Println(result)
 	}
 }

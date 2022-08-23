@@ -1,20 +1,24 @@
-defmodule ListNode do
-  @type t :: %__MODULE__{
-          val: integer,
-          next: ListNode.t() | nil
-        }
-  defstruct val: 0, next: nil
-end
-
 defmodule Solution do
-  @spec is_palindrome(head :: ListNode.t() | nil) :: boolean
-  def is_palindrome(head) do
-    nums = to_arr(head, [])
-    nums == Enum.reverse(nums)
+  @spec summary_ranges(nums :: [integer]) :: [String.t()]
+  def summary_ranges(nums), do: map_result(nums, []) |> Enum.reverse()
+
+  @spec map_result(nums :: [integer], result :: [String.t()]) :: [String.t()]
+  defp map_result([head | nums], result) do
+    {tail, newnums} = get_tail(nums, head)
+
+    if head == tail do
+      map_result(newnums, ["#{head}" | result])
+    else
+      map_result(newnums, ["#{head}->#{tail}" | result])
+    end
   end
 
-  defp to_arr(nil, nums), do: nums
-  defp to_arr(node, nums), do: to_arr(node.next, [node.val | nums])
+  defp map_result([], result), do: result
+
+  @spec get_tail(nums :: [integer], head :: integer) :: {integer, [integer]}
+  defp get_tail([num | _] = nums, head) when num != head + 1, do: {head, nums}
+  defp get_tail([num | nums], _), do: get_tail(nums, num)
+  defp get_tail([], head), do: {head, []}
 end
 
 defmodule Main do
@@ -22,29 +26,23 @@ defmodule Main do
   def main() do
     main([
       %{
-        nums: [1, 2, 2, 1]
+        nums: [0, 1, 2, 4, 5, 7]
       },
       %{
-        nums: [1, 2]
+        nums: [0, 2, 3, 4, 6, 8, 9]
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    nums = input.nums |> Enum.reverse() |> arr_to_list(nil)
-    result = Solution.is_palindrome(nums)
-    IO.puts(result)
+    nums = input.nums
+    result = Solution.summary_ranges(nums)
+    IO.puts(result |> Enum.join(", "))
     main(remains)
   end
 
   def main([]), do: nil
-
-  def arr_to_list([num | nums], head) do
-    arr_to_list(nums, %ListNode{val: num, next: head})
-  end
-
-  def arr_to_list([], head), do: head
 end
 
 Main.main()

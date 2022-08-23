@@ -6,66 +6,53 @@ from __future__ import annotations
 from typing import Optional
 
 
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
-
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
 class Solution:
-    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
-        stack: list[Optional[TreeNode]] = [root]
-        while len(stack) > 0:
-            node = stack.pop()
-            if node is None:
-                continue
+    def summaryRanges(self, nums: list[int]) -> list[str]:
+        result: list[str] = []
 
-            left = node.left
-            right = node.right
-            node.right = left
-            node.left = right
-            stack.append(left)
-            stack.append(right)
-        return root
+        i = 0
+        while i < len(nums):
+            head = nums[i]
+            while True:
+                j = i + 1
+                if j >= len(nums):
+                    break
+
+                cur = nums[i] + 1
+                next = nums[j]
+                if cur != next:
+                    break
+                i = j
+
+            tail = nums[i]
+            if head == tail:
+                result.append(str(head))
+            else:
+                result.append(str(head) + "->" + str(tail))
+
+            i += 1
+
+        return result
 
 
 class Input:
-    root: Optional[TreeNode]
+    nums: list[int]
 
-    def __init__(self, root: Optional[TreeNode]):
-        self.root = root
-
-    def travel(self, node: Optional[TreeNode]):
-        if node is not None:
-            self.travel(node.left)
-            print(node.val, end=" ")
-            self.travel(node.right)
+    def __init__(self, nums: list[int]):
+        self.nums = nums
 
 
 def main():
     inputs: list[Input] = [
-        Input(
-            TreeNode(
-                4,
-                TreeNode(2, TreeNode(1), TreeNode(3)),
-                TreeNode(7, TreeNode(6), TreeNode(9)),
-            )
-        ),
-        Input(TreeNode(2, TreeNode(1), TreeNode(3))),
-        Input(None),
+        Input([0, 1, 2, 4, 5, 7]),
+        Input([0, 2, 3, 4, 6, 8, 9]),
     ]
 
     solution = Solution()
     for input in inputs:
-        root = input.root
-        result = solution.invertTree(root)
-        input.travel(result)
-        print("")
+        nums = input.nums
+        result = solution.summaryRanges(nums)
+        print(result)
 
 
 if __name__ == "__main__":

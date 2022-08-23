@@ -1,88 +1,54 @@
-use std::cell::RefCell;
-use std::mem;
-use std::rc::Rc;
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(
-        val: i32,
-        left: Option<Rc<RefCell<TreeNode>>>,
-        right: Option<Rc<RefCell<TreeNode>>>,
-    ) -> Option<Rc<RefCell<Self>>> {
-        Some(Rc::new(RefCell::new(Self { val, left, right })))
-    }
-}
-
 struct Solution {}
 impl Solution {
-    pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-        let mut stack = vec![root.clone()];
+    pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
+        let mut result = Vec::<String>::new();
 
-        while let Some(top) = stack.pop() {
-            if let Some(node) = top {
-                let TreeNode { left, right, .. } = &mut *node.borrow_mut();
-                mem::swap(left, right);
-                stack.push(left.clone());
-                stack.push(right.clone());
+        let mut i = 0;
+        while i < nums.len() {
+            let head = nums[i];
+            loop {
+                let j = i + 1;
+                if j >= nums.len() {
+                    break;
+                }
+
+                if (nums[i] + 1) != nums[j] {
+                    break;
+                }
+
+                i = j;
             }
+
+            let tail = nums[i];
+            if head == tail {
+                result.push(format!("{head}"));
+            } else {
+                result.push(format!("{head}->{tail}"));
+            }
+            i += 1;
         }
 
-        root
+        result
     }
 }
 
 struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl Input {
-    fn travel(node: Option<Rc<RefCell<TreeNode>>>) {
-        if let Some(n) = node {
-            Self::travel(n.borrow().left.clone());
-            print!("{} ", n.borrow().val);
-            Self::travel(n.borrow().right.clone());
-        }
-    }
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            root: TreeNode::new(
-                4,
-                TreeNode::new(
-                    2,
-                    TreeNode::new(1, None, None),
-                    TreeNode::new(3, None, None),
-                ),
-                TreeNode::new(
-                    7,
-                    TreeNode::new(6, None, None),
-                    TreeNode::new(9, None, None),
-                ),
-            ),
+            nums: vec![0, 1, 2, 4, 5, 7],
         },
         Input {
-            root: TreeNode::new(
-                2,
-                TreeNode::new(1, None, None),
-                TreeNode::new(3, None, None),
-            ),
+            nums: vec![0, 2, 3, 4, 6, 8, 9],
         },
-        Input { root: None },
     ];
 
     for input in inputs.iter() {
-        let root = input.root.clone();
-        let result = Solution::invert_tree(root);
-        Input::travel(result);
-        println!("")
+        let nums = &input.nums;
+        let result = Solution::summary_ranges(nums.clone());
+        println!("{:?}", result);
     }
 }
