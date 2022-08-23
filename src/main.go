@@ -2,43 +2,56 @@ package main
 
 import "fmt"
 
-type MyStack struct {
-	queue []int
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-func Constructor() MyStack {
-	return MyStack{queue: []int{}}
-}
-
-func (this *MyStack) Push(x int) {
-	this.queue = append(this.queue, x)
-	size := len(this.queue)
-	for i := 1; i < size; i += 1 {
-		top, queue := this.queue[0], this.queue[1:]
-		this.queue = append(queue, top)
+func isPalindrome(head *ListNode) bool {
+	nums := []int{}
+	for head != nil {
+		nums = append(nums, head.Val)
+		head = head.Next
 	}
+
+	for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
+		if nums[i] != nums[j] {
+			return false
+		}
+	}
+
+	return true
 }
 
-func (this *MyStack) Pop() int {
-	top, queue := this.queue[0], this.queue[1:]
-	this.queue = queue
-
-	return top
+type input struct {
+	nums []int
 }
 
-func (this *MyStack) Top() int {
-	return this.queue[0]
-}
+func arrToList(nums []int) *ListNode {
+	dummy := &ListNode{}
+	tail := dummy
 
-func (this *MyStack) Empty() bool {
-	return len(this.queue) < 1
+	for _, num := range nums {
+		tail.Next = &ListNode{Val: num}
+		tail = tail.Next
+	}
+
+	return dummy.Next
 }
 
 func main() {
-	myStack := Constructor()
-	myStack.Push(1)
-	myStack.Push(2)
-	fmt.Println(myStack.Top())
-	fmt.Println(myStack.Pop())
-	fmt.Println(myStack.Empty())
+	inputs := []input{
+		{
+			nums: []int{1, 2, 2, 1},
+		},
+		{
+			nums: []int{1, 2},
+		},
+	}
+
+	for _, input := range inputs {
+		nums := input.nums
+		result := isPalindrome(arrToList(nums))
+		fmt.Println(result)
+	}
 }

@@ -6,36 +6,55 @@ from __future__ import annotations
 from typing import Optional
 
 
-class MyStack:
-    queue: list[int]
+class ListNode:
+    val: int
+    next: Optional[ListNode]
 
-    def __init__(self):
-        self.queue = []
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
-    def push(self, x: int) -> None:
-        queue = self.queue
-        queue.append(x)
-        size = len(queue)
-        for i in range(1, size):
-            queue.append(queue.pop(0))
 
-    def pop(self) -> int:
-        return self.queue.pop(0)
+class Solution:
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
+        nums: list[int] = []
+        while head is not None:
+            nums.append(head.val)
+            head = head.next
 
-    def top(self) -> int:
-        return self.queue[0]
+        i = 0
+        j = len(nums) - 1
+        while i < j:
+            if nums[i] != nums[j]:
+                return False
+            else:
+                i += 1
+                j -= 1
+        return True
 
-    def empty(self) -> bool:
-        return len(self.queue) < 1
+
+class Input:
+    nums: list[int]
+
+    def __init__(self, nums: list[int]):
+        self.nums = nums
+
+    def to_list(self) -> Optional[ListNode]:
+        dummy = ListNode()
+        tail = dummy
+        for num in self.nums:
+            tail.next = ListNode(num)
+            tail = tail.next
+        return dummy.next
 
 
 def main():
-    my_stack = MyStack()
-    my_stack.push(1)
-    my_stack.push(2)
-    print(my_stack.top())
-    print(my_stack.pop())
-    print(my_stack.empty())
+    inputs: list[Input] = [Input([1, 2, 2, 1]), Input([1, 2])]
+
+    solution = Solution()
+    for input in inputs:
+        result = solution.isPalindrome(input.to_list())
+        print(result)
 
 
 if __name__ == "__main__":

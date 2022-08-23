@@ -1,45 +1,75 @@
-struct MyStack {
-    queue: Vec<i32>,
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
 }
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl MyStack {
-    fn new() -> Self {
-        MyStack { queue: Vec::new() }
+
+impl ListNode {
+    #[inline]
+    fn new(val: i32) -> Self {
+        ListNode { next: None, val }
     }
+}
 
-    fn push(&mut self, x: i32) {
-        let queue = &mut self.queue;
-        queue.push(x);
-
-        let size = queue.len();
-        for _ in 1..size {
-            let top = queue.remove(0);
-            queue.push(top);
+struct Solution {}
+impl Solution {
+    pub fn is_palindrome(head: Option<Box<ListNode>>) -> bool {
+        let mut node = &head;
+        let mut nums = Vec::<i32>::new();
+        while let Some(n) = node {
+            nums.push(n.val);
+            node = &n.next;
         }
-    }
 
-    fn pop(&mut self) -> i32 {
-        self.queue.remove(0)
-    }
+        if nums.is_empty() {
+            return true;
+        }
 
-    fn top(&self) -> i32 {
-        self.queue[0]
-    }
+        let mut i = 0usize;
+        let mut j = nums.len() - 1;
+        while i < j {
+            if nums[i] != nums[j] {
+                return false;
+            }
 
-    fn empty(&self) -> bool {
-        self.queue.is_empty()
+            i += 1;
+            j -= 1;
+        }
+
+        true
+    }
+}
+
+struct Input {
+    nums: Vec<i32>,
+}
+
+impl Input {
+    fn to_list(&self) -> Option<Box<ListNode>> {
+        let mut head = Some(Box::new(ListNode::new(self.nums[0])));
+        let mut current = head.as_mut();
+
+        for i in 1..self.nums.len() {
+            if let Some(cur) = current {
+                cur.next = Some(Box::new(ListNode::new(self.nums[i])));
+                current = cur.next.as_mut();
+            }
+        }
+
+        head
     }
 }
 
 fn main() {
-    let mut my_stack = MyStack::new();
-    my_stack.push(1);
-    my_stack.push(2);
+    let inputs: Vec<Input> = vec![
+        Input {
+            nums: vec![1, 2, 2, 1],
+        },
+        Input { nums: vec![1, 2] },
+    ];
 
-    println!("{}", my_stack.top());
-    println!("{}", my_stack.pop());
-    println!("{}", my_stack.empty());
+    for input in inputs.iter() {
+        let result = Solution::is_palindrome(input.to_list());
+        println!("{}", result);
+    }
 }

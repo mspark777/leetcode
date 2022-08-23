@@ -1,51 +1,56 @@
-class MyStack {
-  constructor () {
-    this.queue = []
-  }
-
-  /**
- * @param {number} x
- * @return {void}
- */
-  push (x) {
-    const queue = this.queue
-    queue.push(x)
-
-    const size = queue.length
-    for (let i = 1; i < size; i += 1) {
-      queue.push(queue.shift())
-    }
-  }
-
-  /**
-   * @returns {number}
-  */
-  pop () {
-    return this.queue.shift()
-  }
-
-  /**
-   * @return {number}
-  */
-  top () {
-    return this.queue[0]
-  }
-
-  /**
-   * @return {boolean}
-  */
-  empty () {
-    return this.queue.length < 1
+class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
   }
 }
 
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+function isPalindrome (head) {
+  const nums = []
+  while (head != null) {
+    nums.push(head.val)
+    head = head.next
+  }
+
+  for (let i = 0, j = nums.length - 1; i < j; i += 1, j -= 1) {
+    if (nums[i] !== nums[j]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+function arrToList (nums) {
+  const dummy = new ListNode()
+  let tail = dummy
+  for (const num of nums) {
+    tail.next = new ListNode(num)
+    tail = tail.next
+  }
+
+  return dummy.next
+}
+
 async function main () {
-  const myStack = new MyStack()
-  myStack.push(1)
-  myStack.push(2)
-  console.log(myStack.top())
-  console.log(myStack.pop())
-  console.log(myStack.empty())
+  const inputs = [
+    {
+      nums: [1, 2, 2, 1]
+    },
+    {
+      nums: [1, 2]
+    }
+  ]
+
+  for (const input of inputs) {
+    const nums = input.nums
+    const result = isPalindrome(arrToList(nums))
+    console.log(result)
+  }
 }
 
 main().catch(e => {
