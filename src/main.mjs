@@ -1,55 +1,69 @@
-class ListNode {
-  constructor (val, next) {
+class TreeNode {
+  constructor (val, left, right) {
     this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
 }
 
 /**
- * @param {ListNode} head
- * @return {boolean}
+ * @param {TreeNode} root
+ * @return {TreeNode}
  */
-function isPalindrome (head) {
-  const nums = []
-  while (head != null) {
-    nums.push(head.val)
-    head = head.next
-  }
-
-  for (let i = 0, j = nums.length - 1; i < j; i += 1, j -= 1) {
-    if (nums[i] !== nums[j]) {
-      return false
+function invertTree (root) {
+  const stack = [root]
+  while (stack.length > 0) {
+    const node = stack.pop()
+    if (node == null) {
+      continue
     }
+
+    const left = node.left
+    const right = node.right
+    node.right = left
+    node.left = right
+    stack.push(left)
+    stack.push(right)
   }
 
-  return true
+  return root
 }
 
-function arrToList (nums) {
-  const dummy = new ListNode()
-  let tail = dummy
-  for (const num of nums) {
-    tail.next = new ListNode(num)
-    tail = tail.next
+function travelInorder (node) {
+  if (node != null) {
+    travelInorder(node.left)
+    process.stdout.write(`${node.val} `)
+    travelInorder(node.right)
   }
-
-  return dummy.next
 }
 
 async function main () {
   const inputs = [
     {
-      nums: [1, 2, 2, 1]
+      root: new TreeNode(4,
+        new TreeNode(2,
+          new TreeNode(1),
+          new TreeNode(3)
+        ),
+        new TreeNode(7,
+          new TreeNode(6),
+          new TreeNode(9)
+        )
+      )
     },
     {
-      nums: [1, 2]
+      root: new TreeNode(2, new TreeNode(1), new TreeNode(3))
+    },
+    {
+      root: null
     }
   ]
 
   for (const input of inputs) {
-    const nums = input.nums
-    const result = isPalindrome(arrToList(nums))
-    console.log(result)
+    const root = input.root
+    const result = invertTree(root)
+    travelInorder(result)
+    console.log()
   }
 }
 

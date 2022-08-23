@@ -2,56 +2,75 @@ package main
 
 import "fmt"
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func isPalindrome(head *ListNode) bool {
-	nums := []int{}
-	for head != nil {
-		nums = append(nums, head.Val)
-		head = head.Next
-	}
+func invertTree(root *TreeNode) *TreeNode {
+	stack := []*TreeNode{root}
 
-	for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
-		if nums[i] != nums[j] {
-			return false
+	for len(stack) > 0 {
+		node := stack[0]
+		stack = stack[1:]
+		if node == nil {
+			continue
 		}
+
+		left := node.Left
+		right := node.Right
+		node.Left = right
+		node.Right = left
+		stack = append(stack, left, right)
 	}
 
-	return true
+	return root
 }
 
 type input struct {
-	nums []int
+	root *TreeNode
 }
 
-func arrToList(nums []int) *ListNode {
-	dummy := &ListNode{}
-	tail := dummy
-
-	for _, num := range nums {
-		tail.Next = &ListNode{Val: num}
-		tail = tail.Next
+func createNode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{
+		Val:   val,
+		Left:  left,
+		Right: right,
 	}
+}
 
-	return dummy.Next
+func travelInorder(node *TreeNode) {
+	if node != nil {
+		travelInorder(node.Left)
+		fmt.Print(node.Val, " ")
+		travelInorder(node.Right)
+	}
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums: []int{1, 2, 2, 1},
+			root: createNode(4,
+				createNode(2, createNode(1, nil, nil), createNode(3, nil, nil)),
+				createNode(7, createNode(6, nil, nil), createNode(9, nil, nil)),
+			),
 		},
 		{
-			nums: []int{1, 2},
+			root: createNode(2,
+				createNode(1, nil, nil),
+				createNode(3, nil, nil),
+			),
+		},
+		{
+			root: nil,
 		},
 	}
 
 	for _, input := range inputs {
-		nums := input.nums
-		result := isPalindrome(arrToList(nums))
-		fmt.Println(result)
+		root := input.root
+		result := invertTree(root)
+		travelInorder(result)
+		fmt.Println()
 	}
 }

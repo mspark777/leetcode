@@ -6,55 +6,66 @@ from __future__ import annotations
 from typing import Optional
 
 
-class ListNode:
+class TreeNode:
     val: int
-    next: Optional[ListNode]
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
 
-    def __init__(self, val=0, next=None):
+    def __init__(self, val=0, left=None, right=None):
         self.val = val
-        self.next = next
+        self.left = left
+        self.right = right
 
 
 class Solution:
-    def isPalindrome(self, head: Optional[ListNode]) -> bool:
-        nums: list[int] = []
-        while head is not None:
-            nums.append(head.val)
-            head = head.next
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        stack: list[Optional[TreeNode]] = [root]
+        while len(stack) > 0:
+            node = stack.pop()
+            if node is None:
+                continue
 
-        i = 0
-        j = len(nums) - 1
-        while i < j:
-            if nums[i] != nums[j]:
-                return False
-            else:
-                i += 1
-                j -= 1
-        return True
+            left = node.left
+            right = node.right
+            node.right = left
+            node.left = right
+            stack.append(left)
+            stack.append(right)
+        return root
 
 
 class Input:
-    nums: list[int]
+    root: Optional[TreeNode]
 
-    def __init__(self, nums: list[int]):
-        self.nums = nums
+    def __init__(self, root: Optional[TreeNode]):
+        self.root = root
 
-    def to_list(self) -> Optional[ListNode]:
-        dummy = ListNode()
-        tail = dummy
-        for num in self.nums:
-            tail.next = ListNode(num)
-            tail = tail.next
-        return dummy.next
+    def travel(self, node: Optional[TreeNode]):
+        if node is not None:
+            self.travel(node.left)
+            print(node.val, end=" ")
+            self.travel(node.right)
 
 
 def main():
-    inputs: list[Input] = [Input([1, 2, 2, 1]), Input([1, 2])]
+    inputs: list[Input] = [
+        Input(
+            TreeNode(
+                4,
+                TreeNode(2, TreeNode(1), TreeNode(3)),
+                TreeNode(7, TreeNode(6), TreeNode(9)),
+            )
+        ),
+        Input(TreeNode(2, TreeNode(1), TreeNode(3))),
+        Input(None),
+    ]
 
     solution = Solution()
     for input in inputs:
-        result = solution.isPalindrome(input.to_list())
-        print(result)
+        root = input.root
+        result = solution.invertTree(root)
+        input.travel(result)
+        print("")
 
 
 if __name__ == "__main__":

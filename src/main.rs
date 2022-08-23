@@ -1,75 +1,88 @@
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub struct ListNode {
+use std::cell::RefCell;
+use std::mem;
+use std::rc::Rc;
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
     pub val: i32,
-    pub next: Option<Box<ListNode>>,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
-impl ListNode {
+impl TreeNode {
     #[inline]
-    fn new(val: i32) -> Self {
-        ListNode { next: None, val }
+    pub fn new(
+        val: i32,
+        left: Option<Rc<RefCell<TreeNode>>>,
+        right: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<Self>>> {
+        Some(Rc::new(RefCell::new(Self { val, left, right })))
     }
 }
 
 struct Solution {}
 impl Solution {
-    pub fn is_palindrome(head: Option<Box<ListNode>>) -> bool {
-        let mut node = &head;
-        let mut nums = Vec::<i32>::new();
-        while let Some(n) = node {
-            nums.push(n.val);
-            node = &n.next;
-        }
+    pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+        let mut stack = vec![root.clone()];
 
-        if nums.is_empty() {
-            return true;
-        }
-
-        let mut i = 0usize;
-        let mut j = nums.len() - 1;
-        while i < j {
-            if nums[i] != nums[j] {
-                return false;
+        while let Some(top) = stack.pop() {
+            if let Some(node) = top {
+                let TreeNode { left, right, .. } = &mut *node.borrow_mut();
+                mem::swap(left, right);
+                stack.push(left.clone());
+                stack.push(right.clone());
             }
-
-            i += 1;
-            j -= 1;
         }
 
-        true
+        root
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    root: Option<Rc<RefCell<TreeNode>>>,
 }
 
 impl Input {
-    fn to_list(&self) -> Option<Box<ListNode>> {
-        let mut head = Some(Box::new(ListNode::new(self.nums[0])));
-        let mut current = head.as_mut();
-
-        for i in 1..self.nums.len() {
-            if let Some(cur) = current {
-                cur.next = Some(Box::new(ListNode::new(self.nums[i])));
-                current = cur.next.as_mut();
-            }
+    fn travel(node: Option<Rc<RefCell<TreeNode>>>) {
+        if let Some(n) = node {
+            Self::travel(n.borrow().left.clone());
+            print!("{} ", n.borrow().val);
+            Self::travel(n.borrow().right.clone());
         }
-
-        head
     }
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            nums: vec![1, 2, 2, 1],
+            root: TreeNode::new(
+                4,
+                TreeNode::new(
+                    2,
+                    TreeNode::new(1, None, None),
+                    TreeNode::new(3, None, None),
+                ),
+                TreeNode::new(
+                    7,
+                    TreeNode::new(6, None, None),
+                    TreeNode::new(9, None, None),
+                ),
+            ),
         },
-        Input { nums: vec![1, 2] },
+        Input {
+            root: TreeNode::new(
+                2,
+                TreeNode::new(1, None, None),
+                TreeNode::new(3, None, None),
+            ),
+        },
+        Input { root: None },
     ];
 
     for input in inputs.iter() {
-        let result = Solution::is_palindrome(input.to_list());
-        println!("{}", result);
+        let root = input.root.clone();
+        let result = Solution::invert_tree(root);
+        Input::travel(result);
+        println!("")
     }
 }
