@@ -1,24 +1,9 @@
 defmodule Solution do
-  @spec summary_ranges(nums :: [integer]) :: [String.t()]
-  def summary_ranges(nums), do: map_result(nums, []) |> Enum.reverse()
-
-  @spec map_result(nums :: [integer], result :: [String.t()]) :: [String.t()]
-  defp map_result([head | nums], result) do
-    {tail, newnums} = get_tail(nums, head)
-
-    if head == tail do
-      map_result(newnums, ["#{head}" | result])
-    else
-      map_result(newnums, ["#{head}->#{tail}" | result])
-    end
-  end
-
-  defp map_result([], result), do: result
-
-  @spec get_tail(nums :: [integer], head :: integer) :: {integer, [integer]}
-  defp get_tail([num | _] = nums, head) when num != head + 1, do: {head, nums}
-  defp get_tail([num | nums], _), do: get_tail(nums, num)
-  defp get_tail([], head), do: {head, []}
+  @spec is_power_of_three(n :: integer) :: boolean
+  def is_power_of_three(n) when n <= 0, do: false
+  def is_power_of_three(n) when n == 1, do: true
+  def is_power_of_three(n) when rem(n, 3) == 0, do: div(n, 3) |> is_power_of_three()
+  def is_power_of_three(_), do: false
 end
 
 defmodule Main do
@@ -26,19 +11,24 @@ defmodule Main do
   def main() do
     main([
       %{
-        nums: [0, 1, 2, 4, 5, 7]
+        n: 27
       },
       %{
-        nums: [0, 2, 3, 4, 6, 8, 9]
+        n: 0
+      },
+      %{
+        n: 9
+      },
+      %{
+        n: 45
       }
     ])
   end
 
   @spec main(list[any]) :: nil
-  def main([input | remains]) do
-    nums = input.nums
-    result = Solution.summary_ranges(nums)
-    IO.puts(result |> Enum.join(", "))
+  def main([%{:n => n} | remains]) do
+    result = Solution.is_power_of_three(n)
+    IO.puts(result)
     main(remains)
   end
 

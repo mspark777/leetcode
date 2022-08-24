@@ -7,51 +7,35 @@ from typing import Optional
 
 
 class Solution:
-    def summaryRanges(self, nums: list[int]) -> list[str]:
-        result: list[str] = []
+    def isPowerOfThree(self, n: int) -> bool:
+        if n <= 0:
+            return False
 
-        i = 0
-        while i < len(nums):
-            head = nums[i]
-            while True:
-                j = i + 1
-                if j >= len(nums):
-                    break
+        while (n % 3) == 0:
+            n //= 3
 
-                cur = nums[i] + 1
-                next = nums[j]
-                if cur != next:
-                    break
-                i = j
-
-            tail = nums[i]
-            if head == tail:
-                result.append(str(head))
-            else:
-                result.append(str(head) + "->" + str(tail))
-
-            i += 1
-
-        return result
+        return n == 1
 
 
 class Input:
-    nums: list[int]
+    n: int
 
-    def __init__(self, nums: list[int]):
-        self.nums = nums
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
     inputs: list[Input] = [
-        Input([0, 1, 2, 4, 5, 7]),
-        Input([0, 2, 3, 4, 6, 8, 9]),
+        Input(27),
+        Input(0),
+        Input(9),
+        Input(45),
     ]
 
     solution = Solution()
     for input in inputs:
-        nums = input.nums
-        result = solution.summaryRanges(nums)
+        n = input.n
+        result = solution.isPowerOfThree(n)
         print(result)
 
 

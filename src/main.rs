@@ -1,54 +1,34 @@
 struct Solution {}
 impl Solution {
-    pub fn summary_ranges(nums: Vec<i32>) -> Vec<String> {
-        let mut result = Vec::<String>::new();
-
-        let mut i = 0;
-        while i < nums.len() {
-            let head = nums[i];
-            loop {
-                let j = i + 1;
-                if j >= nums.len() {
-                    break;
-                }
-
-                if (nums[i] + 1) != nums[j] {
-                    break;
-                }
-
-                i = j;
-            }
-
-            let tail = nums[i];
-            if head == tail {
-                result.push(format!("{head}"));
-            } else {
-                result.push(format!("{head}->{tail}"));
-            }
-            i += 1;
+    pub fn is_power_of_three(n: i32) -> bool {
+        let mut i = n;
+        if i <= 0 {
+            return false;
         }
 
-        result
+        while (i % 3) == 0 {
+            i /= 3;
+        }
+
+        i == 1
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input {
-            nums: vec![0, 1, 2, 4, 5, 7],
-        },
-        Input {
-            nums: vec![0, 2, 3, 4, 6, 8, 9],
-        },
+        Input { n: 27 },
+        Input { n: 0 },
+        Input { n: 9 },
+        Input { n: 45 },
     ];
 
     for input in inputs.iter() {
-        let nums = &input.nums;
-        let result = Solution::summary_ranges(nums.clone());
+        let n = input.n;
+        let result = Solution::is_power_of_three(n);
         println!("{:?}", result);
     }
 }

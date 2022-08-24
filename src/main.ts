@@ -1,51 +1,38 @@
-function summaryRanges (nums: number[]): string[] {
-  const result: string[] = []
-
-  for (let i = 0; i < nums.length; i += 1) {
-    const head = nums[i]
-    while (true) {
-      const j = i + 1
-      if (j >= nums.length) {
-        break
-      }
-
-      const cur = nums[i] + 1
-      const next = nums[j]
-      if (cur !== next) {
-        break
-      }
-
-      i = j
-    }
-
-    const tail = nums[i]
-    if (head === tail) {
-      result.push(head.toString())
-    } else {
-      result.push(`${head}->${tail}`)
-    }
+function isPowerOfThree (n: number): boolean {
+  let i = BigInt(n)
+  if (i <= 0n) {
+    return false
   }
 
-  return result
+  while ((i % 3n) === 0n) {
+    i /= 3n
+  }
+
+  return i === 1n
 }
 
 interface Input {
-  readonly nums: number[]
+  readonly n: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [0, 1, 2, 4, 5, 7]
+      n: 27
     },
     {
-      nums: [0, 2, 3, 4, 6, 8, 9]
+      n: 0
+    },
+    {
+      n: 9
+    },
+    {
+      n: 45
     }
   ]
 
-  for (const input of inputs) {
-    const nums = input.nums
-    const result = summaryRanges(nums)
+  for (const { n } of inputs) {
+    const result = isPowerOfThree(n)
     console.log(result)
   }
 }
