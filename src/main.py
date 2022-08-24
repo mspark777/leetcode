@@ -6,37 +6,44 @@ from __future__ import annotations
 from typing import Optional
 
 
-class Solution:
-    def isPowerOfThree(self, n: int) -> bool:
-        if n <= 0:
-            return False
+class MyQueue:
+    current: list[int]
+    buffer: list[int]
 
-        while (n % 3) == 0:
-            n //= 3
+    def __init__(self):
+        self.current = []
+        self.buffer = []
 
-        return n == 1
+    def push(self, x: int) -> None:
+        self.buffer.append(x)
 
+    def pop(self) -> int:
+        self.fill_from_buffer()
+        return self.current.pop()
 
-class Input:
-    n: int
+    def peek(self) -> int:
+        self.fill_from_buffer()
+        return self.current[-1]
 
-    def __init__(self, n: int):
-        self.n = n
+    def empty(self) -> bool:
+        size = len(self.current) + len(self.buffer)
+        return size < 1
+
+    def fill_from_buffer(self):
+        current = self.current
+        buffer = self.buffer
+        if len(current) < 1:
+            while len(buffer) > 0:
+                current.append(buffer.pop())
 
 
 def main():
-    inputs: list[Input] = [
-        Input(27),
-        Input(0),
-        Input(9),
-        Input(45),
-    ]
-
-    solution = Solution()
-    for input in inputs:
-        n = input.n
-        result = solution.isPowerOfThree(n)
-        print(result)
+    queue = MyQueue()
+    queue.push(1)
+    queue.push(2)
+    print(queue.peek())
+    print(queue.pop())
+    print(queue.empty())
 
 
 if __name__ == "__main__":

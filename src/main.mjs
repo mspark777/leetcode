@@ -1,40 +1,59 @@
-/**
- * @param {number} n
- * @returns {boolean}
-*/
-function isPowerOfThree (n) {
-  let i = BigInt(n)
-  if (i <= 0n) {
-    return false
+class MyQueue {
+  constructor () {
+    this.current = []
+    this.buffer = []
   }
 
-  while ((i % 3n) === 0n) {
-    i /= 3n
+  /**
+   * @param {number} x
+   * @returns {void}
+  */
+  push (x) {
+    this.buffer.push(x)
   }
 
-  return i === 1n
+  /**
+   * @returns {number}
+   */
+  pop () {
+    this.#fillFromBuffer()
+    return this.current.pop()
+  }
+
+  /**
+   * @returns {number}
+   */
+  peek () {
+    this.#fillFromBuffer()
+    return this.current.at(-1)
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  empty () {
+    const size = this.current.length + this.buffer.length
+    return size < 1
+  }
+
+  #fillFromBuffer () {
+    const current = this.current
+    const buffer = this.buffer
+    if (current.length < 1) {
+      while (buffer.length > 0) {
+        current.push(buffer.pop())
+      }
+    }
+  }
 }
 
 async function main () {
-  const inputs = [
-    {
-      n: 27
-    },
-    {
-      n: 0
-    },
-    {
-      n: 9
-    },
-    {
-      n: 45
-    }
-  ]
-
-  for (const { n } of inputs) {
-    const result = isPowerOfThree(n)
-    console.log(result)
-  }
+  const queue = new MyQueue()
+  queue.push(1)
+  queue.push(2)
+  console.log(queue.peek())
+  console.log(queue.pop())
+  console.log(queue.empty())
 }
 
 main().catch(e => {

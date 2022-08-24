@@ -1,34 +1,57 @@
-struct Solution {}
-impl Solution {
-    pub fn is_power_of_three(n: i32) -> bool {
-        let mut i = n;
-        if i <= 0 {
-            return false;
-        }
-
-        while (i % 3) == 0 {
-            i /= 3;
-        }
-
-        i == 1
-    }
+struct MyQueue {
+    current: Vec<i32>,
+    buffer: Vec<i32>,
 }
 
-struct Input {
-    n: i32,
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl MyQueue {
+    fn new() -> Self {
+        MyQueue {
+            current: vec![],
+            buffer: vec![],
+        }
+    }
+
+    fn push(&mut self, x: i32) {
+        self.buffer.push(x);
+    }
+
+    fn pop(&mut self) -> i32 {
+        self.fill();
+        return self.current.pop().unwrap();
+    }
+
+    fn peek(&mut self) -> i32 {
+        self.fill();
+        let top = self.current.len() - 1;
+        return self.current[top];
+    }
+
+    fn empty(&self) -> bool {
+        let size = self.buffer.len() + self.current.len();
+        return size < 1;
+    }
+
+    fn fill(&mut self) {
+        let current = &mut self.current;
+        let buffer = &mut self.buffer;
+
+        if current.is_empty() {
+            while let Some(n) = buffer.pop() {
+                current.push(n);
+            }
+        }
+    }
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input { n: 27 },
-        Input { n: 0 },
-        Input { n: 9 },
-        Input { n: 45 },
-    ];
-
-    for input in inputs.iter() {
-        let n = input.n;
-        let result = Solution::is_power_of_three(n);
-        println!("{:?}", result);
-    }
+    let mut queue = MyQueue::new();
+    queue.push(1);
+    queue.push(2);
+    println!("{}", queue.peek());
+    println!("{}", queue.pop());
+    println!("{}", queue.empty());
 }
