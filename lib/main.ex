@@ -1,9 +1,28 @@
 defmodule Solution do
-  @spec is_power_of_three(n :: integer) :: boolean
-  def is_power_of_three(n) when n <= 0, do: false
-  def is_power_of_three(n) when n == 1, do: true
-  def is_power_of_three(n) when rem(n, 3) == 0, do: div(n, 3) |> is_power_of_three()
-  def is_power_of_three(_), do: false
+  @spec can_construct(ransom_note :: String.t(), magazine :: String.t()) :: boolean
+  def can_construct(ransom_note, magazine) do
+    counts = magazine |> String.to_charlist() |> create_counts(%{})
+    ransom_note |> String.to_charlist() |> check_counts(counts)
+  end
+
+  defp create_counts([ch | chars], counts) do
+    cnt = Map.get(counts, ch, 0)
+    create_counts(chars, Map.put(counts, ch, cnt + 1))
+  end
+
+  defp create_counts([], counts), do: counts
+
+  defp check_counts([ch | chars], counts) do
+    cnt = Map.get(counts, ch, 0)
+
+    if cnt < 1 do
+      false
+    else
+      check_counts(chars, Map.put(counts, ch, cnt - 1))
+    end
+  end
+
+  defp check_counts([], _), do: true
 end
 
 defmodule Main do
@@ -11,23 +30,25 @@ defmodule Main do
   def main() do
     main([
       %{
-        n: 27
+        ransom_note: "a",
+        magazine: "b"
       },
       %{
-        n: 0
+        ransom_note: "aa",
+        magazine: "ab"
       },
       %{
-        n: 9
-      },
-      %{
-        n: 45
+        ransom_note: "aa",
+        magazine: "aab"
       }
     ])
   end
 
   @spec main(list[any]) :: nil
-  def main([%{:n => n} | remains]) do
-    result = Solution.is_power_of_three(n)
+  def main([input | remains]) do
+    ransom_note = input.ransom_note
+    magazine = input.magazine
+    result = Solution.can_construct(ransom_note, magazine)
     IO.puts(result)
     main(remains)
   end

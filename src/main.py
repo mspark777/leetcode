@@ -4,46 +4,32 @@ main
 
 from __future__ import annotations
 from typing import Optional
+from collections import Counter
 
 
-class MyQueue:
-    current: list[int]
-    buffer: list[int]
+class Solution:
+    def canConstruct(self, ransom_note: str, magazine: str) -> bool:
+        return (Counter(ransom_note) - Counter(magazine)).total() == 0
 
-    def __init__(self):
-        self.current = []
-        self.buffer = []
 
-    def push(self, x: int) -> None:
-        self.buffer.append(x)
+class Input:
+    ransom_note: str
+    magazine: str
 
-    def pop(self) -> int:
-        self.fill_from_buffer()
-        return self.current.pop()
-
-    def peek(self) -> int:
-        self.fill_from_buffer()
-        return self.current[-1]
-
-    def empty(self) -> bool:
-        size = len(self.current) + len(self.buffer)
-        return size < 1
-
-    def fill_from_buffer(self):
-        current = self.current
-        buffer = self.buffer
-        if len(current) < 1:
-            while len(buffer) > 0:
-                current.append(buffer.pop())
+    def __init__(self, ransom_note: str, magazine: str):
+        self.ransom_note = ransom_note
+        self.magazine = magazine
 
 
 def main():
-    queue = MyQueue()
-    queue.push(1)
-    queue.push(2)
-    print(queue.peek())
-    print(queue.pop())
-    print(queue.empty())
+    inputs: list[Input] = [Input("a", "b"), Input("aa", "ab"), Input("aa", "aab")]
+
+    solution = Solution()
+    for input in inputs:
+        ransom_note = input.ransom_note
+        magazine = input.magazine
+        result = solution.canConstruct(ransom_note, magazine)
+        print(result)
 
 
 if __name__ == "__main__":

@@ -1,48 +1,48 @@
-class MyQueue {
-  private readonly current: number[]
-  private readonly buffer: number[]
-  constructor () {
-    this.current = []
-    this.buffer = []
+function canConstruct (ransomNote: string, magazine: string): boolean {
+  const counts = new Map<number, number>()
+  for (let i = 0; i < magazine.length; i += 1) {
+    const code = magazine.charCodeAt(i)
+    const cnt = counts.get(code) ?? 0
+    counts.set(code, cnt + 1)
   }
 
-  push (x: number): void {
-    this.buffer.push(x)
-  }
-
-  pop (): number {
-    this.fillFromBuffer()
-    return this.current.pop() as number
-  }
-
-  peek (): number {
-    this.fillFromBuffer()
-    return this.current.at(-1) as number
-  }
-
-  empty (): boolean {
-    const size = this.current.length + this.buffer.length
-    return size < 1
-  }
-
-  private fillFromBuffer (): void {
-    const current = this.current
-    const buffer = this.buffer
-    if (current.length < 1) {
-      while (buffer.length > 0) {
-        current.push(buffer.pop() as number)
-      }
+  for (let i = 0; i < ransomNote.length; i += 1) {
+    const code = ransomNote.charCodeAt(i)
+    const cnt = counts.get(code) ?? 0
+    if (cnt < 1) {
+      return false
     }
+    counts.set(code, cnt - 1)
   }
+
+  return true
+}
+
+interface Input {
+  readonly ransomNote: string
+  readonly magazine: string
 }
 
 async function main (): Promise<void> {
-  const queue = new MyQueue()
-  queue.push(1)
-  queue.push(2)
-  console.log(queue.peek())
-  console.log(queue.pop())
-  console.log(queue.empty())
+  const inputs: Input[] = [
+    {
+      ransomNote: 'a',
+      magazine: 'b'
+    },
+    {
+      ransomNote: 'aa',
+      magazine: 'ab'
+    },
+    {
+      ransomNote: 'aa',
+      magazine: 'aab'
+    }
+  ]
+
+  for (const { ransomNote, magazine } of inputs) {
+    const result = canConstruct(ransomNote, magazine)
+    console.log(result)
+  }
 }
 
 main().catch(e => {
