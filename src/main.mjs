@@ -1,46 +1,63 @@
 /**
- * @param {string} ransomNote
- * @param {string} magazine
- * @return {boolean}
- */
-function canConstruct (ransomNote, magazine) {
-  const counts = new Map()
-  for (let i = 0; i < magazine.length; i += 1) {
-    const code = magazine.charCodeAt(i)
-    const cnt = counts.get(code) ?? 0
-    counts.set(code, cnt + 1)
+ * @param {bigint} n
+ * @returns {bigint[]}
+*/
+function getCounts (n) {
+  const result = new Array(10).fill(0n)
+  while (n > 0n) {
+    const idx = Number(n % 10n)
+    result[idx] += 1n
+    n /= 10n
   }
 
-  for (let i = 0; i < ransomNote.length; i += 1) {
-    const code = ransomNote.charCodeAt(i)
-    const cnt = counts.get(code) ?? 0
-    if (cnt < 1) {
+  return result
+}
+
+/**
+ * @param {bigint[]} c1
+ * @param {bigint[]} c2
+ * @returns {boolean}
+*/
+function compareCounts (c1, c2) {
+  for (let i = 0; i < c1.length; i += 1) {
+    if (c1[i] !== c2[i]) {
       return false
     }
-    counts.set(code, cnt - 1)
   }
 
   return true
 }
 
+/**
+ * @param {number} n
+ * @return {boolean}
+ */
+function reorderedPowerOf2 (n) {
+  const counts = getCounts(BigInt(n))
+  for (let i = 0n; i < 31n; i += 1n) {
+    if (compareCounts(counts, getCounts(1n << i))) {
+      return true
+    }
+  }
+
+  return false
+}
+
 async function main () {
   const inputs = [
     {
-      ransomNote: 'a',
-      magazine: 'b'
+      n: 1
     },
     {
-      ransomNote: 'aa',
-      magazine: 'ab'
+      n: 10
     },
     {
-      ransomNote: 'aa',
-      magazine: 'aab'
+      n: 46
     }
   ]
 
-  for (const { ransomNote, magazine } of inputs) {
-    const result = canConstruct(ransomNote, magazine)
+  for (const { n } of inputs) {
+    const result = reorderedPowerOf2(n)
     console.log(result)
   }
 }

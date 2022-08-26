@@ -1,28 +1,32 @@
 defmodule Solution do
-  @spec can_construct(ransom_note :: String.t(), magazine :: String.t()) :: boolean
-  def can_construct(ransom_note, magazine) do
-    counts = magazine |> String.to_charlist() |> create_counts(%{})
-    ransom_note |> String.to_charlist() |> check_counts(counts)
+  use Bitwise
+
+  @spec reordered_power_of2(n :: integer) :: boolean
+  def reordered_power_of2(n) do
+    get_counts(n) |> loop(0)
   end
 
-  defp create_counts([ch | chars], counts) do
-    cnt = Map.get(counts, ch, 0)
-    create_counts(chars, Map.put(counts, ch, cnt + 1))
+  @spec get_counts(n :: integer) :: [integer]
+  def get_counts(n), do: get_counts(n, List.duplicate(0, 10))
+
+  @spec get_counts(n :: integer, result :: [integer]) :: [integer]
+  def get_counts(n, result) when n > 0 do
+    idx = rem(n, 10)
+    get_counts(div(n, 10), List.update_at(result, idx, &(&1 + 1)))
   end
 
-  defp create_counts([], counts), do: counts
+  def get_counts(_, result), do: result
 
-  defp check_counts([ch | chars], counts) do
-    cnt = Map.get(counts, ch, 0)
-
-    if cnt < 1 do
-      false
+  @spec loop(counts :: [integer], i :: integer) :: boolean
+  def loop(counts, i) when i < 31 do
+    if counts == get_counts(1 <<< i) do
+      true
     else
-      check_counts(chars, Map.put(counts, ch, cnt - 1))
+      loop(counts, i + 1)
     end
   end
 
-  defp check_counts([], _), do: true
+  def loop(_, _), do: false
 end
 
 defmodule Main do
@@ -30,25 +34,21 @@ defmodule Main do
   def main() do
     main([
       %{
-        ransom_note: "a",
-        magazine: "b"
+        n: 1
       },
       %{
-        ransom_note: "aa",
-        magazine: "ab"
+        n: 10
       },
       %{
-        ransom_note: "aa",
-        magazine: "aab"
+        n: 46
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    ransom_note = input.ransom_note
-    magazine = input.magazine
-    result = Solution.can_construct(ransom_note, magazine)
+    n = input.n
+    result = Solution.reordered_power_of2(n)
     IO.puts(result)
     main(remains)
   end

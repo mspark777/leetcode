@@ -4,31 +4,38 @@ main
 
 from __future__ import annotations
 from typing import Optional
-from collections import Counter
 
 
 class Solution:
-    def canConstruct(self, ransom_note: str, magazine: str) -> bool:
-        return (Counter(ransom_note) - Counter(magazine)).total() == 0
+    def reorderedPowerOf2(self, n: int) -> bool:
+        counts = self.get_counts(n)
+        for i in range(32):
+            if counts == self.get_counts(1 << i):
+                return True
+        return False
+
+    def get_counts(self, n: int) -> list[int]:
+        result = [0] * 10
+        while n > 0:
+            result[n % 10] += 1
+            n //= 10
+        return result
 
 
 class Input:
-    ransom_note: str
-    magazine: str
+    n: int
 
-    def __init__(self, ransom_note: str, magazine: str):
-        self.ransom_note = ransom_note
-        self.magazine = magazine
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
-    inputs: list[Input] = [Input("a", "b"), Input("aa", "ab"), Input("aa", "aab")]
+    inputs: list[Input] = [Input(1), Input(10), Input(46)]
 
     solution = Solution()
     for input in inputs:
-        ransom_note = input.ransom_note
-        magazine = input.magazine
-        result = solution.canConstruct(ransom_note, magazine)
+        n = input.n
+        result = solution.reorderedPowerOf2(n)
         print(result)
 
 

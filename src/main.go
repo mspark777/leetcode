@@ -2,49 +2,57 @@ package main
 
 import "fmt"
 
-func canConstruct(ransomNote string, magazine string) bool {
-	counts := make(map[rune]int)
-
-	for _, ch := range magazine {
-		counts[ch] += 1
+func getCounts(n int) []int {
+	result := make([]int, 10)
+	for n > 0 {
+		result[n%10] += 1
+		n /= 10
 	}
 
-	for _, ch := range ransomNote {
-		cnt := counts[ch]
-		if cnt < 1 {
+	return result
+}
+
+func compareCounts(c1 []int, c2 []int) bool {
+	for i, c := range c1 {
+		if c != c2[i] {
 			return false
 		}
-		counts[ch] = cnt - 1
 	}
 
 	return true
 }
 
+func reorderedPowerOf2(n int) bool {
+	counts := getCounts(n)
+	for i := 0; i < 31; i += 1 {
+		if compareCounts(counts, getCounts(1<<i)) {
+			return true
+		}
+	}
+
+	return false
+}
+
 type input struct {
-	ransomNote string
-	magazine   string
+	n int
 }
 
 func main() {
 	inputs := []input{
 		{
-			ransomNote: "a",
-			magazine:   "b",
+			n: 1,
 		},
 		{
-			ransomNote: "aa",
-			magazine:   "ab",
+			n: 10,
 		},
 		{
-			ransomNote: "aa",
-			magazine:   "aab",
+			n: 46,
 		},
 	}
 
 	for _, input := range inputs {
-		ransomNote := input.ransomNote
-		magazine := input.magazine
-		result := canConstruct(ransomNote, magazine)
+		n := input.n
+		result := reorderedPowerOf2(n)
 		fmt.Println(result)
 	}
 }

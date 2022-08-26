@@ -1,46 +1,54 @@
-function canConstruct (ransomNote: string, magazine: string): boolean {
-  const counts = new Map<number, number>()
-  for (let i = 0; i < magazine.length; i += 1) {
-    const code = magazine.charCodeAt(i)
-    const cnt = counts.get(code) ?? 0
-    counts.set(code, cnt + 1)
+function getCounts (n: bigint): bigint[] {
+  const result = new Array<bigint>(10).fill(0n)
+  while (n > 0n) {
+    const idx = Number(n % 10n)
+    result[idx] += 1n
+    n /= 10n
   }
 
-  for (let i = 0; i < ransomNote.length; i += 1) {
-    const code = ransomNote.charCodeAt(i)
-    const cnt = counts.get(code) ?? 0
-    if (cnt < 1) {
+  return result
+}
+
+function compareCounts (c1: bigint[], c2: bigint[]): boolean {
+  for (let i = 0; i < c1.length; i += 1) {
+    if (c1[i] !== c2[i]) {
       return false
     }
-    counts.set(code, cnt - 1)
   }
 
   return true
 }
 
+function reorderedPowerOf2 (n: number): boolean {
+  const counts = getCounts(BigInt(n))
+  for (let i = 0n; i < 31n; i += 1n) {
+    if (compareCounts(counts, getCounts(1n << i))) {
+      return true
+    }
+  }
+
+  return false
+}
+
 interface Input {
-  readonly ransomNote: string
-  readonly magazine: string
+  readonly n: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      ransomNote: 'a',
-      magazine: 'b'
+      n: 1
     },
     {
-      ransomNote: 'aa',
-      magazine: 'ab'
+      n: 10
     },
     {
-      ransomNote: 'aa',
-      magazine: 'aab'
+      n: 46
     }
   ]
 
-  for (const { ransomNote, magazine } of inputs) {
-    const result = canConstruct(ransomNote, magazine)
+  for (const { n } of inputs) {
+    const result = reorderedPowerOf2(n)
     console.log(result)
   }
 }
