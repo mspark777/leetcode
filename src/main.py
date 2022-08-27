@@ -7,35 +7,46 @@ from typing import Optional
 
 
 class Solution:
-    def reorderedPowerOf2(self, n: int) -> bool:
-        counts = self.get_counts(n)
-        for i in range(32):
-            if counts == self.get_counts(1 << i):
-                return True
-        return False
+    def maxSumSubmatrix(self, matrix: list[list[int]], k: int) -> int:
+        row_count = len(matrix)
+        col_count = len(matrix[0])
+        max_sum = -(2**63 - 1)
 
-    def get_counts(self, n: int) -> list[int]:
-        result = [0] * 10
-        while n > 0:
-            result[n % 10] += 1
-            n //= 10
-        return result
+        for i0 in range(col_count):
+            sums = [0] * row_count
+            for i1 in range(i0, col_count):
+                for i2 in range(row_count):
+                    sums[i2] += matrix[i2][i1]
+
+                for i2 in range(row_count):
+                    sum = 0
+                    for i3 in range(i2, row_count):
+                        sum += sums[i3]
+                        if (sum > max_sum) and (sum <= k):
+                            max_sum = sum
+        return max_sum
 
 
 class Input:
-    n: int
+    matrix: list[list[int]]
+    k: int
 
-    def __init__(self, n: int):
-        self.n = n
+    def __init__(self, matrix: list[list[int]], k: int):
+        self.matrix = matrix
+        self.k = k
 
 
 def main():
-    inputs: list[Input] = [Input(1), Input(10), Input(46)]
+    inputs: list[Input] = [
+        Input([[1, 0, 1], [0, -2, 3]], 2),
+        Input([[2, 2, -1]], 3),
+    ]
 
     solution = Solution()
     for input in inputs:
-        n = input.n
-        result = solution.reorderedPowerOf2(n)
+        matrix = input.matrix
+        k = input.k
+        result = solution.maxSumSubmatrix(matrix, k)
         print(result)
 
 

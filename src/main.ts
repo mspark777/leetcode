@@ -1,54 +1,49 @@
-function getCounts (n: bigint): bigint[] {
-  const result = new Array<bigint>(10).fill(0n)
-  while (n > 0n) {
-    const idx = Number(n % 10n)
-    result[idx] += 1n
-    n /= 10n
-  }
+function maxSumSubmatrix (matrix: number[][], k: number): number {
+  const rowCount = matrix.length
+  const colCount = matrix[0].length
+  let maxSum = Number.MIN_SAFE_INTEGER
 
-  return result
-}
+  for (let i0 = 0; i0 < colCount; i0 += 1) {
+    const sums = new Array<number>(rowCount).fill(0)
+    for (let i1 = i0; i1 < colCount; i1 += 1) {
+      for (let i2 = 0; i2 < rowCount; i2 += 1) {
+        sums[i2] += matrix[i2][i1]
+      }
 
-function compareCounts (c1: bigint[], c2: bigint[]): boolean {
-  for (let i = 0; i < c1.length; i += 1) {
-    if (c1[i] !== c2[i]) {
-      return false
+      for (let i2 = 0; i2 < rowCount; i2 += 1) {
+        let sum = 0
+        for (let i3 = i2; i3 < rowCount; i3 += 1) {
+          sum += sums[i3]
+          if ((sum > maxSum) && (sum <= k)) {
+            maxSum = sum
+          }
+        }
+      }
     }
   }
 
-  return true
-}
-
-function reorderedPowerOf2 (n: number): boolean {
-  const counts = getCounts(BigInt(n))
-  for (let i = 0n; i < 31n; i += 1n) {
-    if (compareCounts(counts, getCounts(1n << i))) {
-      return true
-    }
-  }
-
-  return false
+  return maxSum
 }
 
 interface Input {
-  readonly n: number
+  readonly matrix: number[][]
+  readonly k: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      n: 1
+      matrix: [[1, 0, 1], [0, -2, 3]],
+      k: 2
     },
     {
-      n: 10
-    },
-    {
-      n: 46
+      matrix: [[2, 2, -1]],
+      k: 3
     }
   ]
 
-  for (const { n } of inputs) {
-    const result = reorderedPowerOf2(n)
+  for (const { matrix, k } of inputs) {
+    const result = maxSumSubmatrix(matrix, k)
     console.log(result)
   }
 }
