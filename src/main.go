@@ -2,57 +2,63 @@ package main
 
 import (
 	"fmt"
-	"math"
+	"sort"
 )
 
-func maxSumSubmatrix(matrix [][]int, k int) int {
-	rowCount := len(matrix)
-	colCount := len(matrix[0])
-	maxSum := math.MinInt
+func diagonalSort(mat [][]int) [][]int {
+	rowCount := len(mat)
+	colCount := len(mat[0])
 
-	for i0 := 0; i0 < colCount; i0 += 1 {
-		sums := make([]int, rowCount)
-		for i1 := i0; i1 < colCount; i1 += 1 {
-			for i2 := 0; i2 < rowCount; i2 += 1 {
-				sums[i2] += matrix[i2][i1]
-			}
-
-			for i2 := 0; i2 < rowCount; i2 += 1 {
-				sum := 0
-				for i3 := i2; i3 < rowCount; i3 += 1 {
-					sum += sums[i3]
-					if (sum > maxSum) && (sum <= k) {
-						maxSum = sum
-					}
-				}
+	queues := make(map[int][]int)
+	for i := 0; i < rowCount; i += 1 {
+		for j := 0; j < colCount; j += 1 {
+			key := i - j
+			value := mat[i][j]
+			if queue, ok := queues[key]; ok {
+				queues[key] = append(queue, value)
+			} else {
+				queues[key] = []int{value}
 			}
 		}
 	}
 
-	return maxSum
+	for _, queue := range queues {
+		sort.Sort(sort.Reverse(sort.IntSlice(queue)))
+	}
+
+	result := make([][]int, rowCount)
+	for i := 0; i < rowCount; i += 1 {
+		row := make([]int, colCount)
+		for j := 0; j < colCount; j += 1 {
+			key := i - j
+			queue := queues[key]
+			top := len(queue) - 1
+			row[j] = queue[top]
+			queues[key] = queue[:top]
+		}
+		result[i] = row
+	}
+
+	return result
 }
 
 type input struct {
-	matrix [][]int
-	k      int
+	mat [][]int
 }
 
 func main() {
 	inputs := []input{
 		{
-			matrix: [][]int{{1, 0, 1}, {0, -2, 3}},
-			k:      2,
+			mat: [][]int{{3, 3, 1, 1}, {2, 2, 1, 2}, {1, 1, 1, 2}},
 		},
 		{
-			matrix: [][]int{{2, 2, -1}},
-			k:      3,
+			mat: [][]int{{11, 25, 66, 1, 69, 7}, {23, 55, 17, 45, 15, 52}, {75, 31, 36, 44, 58, 8}, {22, 27, 33, 25, 68, 4}, {84, 28, 14, 11, 5, 50}},
 		},
 	}
 
 	for _, input := range inputs {
-		matrix := input.matrix
-		k := input.k
-		result := maxSumSubmatrix(matrix, k)
+		mat := input.mat
+		result := diagonalSort(mat)
 		fmt.Println(result)
 	}
 }

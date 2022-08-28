@@ -3,50 +3,63 @@ main
 """
 
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Reversible
 
 
 class Solution:
-    def maxSumSubmatrix(self, matrix: list[list[int]], k: int) -> int:
-        row_count = len(matrix)
-        col_count = len(matrix[0])
-        max_sum = -(2**63 - 1)
+    def diagonalSort(self, mat: list[list[int]]) -> list[list[int]]:
+        row_count = len(mat)
+        col_count = len(mat[0])
 
-        for i0 in range(col_count):
-            sums = [0] * row_count
-            for i1 in range(i0, col_count):
-                for i2 in range(row_count):
-                    sums[i2] += matrix[i2][i1]
+        queues: dict[int, list[int]] = {}
+        for i in range(row_count):
+            for j in range(col_count):
+                key = i - j
+                if key not in queues:
+                    queues[key] = []
 
-                for i2 in range(row_count):
-                    sum = 0
-                    for i3 in range(i2, row_count):
-                        sum += sums[i3]
-                        if (sum > max_sum) and (sum <= k):
-                            max_sum = sum
-        return max_sum
+                queues[key].append(mat[i][j])
+
+        for queue in queues.values():
+            queue.sort(reverse=True)
+
+        result = [[]] * row_count
+        for i in range(row_count):
+            row = [0] * col_count
+            for j in range(col_count):
+                key = i - j
+                queue = queues[key]
+                row[j] = queue.pop()
+            result[i] = row
+
+        return result
 
 
 class Input:
-    matrix: list[list[int]]
-    k: int
+    mat: list[list[int]]
 
-    def __init__(self, matrix: list[list[int]], k: int):
-        self.matrix = matrix
-        self.k = k
+    def __init__(self, mat: list[list[int]]):
+        self.mat = mat
 
 
 def main():
     inputs: list[Input] = [
-        Input([[1, 0, 1], [0, -2, 3]], 2),
-        Input([[2, 2, -1]], 3),
+        Input([[3, 3, 1, 1], [2, 2, 1, 2], [1, 1, 1, 2]]),
+        Input(
+            [
+                [11, 25, 66, 1, 69, 7],
+                [23, 55, 17, 45, 15, 52],
+                [75, 31, 36, 44, 58, 8],
+                [22, 27, 33, 25, 68, 4],
+                [84, 28, 14, 11, 5, 50],
+            ]
+        ),
     ]
 
     solution = Solution()
     for input in inputs:
-        matrix = input.matrix
-        k = input.k
-        result = solution.maxSumSubmatrix(matrix, k)
+        mat = input.mat
+        result = solution.diagonalSort(mat)
         print(result)
 
 

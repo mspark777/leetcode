@@ -1,49 +1,52 @@
-function maxSumSubmatrix (matrix: number[][], k: number): number {
-  const rowCount = matrix.length
-  const colCount = matrix[0].length
-  let maxSum = Number.MIN_SAFE_INTEGER
+function diagonalSort (mat: number[][]): number[][] {
+  const rowCount = mat.length
+  const colCount = mat[0].length
 
-  for (let i0 = 0; i0 < colCount; i0 += 1) {
-    const sums = new Array<number>(rowCount).fill(0)
-    for (let i1 = i0; i1 < colCount; i1 += 1) {
-      for (let i2 = 0; i2 < rowCount; i2 += 1) {
-        sums[i2] += matrix[i2][i1]
-      }
-
-      for (let i2 = 0; i2 < rowCount; i2 += 1) {
-        let sum = 0
-        for (let i3 = i2; i3 < rowCount; i3 += 1) {
-          sum += sums[i3]
-          if ((sum > maxSum) && (sum <= k)) {
-            maxSum = sum
-          }
-        }
-      }
+  const queues = new Map<number, number[]>()
+  for (let i = 0; i < rowCount; i += 1) {
+    for (let j = 0; j < colCount; j += 1) {
+      const key = i - j
+      const queue = queues.get(key) ?? []
+      queue.push(mat[i][j])
+      queues.set(key, queue)
     }
   }
 
-  return maxSum
+  for (const queue of queues.values()) {
+    queue.sort((a, b) => b - a)
+  }
+
+  const result = new Array<number[]>(rowCount)
+  for (let i = 0; i < rowCount; i += 1) {
+    const row = new Array<number>(colCount)
+    for (let j = 0; j < colCount; j += 1) {
+      const key = i - j
+      const queue = queues.get(key) as number[]
+      row[j] = queue.pop() as number
+    }
+
+    result[i] = row
+  }
+
+  return result
 }
 
 interface Input {
-  readonly matrix: number[][]
-  readonly k: number
+  readonly mat: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      matrix: [[1, 0, 1], [0, -2, 3]],
-      k: 2
+      mat: [[3, 3, 1, 1], [2, 2, 1, 2], [1, 1, 1, 2]]
     },
     {
-      matrix: [[2, 2, -1]],
-      k: 3
+      mat: [[11, 25, 66, 1, 69, 7], [23, 55, 17, 45, 15, 52], [75, 31, 36, 44, 58, 8], [22, 27, 33, 25, 68, 4], [84, 28, 14, 11, 5, 50]]
     }
   ]
 
-  for (const { matrix, k } of inputs) {
-    const result = maxSumSubmatrix(matrix, k)
+  for (const { mat } of inputs) {
+    const result = diagonalSort(mat)
     console.log(result)
   }
 }
