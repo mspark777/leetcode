@@ -1,52 +1,75 @@
-function diagonalSort (mat: number[][]): number[][] {
-  const rowCount = mat.length
-  const colCount = mat[0].length
+const LAND = '1'
+const WATER = '0'
 
-  const queues = new Map<number, number[]>()
-  for (let i = 0; i < rowCount; i += 1) {
-    for (let j = 0; j < colCount; j += 1) {
-      const key = i - j
-      const queue = queues.get(key) ?? []
-      queue.push(mat[i][j])
-      queues.set(key, queue)
-    }
-  }
+function clearLand (grid: string[][], row: number, col: number, rowCount: number, colCount: number): void {
+  const stack: number[][] = [[row, col]]
 
-  for (const queue of queues.values()) {
-    queue.sort((a, b) => b - a)
-  }
+  while (stack.length > 0) {
+    const [r, c] = stack.pop() as number[]
 
-  const result = new Array<number[]>(rowCount)
-  for (let i = 0; i < rowCount; i += 1) {
-    const row = new Array<number>(colCount)
-    for (let j = 0; j < colCount; j += 1) {
-      const key = i - j
-      const queue = queues.get(key) as number[]
-      row[j] = queue.pop() as number
+    if (r < 0) {
+      continue
+    } else if (r >= rowCount) {
+      continue
+    } else if (c < 0) {
+      continue
+    } else if (c >= colCount) {
+      continue
+    } else if (grid[r][c] === WATER) {
+      continue
     }
 
-    result[i] = row
+    grid[r][c] = WATER
+    stack.push([r - 1, c])
+    stack.push([r + 1, c])
+    stack.push([r, c - 1])
+    stack.push([r, c + 1])
+  }
+}
+
+function numIslands (grid: string[][]): number {
+  const rowCount = grid.length
+  const colCount = grid[0].length
+
+  let result = 0
+  for (let r = 0; r < rowCount; r += 1) {
+    for (let c = 0; c < colCount; c += 1) {
+      if (grid[r][c] === LAND) {
+        result += 1
+        clearLand(grid, r, c, rowCount, colCount)
+      }
+    }
   }
 
   return result
 }
 
 interface Input {
-  readonly mat: number[][]
+  readonly grid: string[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      mat: [[3, 3, 1, 1], [2, 2, 1, 2], [1, 1, 1, 2]]
+      grid: [
+        ['1', '1', '1', '1', '0'],
+        ['1', '1', '0', '1', '0'],
+        ['1', '1', '0', '0', '0'],
+        ['0', '0', '0', '0', '0']
+      ]
     },
     {
-      mat: [[11, 25, 66, 1, 69, 7], [23, 55, 17, 45, 15, 52], [75, 31, 36, 44, 58, 8], [22, 27, 33, 25, 68, 4], [84, 28, 14, 11, 5, 50]]
+      grid: [
+        ['1', '1', '0', '0', '0'],
+        ['1', '1', '0', '0', '0'],
+        ['0', '0', '1', '0', '0'],
+        ['0', '0', '0', '1', '1']
+      ]
     }
   ]
 
-  for (const { mat } of inputs) {
-    const result = diagonalSort(mat)
+  for (const { grid } of inputs) {
+    const result = numIslands(grid)
     console.log(result)
   }
 }

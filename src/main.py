@@ -5,61 +5,77 @@ main
 from __future__ import annotations
 from typing import Optional, Reversible
 
+WATER = "0"
+LAND = "1"
+
 
 class Solution:
-    def diagonalSort(self, mat: list[list[int]]) -> list[list[int]]:
-        row_count = len(mat)
-        col_count = len(mat[0])
+    def numIslands(self, grid: list[list[str]]) -> int:
+        row_count = len(grid)
+        col_count = len(grid[0])
 
-        queues: dict[int, list[int]] = {}
-        for i in range(row_count):
-            for j in range(col_count):
-                key = i - j
-                if key not in queues:
-                    queues[key] = []
-
-                queues[key].append(mat[i][j])
-
-        for queue in queues.values():
-            queue.sort(reverse=True)
-
-        result = [[]] * row_count
-        for i in range(row_count):
-            row = [0] * col_count
-            for j in range(col_count):
-                key = i - j
-                queue = queues[key]
-                row[j] = queue.pop()
-            result[i] = row
+        result = 0
+        for r in range(row_count):
+            for c in range(col_count):
+                if grid[r][c] == LAND:
+                    result += 1
+                    self.clear_land(grid, r, c, row_count, col_count)
 
         return result
 
+    def clear_land(
+        self, grid: list[list[str]], row: int, col: int, row_count: int, col_count: int
+    ):
+        stack: list[tuple[int, int]] = [(row, col)]
+
+        while len(stack) > 0:
+            (r, c) = stack.pop()
+
+            if (r < 0) or (c < 0):
+                continue
+            elif (r >= row_count) or (c >= col_count):
+                continue
+            elif grid[r][c] == WATER:
+                continue
+
+            grid[r][c] = WATER
+            stack.append((r + 1, c))
+            stack.append((r - 1, c))
+            stack.append((r, c + 1))
+            stack.append((r, c - 1))
+
 
 class Input:
-    mat: list[list[int]]
+    grid: list[list[str]]
 
-    def __init__(self, mat: list[list[int]]):
-        self.mat = mat
+    def __init__(self, grid: list[list[str]]):
+        self.grid = grid
 
 
 def main():
     inputs: list[Input] = [
-        Input([[3, 3, 1, 1], [2, 2, 1, 2], [1, 1, 1, 2]]),
         Input(
             [
-                [11, 25, 66, 1, 69, 7],
-                [23, 55, 17, 45, 15, 52],
-                [75, 31, 36, 44, 58, 8],
-                [22, 27, 33, 25, 68, 4],
-                [84, 28, 14, 11, 5, 50],
+                ["1", "1", "1", "1", "0"],
+                ["1", "1", "0", "1", "0"],
+                ["1", "1", "0", "0", "0"],
+                ["0", "0", "0", "0", "0"],
+            ]
+        ),
+        Input(
+            [
+                ["1", "1", "0", "0", "0"],
+                ["1", "1", "0", "0", "0"],
+                ["0", "0", "1", "0", "0"],
+                ["0", "0", "0", "1", "1"],
             ]
         ),
     ]
 
     solution = Solution()
     for input in inputs:
-        mat = input.mat
-        result = solution.diagonalSort(mat)
+        grid = input.grid
+        result = solution.numIslands(grid)
         print(result)
 
 

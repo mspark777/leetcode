@@ -2,63 +2,84 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func diagonalSort(mat [][]int) [][]int {
-	rowCount := len(mat)
-	colCount := len(mat[0])
+const WATER = '0'
+const LAND = '1'
 
-	queues := make(map[int][]int)
-	for i := 0; i < rowCount; i += 1 {
-		for j := 0; j < colCount; j += 1 {
-			key := i - j
-			value := mat[i][j]
-			if queue, ok := queues[key]; ok {
-				queues[key] = append(queue, value)
-			} else {
-				queues[key] = []int{value}
+func clearLand(grid [][]byte, row, col, rowCount, colCount int) {
+	stack := [][]int{{row, col}}
+
+	for len(stack) > 0 {
+		idx := len(stack) - 1
+		top := stack[idx]
+		stack = stack[:idx]
+
+		r := top[0]
+		c := top[1]
+
+		if (r < 0) || (c < 0) {
+			continue
+		} else if (r >= rowCount) || (c >= colCount) {
+			continue
+		} else if grid[r][c] == WATER {
+			continue
+		}
+
+		grid[r][c] = WATER
+		stack = append(stack,
+			[]int{r - 1, c},
+			[]int{r + 1, c},
+			[]int{r, c - 1},
+			[]int{r, c + 1},
+		)
+	}
+}
+
+func numIslands(grid [][]byte) int {
+	rowCount := len(grid)
+	colCount := len(grid[0])
+
+	result := 0
+	for r := 0; r < rowCount; r += 1 {
+		for c := 0; c < colCount; c += 1 {
+			if grid[r][c] == LAND {
+				result += 1
+				clearLand(grid, r, c, rowCount, colCount)
 			}
 		}
-	}
-
-	for _, queue := range queues {
-		sort.Sort(sort.Reverse(sort.IntSlice(queue)))
-	}
-
-	result := make([][]int, rowCount)
-	for i := 0; i < rowCount; i += 1 {
-		row := make([]int, colCount)
-		for j := 0; j < colCount; j += 1 {
-			key := i - j
-			queue := queues[key]
-			top := len(queue) - 1
-			row[j] = queue[top]
-			queues[key] = queue[:top]
-		}
-		result[i] = row
 	}
 
 	return result
 }
 
 type input struct {
-	mat [][]int
+	grid [][]byte
 }
 
 func main() {
 	inputs := []input{
 		{
-			mat: [][]int{{3, 3, 1, 1}, {2, 2, 1, 2}, {1, 1, 1, 2}},
+			grid: [][]byte{
+				{'1', '1', '1', '1', '0'},
+				{'1', '1', '0', '1', '0'},
+				{'1', '1', '0', '0', '0'},
+				{'0', '0', '0', '0', '0'},
+			},
 		},
 		{
-			mat: [][]int{{11, 25, 66, 1, 69, 7}, {23, 55, 17, 45, 15, 52}, {75, 31, 36, 44, 58, 8}, {22, 27, 33, 25, 68, 4}, {84, 28, 14, 11, 5, 50}},
+			grid: [][]byte{
+				{'1', '1', '0', '0', '0'},
+				{'1', '1', '0', '0', '0'},
+				{'0', '0', '1', '0', '0'},
+				{'0', '0', '0', '1', '1'},
+			},
 		},
 	}
 
 	for _, input := range inputs {
-		mat := input.mat
-		result := diagonalSort(mat)
+		grid := input.grid
+		result := numIslands(grid)
 		fmt.Println(result)
 	}
 }
