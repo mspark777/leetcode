@@ -2,60 +2,90 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func transpose(matrix [][]int) {
-	for i := 0; i < len(matrix); i += 1 {
-		for j := i + 1; j < len(matrix); j += 1 {
-			temp := matrix[i][j]
-			matrix[i][j] = matrix[j][i]
-			matrix[j][i] = temp
-		}
-	}
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func reverse(matrix [][]int) {
-	for i := 0; i < len(matrix); i += 1 {
-		j := 0
-		k := len(matrix) - 1
-		for j < k {
-			temp := matrix[i][j]
-			matrix[i][j] = matrix[i][k]
-			matrix[i][k] = temp
-			j += 1
-			k -= 1
-		}
-	}
+func createTreeNode(val int, left *TreeNode, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
 }
 
-func rotate(matrix [][]int) {
-	transpose(matrix)
-	reverse(matrix)
+type stackNode struct {
+	node *TreeNode
+	path []*TreeNode
+}
+
+func createNode(node *TreeNode, path []*TreeNode) *stackNode {
+	return &stackNode{node: node, path: path}
+}
+
+func binaryTreePaths(root *TreeNode) []string {
+	if root == nil {
+		return []string{}
+	}
+
+	stack := []*stackNode{
+		createNode(root, []*TreeNode{}),
+	}
+
+	result := []string{}
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+
+		node := top.node
+		left := node.Left
+		right := node.Right
+		path := append(top.path, node)
+
+		if (left == nil) && (right == nil) {
+			spath := make([]string, len(path))
+			for i, p := range path {
+				spath[i] = fmt.Sprint(p.Val)
+			}
+			result = append(result, strings.Join(spath, "->"))
+			continue
+		}
+
+		if left != nil {
+			newPath := make([]*TreeNode, len(path))
+			copy(newPath, path)
+			stack = append(stack, createNode(left, newPath))
+		}
+
+		if right != nil {
+			newPath := make([]*TreeNode, len(path))
+			copy(newPath, path)
+			stack = append(stack, createNode(right, newPath))
+		}
+	}
+
+	return result
 }
 
 type input struct {
-	matrix [][]int
+	root *TreeNode
 }
 
 func main() {
 	inputs := []input{
 		{
-			matrix: [][]int{
-				{1, 2, 3},
-				{4, 5, 6},
-				{7, 8, 9},
-			},
+			root: createTreeNode(1, createTreeNode(2, nil, createTreeNode(5, nil, nil)), createTreeNode(3, nil, nil)),
 		},
 		{
-			matrix: [][]int{
-				{5, 1, 9, 11}, {2, 4, 8, 10}, {13, 3, 6, 7}, {15, 14, 12, 16},
-			},
+			root: createTreeNode(1, nil, nil),
 		},
 	}
 
 	for _, input := range inputs {
-		matrix := input.matrix
-		rotate(matrix)
-		fmt.Println(matrix)
+		root := input.root
+		result := binaryTreePaths(root)
+		fmt.Println(result)
 	}
 }

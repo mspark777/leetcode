@@ -6,51 +6,73 @@ from __future__ import annotations
 from typing import Optional, Reversible
 
 
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+class StackNode:
+    path: list[TreeNode]
+    node: TreeNode
+
+    def __init__(self, node: TreeNode, path: list[TreeNode]):
+        self.node = node
+        self.path = path
+
+
 class Solution:
-    def rotate(self, matrix: list[list[int]]) -> None:
-        """
-        Do not return anything, modify matrix in-place instead.
-        """
-        self.transpose(matrix)
-        self.reverse(matrix)
+    def binaryTreePaths(self, root: Optional[TreeNode]) -> list[str]:
+        if root is None:
+            return []
 
-    def transpose(self, matrix: list[list[int]]) -> None:
-        for i in range(len(matrix)):
-            for j in range(i + 1, len(matrix)):
-                temp = matrix[i][j]
-                matrix[i][j] = matrix[j][i]
-                matrix[j][i] = temp
+        stack: list[StackNode] = [StackNode(root, [])]
 
-    def reverse(self, matrix: list[list[int]]) -> None:
-        for i in range(len(matrix)):
-            j = 0
-            k = len(matrix) - 1
-            while j < k:
-                temp = matrix[i][j]
-                matrix[i][j] = matrix[i][k]
-                matrix[i][k] = temp
-                j += 1
-                k -= 1
+        result: list[list[str]] = []
+        while len(stack) > 0:
+            top = stack.pop()
+            node = top.node
+            left = node.left
+            right = node.right
+            path = top.path
+            path.append(node)
+
+            if (left is None) and (right is None):
+                result.append([str(n.val) for n in path])
+                continue
+
+            if left is not None:
+                stack.append(StackNode(left, path.copy()))
+
+            if right is not None:
+                stack.append(StackNode(right, path.copy()))
+
+        return ["->".join(p) for p in result]
 
 
 class Input:
-    matrix: list[list[int]]
+    root: Optional[TreeNode]
 
-    def __init__(self, matrix: list[list[int]]):
-        self.matrix = matrix
+    def __init__(self, root: Optional[TreeNode]):
+        self.root = root
 
 
 def main():
     inputs: list[Input] = [
-        Input([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
-        Input([[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]),
+        Input(TreeNode(1, TreeNode(2, None, TreeNode(5)), TreeNode(3))),
+        Input(TreeNode(1)),
     ]
 
     solution = Solution()
     for input in inputs:
-        matrix = input.matrix
-        solution.rotate(matrix)
-        print(matrix)
+        root = input.root
+        result = solution.binaryTreePaths(root)
+        print(result)
 
 
 if __name__ == "__main__":
