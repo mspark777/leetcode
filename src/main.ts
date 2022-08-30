@@ -1,76 +1,52 @@
-const LAND = '1'
-const WATER = '0'
-
-function clearLand (grid: string[][], row: number, col: number, rowCount: number, colCount: number): void {
-  const stack: number[][] = [[row, col]]
-
-  while (stack.length > 0) {
-    const [r, c] = stack.pop() as number[]
-
-    if (r < 0) {
-      continue
-    } else if (r >= rowCount) {
-      continue
-    } else if (c < 0) {
-      continue
-    } else if (c >= colCount) {
-      continue
-    } else if (grid[r][c] === WATER) {
-      continue
+function transpose (matrix: number[][]): void {
+  for (let i = 0; i < matrix.length; i += 1) {
+    for (let j = i + 1; j < matrix.length; j += 1) {
+      const temp = matrix[i][j]
+      matrix[i][j] = matrix[j][i]
+      matrix[j][i] = temp
     }
-
-    grid[r][c] = WATER
-    stack.push([r - 1, c])
-    stack.push([r + 1, c])
-    stack.push([r, c - 1])
-    stack.push([r, c + 1])
   }
 }
 
-function numIslands (grid: string[][]): number {
-  const rowCount = grid.length
-  const colCount = grid[0].length
-
-  let result = 0
-  for (let r = 0; r < rowCount; r += 1) {
-    for (let c = 0; c < colCount; c += 1) {
-      if (grid[r][c] === LAND) {
-        result += 1
-        clearLand(grid, r, c, rowCount, colCount)
-      }
+function reverse (matrix: number[][]): void {
+  for (let i = 0; i < matrix.length; i += 1) {
+    let j = 0
+    let k = matrix.length - 1
+    while (j < k) {
+      const temp = matrix[i][j]
+      matrix[i][j] = matrix[i][k]
+      matrix[i][k] = temp
+      j += 1
+      k -= 1
     }
   }
+}
 
-  return result
+/**
+ Do not return anything, modify matrix in-place instead.
+ */
+function rotate (matrix: number[][]): void {
+  transpose(matrix)
+  reverse(matrix)
 }
 
 interface Input {
-  readonly grid: string[][]
+  readonly matrix: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      grid: [
-        ['1', '1', '1', '1', '0'],
-        ['1', '1', '0', '1', '0'],
-        ['1', '1', '0', '0', '0'],
-        ['0', '0', '0', '0', '0']
-      ]
+      matrix: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     },
     {
-      grid: [
-        ['1', '1', '0', '0', '0'],
-        ['1', '1', '0', '0', '0'],
-        ['0', '0', '1', '0', '0'],
-        ['0', '0', '0', '1', '1']
-      ]
+      matrix: [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]
     }
   ]
 
-  for (const { grid } of inputs) {
-    const result = numIslands(grid)
-    console.log(result)
+  for (const { matrix } of inputs) {
+    rotate(matrix)
+    console.log(matrix)
   }
 }
 

@@ -5,78 +5,52 @@ main
 from __future__ import annotations
 from typing import Optional, Reversible
 
-WATER = "0"
-LAND = "1"
-
 
 class Solution:
-    def numIslands(self, grid: list[list[str]]) -> int:
-        row_count = len(grid)
-        col_count = len(grid[0])
+    def rotate(self, matrix: list[list[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        self.transpose(matrix)
+        self.reverse(matrix)
 
-        result = 0
-        for r in range(row_count):
-            for c in range(col_count):
-                if grid[r][c] == LAND:
-                    result += 1
-                    self.clear_land(grid, r, c, row_count, col_count)
+    def transpose(self, matrix: list[list[int]]) -> None:
+        for i in range(len(matrix)):
+            for j in range(i + 1, len(matrix)):
+                temp = matrix[i][j]
+                matrix[i][j] = matrix[j][i]
+                matrix[j][i] = temp
 
-        return result
-
-    def clear_land(
-        self, grid: list[list[str]], row: int, col: int, row_count: int, col_count: int
-    ):
-        stack: list[tuple[int, int]] = [(row, col)]
-
-        while len(stack) > 0:
-            (r, c) = stack.pop()
-
-            if (r < 0) or (c < 0):
-                continue
-            elif (r >= row_count) or (c >= col_count):
-                continue
-            elif grid[r][c] == WATER:
-                continue
-
-            grid[r][c] = WATER
-            stack.append((r + 1, c))
-            stack.append((r - 1, c))
-            stack.append((r, c + 1))
-            stack.append((r, c - 1))
+    def reverse(self, matrix: list[list[int]]) -> None:
+        for i in range(len(matrix)):
+            j = 0
+            k = len(matrix) - 1
+            while j < k:
+                temp = matrix[i][j]
+                matrix[i][j] = matrix[i][k]
+                matrix[i][k] = temp
+                j += 1
+                k -= 1
 
 
 class Input:
-    grid: list[list[str]]
+    matrix: list[list[int]]
 
-    def __init__(self, grid: list[list[str]]):
-        self.grid = grid
+    def __init__(self, matrix: list[list[int]]):
+        self.matrix = matrix
 
 
 def main():
     inputs: list[Input] = [
-        Input(
-            [
-                ["1", "1", "1", "1", "0"],
-                ["1", "1", "0", "1", "0"],
-                ["1", "1", "0", "0", "0"],
-                ["0", "0", "0", "0", "0"],
-            ]
-        ),
-        Input(
-            [
-                ["1", "1", "0", "0", "0"],
-                ["1", "1", "0", "0", "0"],
-                ["0", "0", "1", "0", "0"],
-                ["0", "0", "0", "1", "1"],
-            ]
-        ),
+        Input([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+        Input([[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]),
     ]
 
     solution = Solution()
     for input in inputs:
-        grid = input.grid
-        result = solution.numIslands(grid)
-        print(result)
+        matrix = input.matrix
+        solution.rotate(matrix)
+        print(matrix)
 
 
 if __name__ == "__main__":

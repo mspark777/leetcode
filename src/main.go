@@ -4,82 +4,58 @@ import (
 	"fmt"
 )
 
-const WATER = '0'
-const LAND = '1'
-
-func clearLand(grid [][]byte, row, col, rowCount, colCount int) {
-	stack := [][]int{{row, col}}
-
-	for len(stack) > 0 {
-		idx := len(stack) - 1
-		top := stack[idx]
-		stack = stack[:idx]
-
-		r := top[0]
-		c := top[1]
-
-		if (r < 0) || (c < 0) {
-			continue
-		} else if (r >= rowCount) || (c >= colCount) {
-			continue
-		} else if grid[r][c] == WATER {
-			continue
+func transpose(matrix [][]int) {
+	for i := 0; i < len(matrix); i += 1 {
+		for j := i + 1; j < len(matrix); j += 1 {
+			temp := matrix[i][j]
+			matrix[i][j] = matrix[j][i]
+			matrix[j][i] = temp
 		}
-
-		grid[r][c] = WATER
-		stack = append(stack,
-			[]int{r - 1, c},
-			[]int{r + 1, c},
-			[]int{r, c - 1},
-			[]int{r, c + 1},
-		)
 	}
 }
 
-func numIslands(grid [][]byte) int {
-	rowCount := len(grid)
-	colCount := len(grid[0])
-
-	result := 0
-	for r := 0; r < rowCount; r += 1 {
-		for c := 0; c < colCount; c += 1 {
-			if grid[r][c] == LAND {
-				result += 1
-				clearLand(grid, r, c, rowCount, colCount)
-			}
+func reverse(matrix [][]int) {
+	for i := 0; i < len(matrix); i += 1 {
+		j := 0
+		k := len(matrix) - 1
+		for j < k {
+			temp := matrix[i][j]
+			matrix[i][j] = matrix[i][k]
+			matrix[i][k] = temp
+			j += 1
+			k -= 1
 		}
 	}
+}
 
-	return result
+func rotate(matrix [][]int) {
+	transpose(matrix)
+	reverse(matrix)
 }
 
 type input struct {
-	grid [][]byte
+	matrix [][]int
 }
 
 func main() {
 	inputs := []input{
 		{
-			grid: [][]byte{
-				{'1', '1', '1', '1', '0'},
-				{'1', '1', '0', '1', '0'},
-				{'1', '1', '0', '0', '0'},
-				{'0', '0', '0', '0', '0'},
+			matrix: [][]int{
+				{1, 2, 3},
+				{4, 5, 6},
+				{7, 8, 9},
 			},
 		},
 		{
-			grid: [][]byte{
-				{'1', '1', '0', '0', '0'},
-				{'1', '1', '0', '0', '0'},
-				{'0', '0', '1', '0', '0'},
-				{'0', '0', '0', '1', '1'},
+			matrix: [][]int{
+				{5, 1, 9, 11}, {2, 4, 8, 10}, {13, 3, 6, 7}, {15, 14, 12, 16},
 			},
 		},
 	}
 
 	for _, input := range inputs {
-		grid := input.grid
-		result := numIslands(grid)
-		fmt.Println(result)
+		matrix := input.matrix
+		rotate(matrix)
+		fmt.Println(matrix)
 	}
 }
