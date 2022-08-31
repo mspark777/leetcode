@@ -1,67 +1,109 @@
-class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
+/**
+ * @param {number} row
+ * @param {number} col
+ * @param {number} rowCount
+ * @param {number} colCount
+ * @returns {boolean}
+*/
+function inLand (row, col, rowCount, colCount) {
+  return (row >= 0) && (row < rowCount) && (col >= 0) && (col < colCount)
 }
 
-function binaryTreePaths (root) {
-  if (root == null) {
-    return []
+/**
+ * @param {number[][]} heights
+ * @param {number[][]} queue
+ * @returns {boolean[][]}
+*/
+function visit (heights, queue) {
+  const rowCount = heights.length
+  const colCount = heights[0].length
+  const visiteds = new Array(rowCount)
+  for (let i = 0; i < heights.length; i += 1) {
+    visiteds[i] = new Array(colCount).fill(false)
   }
 
-  const stack = [{
-    path: [],
-    node: root
-  }]
+  const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+  for (let top = queue.shift(); top != null; top = queue.shift()) {
+    const [row, col] = top
+    visiteds[row][col] = true
 
+    for (const [r, c] of dirs) {
+      const nextRow = row + r
+      const nextCol = col + c
+
+      if (!inLand(nextRow, nextCol, rowCount, colCount)) {
+        continue
+      }
+
+      const height = heights[row][col]
+      const nextHeight = heights[nextRow][nextCol]
+      const visited = visiteds[nextRow][nextCol]
+      if (visited || (nextHeight < height)) {
+        continue
+      }
+
+      queue.push([nextRow, nextCol])
+      visiteds[nextRow][nextCol] = true
+    }
+  }
+
+  return visiteds
+}
+
+/**
+ * @param {number[][]} heights
+ * @return {number[][]}
+ */
+function pacificAtlantic (heights) {
+  const rowCount = heights.length
+  const colCount = heights[0].length
+  const pacifics = []
+  const atlantics = []
+
+  for (let r = 0; r < rowCount; r += 1) {
+    pacifics.push([r, 0])
+    atlantics.push([r, colCount - 1])
+  }
+
+  for (let c = 0; c < colCount; c += 1) {
+    pacifics.push([0, c])
+    atlantics.push([rowCount - 1, c])
+  }
+
+  const pacificVisiteds = visit(heights, pacifics)
+  const atlanticVisiteds = visit(heights, atlantics)
   const result = []
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { node, path } = top
-    path.push(node)
-
-    if ((node.left == null) && (node.right == null)) {
-      result.push(path.map(p => p.val))
-      continue
-    }
-
-    if (node.left != null) {
-      stack.push({
-        path: [...path],
-        node: node.left
-      })
-    }
-
-    if (node.right != null) {
-      stack.push({
-        path: [...path],
-        node: node.right
-      })
+  for (let r = 0; r < rowCount; r += 1) {
+    for (let c = 0; c < colCount; c += 1) {
+      if (pacificVisiteds[r][c] && atlanticVisiteds[r][c]) {
+        result.push([r, c])
+      }
     }
   }
 
-  return result.map(r => r.join('->'))
+  return result
 }
 
 async function main () {
   const inputs = [
     {
-      root: new TreeNode(1,
-        new TreeNode(2,
-          null,
-          new TreeNode(5)
-        ),
-        new TreeNode(3)
-      )
+      heights: [
+        [1, 2, 2, 3, 5],
+        [3, 2, 3, 4, 4],
+        [2, 4, 5, 3, 1],
+        [6, 7, 1, 4, 5],
+        [5, 1, 1, 2, 4]
+      ]
     },
     {
-      root: new TreeNode(1)
+      heights: [
+        [1]
+      ]
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = binaryTreePaths(root)
+  for (const { heights } of inputs) {
+    const result = pacificAtlantic(heights)
     console.log(result)
   }
 }
