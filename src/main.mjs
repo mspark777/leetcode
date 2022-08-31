@@ -11,10 +11,10 @@ function inLand (row, col, rowCount, colCount) {
 
 /**
  * @param {number[][]} heights
- * @param {number[][]} queue
+ * @param {number[][]} stack
  * @returns {boolean[][]}
 */
-function visit (heights, queue) {
+function visit (heights, stack) {
   const rowCount = heights.length
   const colCount = heights[0].length
   const visiteds = new Array(rowCount)
@@ -23,7 +23,7 @@ function visit (heights, queue) {
   }
 
   const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-  for (let top = queue.shift(); top != null; top = queue.shift()) {
+  for (let top = stack.pop(); top != null; top = stack.pop()) {
     const [row, col] = top
     visiteds[row][col] = true
 
@@ -42,7 +42,7 @@ function visit (heights, queue) {
         continue
       }
 
-      queue.push([nextRow, nextCol])
+      stack.push([nextRow, nextCol])
       visiteds[nextRow][nextCol] = true
     }
   }
