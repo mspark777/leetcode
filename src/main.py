@@ -18,41 +18,39 @@ class TreeNode:
 
 
 class StackNode:
-    path: list[TreeNode]
+    max: int
     node: TreeNode
 
-    def __init__(self, node: TreeNode, path: list[TreeNode]):
+    def __init__(self, node: TreeNode, max: int):
         self.node = node
-        self.path = path
+        self.max = max
 
 
 class Solution:
-    def binaryTreePaths(self, root: Optional[TreeNode]) -> list[str]:
+    def goodNodes(self, root: Optional[TreeNode]) -> int:
         if root is None:
-            return []
+            return 0
 
-        stack: list[StackNode] = [StackNode(root, [])]
+        result = 0
 
-        result: list[list[str]] = []
+        stack: list[StackNode] = [StackNode(root, root.val)]
         while len(stack) > 0:
             top = stack.pop()
             node = top.node
+            val = node.val
+            max = top.max if top.max > val else val
+            if val == max:
+                result += 1
+
             left = node.left
-            right = node.right
-            path = top.path
-            path.append(node)
-
-            if (left is None) and (right is None):
-                result.append([str(n.val) for n in path])
-                continue
-
             if left is not None:
-                stack.append(StackNode(left, path.copy()))
+                stack.append(StackNode(left, max))
 
+            right = node.right
             if right is not None:
-                stack.append(StackNode(right, path.copy()))
+                stack.append(StackNode(right, max))
 
-        return ["->".join(p) for p in result]
+        return result
 
 
 class Input:
@@ -64,14 +62,17 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-        Input(TreeNode(1, TreeNode(2, None, TreeNode(5)), TreeNode(3))),
+        Input(
+            TreeNode(3, TreeNode(1, TreeNode(3)), TreeNode(4, TreeNode(1), TreeNode(5)))
+        ),
+        Input(TreeNode(3, TreeNode(3, TreeNode(4), TreeNode(2)))),
         Input(TreeNode(1)),
     ]
 
     solution = Solution()
     for input in inputs:
         root = input.root
-        result = solution.binaryTreePaths(root)
+        result = solution.goodNodes(root)
         print(result)
 
 

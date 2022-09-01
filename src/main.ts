@@ -1,67 +1,39 @@
-function inLand (row: number, col: number, rowCount: number, colCount: number): boolean {
-  return (row >= 0) && (row < rowCount) && (col >= 0) && (col < colCount)
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
 }
 
-function visit (heights: number[][], stack: number[][]): boolean[][] {
-  const rowCount = heights.length
-  const colCount = heights[0].length
-  const visiteds = new Array<boolean[]>(rowCount)
-  for (let i = 0; i < heights.length; i += 1) {
-    visiteds[i] = new Array<boolean>(colCount).fill(false)
+interface StackNode {
+  readonly node: TreeNode
+  readonly max: number
+}
+
+function goodNodes (root: TreeNode | null): number {
+  if (root == null) {
+    return 0
   }
 
-  const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+  let result = 0
+  const stack: StackNode[] = [{ node: root, max: root.val }]
   for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const [row, col] = top
-    visiteds[row][col] = true
-
-    for (const [r, c] of dirs) {
-      const nextRow = row + r
-      const nextCol = col + c
-
-      if (!inLand(nextRow, nextCol, rowCount, colCount)) {
-        continue
-      }
-
-      const height = heights[row][col]
-      const nextHeight = heights[nextRow][nextCol]
-      const visited = visiteds[nextRow][nextCol]
-      if (visited || (nextHeight < height)) {
-        continue
-      }
-
-      stack.push([nextRow, nextCol])
-      visiteds[nextRow][nextCol] = true
+    const { left, right, val } = top.node
+    const max = Math.max(top.max, val)
+    if (val === max) {
+      result += 1
     }
-  }
 
-  return visiteds
-}
+    if (left != null) {
+      stack.push({ node: left, max })
+    }
 
-function pacificAtlantic (heights: number[][]): number[][] {
-  const rowCount = heights.length
-  const colCount = heights[0].length
-  const pacifics: number[][] = []
-  const atlantics: number[][] = []
-
-  for (let r = 0; r < rowCount; r += 1) {
-    pacifics.push([r, 0])
-    atlantics.push([r, colCount - 1])
-  }
-
-  for (let c = 0; c < colCount; c += 1) {
-    pacifics.push([0, c])
-    atlantics.push([rowCount - 1, c])
-  }
-
-  const pacificVisiteds = visit(heights, pacifics)
-  const atlanticVisiteds = visit(heights, atlantics)
-  const result: number[][] = []
-  for (let r = 0; r < rowCount; r += 1) {
-    for (let c = 0; c < colCount; c += 1) {
-      if (pacificVisiteds[r][c] && atlanticVisiteds[r][c]) {
-        result.push([r, c])
-      }
+    if (right != null) {
+      stack.push({ node: right, max })
     }
   }
 
@@ -69,29 +41,27 @@ function pacificAtlantic (heights: number[][]): number[][] {
 }
 
 interface Input {
-  readonly heights: number[][]
+  readonly root: TreeNode | null
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      heights: [
-        [1, 2, 2, 3, 5],
-        [3, 2, 3, 4, 4],
-        [2, 4, 5, 3, 1],
-        [6, 7, 1, 4, 5],
-        [5, 1, 1, 2, 4]
-      ]
+      root: new TreeNode(3,
+        new TreeNode(1, new TreeNode(3)),
+        new TreeNode(4, new TreeNode(1), new TreeNode(5))
+      )
     },
     {
-      heights: [
-        [1]
-      ]
+      root: new TreeNode(3, new TreeNode(3, new TreeNode(4), new TreeNode(2)))
+    },
+    {
+      root: new TreeNode(1)
     }
   ]
 
-  for (const { heights } of inputs) {
-    const result = pacificAtlantic(heights)
+  for (const { root } of inputs) {
+    const result = goodNodes(root)
     console.log(result)
   }
 }

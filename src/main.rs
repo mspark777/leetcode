@@ -1,58 +1,110 @@
-struct Solution {}
-impl Solution {
-    pub fn rotate(matrix: &mut Vec<Vec<i32>>) {
-        Self::transpose(matrix);
-        Self::reverse(matrix);
-    }
+use std::cell::RefCell;
+use std::rc::Rc;
 
-    fn transpose(matrix: &mut Vec<Vec<i32>>) {
-        for i in 0..matrix.len() {
-            for j in (i + 1)..matrix.len() {
-                let temp = matrix[i][j];
-                matrix[i][j] = matrix[j][i];
-                matrix[j][i] = temp;
-            }
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(
+        val: i32,
+        left: Option<Rc<RefCell<TreeNode>>>,
+        right: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<Self>>> {
+        Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
+    }
+}
+
+struct StackNode {
+    node: Rc<RefCell<TreeNode>>,
+    max: i32,
+}
+
+impl StackNode {
+    #[inline]
+    fn new(node: Rc<RefCell<TreeNode>>, max: i32) -> Self {
+        StackNode {
+            node: node.clone(),
+            max,
         }
     }
+}
 
-    fn reverse(matrix: &mut Vec<Vec<i32>>) {
-        for i in 0..matrix.len() {
-            let mut j = 0usize;
-            let mut k = matrix.len() - 1;
-            while j < k {
-                let temp = matrix[i][j];
-                matrix[i][j] = matrix[i][k];
-                matrix[i][k] = temp;
+struct Solution {}
+impl Solution {
+    pub fn good_nodes(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if let Some(root_node) = root {
+            let mut result = 0;
+            let mut stack = vec![StackNode::new(
+                Rc::clone(&root_node),
+                root_node.borrow().val,
+            )];
 
-                j += 1;
-                k -= 1;
+            while let Some(stack_node) = stack.pop() {
+                let node = stack_node.node.borrow();
+                let val = node.val;
+                let max = stack_node.max.max(val);
+
+                if max == val {
+                    result += 1;
+                }
+
+                if let Some(left) = node.left.as_ref() {
+                    stack.push(StackNode::new(Rc::clone(left), max));
+                }
+
+                if let Some(right) = node.right.as_ref() {
+                    stack.push(StackNode::new(Rc::clone(right), max));
+                }
             }
+
+            result
+        } else {
+            0
         }
     }
 }
 
 struct Input {
-    matrix: Vec<Vec<i32>>,
+    root: Option<Rc<RefCell<TreeNode>>>,
 }
 
 fn main() {
-    let mut inputs: Vec<Input> = vec![
+    let inputs: Vec<Input> = vec![
         Input {
-            matrix: vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]],
+            root: TreeNode::new(
+                3,
+                TreeNode::new(1, TreeNode::new(3, None, None), None),
+                TreeNode::new(
+                    4,
+                    TreeNode::new(1, None, None),
+                    TreeNode::new(5, None, None),
+                ),
+            ),
         },
         Input {
-            matrix: vec![
-                vec![5, 1, 9, 11],
-                vec![2, 4, 8, 10],
-                vec![13, 3, 6, 7],
-                vec![15, 14, 12, 16],
-            ],
+            root: TreeNode::new(
+                3,
+                TreeNode::new(
+                    3,
+                    TreeNode::new(4, None, None),
+                    TreeNode::new(2, None, None),
+                ),
+                None,
+            ),
+        },
+        Input {
+            root: TreeNode::new(1, None, None),
         },
     ];
 
-    for input in inputs.iter_mut() {
-        let matrix = &mut input.matrix;
-        Solution::rotate(matrix);
-        println!("{matrix:?}");
+    for input in inputs.iter() {
+        let root = input.root.clone();
+        let result = Solution::good_nodes(root);
+        println!("{result}");
     }
 }
