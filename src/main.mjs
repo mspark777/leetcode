@@ -1,61 +1,23 @@
-class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
 /**
- * @param {TreeNode} root
+ * @param {number} num
  * @return {number}
  */
-function goodNodes (root) {
-  if (root == null) {
-    return 0
-  }
-
-  let result = 0
-  const stack = [{ node: root, max: root.val }]
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { left, right, val } = top.node
-    const max = Math.max(top.max, val)
-    if (val === max) {
-      result += 1
-    }
-
-    if (left != null) {
-      stack.push({ node: left, max })
-    }
-
-    if (right != null) {
-      stack.push({ node: right, max })
-    }
-  }
-
-  return result
+function addDigits (num) {
+  return num === 0 ? 0 : 1 + (num - 1) % 9
 }
 
 async function main () {
   const inputs = [
     {
-      root: new TreeNode(3,
-        new TreeNode(1,
-          new TreeNode(3)
-        ),
-        new TreeNode(4, new TreeNode(1), new TreeNode(5))
-      )
+      num: 38
     },
     {
-      root: new TreeNode(3, new TreeNode(3, new TreeNode(4), new TreeNode(2)))
-    },
-    {
-      root: new TreeNode(1)
+      num: 0
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = goodNodes(root)
+  for (const { num } of inputs) {
+    const result = addDigits(num)
     console.log(result)
   }
 }

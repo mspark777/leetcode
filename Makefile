@@ -23,9 +23,3 @@ ex:
 
 sh:
 	${SHELL} src/main.sh
-
-java:
-	java ./app/src/main/kotlin/leetcode/App.java
-
-kt:
-	./gradlew run
