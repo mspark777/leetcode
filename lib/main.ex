@@ -1,7 +1,34 @@
+defmodule TreeNode do
+  @type t :: %__MODULE__{
+          val: integer,
+          left: TreeNode.t() | nil,
+          right: TreeNode.t() | nil
+        }
+  defstruct val: 0, left: nil, right: nil
+end
+
 defmodule Solution do
-  @spec add_digits(num :: integer) :: integer
-  def add_digits(num) when num != 0, do: 1 + rem(num - 1, 9)
-  def add_digits(_num), do: 0
+  @type accmap :: %{optional(integer) => {integer, pos_integer}}
+
+  @spec average_of_levels(root :: TreeNode.t() | nil) :: [float]
+  def average_of_levels(root) do
+    %{}
+    |> accumulate(root, 0)
+    |> Enum.map(fn {level, {sum, count}} -> {level, sum / count} end)
+    |> Enum.sort()
+    |> Enum.map(&elem(&1, 1))
+  end
+
+  @spec accumulate(acc :: accmap, node :: nil | TreeNode.t(), level :: integer) :: accmap
+  defp accumulate(acc, nil, _level), do: acc
+
+  defp accumulate(acc, node, level) do
+    Map.update(acc, level, {node.val, 1}, fn {sum, count} ->
+      {sum + node.val, count + 1}
+    end)
+    |> accumulate(node.left, level + 1)
+    |> accumulate(node.right, level + 1)
+  end
 end
 
 defmodule Main do
@@ -9,23 +36,39 @@ defmodule Main do
   def main() do
     main([
       %{
-        n: 38
+        root:
+          newnode(
+            3,
+            newval(9),
+            newnode(20, newval(15), newval(7))
+          )
       },
       %{
-        n: 0
+        root:
+          newnode(
+            3,
+            newnode(9, newval(15), newval(7)),
+            newval(20)
+          )
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    n = input.n
-    result = Solution.add_digits(n)
-    IO.puts(result)
+    root = input.root
+    result = Solution.average_of_levels(root)
+    IO.puts(result |> Enum.join(", "))
     main(remains)
   end
 
   def main([]), do: nil
+
+  @spec newnode(val :: integer, left :: TreeNode.t() | nil, right :: TreeNode.t() | nil) ::
+          TreeNode.t()
+  defp newnode(val, left, right), do: %TreeNode{val: val, left: left, right: right}
+  @spec newval(val :: integer) :: TreeNode.t()
+  defp newval(val), do: newnode(val, nil, nil)
 end
 
 Main.main()
