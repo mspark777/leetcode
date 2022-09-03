@@ -1,73 +1,60 @@
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
+interface StackNode {
+  readonly len: number
+  readonly num: number
+  readonly digit: number
 }
 
-function averageOfLevels (root: TreeNode | null): number[] {
+function numsSameConsecDiff (n: number, k: number): number[] {
+  const stack: StackNode[] = []
   const result: number[] = []
-  if (root == null) {
-    return result
+  for (let i = 1; i <= 9; i += 1) {
+    stack.push({
+      len: n - 1,
+      num: i,
+      digit: i
+    })
   }
 
-  let queue: TreeNode[] = [root]
-  while (queue.length > 0) {
-    const size = queue.length
-    let total = 0n
-    for (let i = 0; i < size; i += 1) {
-      const { val, left, right } = queue[i]
-      total += BigInt(val)
-
-      if (left != null) {
-        queue.push(left)
-      }
-
-      if (right != null) {
-        queue.push(right)
-      }
+  for (let top = stack.pop(); top != null; top = stack.pop()) {
+    const { len, num, digit } = top
+    if (len === 0) {
+      result.push(num)
+      continue
     }
 
-    queue = queue.slice(size)
-    const sizen = BigInt(size)
-    const div = total / sizen
-    const rem = total % sizen
-    const avg = Number(div) + (Number(rem) / size)
-    result.push(Number(avg.toFixed(5)))
+    for (let i = 0; i < 10; i += 1) {
+      if (Math.abs(i - digit) === k) {
+        stack.push({
+          len: len - 1,
+          num: num * 10 + i,
+          digit: i
+        })
+      }
+    }
   }
 
   return result
 }
 
 interface Input {
-  readonly root: TreeNode | null
+  readonly n: number
+  readonly k: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: new TreeNode(3,
-        new TreeNode(9),
-        new TreeNode(20, new TreeNode(15), new TreeNode(7))
-      )
+      n: 3,
+      k: 7
     },
     {
-      root: new TreeNode(3,
-        new TreeNode(9,
-          new TreeNode(15),
-          new TreeNode(7)
-        ),
-        new TreeNode(20)
-      )
+      n: 2,
+      k: 1
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = averageOfLevels(root)
+  for (const { n, k } of inputs) {
+    const result = numsSameConsecDiff(n, k)
     console.log(result)
   }
 }

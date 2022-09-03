@@ -1,34 +1,39 @@
-defmodule TreeNode do
+defmodule StackNode do
   @type t :: %__MODULE__{
-          val: integer,
-          left: TreeNode.t() | nil,
-          right: TreeNode.t() | nil
+          len: integer,
+          num: integer,
+          digit: integer
         }
-  defstruct val: 0, left: nil, right: nil
+  defstruct len: nil, num: nil, digit: nil
 end
 
 defmodule Solution do
-  @type accmap :: %{optional(integer) => {integer, pos_integer}}
-
-  @spec average_of_levels(root :: TreeNode.t() | nil) :: [float]
-  def average_of_levels(root) do
-    %{}
-    |> accumulate(root, 0)
-    |> Enum.map(fn {level, {sum, count}} -> {level, sum / count} end)
-    |> Enum.sort()
-    |> Enum.map(&elem(&1, 1))
+  @spec nums_same_consec_diff(n :: integer, k :: integer) :: [integer]
+  def nums_same_consec_diff(n, k) do
+    1..9
+    |> Enum.map(&newnode(n - 1, &1, &1))
+    |> dfs(k, [])
   end
 
-  @spec accumulate(acc :: accmap, node :: nil | TreeNode.t(), level :: integer) :: accmap
-  defp accumulate(acc, nil, _level), do: acc
+  @spec dfs(stack :: [StackNode.t()], k :: integer, result :: [integer]) :: [integer]
+  defp dfs([%StackNode{len: len, num: num, digit: _} | nodes], k, result) when len == 0,
+    do: dfs(nodes, k, [num | result])
 
-  defp accumulate(acc, node, level) do
-    Map.update(acc, level, {node.val, 1}, fn {sum, count} ->
-      {sum + node.val, count + 1}
-    end)
-    |> accumulate(node.left, level + 1)
-    |> accumulate(node.right, level + 1)
+  defp dfs([%StackNode{len: len, num: num, digit: digit} | nodes], k, result) do
+    newnodes =
+      0..9
+      |> Enum.map(&{&1, abs(&1 - digit)})
+      |> Enum.filter(&(elem(&1, 1) == k))
+      |> Enum.map(&elem(&1, 0))
+      |> Enum.map(&newnode(len - 1, num * 10 + &1, &1))
+
+    dfs(newnodes ++ nodes, k, result)
   end
+
+  defp dfs([], _, result), do: result
+
+  @spec newnode(len :: integer, num :: integer, digit :: integer) :: StackNode.t()
+  defp newnode(len, num, digit), do: %StackNode{len: len, num: num, digit: digit}
 end
 
 defmodule Main do
@@ -36,39 +41,26 @@ defmodule Main do
   def main() do
     main([
       %{
-        root:
-          newnode(
-            3,
-            newval(9),
-            newnode(20, newval(15), newval(7))
-          )
+        n: 3,
+        k: 7
       },
       %{
-        root:
-          newnode(
-            3,
-            newnode(9, newval(15), newval(7)),
-            newval(20)
-          )
+        n: 2,
+        k: 1
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    root = input.root
-    result = Solution.average_of_levels(root)
+    n = input.n
+    k = input.k
+    result = Solution.nums_same_consec_diff(n, k)
     IO.puts(result |> Enum.join(", "))
     main(remains)
   end
 
   def main([]), do: nil
-
-  @spec newnode(val :: integer, left :: TreeNode.t() | nil, right :: TreeNode.t() | nil) ::
-          TreeNode.t()
-  defp newnode(val, left, right), do: %TreeNode{val: val, left: left, right: right}
-  @spec newval(val :: integer) :: TreeNode.t()
-  defp newval(val), do: newnode(val, nil, nil)
 end
 
 Main.main()

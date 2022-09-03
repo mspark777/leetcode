@@ -4,74 +4,71 @@ import (
 	"fmt"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
+type stackNode struct {
+	len   int
+	num   int
+	digit int
 }
 
-func averageOfLevels(root *TreeNode) []float64 {
-	result := []float64{}
-	if root == nil {
-		return result
+func absdiff(i, j int) int {
+	if i > j {
+		return i - j
 	}
 
-	queue := []*TreeNode{root}
-	for len(queue) > 0 {
-		size := len(queue)
-		total := 0.0
+	return j - i
+}
 
-		for i := 0; i < size; i += 1 {
-			head := queue[i]
-			total += float64(head.Val)
+func numsSameConsecDiff(n int, k int) []int {
+	stack := []*stackNode{}
+	result := []int{}
 
-			left := head.Left
-			if left != nil {
-				queue = append(queue, left)
-			}
-			right := head.Right
-			if right != nil {
-				queue = append(queue, right)
+	for i := 1; i <= 9; i += 1 {
+		stack = append(stack, &stackNode{len: n - 1, num: i, digit: i})
+	}
+
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+
+		if top.len == 0 {
+			result = append(result, top.num)
+			continue
+		}
+
+		for i := 0; i < 10; i += 1 {
+			if absdiff(top.digit, i) == k {
+				stack = append(stack, &stackNode{
+					len:   top.len - 1,
+					num:   top.num*10 + i,
+					digit: i,
+				})
 			}
 		}
-		queue = queue[size:]
-		result = append(result, total/float64(size))
 	}
 
 	return result
 }
 
 type input struct {
-	root *TreeNode
-}
-
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
-
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
+	n int
+	k int
 }
 
 func main() {
 	inputs := []input{
 		{
-			root: newnode(3,
-				newval(9),
-				newnode(20, newval(15), newval(7)),
-			),
+			n: 3,
+			k: 7,
 		},
 		{
-			root: newnode(3,
-				newnode(9, newval(15), newval(7)),
-				newval(20),
-			),
+			n: 2,
+			k: 1,
 		},
 	}
 
 	for _, input := range inputs {
-		root := input.root
-		result := averageOfLevels(root)
+		result := numsSameConsecDiff(input.n, input.k)
 		fmt.Println(result)
 	}
 }

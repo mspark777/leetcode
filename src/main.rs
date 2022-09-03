@@ -1,88 +1,53 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
+struct StackNode {
+    len: i32,
+    num: i32,
+    digit: i32,
 }
 
-impl TreeNode {
+impl StackNode {
     #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
+    fn new(len: i32, num: i32, digit: i32) -> Self {
+        StackNode { len, num, digit }
     }
 }
-
-use std::cell::RefCell;
-use std::collections::VecDeque;
-use std::rc::Rc;
 struct Solution {}
 impl Solution {
-    pub fn average_of_levels(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<f64> {
-        if let Some(root_node) = root.as_ref() {
-            let mut result = Vec::<f64>::new();
+    pub fn nums_same_consec_diff(n: i32, k: i32) -> Vec<i32> {
+        let mut stack = Vec::<StackNode>::new();
+        let mut result = Vec::<i32>::new();
 
-            let mut queue = VecDeque::<Rc<RefCell<TreeNode>>>::new();
-            queue.push_back(Rc::clone(root_node));
-            while !queue.is_empty() {
-                let size = queue.len();
-                let mut total = 0f64;
-                for _ in 0..size {
-                    let cloned = Rc::clone(queue.pop_front().as_ref().unwrap());
-                    let head = cloned.borrow();
-                    total += head.val as f64;
+        for i in 1..10 {
+            stack.push(StackNode::new(n - 1, i, i));
+        }
 
-                    if let Some(l) = head.left.as_ref() {
-                        queue.push_back(Rc::clone(l));
-                    }
-
-                    if let Some(r) = head.right.as_ref() {
-                        queue.push_back(Rc::clone(r));
-                    }
-                }
-
-                result.push(total / (size as f64));
+        while let Some(top) = stack.pop() {
+            let StackNode { len, num, digit } = top;
+            if len == 0 {
+                result.push(num);
+                continue;
             }
 
-            result
-        } else {
-            Vec::<f64>::new()
+            for i in 0..10 {
+                if (i - digit).abs() == k {
+                    stack.push(StackNode::new(len - 1, num * 10 + i, i));
+                }
+            }
         }
+
+        result
     }
 }
 
 struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
-}
-
-fn newnode(
-    val: i32,
-    left: Option<Rc<RefCell<TreeNode>>>,
-    right: Option<Rc<RefCell<TreeNode>>>,
-) -> Option<Rc<RefCell<TreeNode>>> {
-    Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
-}
-
-fn newval(val: i32) -> Option<Rc<RefCell<TreeNode>>> {
-    newnode(val, None, None)
+    n: i32,
+    k: i32,
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input {
-            root: newnode(3, newval(9), newnode(20, newval(15), newval(7))),
-        },
-        Input {
-            root: newnode(3, newnode(9, newval(15), newval(7)), newval(20)),
-        },
-    ];
+    let inputs: Vec<Input> = vec![Input { n: 3, k: 7 }, Input { n: 2, k: 1 }];
 
     for input in inputs.iter() {
-        let root = input.root.clone();
-        let result = Solution::average_of_levels(root);
+        let result = Solution::nums_same_consec_diff(input.n, input.k);
         println!("{result:?}");
     }
 }
