@@ -1,54 +1,116 @@
+import { newTreeLeft, newTreeNode, newTreeVal } from './lib.mjs'
+
 /**
- * @param {number} n
- * @param {number} k
- * @return {number[]}
+ * @param {import('./lib.mjs').TreeNode} root
+ * @return {number[][]}
  */
-function numsSameConsecDiff (n, k) {
-  const stack = []
-  const result = []
-  for (let i = 1; i <= 9; i += 1) {
-    stack.push({
-      len: n - 1,
-      num: i,
-      digit: i
-    })
-  }
+function verticalTraversal (root) {
+  const verticals = new Map()
+  const stack = [{
+    row: 0,
+    col: 0,
+    node: root
+  }]
 
   for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { len, num, digit } = top
-    if (len === 0) {
-      result.push(num)
+    const { row, col, node } = top
+    if (node == null) {
       continue
     }
 
-    for (let i = 0; i < 10; i += 1) {
-      if (Math.abs(i - digit) === k) {
-        stack.push({
-          len: len - 1,
-          num: num * 10 + i,
-          digit: i
-        })
-      }
-    }
+    const vertical = verticals.get(col) ?? []
+    vertical.push({
+      row,
+      col,
+      value: node.val
+    })
+
+    verticals.set(col, vertical)
+    stack.push({
+      row: row + 1,
+      col: col - 1,
+      node: node.left
+    }, {
+      row: row + 1,
+      col: col + 1,
+      node: node.right
+    })
+  }
+
+  const result = []
+  for (const nodes of verticals.values()) {
+    nodes.sort((a, b) => a.row === b.row ? a.value - b.value : a.row - b.row)
+    result.push({
+      col: nodes[0].col,
+      values: nodes.map(n => n.value)
+    })
   }
 
   return result
+    .sort((a, b) => a.col - b.col)
+    .map(r => r.values)
 }
 
 async function main () {
   const inputs = [
     {
-      n: 3,
-      k: 7
+      root: newTreeNode(
+        3,
+        newTreeVal(9),
+        newTreeNode(20,
+          newTreeVal(15),
+          newTreeVal(7)
+        )
+      )
     },
     {
-      n: 2,
-      k: 1
+      root: newTreeNode(
+        1,
+        newTreeNode(
+          2,
+          newTreeVal(4),
+          newTreeVal(5)
+        ),
+        newTreeNode(
+          3,
+          newTreeVal(6),
+          newTreeVal(7)
+        )
+      )
+    },
+    {
+      root: newTreeNode(
+        1,
+        newTreeNode(
+          2,
+          newTreeVal(4),
+          newTreeVal(6)
+        ),
+        newTreeNode(
+          3,
+          newTreeVal(5),
+          newTreeVal(7)
+        )
+      )
+    },
+    {
+      root: newTreeNode(
+        3,
+        newTreeNode(
+          1,
+          newTreeVal(0),
+          newTreeVal(2)
+        ),
+        newTreeLeft(
+          4,
+          newTreeVal(2)
+        )
+      )
     }
   ]
 
-  for (const { n, k } of inputs) {
-    const result = numsSameConsecDiff(n, k)
+  for (const { root } of inputs) {
+    const result = verticalTraversal(root)
     console.log(result)
   }
 }

@@ -3,60 +3,106 @@ main
 """
 
 from __future__ import annotations
-from typing import Optional, Reversible
+from typing import Optional
+from lib import TreeNode, new_tree_node, new_tree_left, new_tree_val
 
 
 class StackNode:
-    len: int
-    num: int
-    digit: int
+    row: int
+    col: int
+    node: Optional[TreeNode]
 
-    def __init__(self, len: int, num: int, digit: int):
-        self.len = len
-        self.num = num
-        self.digit = digit
+    def __init__(self, row: int, col: int, node: Optional[TreeNode]):
+        self.row = row
+        self.col = col
+        self.node = node
+
+
+class VerticalNode:
+    row: int
+    col: int
+    value: int
+
+    def __init__(self, row: int, col: int, value: int) -> None:
+        self.row = row
+        self.col = col
+        self.value = value
+
+
+class ResultNode:
+    col: int
+    values: list[int]
+
+    def __init__(self, col: int, values: list[int]) -> None:
+        self.col = col
+        self.values = values
 
 
 class Solution:
-    def numsSameConsecDiff(self, n: int, k: int) -> list[int]:
-        stack: list[StackNode] = []
-        result: list[int] = []
-
-        for i in range(1, 10):
-            node = StackNode(n - 1, i, i)
-            stack.append(node)
+    def verticalTraversal(self, root: Optional[TreeNode]) -> list[list[int]]:
+        verticals: dict[int, list[VerticalNode]] = {}
+        stack: list[StackNode] = [StackNode(0, 0, root)]
 
         while len(stack) > 0:
             top = stack.pop()
-            if top.len == 0:
-                result.append(top.num)
+            if top.node is None:
                 continue
 
-            for i in range(10):
-                if abs(i - top.digit) == k:
-                    node = StackNode(top.len - 1, top.num * 10 + i, i)
-                    stack.append(node)
+            if top.col not in verticals:
+                verticals[top.col] = []
 
-        return result
+            vertical = verticals[top.col]
+            vertical.append(VerticalNode(top.row, top.col, top.node.val))
+
+            stack.append(StackNode(top.row + 1, top.col - 1, top.node.left))
+            stack.append(StackNode(top.row + 1, top.col + 1, top.node.right))
+
+        result: list[ResultNode] = []
+        for nodes in verticals.values():
+            nodes.sort(key=lambda node: (node.row, node.value))
+            rnode = ResultNode(nodes[0].col, [])
+            for node in nodes:
+                rnode.values.append(node.value)
+            result.append(rnode)
+
+        result.sort(key=lambda node: node.col)
+        return [node.values for node in result]
 
 
 class Input:
-    n: int
-    k: int
+    root: Optional[TreeNode]
 
-    def __init__(self, n: int, k: int):
-        self.n = n
-        self.k = k
+    def __init__(self, root: Optional[TreeNode]):
+        self.root = root
 
 
 def main():
-    inputs: list[Input] = [Input(3, 7), Input(2, 1)]
+    inputs: list[Input] = [
+        Input(
+            new_tree_node(
+                3, new_tree_val(9), new_tree_node(20, new_tree_val(15), new_tree_val(7))
+            )
+        ),
+        Input(
+            new_tree_node(
+                1,
+                new_tree_node(2, new_tree_val(4), new_tree_val(5)),
+                new_tree_node(3, new_tree_val(6), new_tree_val(7)),
+            )
+        ),
+        Input(
+            new_tree_node(
+                3,
+                new_tree_node(1, new_tree_val(0), new_tree_val(2)),
+                new_tree_left(4, new_tree_val(2)),
+            )
+        ),
+    ]
 
     solution = Solution()
     for input in inputs:
-        n = input.n
-        k = input.k
-        result = solution.numsSameConsecDiff(n, k)
+        root = input.root
+        result = solution.verticalTraversal(root)
         print(result)
 
 
