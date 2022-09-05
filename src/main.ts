@@ -1,134 +1,85 @@
-import { newTreeLeft, newTreeNode, newTreeVal, TreeNode } from './lib'
-
-interface StackNode {
-  readonly row: number
-  readonly col: number
-  readonly node: TreeNode | null
+class Node {
+  val: number
+  children: Node[]
+  constructor (val?: number) {
+    this.val = (val === undefined ? 0 : val)
+    this.children = []
+  }
 }
 
-interface VerticalNode {
-  readonly col: number
-  readonly row: number
-  readonly value: number
-}
-
-interface ResultNode {
-  readonly col: number
-  readonly values: number[]
-}
-
-function verticalTraversal (root: TreeNode | null): number[][] {
-  const verticals = new Map<number, VerticalNode[]>()
-  const stack: StackNode[] = [{
-    row: 0,
-    col: 0,
-    node: root
-  }]
-
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { row, col, node } = top
-    if (node == null) {
-      continue
-    }
-
-    const vertical = verticals.get(col) ?? []
-    vertical.push({
-      row,
-      col,
-      value: node.val
-    })
-
-    verticals.set(col, vertical)
-    stack.push({
-      row: row + 1,
-      col: col - 1,
-      node: node.left
-    }, {
-      row: row + 1,
-      col: col + 1,
-      node: node.right
-    })
+function levelOrder (root: Node | null): number[][] {
+  if (root == null) {
+    return []
   }
 
-  const result: ResultNode[] = []
-  for (const nodes of verticals.values()) {
-    nodes.sort((a, b) => a.row === b.row ? a.value - b.value : a.row - b.row)
-    result.push({
-      col: nodes[0].col,
-      values: nodes.map(n => n.value)
-    })
+  const queue: Node[] = [root]
+  const result: number[][] = []
+  while (queue.length > 0) {
+    const size = queue.length
+    const values = new Array<number>(size)
+    for (let i = 0; i < size; i += 1) {
+      const node = queue[i]
+      values[i] = node.val
+      queue.push(...node.children)
+    }
+    queue.splice(0, size)
+
+    result.push(values)
   }
 
   return result
-    .sort((a, b) => a.col - b.col)
-    .map(r => r.values)
 }
 
 interface Input {
-  readonly root: TreeNode | null
+  readonly root: Node | null
+}
 
+function newnode (val: number, ...children: Node[]): Node {
+  const node = new Node(val)
+  node.children = children
+  return node
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newTreeNode(
-        3,
-        newTreeVal(9),
-        newTreeNode(20,
-          newTreeVal(15),
-          newTreeVal(7)
-        )
+      root: newnode(1,
+        newnode(3,
+          newnode(5),
+          newnode(6)
+        ),
+        newnode(2),
+        newnode(4)
       )
     },
     {
-      root: newTreeNode(
-        1,
-        newTreeNode(
-          2,
-          newTreeVal(4),
-          newTreeVal(5)
+      root: newnode(1,
+        newnode(2),
+        newnode(3,
+          newnode(6),
+          newnode(7,
+            newnode(11,
+              newnode(14)
+            )
+          )
         ),
-        newTreeNode(
-          3,
-          newTreeVal(6),
-          newTreeVal(7)
-        )
-      )
-    },
-    {
-      root: newTreeNode(
-        1,
-        newTreeNode(
-          2,
-          newTreeVal(4),
-          newTreeVal(6)
+        newnode(4,
+          newnode(8,
+            newnode(12)
+          )
         ),
-        newTreeNode(
-          3,
-          newTreeVal(5),
-          newTreeVal(7)
-        )
-      )
-    },
-    {
-      root: newTreeNode(
-        3,
-        newTreeNode(
-          1,
-          newTreeVal(0),
-          newTreeVal(2)
-        ),
-        newTreeLeft(
-          4,
-          newTreeVal(2)
+        newnode(5,
+          newnode(9,
+            newnode(13)
+          ),
+          newnode(10)
         )
       )
     }
   ]
 
   for (const { root } of inputs) {
-    const result = verticalTraversal(root)
+    const result = levelOrder(root)
     console.log(result)
   }
 }

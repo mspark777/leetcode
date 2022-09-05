@@ -1,74 +1,82 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type stackNode struct {
-	len   int
-	num   int
-	digit int
+type Node struct {
+	Val      int
+	Children []*Node
 }
 
-func absdiff(i, j int) int {
-	if i > j {
-		return i - j
+func levelOrder(root *Node) [][]int {
+	result := [][]int{}
+	if root == nil {
+		return result
 	}
 
-	return j - i
-}
-
-func numsSameConsecDiff(n int, k int) []int {
-	stack := []*stackNode{}
-	result := []int{}
-
-	for i := 1; i <= 9; i += 1 {
-		stack = append(stack, &stackNode{len: n - 1, num: i, digit: i})
-	}
-
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		stack = stack[:topidx]
-
-		if top.len == 0 {
-			result = append(result, top.num)
-			continue
+	queue := []*Node{root}
+	for len(queue) > 0 {
+		size := len(queue)
+		values := make([]int, size)
+		for i := 0; i < size; i += 1 {
+			node := queue[i]
+			values[i] = node.Val
+			queue = append(queue, node.Children...)
 		}
-
-		for i := 0; i < 10; i += 1 {
-			if absdiff(top.digit, i) == k {
-				stack = append(stack, &stackNode{
-					len:   top.len - 1,
-					num:   top.num*10 + i,
-					digit: i,
-				})
-			}
-		}
+		queue = queue[size:]
+		result = append(result, values)
 	}
 
 	return result
 }
 
 type input struct {
-	n int
-	k int
+	root *Node
+}
+
+func newnode(val int, children ...*Node) *Node {
+	return &Node{Val: val, Children: children}
 }
 
 func main() {
 	inputs := []input{
 		{
-			n: 3,
-			k: 7,
+			root: newnode(1,
+				newnode(3,
+					newnode(5),
+					newnode(6),
+				),
+				newnode(2),
+				newnode(4),
+			),
 		},
 		{
-			n: 2,
-			k: 1,
+			root: newnode(1,
+				newnode(2),
+				newnode(3,
+					newnode(6),
+					newnode(7,
+						newnode(11,
+							newnode(14),
+						),
+					),
+				),
+				newnode(4,
+					newnode(8,
+						newnode(12),
+					),
+				),
+				newnode(5,
+					newnode(9,
+						newnode(13),
+					),
+					newnode(10),
+				),
+			),
 		},
 	}
 
 	for _, input := range inputs {
-		result := numsSameConsecDiff(input.n, input.k)
+		result := levelOrder(input.root)
 		fmt.Println(result)
 	}
 }

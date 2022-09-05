@@ -1,116 +1,62 @@
-import { newTreeLeft, newTreeNode, newTreeVal } from './lib.mjs'
+class Node {
+  constructor (val) {
+    this.val = (val === undefined ? 0 : val)
+    this.children = []
+  }
+}
 
 /**
- * @param {import('./lib.mjs').TreeNode} root
+ * @param {Node|null} root
  * @return {number[][]}
  */
-function verticalTraversal (root) {
-  const verticals = new Map()
-  const stack = [{
-    row: 0,
-    col: 0,
-    node: root
-  }]
-
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { row, col, node } = top
-    if (node == null) {
-      continue
-    }
-
-    const vertical = verticals.get(col) ?? []
-    vertical.push({
-      row,
-      col,
-      value: node.val
-    })
-
-    verticals.set(col, vertical)
-    stack.push({
-      row: row + 1,
-      col: col - 1,
-      node: node.left
-    }, {
-      row: row + 1,
-      col: col + 1,
-      node: node.right
-    })
+function levelOrder (root) {
+  if (root == null) {
+    return []
   }
 
+  const queue = [root]
   const result = []
-  for (const nodes of verticals.values()) {
-    nodes.sort((a, b) => a.row === b.row ? a.value - b.value : a.row - b.row)
-    result.push({
-      col: nodes[0].col,
-      values: nodes.map(n => n.value)
-    })
+  while (queue.length > 0) {
+    const size = queue.length
+    const values = new Array(size)
+    for (let i = 0; i < size; i += 1) {
+      const node = queue[i]
+      values[i] = node.val
+      queue.push(...node.children)
+    }
+    queue.splice(0, size)
+
+    result.push(values)
   }
 
   return result
-    .sort((a, b) => a.col - b.col)
-    .map(r => r.values)
+}
+
+function newnode (val, ...children) {
+  const node = new Node(val)
+  node.children = children
+  return node
 }
 
 async function main () {
   const inputs = [
     {
-      root: newTreeNode(
-        3,
-        newTreeVal(9),
-        newTreeNode(20,
-          newTreeVal(15),
-          newTreeVal(7)
-        )
+      root: newnode(1,
+        newnode(3,
+          newnode(5),
+          newnode(6)
+        ),
+        newnode(2),
+        newnode(4)
       )
     },
     {
-      root: newTreeNode(
-        1,
-        newTreeNode(
-          2,
-          newTreeVal(4),
-          newTreeVal(5)
-        ),
-        newTreeNode(
-          3,
-          newTreeVal(6),
-          newTreeVal(7)
-        )
-      )
-    },
-    {
-      root: newTreeNode(
-        1,
-        newTreeNode(
-          2,
-          newTreeVal(4),
-          newTreeVal(6)
-        ),
-        newTreeNode(
-          3,
-          newTreeVal(5),
-          newTreeVal(7)
-        )
-      )
-    },
-    {
-      root: newTreeNode(
-        3,
-        newTreeNode(
-          1,
-          newTreeVal(0),
-          newTreeVal(2)
-        ),
-        newTreeLeft(
-          4,
-          newTreeVal(2)
-        )
-      )
+      root: newnode(1, newnode(2), newnode(3, newnode(6), newnode(7, newnode(11, newnode(14)))), newnode(4, newnode(8, newnode(12))), newnode(5, newnode(9, newnode(13)), newnode(10)))
     }
   ]
 
   for (const { root } of inputs) {
-    const result = verticalTraversal(root)
+    const result = levelOrder(root)
     console.log(result)
   }
 }

@@ -4,97 +4,62 @@ main
 
 from __future__ import annotations
 from typing import Optional
-from lib import TreeNode, new_tree_node, new_tree_left, new_tree_val
 
 
-class StackNode:
-    row: int
-    col: int
-    node: Optional[TreeNode]
+class Node:
+    val: int
+    children: Optional[list[Node]]
 
-    def __init__(self, row: int, col: int, node: Optional[TreeNode]):
-        self.row = row
-        self.col = col
-        self.node = node
+    def __init__(self, val: int, children=None):
+        self.val = val
+        self.children = children
 
 
-class VerticalNode:
-    row: int
-    col: int
-    value: int
-
-    def __init__(self, row: int, col: int, value: int) -> None:
-        self.row = row
-        self.col = col
-        self.value = value
-
-
-class ResultNode:
-    col: int
-    values: list[int]
-
-    def __init__(self, col: int, values: list[int]) -> None:
-        self.col = col
-        self.values = values
+def newnode(val: int, children: Optional[list[Node]] = None) -> Node:
+    return Node(val, children)
 
 
 class Solution:
-    def verticalTraversal(self, root: Optional[TreeNode]) -> list[list[int]]:
-        verticals: dict[int, list[VerticalNode]] = {}
-        stack: list[StackNode] = [StackNode(0, 0, root)]
+    def levelOrder(self, root: Optional[Node]) -> list[list[int]]:
+        if root is None:
+            return []
 
-        while len(stack) > 0:
-            top = stack.pop()
-            if top.node is None:
-                continue
-
-            if top.col not in verticals:
-                verticals[top.col] = []
-
-            vertical = verticals[top.col]
-            vertical.append(VerticalNode(top.row, top.col, top.node.val))
-
-            stack.append(StackNode(top.row + 1, top.col - 1, top.node.left))
-            stack.append(StackNode(top.row + 1, top.col + 1, top.node.right))
-
-        result: list[ResultNode] = []
-        for nodes in verticals.values():
-            nodes.sort(key=lambda node: (node.row, node.value))
-            rnode = ResultNode(nodes[0].col, [])
-            for node in nodes:
-                rnode.values.append(node.value)
-            result.append(rnode)
-
-        result.sort(key=lambda node: node.col)
-        return [node.values for node in result]
+        queue: list[Node] = [root]
+        result: list[list[int]] = []
+        while len(queue) > 0:
+            size = len(queue)
+            values: list[int] = []
+            for i in range(size):
+                node = queue[i]
+                values.append(node.val)
+                if node.children is not None:
+                    queue.extend(node.children)
+            result.append(values)
+            queue = queue[size:]
+        return result
 
 
 class Input:
-    root: Optional[TreeNode]
+    root: Optional[Node]
 
-    def __init__(self, root: Optional[TreeNode]):
+    def __init__(self, root: Optional[Node]):
         self.root = root
 
 
 def main():
     inputs: list[Input] = [
         Input(
-            new_tree_node(
-                3, new_tree_val(9), new_tree_node(20, new_tree_val(15), new_tree_val(7))
-            )
+            newnode(1, [newnode(3, [newnode(5), newnode(6)]), newnode(2), newnode(4)])
         ),
         Input(
-            new_tree_node(
+            newnode(
                 1,
-                new_tree_node(2, new_tree_val(4), new_tree_val(5)),
-                new_tree_node(3, new_tree_val(6), new_tree_val(7)),
-            )
-        ),
-        Input(
-            new_tree_node(
-                3,
-                new_tree_node(1, new_tree_val(0), new_tree_val(2)),
-                new_tree_left(4, new_tree_val(2)),
+                [
+                    newnode(2),
+                    newnode(3, [newnode(6), newnode(7, [newnode(11, [newnode(14)])])]),
+                    newnode(4, [newnode(8, [newnode(12)])]),
+                    newnode(5, [newnode(9, [newnode(13)]), newnode(10)]),
+                ],
             )
         ),
     ]
@@ -102,7 +67,7 @@ def main():
     solution = Solution()
     for input in inputs:
         root = input.root
-        result = solution.verticalTraversal(root)
+        result = solution.levelOrder(root)
         print(result)
 
 
