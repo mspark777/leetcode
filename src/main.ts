@@ -1,85 +1,59 @@
-class Node {
-  val: number
-  children: Node[]
-  constructor (val?: number) {
-    this.val = (val === undefined ? 0 : val)
-    this.children = []
-  }
-}
+function decodeString (s: string): string {
+  const stack: string[] = []
 
-function levelOrder (root: Node | null): number[][] {
-  if (root == null) {
-    return []
-  }
-
-  const queue: Node[] = [root]
-  const result: number[][] = []
-  while (queue.length > 0) {
-    const size = queue.length
-    const values = new Array<number>(size)
-    for (let i = 0; i < size; i += 1) {
-      const node = queue[i]
-      values[i] = node.val
-      queue.push(...node.children)
+  for (const ch of s) {
+    if (ch !== ']') {
+      stack.push(ch)
+      continue
     }
-    queue.splice(0, size)
 
-    result.push(values)
+    const chars: string[] = []
+    for (let top = stack.pop(); top !== '['; top = stack.pop()) {
+      chars.push(top as string)
+    }
+
+    const nums: string[] = []
+    while (stack.length > 0) {
+      const nch = stack.pop() as string
+      const n = Number(nch)
+      if (Number.isNaN(n)) {
+        stack.push(nch)
+        break
+      } else {
+        nums.push(nch)
+      }
+    }
+
+    const str = chars.reverse().join('')
+    const count = Number(nums.reverse().join(''))
+
+    for (let i = 0; i < count; i += 1) {
+      stack.push(str)
+    }
   }
 
-  return result
+  return stack.join('')
 }
 
 interface Input {
-  readonly root: Node | null
-}
-
-function newnode (val: number, ...children: Node[]): Node {
-  const node = new Node(val)
-  node.children = children
-  return node
+  readonly s: string
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newnode(1,
-        newnode(3,
-          newnode(5),
-          newnode(6)
-        ),
-        newnode(2),
-        newnode(4)
-      )
+      s: '3[a]2[bc]'
     },
     {
-      root: newnode(1,
-        newnode(2),
-        newnode(3,
-          newnode(6),
-          newnode(7,
-            newnode(11,
-              newnode(14)
-            )
-          )
-        ),
-        newnode(4,
-          newnode(8,
-            newnode(12)
-          )
-        ),
-        newnode(5,
-          newnode(9,
-            newnode(13)
-          ),
-          newnode(10)
-        )
-      )
+      s: '3[a2[c]]'
+    },
+    {
+      s: '2[abc]3[cd]ef'
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = levelOrder(root)
+  for (const { s } of inputs) {
+    const result = decodeString(s)
     console.log(result)
   }
 }

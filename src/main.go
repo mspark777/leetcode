@@ -2,81 +2,90 @@ package main
 
 import "fmt"
 
-type Node struct {
-	Val      int
-	Children []*Node
+func reverse(arr []rune) {
+	i := 0
+	j := len(arr) - 1
+	for i < j {
+		temp := arr[i]
+		arr[i] = arr[j]
+		arr[j] = temp
+
+		i += 1
+		j -= 1
+	}
 }
 
-func levelOrder(root *Node) [][]int {
-	result := [][]int{}
-	if root == nil {
-		return result
-	}
+func stackToString(arr []rune) string {
+	reverse(arr)
+	return string(arr)
+}
 
-	queue := []*Node{root}
-	for len(queue) > 0 {
-		size := len(queue)
-		values := make([]int, size)
-		for i := 0; i < size; i += 1 {
-			node := queue[i]
-			values[i] = node.Val
-			queue = append(queue, node.Children...)
+func decodeString(s string) string {
+	stack := []rune{}
+
+	for _, ch := range s {
+		if ch != ']' {
+			stack = append(stack, ch)
+			continue
 		}
-		queue = queue[size:]
-		result = append(result, values)
+
+		chars := []rune{}
+		for len(stack) > 0 {
+			topidx := len(stack) - 1
+			top := stack[topidx]
+			stack = stack[:topidx]
+
+			if top != '[' {
+				chars = append(chars, top)
+			} else {
+				break
+			}
+		}
+
+		nums := []rune{}
+		for len(stack) > 0 {
+			topidx := len(stack) - 1
+			top := stack[topidx]
+			if ('0' <= top) && (top <= '9') {
+				nums = append(nums, top)
+				stack = stack[:topidx]
+			} else {
+				break
+			}
+		}
+
+		reverse(chars)
+		count := 0
+		fmt.Sscanf(stackToString(nums), "%d", &count)
+
+		for i := 0; i < count; i += 1 {
+			stack = append(stack, chars...)
+		}
 	}
 
-	return result
+	return string(stack)
 }
 
 type input struct {
-	root *Node
-}
-
-func newnode(val int, children ...*Node) *Node {
-	return &Node{Val: val, Children: children}
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			root: newnode(1,
-				newnode(3,
-					newnode(5),
-					newnode(6),
-				),
-				newnode(2),
-				newnode(4),
-			),
+			s: "3[a]2[bc]",
 		},
 		{
-			root: newnode(1,
-				newnode(2),
-				newnode(3,
-					newnode(6),
-					newnode(7,
-						newnode(11,
-							newnode(14),
-						),
-					),
-				),
-				newnode(4,
-					newnode(8,
-						newnode(12),
-					),
-				),
-				newnode(5,
-					newnode(9,
-						newnode(13),
-					),
-					newnode(10),
-				),
-			),
+			s: "3[a2[c]]",
+		},
+		{
+			s: "2[abc]3[cd]ef",
 		},
 	}
 
 	for _, input := range inputs {
-		result := levelOrder(input.root)
+		s := input.s
+		result := decodeString(s)
 		fmt.Println(result)
 	}
 }

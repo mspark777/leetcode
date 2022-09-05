@@ -6,68 +6,52 @@ from __future__ import annotations
 from typing import Optional
 
 
-class Node:
-    val: int
-    children: Optional[list[Node]]
-
-    def __init__(self, val: int, children=None):
-        self.val = val
-        self.children = children
-
-
-def newnode(val: int, children: Optional[list[Node]] = None) -> Node:
-    return Node(val, children)
-
-
 class Solution:
-    def levelOrder(self, root: Optional[Node]) -> list[list[int]]:
-        if root is None:
-            return []
+    def decodeString(self, s: str) -> str:
+        stack: list[str] = []
 
-        queue: list[Node] = [root]
-        result: list[list[int]] = []
-        while len(queue) > 0:
-            size = len(queue)
-            values: list[int] = []
-            for i in range(size):
-                node = queue[i]
-                values.append(node.val)
-                if node.children is not None:
-                    queue.extend(node.children)
-            result.append(values)
-            queue = queue[size:]
-        return result
+        for ch in s:
+            if ch != "]":
+                stack.append(ch)
+                continue
+
+            chars: list[str] = []
+            while stack[-1] != "[":
+                chars.append(stack.pop())
+            stack.pop()
+
+            nums: list[str] = []
+            while len(stack) > 0 and stack[-1].isdigit():
+                nums.append(stack.pop())
+
+            chars.reverse()
+            nums.reverse()
+
+            s = "".join(chars)
+            count = int("".join(nums))
+            stack.append(count * s)
+
+        return "".join(stack)
 
 
 class Input:
-    root: Optional[Node]
+    s: str
 
-    def __init__(self, root: Optional[Node]):
-        self.root = root
+    def __init__(self, s: str):
+        self.s = s
 
 
 def main():
     inputs: list[Input] = [
-        Input(
-            newnode(1, [newnode(3, [newnode(5), newnode(6)]), newnode(2), newnode(4)])
-        ),
-        Input(
-            newnode(
-                1,
-                [
-                    newnode(2),
-                    newnode(3, [newnode(6), newnode(7, [newnode(11, [newnode(14)])])]),
-                    newnode(4, [newnode(8, [newnode(12)])]),
-                    newnode(5, [newnode(9, [newnode(13)]), newnode(10)]),
-                ],
-            )
-        ),
+        Input("3[a]2[bc]"),
+        Input("3[a2[c]]"),
+        Input("2[abc]3[cd]ef"),
     ]
 
     solution = Solution()
     for input in inputs:
-        root = input.root
-        result = solution.levelOrder(root)
+        s = input.s
+        result = solution.decodeString(s)
         print(result)
 
 

@@ -1,62 +1,58 @@
-class Node {
-  constructor (val) {
-    this.val = (val === undefined ? 0 : val)
-    this.children = []
-  }
-}
-
 /**
- * @param {Node|null} root
- * @return {number[][]}
+ * @param {string} s
+ * @return {string}
  */
-function levelOrder (root) {
-  if (root == null) {
-    return []
-  }
+function decodeString (s) {
+  const stack = []
 
-  const queue = [root]
-  const result = []
-  while (queue.length > 0) {
-    const size = queue.length
-    const values = new Array(size)
-    for (let i = 0; i < size; i += 1) {
-      const node = queue[i]
-      values[i] = node.val
-      queue.push(...node.children)
+  for (const ch of s) {
+    if (ch !== ']') {
+      stack.push(ch)
+      continue
     }
-    queue.splice(0, size)
 
-    result.push(values)
+    const chars = []
+    for (let top = stack.pop(); top !== '['; top = stack.pop()) {
+      chars.push(top)
+    }
+    const nums = []
+    while (stack.length > 0) {
+      const nch = stack.pop()
+      const n = Number(nch)
+      if (Number.isNaN(n)) {
+        stack.push(nch)
+        break
+      } else {
+        nums.push(nch)
+      }
+    }
+
+    const str = chars.reverse().join('')
+    const count = Number(nums.reverse().join(''))
+
+    for (let i = 0; i < count; i += 1) {
+      stack.push(str)
+    }
   }
 
-  return result
-}
-
-function newnode (val, ...children) {
-  const node = new Node(val)
-  node.children = children
-  return node
+  return stack.join('')
 }
 
 async function main () {
   const inputs = [
     {
-      root: newnode(1,
-        newnode(3,
-          newnode(5),
-          newnode(6)
-        ),
-        newnode(2),
-        newnode(4)
-      )
+      s: '3[a]2[bc]'
     },
     {
-      root: newnode(1, newnode(2), newnode(3, newnode(6), newnode(7, newnode(11, newnode(14)))), newnode(4, newnode(8, newnode(12))), newnode(5, newnode(9, newnode(13)), newnode(10)))
+      s: '3[a2[c]]'
+    },
+    {
+      s: '2[abc]3[cd]ef'
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = levelOrder(root)
+  for (const { s } of inputs) {
+    const result = decodeString(s)
     console.log(result)
   }
 }
