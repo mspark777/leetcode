@@ -2,90 +2,108 @@ package main
 
 import "fmt"
 
-func reverse(arr []rune) {
-	i := 0
-	j := len(arr) - 1
-	for i < j {
-		temp := arr[i]
-		arr[i] = arr[j]
-		arr[j] = temp
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
 
-		i += 1
-		j -= 1
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
+}
+
+func newval(val int) *TreeNode {
+	return newnode(val, nil, nil)
+}
+
+func newleft(val int, left *TreeNode) *TreeNode {
+	return newnode(val, left, nil)
+}
+
+func newright(val int, right *TreeNode) *TreeNode {
+	return newnode(val, nil, right)
+}
+
+func preorder(node *TreeNode) {
+	if node != nil {
+		preorder(node.Left)
+		fmt.Print(node.Val, " ")
+		preorder(node.Right)
 	}
 }
 
-func stackToString(arr []rune) string {
-	reverse(arr)
-	return string(arr)
-}
-
-func decodeString(s string) string {
-	stack := []rune{}
-
-	for _, ch := range s {
-		if ch != ']' {
-			stack = append(stack, ch)
-			continue
-		}
-
-		chars := []rune{}
-		for len(stack) > 0 {
-			topidx := len(stack) - 1
-			top := stack[topidx]
-			stack = stack[:topidx]
-
-			if top != '[' {
-				chars = append(chars, top)
-			} else {
-				break
-			}
-		}
-
-		nums := []rune{}
-		for len(stack) > 0 {
-			topidx := len(stack) - 1
-			top := stack[topidx]
-			if ('0' <= top) && (top <= '9') {
-				nums = append(nums, top)
-				stack = stack[:topidx]
-			} else {
-				break
-			}
-		}
-
-		reverse(chars)
-		count := 0
-		fmt.Sscanf(stackToString(nums), "%d", &count)
-
-		for i := 0; i < count; i += 1 {
-			stack = append(stack, chars...)
-		}
+func containsOne(node *TreeNode) bool {
+	if node == nil {
+		return false
 	}
 
-	return string(stack)
+	leftContained := containsOne(node.Left)
+	if !leftContained {
+		node.Left = nil
+	}
+
+	rightContained := containsOne(node.Right)
+	if !rightContained {
+		node.Right = nil
+	}
+
+	return (node.Val == 1) || leftContained || rightContained
+}
+
+func pruneTree(root *TreeNode) *TreeNode {
+	if containsOne(root) {
+		return root
+	}
+
+	return nil
 }
 
 type input struct {
-	s string
+	root *TreeNode
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "3[a]2[bc]",
+			root: newright(1,
+				newnode(0,
+					newval(0),
+					newval(1),
+				),
+			),
 		},
 		{
-			s: "3[a2[c]]",
+			root: newnode(1,
+				newnode(0,
+					newval(0),
+					newval(0),
+				),
+				newnode(1,
+					newval(0),
+					newval(1),
+				),
+			),
 		},
 		{
-			s: "2[abc]3[cd]ef",
+			root: newnode(1,
+				newnode(1,
+					newleft(1,
+						newval(0),
+					),
+					newval(1),
+				),
+				newnode(0,
+					newval(0),
+					newval(1),
+				),
+			),
 		},
 	}
 
 	for _, input := range inputs {
-		s := input.s
-		result := decodeString(s)
-		fmt.Println(result)
+		root := input.root
+		result := pruneTree(root)
+		preorder(result)
+		fmt.Println("")
 	}
 }

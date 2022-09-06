@@ -1,39 +1,25 @@
-defmodule StackNode do
+defmodule TreeNode do
   @type t :: %__MODULE__{
-          len: integer,
-          num: integer,
-          digit: integer
+          val: integer,
+          left: TreeNode.t() | nil,
+          right: TreeNode.t() | nil
         }
-  defstruct len: nil, num: nil, digit: nil
+  defstruct val: 0, left: nil, right: nil
 end
 
 defmodule Solution do
-  @spec nums_same_consec_diff(n :: integer, k :: integer) :: [integer]
-  def nums_same_consec_diff(n, k) do
-    1..9
-    |> Enum.map(&newnode(n - 1, &1, &1))
-    |> dfs(k, [])
+  @spec prune_tree(root :: TreeNode.t() | nil) :: TreeNode.t() | nil
+  def prune_tree(nil), do: nil
+
+  def prune_tree(root) do
+    left = prune_tree(root.left)
+    right = prune_tree(root.right)
+
+    case {root.val, left, right} do
+      {0, nil, nil} -> nil
+      _ -> %TreeNode{val: root.val, left: left, right: right}
+    end
   end
-
-  @spec dfs(stack :: [StackNode.t()], k :: integer, result :: [integer]) :: [integer]
-  defp dfs([%StackNode{len: len, num: num, digit: _} | nodes], k, result) when len == 0,
-    do: dfs(nodes, k, [num | result])
-
-  defp dfs([%StackNode{len: len, num: num, digit: digit} | nodes], k, result) do
-    newnodes =
-      0..9
-      |> Enum.map(&{&1, abs(&1 - digit)})
-      |> Enum.filter(&(elem(&1, 1) == k))
-      |> Enum.map(&elem(&1, 0))
-      |> Enum.map(&newnode(len - 1, num * 10 + &1, &1))
-
-    dfs(newnodes ++ nodes, k, result)
-  end
-
-  defp dfs([], _, result), do: result
-
-  @spec newnode(len :: integer, num :: integer, digit :: integer) :: StackNode.t()
-  defp newnode(len, num, digit), do: %StackNode{len: len, num: num, digit: digit}
 end
 
 defmodule Main do
@@ -41,26 +27,79 @@ defmodule Main do
   def main() do
     main([
       %{
-        n: 3,
-        k: 7
+        root:
+          newright(
+            1,
+            newnode(
+              0,
+              newval(0),
+              newval(1)
+            )
+          )
       },
       %{
-        n: 2,
-        k: 1
+        root:
+          newnode(
+            1,
+            newnode(
+              0,
+              newval(0),
+              newval(0)
+            ),
+            newnode(
+              1,
+              newval(0),
+              newval(1)
+            )
+          )
+      },
+      %{
+        root:
+          newnode(
+            1,
+            newnode(
+              1,
+              newleft(
+                1,
+                newval(0)
+              ),
+              newval(1)
+            ),
+            newnode(
+              0,
+              newval(0),
+              newval(1)
+            )
+          )
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    n = input.n
-    k = input.k
-    result = Solution.nums_same_consec_diff(n, k)
-    IO.puts(result |> Enum.join(", "))
+    root = input.root
+    result = Solution.prune_tree(root)
+    IO.puts(postorder([], result) |> Enum.join(", "))
     main(remains)
   end
 
   def main([]), do: nil
+
+  defp newnode(val, left, right), do: %TreeNode{val: val, left: left, right: right}
+  defp newval(val), do: newnode(val, nil, nil)
+  defp newleft(val, left), do: newnode(val, left, nil)
+  defp newright(val, right), do: newnode(val, nil, right)
+
+  defp postorder(vals, nil), do: vals
+
+  defp postorder(vals, node) do
+    newvals =
+      vals
+      |> postorder(node.right)
+      |> postorder(node.left)
+
+    [node.val | newvals]
+  end
 end
 
 Main.main()
