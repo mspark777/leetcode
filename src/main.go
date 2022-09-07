@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type TreeNode struct {
 	Val   int
@@ -24,38 +27,44 @@ func newright(val int, right *TreeNode) *TreeNode {
 	return newnode(val, nil, right)
 }
 
-func preorder(node *TreeNode) {
-	if node != nil {
-		preorder(node.Left)
-		fmt.Print(node.Val, " ")
-		preorder(node.Right)
-	}
-}
-
-func containsOne(node *TreeNode) bool {
-	if node == nil {
-		return false
+func tree2str(root *TreeNode) string {
+	if root == nil {
+		return ""
 	}
 
-	leftContained := containsOne(node.Left)
-	if !leftContained {
-		node.Left = nil
+	stack := []*TreeNode{root}
+	visiteds := make(map[*TreeNode]bool)
+	result := []string{}
+
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		node := stack[topidx]
+
+		if _, ok := visiteds[node]; ok {
+			stack = stack[:topidx]
+			result = append(result, ")")
+			continue
+		}
+
+		visiteds[node] = true
+		result = append(result, "(", fmt.Sprint(node.Val))
+		left := node.Left
+		right := node.Right
+
+		if (left == nil) && (right != nil) {
+			result = append(result, "(", ")")
+		}
+
+		if right != nil {
+			stack = append(stack, right)
+		}
+
+		if left != nil {
+			stack = append(stack, left)
+		}
 	}
 
-	rightContained := containsOne(node.Right)
-	if !rightContained {
-		node.Right = nil
-	}
-
-	return (node.Val == 1) || leftContained || rightContained
-}
-
-func pruneTree(root *TreeNode) *TreeNode {
-	if containsOne(root) {
-		return root
-	}
-
-	return nil
+	return strings.Join(result[1:len(result)-1], "")
 }
 
 type input struct {
@@ -65,45 +74,27 @@ type input struct {
 func main() {
 	inputs := []input{
 		{
-			root: newright(1,
-				newnode(0,
-					newval(0),
-					newval(1),
-				),
+			root: newnode(1,
+				newleft(2, newval(4)),
+				newval(3),
 			),
 		},
 		{
 			root: newnode(1,
-				newnode(0,
-					newval(0),
-					newval(0),
-				),
-				newnode(1,
-					newval(0),
-					newval(1),
-				),
+				newright(2, newval(4)),
+				newval(3),
 			),
 		},
 		{
-			root: newnode(1,
-				newnode(1,
-					newleft(1,
-						newval(0),
-					),
-					newval(1),
-				),
-				newnode(0,
-					newval(0),
-					newval(1),
-				),
+			root: newleft(-1,
+				newleft(-2, newleft(-3, newval(-4))),
 			),
 		},
 	}
 
 	for _, input := range inputs {
 		root := input.root
-		result := pruneTree(root)
-		preorder(result)
-		fmt.Println("")
+		result := tree2str(root)
+		fmt.Println(result)
 	}
 }

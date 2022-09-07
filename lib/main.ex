@@ -8,18 +8,17 @@ defmodule TreeNode do
 end
 
 defmodule Solution do
-  @spec prune_tree(root :: TreeNode.t() | nil) :: TreeNode.t() | nil
-  def prune_tree(nil), do: nil
+  @spec tree2str(root :: TreeNode.t() | nil) :: String.t()
+  def tree2str(nil), do: ""
 
-  def prune_tree(root) do
-    left = prune_tree(root.left)
-    right = prune_tree(root.right)
+  def tree2str(%TreeNode{val: val, left: left, right: right}) when left == nil and right == nil,
+    do: to_string(val)
 
-    case {root.val, left, right} do
-      {0, nil, nil} -> nil
-      _ -> %TreeNode{val: root.val, left: left, right: right}
-    end
-  end
+  def tree2str(%TreeNode{val: val, left: left, right: right}) when right == nil,
+    do: "#{val}(#{tree2str(left)})"
+
+  def tree2str(%TreeNode{val: val, left: left, right: right}),
+    do: "#{val}(#{tree2str(left)})(#{tree2str(right)})"
 end
 
 defmodule Main do
@@ -28,48 +27,25 @@ defmodule Main do
     main([
       %{
         root:
-          newright(
+          newnode(
             1,
-            newnode(
-              0,
-              newval(0),
-              newval(1)
-            )
+            newleft(2, newval(4)),
+            newval(3)
           )
       },
       %{
         root:
           newnode(
             1,
-            newnode(
-              0,
-              newval(0),
-              newval(0)
-            ),
-            newnode(
-              1,
-              newval(0),
-              newval(1)
-            )
+            newright(2, newval(4)),
+            newval(3)
           )
       },
       %{
         root:
-          newnode(
-            1,
-            newnode(
-              1,
-              newleft(
-                1,
-                newval(0)
-              ),
-              newval(1)
-            ),
-            newnode(
-              0,
-              newval(0),
-              newval(1)
-            )
+          newleft(
+            -1,
+            newleft(-2, newleft(-3, newval(-4)))
           )
       }
     ])
@@ -78,8 +54,8 @@ defmodule Main do
   @spec main(list[any]) :: nil
   def main([input | remains]) do
     root = input.root
-    result = Solution.prune_tree(root)
-    IO.puts(postorder([], result) |> Enum.join(", "))
+    result = Solution.tree2str(root)
+    IO.puts(result)
     main(remains)
   end
 
@@ -89,17 +65,6 @@ defmodule Main do
   defp newval(val), do: newnode(val, nil, nil)
   defp newleft(val, left), do: newnode(val, left, nil)
   defp newright(val, right), do: newnode(val, nil, right)
-
-  defp postorder(vals, nil), do: vals
-
-  defp postorder(vals, node) do
-    newvals =
-      vals
-      |> postorder(node.right)
-      |> postorder(node.left)
-
-    [node.val | newvals]
-  end
 end
 
 Main.main()

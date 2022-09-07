@@ -33,30 +33,37 @@ def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
     return newnode(val, None, right)
 
 
-def preorder(node: Optional[TreeNode]):
-    if node is not None:
-        preorder(node.left)
-        print(node.val, end=" ")
-        preorder(node.right)
-
-
 class Solution:
-    def pruneTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
-        return root if self.contains_one(root) else None
+    def tree2str(self, root: Optional[TreeNode]) -> str:
+        if root is None:
+            return ""
 
-    def contains_one(self, node: Optional[TreeNode]) -> bool:
-        if node is None:
-            return False
+        stack: list[TreeNode] = [root]
+        visiteds: set[TreeNode] = set()
+        result: list[str] = []
+        while stack:
+            node = stack[-1]
+            if node in visiteds:
+                stack.pop()
+                result.append(")")
+                continue
 
-        left_contained = self.contains_one(node.left)
-        if not left_contained:
-            node.left = None
+            visiteds.add(node)
+            result.append("(")
+            result.append(str(node.val))
 
-        right_contained = self.contains_one(node.right)
-        if not right_contained:
-            node.right = None
+            left = node.left
+            right = node.right
+            if (left is None) and (right is not None):
+                result.append("()")
 
-        return (node.val == 1) or left_contained or right_contained
+            if right is not None:
+                stack.append(right)
+
+            if left is not None:
+                stack.append(left)
+
+        return "".join(result[1:-1])
 
 
 class Input:
@@ -68,27 +75,15 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-        Input(newright(1, newnode(0, newval(0), newval(1)))),
-        Input(
-            newnode(
-                1, newnode(0, newval(0), newval(0)), newnode(1, newval(0), newval(1))
-            )
-        ),
-        Input(
-            newnode(
-                1,
-                newnode(1, newleft(1, newval(0)), newval(1)),
-                newnode(0, newval(0), newval(1)),
-            )
-        ),
+        Input(newnode(1, newleft(2, newval(4)), newval(3))),
+        Input(newnode(1, newright(2, newval(4)), newval(3))),
     ]
 
     solution = Solution()
     for input in inputs:
         root = input.root
-        result = solution.pruneTree(root)
-        preorder(result)
-        print("")
+        result = solution.tree2str(root)
+        print(result)
 
 
 if __name__ == "__main__":

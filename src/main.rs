@@ -1,4 +1,6 @@
 use std::cell::RefCell;
+use std::collections::HashSet;
+use std::iter::FromIterator;
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -26,45 +28,52 @@ fn newright(val: i32, right: TreeType) -> TreeType {
     newnode(val, None, right)
 }
 
-fn preorder(node: &TreeType) {
-    if let Some(n) = node {
-        let bo = n.borrow();
-        preorder(&bo.left);
-        print!("{} ", bo.val);
-        preorder(&bo.right);
-    }
-}
-
 struct Solution {}
 impl Solution {
-    pub fn prune_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-        if Self::contains_one(&root) {
-            root
-        } else {
-            None
+    pub fn tree2str(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+        if root.is_none() {
+            return String::new();
         }
-    }
 
-    fn contains_one(ntype: &TreeType) -> bool {
-        if let Some(noderef) = ntype {
-            let mut node = noderef.borrow_mut();
-            let left_contained = Self::contains_one(&node.left);
-            if !left_contained {
-                node.left = None;
+        let mut stack = vec![Rc::clone(&root.unwrap())];
+        let mut visiteds = HashSet::<*mut TreeNode>::new();
+        let mut result = Vec::<String>::new();
+        while !stack.is_empty() {
+            let node_ref = if let Some(n) = stack.last() {
+                Rc::clone(n)
+            } else {
+                break;
+            };
+
+            if visiteds.contains(&node_ref.as_ptr()) {
+                stack.pop();
+                result.push(")".to_string());
+                continue;
             }
 
-            let right_contained = Self::contains_one(&node.right);
-            if !right_contained {
-                node.right = None;
+            visiteds.insert(node_ref.as_ptr());
+            result.push("(".to_string());
+
+            let node = node_ref.borrow();
+            result.push(node.val.to_string());
+
+            if node.left.is_none() && node.right.is_some() {
+                result.push("()".to_string());
             }
 
-            (node.val == 1) || left_contained || right_contained
-        } else {
-            false
+            if let Some(r) = &node.right {
+                stack.push(Rc::clone(r));
+            }
+
+            if let Some(l) = &node.left {
+                stack.push(Rc::clone(l));
+            }
         }
+
+        let size = result.len();
+        String::from_iter(result.into_iter().skip(1).take(size - 2))
     }
 }
-
 struct Input {
     root: TreeType,
 }
@@ -72,28 +81,19 @@ struct Input {
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            root: newright(1, newnode(0, newval(0), newval(1))),
+            root: newnode(1, newleft(2, newval(4)), newval(3)),
         },
         Input {
-            root: newnode(
-                1,
-                newnode(0, newval(0), newval(0)),
-                newnode(1, newval(0), newval(1)),
-            ),
+            root: newnode(1, newright(2, newval(4)), newval(3)),
         },
         Input {
-            root: newnode(
-                1,
-                newnode(1, newleft(1, newval(0)), newval(1)),
-                newnode(0, newval(0), newval(1)),
-            ),
+            root: newleft(-1, newleft(-2, newleft(-3, newval(-4)))),
         },
     ];
 
     for input in inputs.iter() {
         let root = input.root.clone();
-        let result = Solution::prune_tree(root);
-        preorder(&result);
-        println!("");
+        let result = Solution::tree2str(root);
+        println!("{result}");
     }
 }

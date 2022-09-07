@@ -25,34 +25,38 @@ function newright (val: number, right: TreeNode | null): TreeNode {
   return newnode(val, null, right)
 }
 
-function preorder (node: TreeNode | null): void {
-  if (node != null) {
-    preorder(node.left)
-    process.stdout.write(`${node.val} `)
-    preorder(node.right)
-  }
-}
-
-function containsOne (node: TreeNode | null): boolean {
-  if (node == null) {
-    return false
+function tree2str (root: TreeNode | null): string {
+  if (root == null) {
+    return ''
   }
 
-  const leftContained = containsOne(node.left)
-  if (!leftContained) {
-    node.left = null
+  const stack: TreeNode[] = [root]
+  const visiteds = new Set<TreeNode>()
+  const result: string[] = []
+  for (let node = stack.at(-1); node != null; node = stack.at(-1)) {
+    if (visiteds.has(node)) {
+      stack.pop()
+      result.push(')')
+      continue
+    }
+
+    visiteds.add(node)
+    const { left, right, val } = node
+    result.push('(', val.toString())
+    if ((left == null) && (right != null)) {
+      result.push('()')
+    }
+
+    if (right != null) {
+      stack.push(right)
+    }
+
+    if (left != null) {
+      stack.push(left)
+    }
   }
 
-  const rightContained = containsOne(node.right)
-  if (!rightContained) {
-    node.right = null
-  }
-
-  return node.val === 1 || leftContained || rightContained
-}
-
-function pruneTree (root: TreeNode | null): TreeNode | null {
-  return containsOne(root) ? root : null
+  return result.slice(1, -1).join('')
 }
 
 interface Input {
@@ -62,45 +66,27 @@ interface Input {
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newright(1,
-        newnode(0,
-          newval(0),
-          newval(1)
-        )
+      root: newnode(1,
+        newleft(2, newval(4)),
+        newval(3)
       )
     },
     {
       root: newnode(1,
-        newnode(0,
-          newval(0),
-          newval(0)
-        ),
-        newnode(1,
-          newval(0),
-          newval(1)
-        )
+        newright(2, newval(4)),
+        newval(3)
       )
     },
     {
-      root: newnode(1,
-        newnode(1,
-          newleft(1,
-            newval(0)
-          ),
-          newval(1)
-        ),
-        newnode(0,
-          newval(0),
-          newval(1)
-        )
+      root: newleft(-1,
+        newleft(-2, newleft(-3, newval(-4)))
       )
     }
   ]
 
   for (const { root } of inputs) {
-    const result = pruneTree(root)
-    preorder(result)
-    console.log()
+    const result = tree2str(root)
+    console.log(result)
   }
 }
 
