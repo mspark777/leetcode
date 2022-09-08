@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 type TreeNode struct {
@@ -27,44 +26,25 @@ func newright(val int, right *TreeNode) *TreeNode {
 	return newnode(val, nil, right)
 }
 
-func tree2str(root *TreeNode) string {
-	if root == nil {
-		return ""
-	}
+func inorderTraversal(root *TreeNode) []int {
+	stack := []*TreeNode{}
+	result := []int{}
+	top := root
 
-	stack := []*TreeNode{root}
-	visiteds := make(map[*TreeNode]bool)
-	result := []string{}
+	for (top != nil) || (len(stack) > 0) {
+		for top != nil {
+			stack = append(stack, top)
+			top = top.Left
+		}
 
-	for len(stack) > 0 {
 		topidx := len(stack) - 1
-		node := stack[topidx]
-
-		if _, ok := visiteds[node]; ok {
-			stack = stack[:topidx]
-			result = append(result, ")")
-			continue
-		}
-
-		visiteds[node] = true
-		result = append(result, "(", fmt.Sprint(node.Val))
-		left := node.Left
-		right := node.Right
-
-		if (left == nil) && (right != nil) {
-			result = append(result, "(", ")")
-		}
-
-		if right != nil {
-			stack = append(stack, right)
-		}
-
-		if left != nil {
-			stack = append(stack, left)
-		}
+		top = stack[topidx]
+		stack = stack[:topidx]
+		result = append(result, top.Val)
+		top = top.Right
 	}
 
-	return strings.Join(result[1:len(result)-1], "")
+	return result
 }
 
 type input struct {
@@ -74,27 +54,19 @@ type input struct {
 func main() {
 	inputs := []input{
 		{
-			root: newnode(1,
-				newleft(2, newval(4)),
-				newval(3),
-			),
+			root: newright(1, newleft(2, newval(3))),
 		},
 		{
-			root: newnode(1,
-				newright(2, newval(4)),
-				newval(3),
-			),
+			root: nil,
 		},
 		{
-			root: newleft(-1,
-				newleft(-2, newleft(-3, newval(-4))),
-			),
+			root: newval(1),
 		},
 	}
 
 	for _, input := range inputs {
 		root := input.root
-		result := tree2str(root)
+		result := inorderTraversal(root)
 		fmt.Println(result)
 	}
 }

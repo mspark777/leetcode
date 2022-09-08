@@ -8,17 +8,11 @@ defmodule TreeNode do
 end
 
 defmodule Solution do
-  @spec tree2str(root :: TreeNode.t() | nil) :: String.t()
-  def tree2str(nil), do: ""
+  @spec inorder_traversal(root :: TreeNode.t() | nil) :: [integer]
+  def inorder_traversal(nil), do: []
 
-  def tree2str(%TreeNode{val: val, left: left, right: right}) when left == nil and right == nil,
-    do: to_string(val)
-
-  def tree2str(%TreeNode{val: val, left: left, right: right}) when right == nil,
-    do: "#{val}(#{tree2str(left)})"
-
-  def tree2str(%TreeNode{val: val, left: left, right: right}),
-    do: "#{val}(#{tree2str(left)})(#{tree2str(right)})"
+  def inorder_traversal(root),
+    do: inorder_traversal(root.left) ++ [root.val] ++ inorder_traversal(root.right)
 end
 
 defmodule Main do
@@ -26,27 +20,13 @@ defmodule Main do
   def main() do
     main([
       %{
-        root:
-          newnode(
-            1,
-            newleft(2, newval(4)),
-            newval(3)
-          )
+        root: newright(1, newleft(2, newval(3)))
       },
       %{
-        root:
-          newnode(
-            1,
-            newright(2, newval(4)),
-            newval(3)
-          )
+        root: nil
       },
       %{
-        root:
-          newleft(
-            -1,
-            newleft(-2, newleft(-3, newval(-4)))
-          )
+        root: newval(1)
       }
     ])
   end
@@ -54,8 +34,8 @@ defmodule Main do
   @spec main(list[any]) :: nil
   def main([input | remains]) do
     root = input.root
-    result = Solution.tree2str(root)
-    IO.puts(result)
+    result = Solution.inorder_traversal(root)
+    IO.puts(result |> Enum.join(", "))
     main(remains)
   end
 

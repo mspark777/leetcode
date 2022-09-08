@@ -34,36 +34,20 @@ def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
 
 
 class Solution:
-    def tree2str(self, root: Optional[TreeNode]) -> str:
-        if root is None:
-            return ""
+    def inorderTraversal(self, root: Optional[TreeNode]) -> list[int]:
+        stack: list[TreeNode] = []
+        result: list[int] = []
+        top = root
+        while (top is not None) or stack:
+            while top is not None:
+                stack.append(top)
+                top = top.left
 
-        stack: list[TreeNode] = [root]
-        visiteds: set[TreeNode] = set()
-        result: list[str] = []
-        while stack:
-            node = stack[-1]
-            if node in visiteds:
-                stack.pop()
-                result.append(")")
-                continue
+            top = stack.pop()
+            result.append(top.val)
+            top = top.right
 
-            visiteds.add(node)
-            result.append("(")
-            result.append(str(node.val))
-
-            left = node.left
-            right = node.right
-            if (left is None) and (right is not None):
-                result.append("()")
-
-            if right is not None:
-                stack.append(right)
-
-            if left is not None:
-                stack.append(left)
-
-        return "".join(result[1:-1])
+        return result
 
 
 class Input:
@@ -75,14 +59,15 @@ class Input:
 
 def main():
     inputs: list[Input] = [
-        Input(newnode(1, newleft(2, newval(4)), newval(3))),
-        Input(newnode(1, newright(2, newval(4)), newval(3))),
+        Input(newright(1, newleft(2, newval(3)))),
+        Input(None),
+        Input(newval(1)),
     ]
 
     solution = Solution()
     for input in inputs:
         root = input.root
-        result = solution.tree2str(root)
+        result = solution.inorderTraversal(root)
         print(result)
 
 

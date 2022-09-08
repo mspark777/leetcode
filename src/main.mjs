@@ -24,60 +24,37 @@ function newright (val, right) {
 
 /**
  * @param {TreeNode} root
- * @return {string}
+ * @return {number[]}
  */
-function tree2str (root) {
-  if (root == null) {
-    return ''
-  }
-
-  const stack = [root]
-  const visiteds = new Set()
+function inorderTraversal (root) {
   const result = []
-  for (let node = stack.at(-1); node != null; node = stack.at(-1)) {
-    if (visiteds.has(node)) {
-      stack.pop()
-      result.push(')')
-      continue
-    }
-
-    visiteds.add(node)
-    const { left, right, val } = node
-    result.push('(', val.toString())
-    if ((left == null) && (right != null)) {
-      result.push('()')
-    }
-
-    if (right != null) {
-      stack.push(right)
-    }
-
-    if (left != null) {
-      stack.push(left)
+  const travel = node => {
+    if (node != null) {
+      travel(node.left)
+      result.push(node.val)
+      travel(node.right)
     }
   }
+  travel(root)
 
-  return result.slice(1, -1).join('')
+  return result
 }
 
 async function main () {
   const inputs = [
     {
-      root: newnode(1,
-        newleft(2, newval(4)),
-        newval(3)
-      )
+      root: newright(1, newleft(2, newval(3)))
     },
     {
-      root: newnode(1,
-        newright(2, newval(4)),
-        newval(3)
-      )
+      root: null
+    },
+    {
+      root: newval(1)
     }
   ]
 
   for (const { root } of inputs) {
-    const result = tree2str(root)
+    const result = inorderTraversal(root)
     console.log(result)
   }
 }

@@ -1,6 +1,4 @@
 use std::cell::RefCell;
-use std::collections::HashSet;
-use std::iter::FromIterator;
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -30,48 +28,37 @@ fn newright(val: i32, right: TreeType) -> TreeType {
 
 struct Solution {}
 impl Solution {
-    pub fn tree2str(root: Option<Rc<RefCell<TreeNode>>>) -> String {
+    pub fn inorder_traversal(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
         if root.is_none() {
-            return String::new();
+            return vec![];
         }
 
-        let mut stack = vec![Rc::clone(&root.unwrap())];
-        let mut visiteds = HashSet::<*mut TreeNode>::new();
-        let mut result = Vec::<String>::new();
-        while !stack.is_empty() {
-            let node_ref = if let Some(n) = stack.last() {
-                Rc::clone(n)
+        let mut stack = Vec::<Rc<RefCell<TreeNode>>>::new();
+        let mut result = Vec::<i32>::new();
+        let mut top = Some(Rc::clone(&root.unwrap()));
+
+        while top.is_some() || !stack.is_empty() {
+            while let Some(node_rc) = top {
+                stack.push(Rc::clone(&node_rc));
+                let node_bo = node_rc.borrow();
+                top = if let Some(left_rc) = &node_bo.left {
+                    Some(Rc::clone(left_rc))
+                } else {
+                    None
+                };
+            }
+
+            let top_node = stack.pop().unwrap();
+            let top_bo = top_node.borrow();
+            result.push(top_bo.val);
+            top = if let Some(right_rc) = &top_bo.right {
+                Some(Rc::clone(right_rc))
             } else {
-                break;
+                None
             };
-
-            if visiteds.contains(&node_ref.as_ptr()) {
-                stack.pop();
-                result.push(")".to_string());
-                continue;
-            }
-
-            visiteds.insert(node_ref.as_ptr());
-            result.push("(".to_string());
-
-            let node = node_ref.borrow();
-            result.push(node.val.to_string());
-
-            if node.left.is_none() && node.right.is_some() {
-                result.push("()".to_string());
-            }
-
-            if let Some(r) = &node.right {
-                stack.push(Rc::clone(r));
-            }
-
-            if let Some(l) = &node.left {
-                stack.push(Rc::clone(l));
-            }
         }
 
-        let size = result.len();
-        String::from_iter(result.into_iter().skip(1).take(size - 2))
+        result
     }
 }
 struct Input {
@@ -81,19 +68,15 @@ struct Input {
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            root: newnode(1, newleft(2, newval(4)), newval(3)),
+            root: newright(1, newleft(2, newval(3))),
         },
-        Input {
-            root: newnode(1, newright(2, newval(4)), newval(3)),
-        },
-        Input {
-            root: newleft(-1, newleft(-2, newleft(-3, newval(-4)))),
-        },
+        Input { root: None },
+        Input { root: newval(1) },
     ];
 
     for input in inputs.iter() {
         let root = input.root.clone();
-        let result = Solution::tree2str(root);
-        println!("{result}");
+        let result = Solution::inorder_traversal(root);
+        println!("{result:?}");
     }
 }

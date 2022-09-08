@@ -25,38 +25,22 @@ function newright (val: number, right: TreeNode | null): TreeNode {
   return newnode(val, null, right)
 }
 
-function tree2str (root: TreeNode | null): string {
-  if (root == null) {
-    return ''
+function inorderTraversal (root: TreeNode | null): number[] {
+  const stack: TreeNode[] = []
+  const result: number[] = []
+  let top = root
+  while ((top != null) || (stack.length > 0)) {
+    while (top != null) {
+      stack.push(top)
+      top = top.left
+    }
+
+    top = stack.pop() as TreeNode
+    result.push(top.val)
+    top = top.right
   }
 
-  const stack: TreeNode[] = [root]
-  const visiteds = new Set<TreeNode>()
-  const result: string[] = []
-  for (let node = stack.at(-1); node != null; node = stack.at(-1)) {
-    if (visiteds.has(node)) {
-      stack.pop()
-      result.push(')')
-      continue
-    }
-
-    visiteds.add(node)
-    const { left, right, val } = node
-    result.push('(', val.toString())
-    if ((left == null) && (right != null)) {
-      result.push('()')
-    }
-
-    if (right != null) {
-      stack.push(right)
-    }
-
-    if (left != null) {
-      stack.push(left)
-    }
-  }
-
-  return result.slice(1, -1).join('')
+  return result
 }
 
 interface Input {
@@ -66,26 +50,18 @@ interface Input {
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newnode(1,
-        newleft(2, newval(4)),
-        newval(3)
-      )
+      root: newright(1, newleft(2, newval(3)))
     },
     {
-      root: newnode(1,
-        newright(2, newval(4)),
-        newval(3)
-      )
+      root: null
     },
     {
-      root: newleft(-1,
-        newleft(-2, newleft(-3, newval(-4)))
-      )
+      root: newval(1)
     }
   ]
 
   for (const { root } of inputs) {
-    const result = tree2str(root)
+    const result = inorderTraversal(root)
     console.log(result)
   }
 }
