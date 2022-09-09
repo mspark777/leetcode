@@ -1,18 +1,28 @@
-defmodule TreeNode do
-  @type t :: %__MODULE__{
-          val: integer,
-          left: TreeNode.t() | nil,
-          right: TreeNode.t() | nil
-        }
-  defstruct val: 0, left: nil, right: nil
-end
-
 defmodule Solution do
-  @spec inorder_traversal(root :: TreeNode.t() | nil) :: [integer]
-  def inorder_traversal(nil), do: []
+  @spec number_of_weak_characters(properties :: [[integer]]) :: integer
+  def number_of_weak_characters(properties) do
+    properties
+    |> Enum.sort(&cmp/2)
+    |> solve(0, 0)
+  end
 
-  def inorder_traversal(root),
-    do: inorder_traversal(root.left) ++ [root.val] ++ inorder_traversal(root.right)
+  @spec cmp(a :: [integer], b :: [integer]) :: boolean
+  defp cmp([attack_a, defense_a], [attack_b, defense_b])
+       when attack_a == attack_b,
+       do: defense_a < defense_b
+
+  defp cmp([attack_a, _defence_a], [attack_b, _defence_b]),
+    do: attack_b < attack_a
+
+  @spec solve(properties :: [[integer]], max_defence :: integer, result :: integer) :: integer
+  defp solve([[_attack, defense] | properties], max_defense, result)
+       when max_defense > defense,
+       do: solve(properties, max_defense, result + 1)
+
+  defp solve([[_attack, defense] | properties], _max_defense, result),
+    do: solve(properties, defense, result)
+
+  defp solve([], _max_defense, result), do: result
 end
 
 defmodule Main do
@@ -20,31 +30,26 @@ defmodule Main do
   def main() do
     main([
       %{
-        root: newright(1, newleft(2, newval(3)))
+        properties: [[5, 5], [6, 3], [3, 6]]
       },
       %{
-        root: nil
+        properties: [[2, 2], [3, 3]]
       },
       %{
-        root: newval(1)
+        properties: [[1, 5], [10, 4], [4, 3]]
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    root = input.root
-    result = Solution.inorder_traversal(root)
-    IO.puts(result |> Enum.join(", "))
+    properties = input.properties
+    result = Solution.number_of_weak_characters(properties)
+    IO.puts(result)
     main(remains)
   end
 
   def main([]), do: nil
-
-  defp newnode(val, left, right), do: %TreeNode{val: val, left: left, right: right}
-  defp newval(val), do: newnode(val, nil, nil)
-  defp newleft(val, left), do: newnode(val, left, nil)
-  defp newright(val, right), do: newnode(val, nil, right)
 end
 
 Main.main()

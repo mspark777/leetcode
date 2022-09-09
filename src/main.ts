@@ -1,67 +1,43 @@
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
+function numberOfWeakCharacters (properties: number[][]): number {
+  properties.sort(
+    ([attackA, defenceA], [attackB, defenceB]) =>
+      attackA === attackB
+        ? defenceA - defenceB
+        : attackB - attackA
+  )
 
-function newnode (val: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
-  return new TreeNode(val, left, right)
-}
-
-function newval (val: number): TreeNode {
-  return newnode(val, null, null)
-}
-
-function newleft (val: number, left: TreeNode | null): TreeNode {
-  return newnode(val, left, null)
-}
-
-function newright (val: number, right: TreeNode | null): TreeNode {
-  return newnode(val, null, right)
-}
-
-function inorderTraversal (root: TreeNode | null): number[] {
-  const stack: TreeNode[] = []
-  const result: number[] = []
-  let top = root
-  while ((top != null) || (stack.length > 0)) {
-    while (top != null) {
-      stack.push(top)
-      top = top.left
+  let maxDefence = Number.MIN_SAFE_INTEGER
+  let result = 0
+  for (const [_attack, defense] of properties) {
+    if (maxDefence > defense) {
+      result += 1
+    } else {
+      maxDefence = defense
     }
-
-    top = stack.pop() as TreeNode
-    result.push(top.val)
-    top = top.right
   }
 
   return result
 }
 
 interface Input {
-  readonly root: TreeNode | null
+  readonly properties: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newright(1, newleft(2, newval(3)))
+      properties: [[5, 5], [6, 3], [3, 6]]
     },
     {
-      root: null
+      properties: [[2, 2], [3, 3]]
     },
     {
-      root: newval(1)
+      properties: [[1, 5], [10, 4], [4, 3]]
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = inorderTraversal(root)
+  for (const { properties } of inputs) {
+    const result = numberOfWeakCharacters(properties)
     console.log(result)
   }
 }

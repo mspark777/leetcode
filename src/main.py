@@ -6,68 +6,39 @@ from __future__ import annotations
 from typing import Optional
 
 
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
-
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
-def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
-    return TreeNode(val, left, right)
-
-
-def newval(val: int) -> TreeNode:
-    return newnode(val, None, None)
-
-
-def newleft(val: int, left: Optional[TreeNode]) -> TreeNode:
-    return newnode(val, left, None)
-
-
-def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
-    return newnode(val, None, right)
-
-
 class Solution:
-    def inorderTraversal(self, root: Optional[TreeNode]) -> list[int]:
-        stack: list[TreeNode] = []
-        result: list[int] = []
-        top = root
-        while (top is not None) or stack:
-            while top is not None:
-                stack.append(top)
-                top = top.left
+    def numberOfWeakCharacters(self, properties: list[list[int]]) -> int:
+        properties.sort(key=lambda p: (-p[0], p[1]))
 
-            top = stack.pop()
-            result.append(top.val)
-            top = top.right
+        result = 0
+        max_defence = 0
+        for _attack, defence in properties:
+            if max_defence > defence:
+                result += 1
+            else:
+                max_defence = defence
 
         return result
 
 
 class Input:
-    root: Optional[TreeNode]
+    properties: list[list[int]]
 
-    def __init__(self, root: Optional[TreeNode]):
-        self.root = root
+    def __init__(self, properties: list[list[int]]):
+        self.properties = properties
 
 
 def main():
     inputs: list[Input] = [
-        Input(newright(1, newleft(2, newval(3)))),
-        Input(None),
-        Input(newval(1)),
+        Input([[5, 5], [6, 3], [3, 6]]),
+        Input([[2, 2], [3, 3]]),
+        Input([[1, 5], [10, 4], [4, 3]]),
     ]
 
     solution = Solution()
     for input in inputs:
-        root = input.root
-        result = solution.inorderTraversal(root)
+        properties = input.properties
+        result = solution.numberOfWeakCharacters(properties)
         print(result)
 
 

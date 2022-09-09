@@ -2,71 +2,62 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
+func numberOfWeakCharacters(properties [][]int) int {
+	sort.Slice(properties, func(i, j int) bool {
+		a := properties[i]
+		b := properties[j]
 
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
+		attackA := a[0]
+		defenceA := a[1]
 
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
+		attackB := b[0]
+		defenceB := b[1]
 
-func newleft(val int, left *TreeNode) *TreeNode {
-	return newnode(val, left, nil)
-}
-
-func newright(val int, right *TreeNode) *TreeNode {
-	return newnode(val, nil, right)
-}
-
-func inorderTraversal(root *TreeNode) []int {
-	stack := []*TreeNode{}
-	result := []int{}
-	top := root
-
-	for (top != nil) || (len(stack) > 0) {
-		for top != nil {
-			stack = append(stack, top)
-			top = top.Left
+		if attackA == attackB {
+			return defenceA < defenceB
 		}
 
-		topidx := len(stack) - 1
-		top = stack[topidx]
-		stack = stack[:topidx]
-		result = append(result, top.Val)
-		top = top.Right
+		return attackB < attackA
+	})
+
+	maxDefence := 0
+	result := 0
+
+	for _, p := range properties {
+		defence := p[1]
+		if maxDefence > defence {
+			result += 1
+		} else {
+			maxDefence = defence
+		}
 	}
 
 	return result
 }
 
 type input struct {
-	root *TreeNode
+	properties [][]int
 }
 
 func main() {
 	inputs := []input{
 		{
-			root: newright(1, newleft(2, newval(3))),
+			properties: [][]int{{5, 5}, {6, 3}, {3, 6}},
 		},
 		{
-			root: nil,
+			properties: [][]int{{2, 2}, {3, 3}},
 		},
 		{
-			root: newval(1),
+			properties: [][]int{{1, 5}, {10, 4}, {4, 3}},
 		},
 	}
 
 	for _, input := range inputs {
-		root := input.root
-		result := inorderTraversal(root)
+		properties := input.properties
+		result := numberOfWeakCharacters(properties)
 		fmt.Println(result)
 	}
 }
