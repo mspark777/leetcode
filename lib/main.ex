@@ -1,28 +1,11 @@
 defmodule Solution do
-  @spec number_of_weak_characters(properties :: [[integer]]) :: integer
-  def number_of_weak_characters(properties) do
-    properties
-    |> Enum.sort(&cmp/2)
-    |> solve(0, 0)
-  end
-
-  @spec cmp(a :: [integer], b :: [integer]) :: boolean
-  defp cmp([attack_a, defense_a], [attack_b, defense_b])
-       when attack_a == attack_b,
-       do: defense_a < defense_b
-
-  defp cmp([attack_a, _defence_a], [attack_b, _defence_b]),
-    do: attack_b < attack_a
-
-  @spec solve(properties :: [[integer]], max_defence :: integer, result :: integer) :: integer
-  defp solve([[_attack, defense] | properties], max_defense, result)
-       when max_defense > defense,
-       do: solve(properties, max_defense, result + 1)
-
-  defp solve([[_attack, defense] | properties], _max_defense, result),
-    do: solve(properties, defense, result)
-
-  defp solve([], _max_defense, result), do: result
+  @spec is_ugly(n :: integer) :: boolean
+  def is_ugly(n) when n <= 0, do: false
+  def is_ugly(n) when n == 1, do: true
+  def is_ugly(n) when rem(n, 2) == 0, do: n |> div(2) |> is_ugly()
+  def is_ugly(n) when rem(n, 3) == 0, do: n |> div(3) |> is_ugly()
+  def is_ugly(n) when rem(n, 5) == 0, do: n |> div(5) |> is_ugly()
+  def is_ugly(_n), do: false
 end
 
 defmodule Main do
@@ -30,21 +13,24 @@ defmodule Main do
   def main() do
     main([
       %{
-        properties: [[5, 5], [6, 3], [3, 6]]
+        n: 6
       },
       %{
-        properties: [[2, 2], [3, 3]]
+        n: 1
       },
       %{
-        properties: [[1, 5], [10, 4], [4, 3]]
+        n: 14
+      },
+      %{
+        n: -2_147_483_648
       }
     ])
   end
 
   @spec main(list[any]) :: nil
   def main([input | remains]) do
-    properties = input.properties
-    result = Solution.number_of_weak_characters(properties)
+    n = input.n
+    result = Solution.is_ugly(n)
     IO.puts(result)
     main(remains)
   end

@@ -1,43 +1,42 @@
 /**
- * @param {number[][]} properties
- * @return {number}
+ * @param {number} n
+ * @return {boolean}
  */
-function numberOfWeakCharacters (properties) {
-  properties.sort(
-    ([attackA, defenceA], [attackB, defenceB]) =>
-      attackA === attackB
-        ? defenceA - defenceB
-        : attackB - attackA
-  )
-
-  let maxDefence = Number.MIN_SAFE_INTEGER
-  let result = 0
-  for (const [_attack, defense] of properties) {
-    if (maxDefence > defense) {
-      result += 1
+function isUgly (n) {
+  let i = BigInt(n)
+  while (i > 1n) {
+    if ((i % 2n) === 0n) {
+      i /= 2n
+    } else if ((i % 3n) === 0n) {
+      i /= 3n
+    } else if ((i % 5n) === 0n) {
+      i /= 5n
     } else {
-      maxDefence = defense
+      return false
     }
   }
 
-  return result
+  return i === 1n
 }
 
 async function main () {
   const inputs = [
     {
-      properties: [[5, 5], [6, 3], [3, 6]]
+      n: 6
     },
     {
-      properties: [[2, 2], [3, 3]]
+      n: 1
     },
     {
-      properties: [[1, 5], [10, 4], [4, 3]]
+      n: 14
+    },
+    {
+      n: -2147483648
     }
   ]
 
-  for (const { properties } of inputs) {
-    const result = numberOfWeakCharacters(properties)
+  for (const { n } of inputs) {
+    const result = isUgly(n)
     console.log(result)
   }
 }

@@ -7,38 +7,39 @@ from typing import Optional
 
 
 class Solution:
-    def numberOfWeakCharacters(self, properties: list[list[int]]) -> int:
-        properties.sort(key=lambda p: (-p[0], p[1]))
-
-        result = 0
-        max_defence = 0
-        for _attack, defence in properties:
-            if max_defence > defence:
-                result += 1
+    def isUgly(self, n: int) -> bool:
+        while n > 1:
+            if (n % 2) == 0:
+                n //= 2
+            elif (n % 3) == 0:
+                n //= 3
+            elif (n % 5) == 0:
+                n //= 5
             else:
-                max_defence = defence
+                return False
 
-        return result
+        return n == 1
 
 
 class Input:
-    properties: list[list[int]]
+    n: int
 
-    def __init__(self, properties: list[list[int]]):
-        self.properties = properties
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
     inputs: list[Input] = [
-        Input([[5, 5], [6, 3], [3, 6]]),
-        Input([[2, 2], [3, 3]]),
-        Input([[1, 5], [10, 4], [4, 3]]),
+        Input(6),
+        Input(1),
+        Input(14),
+        Input(-2147483648),
     ]
 
     solution = Solution()
     for input in inputs:
-        properties = input.properties
-        result = solution.numberOfWeakCharacters(properties)
+        n = input.n
+        result = solution.isUgly(n)
         print(result)
 
 

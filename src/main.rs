@@ -1,44 +1,37 @@
 struct Solution {}
 impl Solution {
-    pub fn number_of_weak_characters(properties: Vec<Vec<i32>>) -> i32 {
-        let mut properties = properties;
-        properties.sort_unstable_by_key(|p| (-p[0], p[1]));
-
-        let mut result = 0;
-        let mut max_defence = 0;
-
-        for property in properties.iter() {
-            let defence = property[1];
-            if max_defence > defence {
-                result += 1;
+    pub fn is_ugly(n: i32) -> bool {
+        let mut n = n;
+        while n > 1 {
+            if (n % 2) == 0 {
+                n /= 2;
+            } else if (n % 3) == 0 {
+                n /= 3;
+            } else if (n % 5) == 0 {
+                n /= 5;
             } else {
-                max_defence = defence;
+                return false;
             }
         }
 
-        result
+        n == 1
     }
 }
+
 struct Input {
-    properties: Vec<Vec<i32>>,
+    n: i32,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
-        Input {
-            properties: vec![vec![5, 5], vec![6, 3], vec![3, 6]],
-        },
-        Input {
-            properties: vec![vec![2, 2], vec![3, 3]],
-        },
-        Input {
-            properties: vec![vec![1, 5], vec![10, 4], vec![4, 3]],
-        },
+        Input { n: 6 },
+        Input { n: 1 },
+        Input { n: 14 },
+        Input { n: -2147483648 },
     ];
 
-    for input in inputs.iter() {
-        let properties = input.properties.clone();
-        let result = Solution::number_of_weak_characters(properties);
+    for Input { n } in inputs.iter() {
+        let result = Solution::is_ugly(*n);
         println!("{result:?}");
     }
 }
