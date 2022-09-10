@@ -1,42 +1,52 @@
-function isUgly (n: number): boolean {
-  let i = BigInt(n)
-  while (i > 1n) {
-    if ((i % 2n) === 0n) {
-      i /= 2n
-    } else if ((i % 3n) === 0n) {
-      i /= 3n
-    } else if ((i % 5n) === 0n) {
-      i /= 5n
-    } else {
-      return false
+interface Transaction {
+  spend: number
+  profit: number
+}
+
+function maxProfit (k: number, prices: number[]): number {
+  if (k <= 0) {
+    return 0
+  }
+
+  const transactions = new Array<Transaction>(k + 1)
+  for (let i = 0; i <= k; i += 1) {
+    transactions[i] = {
+      spend: Number.MAX_SAFE_INTEGER,
+      profit: 0
     }
   }
 
-  return i === 1n
+  for (const price of prices) {
+    for (let i = 1; i <= k; i += 1) {
+      const prev = transactions[i - 1]
+      const cur = transactions[i]
+      cur.spend = Math.min(cur.spend, price - prev.profit)
+      cur.profit = Math.max(cur.profit, price - cur.spend)
+    }
+  }
+
+  return transactions[k].profit
 }
 
 interface Input {
-  readonly n: number
+  readonly k: number
+  readonly prices: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      n: 6
+      k: 2,
+      prices: [2, 4, 1]
     },
     {
-      n: 1
-    },
-    {
-      n: 14
-    },
-    {
-      n: -2147483648
+      k: 2,
+      prices: [3, 2, 6, 5, 0, 3]
     }
   ]
 
-  for (const { n } of inputs) {
-    const result = isUgly(n)
+  for (const { k, prices } of inputs) {
+    const result = maxProfit(k, prices)
     console.log(result)
   }
 }

@@ -2,47 +2,74 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
-func isUgly(n int) bool {
-	for n > 1 {
-		if (n % 2) == 0 {
-			n /= 2
-		} else if (n % 3) == 0 {
-			n /= 3
-		} else if (n % 5) == 0 {
-			n /= 5
-		} else {
-			return false
+type transaction struct {
+	spend  int
+	profit int
+}
+
+func max(i, j int) int {
+	if i < j {
+		return j
+	}
+
+	return i
+}
+
+func min(i, j int) int {
+	if i < j {
+		return i
+	}
+
+	return j
+}
+
+func maxProfit(k int, prices []int) int {
+	if k <= 0 {
+		return 0
+	}
+
+	transactions := make([]transaction, k+1)
+	for i := 0; i <= k; i += 1 {
+		transactions[i].spend = math.MaxInt
+	}
+
+	for _, price := range prices {
+		for i := 1; i <= k; i += 1 {
+			prev := &transactions[i-1]
+			cur := &transactions[i]
+
+			cur.spend = min(cur.spend, price-prev.profit)
+			cur.profit = max(cur.profit, price-cur.spend)
 		}
 	}
 
-	return n == 1
+	return transactions[k].profit
 }
 
 type input struct {
-	n int
+	k      int
+	prices []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			n: 6,
+			k:      2,
+			prices: []int{2, 4, 1},
 		},
 		{
-			n: 1,
-		},
-		{
-			n: 14,
-		},
-		{
-			n: -2147483648,
+			k:      2,
+			prices: []int{3, 2, 6, 5, 0, 3},
 		},
 	}
 
 	for _, input := range inputs {
-		n := input.n
-		result := isUgly(n)
+		k := input.k
+		prices := input.prices
+		result := maxProfit(k, prices)
 		fmt.Println(result)
 	}
 }
