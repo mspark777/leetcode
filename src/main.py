@@ -4,54 +4,55 @@ main
 
 from __future__ import annotations
 from typing import Optional
-
-
-class Transaction:
-    spend: int
-    profit: int
-
-    def __init__(self, spend: int, profit: int):
-        self.spend = spend
-        self.profit = profit
+from queue import PriorityQueue
 
 
 class Solution:
-    def maxProfit(self, k: int, prices: list[int]) -> int:
-        if k <= 0:
-            return 0
+    def maxPerformance(
+        self, n: int, speeds: list[int], efficiencies: list[int], k: int
+    ) -> int:
+        candidates = sorted(zip(efficiencies, speeds), key=lambda x: -x[0])
+        speed_sum = 0
+        result = 0
+        queue: PriorityQueue[int] = PriorityQueue()
 
-        transactions = [Transaction(2**32, 0) for _ in range(k + 2)]
+        for efficiency, speed in candidates:
+            queue.put(speed)
+            speed_sum += speed
+            if queue.qsize() > k:
+                speed_sum -= queue.get()
+            result = max(result, speed_sum * efficiency)
 
-        for price in prices:
-            for i in range(1, k + 2):
-                prev = transactions[i - 1]
-                cur = transactions[i]
-                cur.spend = min(cur.spend, price - prev.profit)
-                cur.profit = max(cur.profit, price - cur.spend)
-
-        return transactions[k].profit
+        return result % ((10**9) + 7)
 
 
 class Input:
+    n: int
     k: int
-    prices: list[int]
+    speed: list[int]
+    efficiency: list[int]
 
-    def __init__(self, k: int, prices: list[int]):
+    def __init__(self, n: int, k: int, speed: list[int], efficiency: list[int]):
+        self.n = n
         self.k = k
-        self.prices = prices
+        self.speed = speed
+        self.efficiency = efficiency
 
 
 def main():
     inputs: list[Input] = [
-        Input(2, [2, 4, 1]),
-        Input(2, [3, 2, 6, 5, 0, 3]),
+        Input(n=6, speed=[2, 10, 3, 1, 5, 8], efficiency=[5, 4, 3, 9, 7, 2], k=2),
+        Input(n=6, speed=[2, 10, 3, 1, 5, 8], efficiency=[5, 4, 3, 9, 7, 2], k=3),
+        Input(n=6, speed=[2, 10, 3, 1, 5, 8], efficiency=[5, 4, 3, 9, 7, 2], k=4),
     ]
 
     solution = Solution()
     for input in inputs:
+        n = input.n
         k = input.k
-        prices = input.prices
-        result = solution.maxProfit(k, prices)
+        speed = input.speed
+        efficiency = input.efficiency
+        result = solution.maxPerformance(n, speed, efficiency, k)
         print(result)
 
 
