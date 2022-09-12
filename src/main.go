@@ -2,74 +2,62 @@ package main
 
 import (
 	"fmt"
-	"math"
+	"sort"
 )
 
-type transaction struct {
-	spend  int
-	profit int
-}
+func bagOfTokensScore(tokens []int, power int) int {
+	sort.Sort(sort.IntSlice(tokens))
 
-func max(i, j int) int {
-	if i < j {
-		return j
-	}
+	score := 0
+	result := 0
+	i := 0
+	j := len(tokens) - 1
+	for (i <= j) && ((power >= tokens[i]) || (score > 0)) {
+		for (i <= j) && (power >= tokens[i]) {
+			power -= tokens[i]
+			i += 1
+			score += 1
+		}
 
-	return i
-}
+		if score > result {
+			result = score
+		}
 
-func min(i, j int) int {
-	if i < j {
-		return i
-	}
-
-	return j
-}
-
-func maxProfit(k int, prices []int) int {
-	if k <= 0 {
-		return 0
-	}
-
-	transactions := make([]transaction, k+1)
-	for i := 0; i <= k; i += 1 {
-		transactions[i].spend = math.MaxInt
-	}
-
-	for _, price := range prices {
-		for i := 1; i <= k; i += 1 {
-			prev := &transactions[i-1]
-			cur := &transactions[i]
-
-			cur.spend = min(cur.spend, price-prev.profit)
-			cur.profit = max(cur.profit, price-cur.spend)
+		if (i <= j) && (score > 0) {
+			power += tokens[j]
+			j -= 1
+			score -= 1
 		}
 	}
 
-	return transactions[k].profit
+	return result
 }
 
 type input struct {
-	k      int
-	prices []int
+	tokens []int
+	power  int
 }
 
 func main() {
 	inputs := []input{
 		{
-			k:      2,
-			prices: []int{2, 4, 1},
+			tokens: []int{100},
+			power:  50,
 		},
 		{
-			k:      2,
-			prices: []int{3, 2, 6, 5, 0, 3},
+			tokens: []int{100, 200},
+			power:  150,
+		},
+		{
+			tokens: []int{100, 200, 300, 400},
+			power:  200,
 		},
 	}
 
 	for _, input := range inputs {
-		k := input.k
-		prices := input.prices
-		result := maxProfit(k, prices)
+		tokens := input.tokens
+		power := input.power
+		result := bagOfTokensScore(tokens, power)
 		fmt.Println(result)
 	}
 }

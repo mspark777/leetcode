@@ -4,55 +4,54 @@ main
 
 from __future__ import annotations
 from typing import Optional
-from queue import PriorityQueue
 
 
 class Solution:
-    def maxPerformance(
-        self, n: int, speeds: list[int], efficiencies: list[int], k: int
-    ) -> int:
-        candidates = sorted(zip(efficiencies, speeds), key=lambda x: -x[0])
-        speed_sum = 0
+    def bagOfTokensScore(self, tokens: list[int], power: int) -> int:
+        tokens.sort()
+
+        score = 0
         result = 0
-        queue: PriorityQueue[int] = PriorityQueue()
+        i = 0
+        j = len(tokens) - 1
 
-        for efficiency, speed in candidates:
-            queue.put(speed)
-            speed_sum += speed
-            if queue.qsize() > k:
-                speed_sum -= queue.get()
-            result = max(result, speed_sum * efficiency)
+        while (i <= j) and ((power >= tokens[i]) or (score > 0)):
+            while (i <= j) and (power >= tokens[i]):
+                power -= tokens[i]
+                i += 1
+                score += 1
 
-        return result % ((10**9) + 7)
+            result = max(result, score)
+
+            if (i <= j) and (score > 0):
+                power += tokens[j]
+                j -= 1
+                score -= 1
+
+        return result
 
 
 class Input:
-    n: int
-    k: int
-    speed: list[int]
-    efficiency: list[int]
+    tokens: list[int]
+    power: int
 
-    def __init__(self, n: int, k: int, speed: list[int], efficiency: list[int]):
-        self.n = n
-        self.k = k
-        self.speed = speed
-        self.efficiency = efficiency
+    def __init__(self, tokens: list[int], power: int):
+        self.tokens = tokens
+        self.power = power
 
 
 def main():
     inputs: list[Input] = [
-        Input(n=6, speed=[2, 10, 3, 1, 5, 8], efficiency=[5, 4, 3, 9, 7, 2], k=2),
-        Input(n=6, speed=[2, 10, 3, 1, 5, 8], efficiency=[5, 4, 3, 9, 7, 2], k=3),
-        Input(n=6, speed=[2, 10, 3, 1, 5, 8], efficiency=[5, 4, 3, 9, 7, 2], k=4),
+        Input(tokens=[100], power=50),
+        Input(tokens=[100, 200], power=150),
+        Input(tokens=[100, 200, 300, 400], power=200),
     ]
 
     solution = Solution()
     for input in inputs:
-        n = input.n
-        k = input.k
-        speed = input.speed
-        efficiency = input.efficiency
-        result = solution.maxPerformance(n, speed, efficiency, k)
+        tokens = input.tokens
+        power = input.power
+        result = solution.bagOfTokensScore(tokens, power)
         print(result)
 
 

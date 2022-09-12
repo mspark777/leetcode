@@ -1,51 +1,52 @@
 /**
- * @param {number} k
- * @param {number[]} prices
- * @return {number}
- */
-function maxProfit (k, prices) {
-  if (k <= 0) {
-    return 0
-  }
+ * @param {number[]} tokens
+ * @param {number} power
+ * @returns {number}
+*/
+function bagOfTokensScore (tokens, power) {
+  tokens.sort((a, b) => a - b)
 
-  const transactions = new Array(k + 1)
-  for (let i = 0; i <= k; i += 1) {
-    transactions[i] = {
-      spend: Number.MAX_SAFE_INTEGER,
-      profit: 0
+  let score = 0
+  let result = 0
+  let i = 0
+  let j = tokens.length - 1
+  while ((i <= j) && ((power >= tokens[i]) || (score > 0))) {
+    while ((i <= j) && (power >= tokens[i])) {
+      power -= tokens[i]
+      i += 1
+      score += 1
+    }
+
+    result = Math.max(result, score)
+
+    if ((i <= j) && (score > 0)) {
+      power += tokens[j]
+      j -= 1
+      score -= 1
     }
   }
 
-  for (const price of prices) {
-    for (let i = 1; i <= k; i += 1) {
-      const prev = transactions[i - 1]
-      const cur = transactions[i]
-      cur.spend = Math.min(cur.spend, price - prev.profit)
-      cur.profit = Math.max(cur.profit, price - cur.spend)
-    }
-  }
-
-  return transactions[k].profit
+  return result
 }
 
 async function main () {
   const inputs = [
     {
-      k: 2,
-      prices: [2, 4, 1]
+      tokens: [100],
+      power: 50
     },
     {
-      k: 2,
-      prices: [3, 2, 6, 5, 0, 3]
+      tokens: [100, 200],
+      power: 150
     },
     {
-      k: 2,
-      prices: [3, 2, 6, 5, 0, 3]
+      tokens: [100, 200, 300, 400],
+      power: 200
     }
   ]
 
-  for (const { k, prices } of inputs) {
-    const result = maxProfit(k, prices)
+  for (const { tokens, power } of inputs) {
+    const result = bagOfTokensScore(tokens, power)
     console.log(result)
   }
 }
