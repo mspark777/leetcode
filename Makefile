@@ -1,4 +1,3 @@
-
 help:
 	@cat Makefile
 
@@ -16,10 +15,6 @@ go:
 
 py:
 	python src/main.py
-
-ex:
-	mix clean
-	mix run
 
 sh:
 	${SHELL} src/main.sh
