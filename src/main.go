@@ -2,62 +2,56 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func bagOfTokensScore(tokens []int, power int) int {
-	sort.Sort(sort.IntSlice(tokens))
+func validUtf8(data []int) bool {
+	bytes := 0
 
-	score := 0
-	result := 0
-	i := 0
-	j := len(tokens) - 1
-	for (i <= j) && ((power >= tokens[i]) || (score > 0)) {
-		for (i <= j) && (power >= tokens[i]) {
-			power -= tokens[i]
-			i += 1
-			score += 1
+	for _, i := range data {
+		if bytes == 0 {
+			for mask := 128; (mask & i) != 0; mask >>= 1 {
+				bytes += 1
+			}
+
+			if bytes == 0 {
+				continue
+			}
+
+			if (bytes > 4) || (bytes == 1) {
+				return false
+			}
+		} else {
+			if ((i & 128) == 0) || ((i & 64) != 0) {
+				return false
+			}
 		}
 
-		if score > result {
-			result = score
-		}
-
-		if (i <= j) && (score > 0) {
-			power += tokens[j]
-			j -= 1
-			score -= 1
-		}
+		bytes -= 1
 	}
 
-	return result
+	return bytes == 0
 }
 
 type input struct {
-	tokens []int
-	power  int
+	data []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			tokens: []int{100},
-			power:  50,
+			data: []int{197, 130, 1},
 		},
 		{
-			tokens: []int{100, 200},
-			power:  150,
+			data: []int{235, 140, 4},
 		},
 		{
-			tokens: []int{100, 200, 300, 400},
-			power:  200,
+			data: []int{240, 162, 138, 147},
 		},
 	}
 
 	for _, input := range inputs {
-		tokens := input.tokens
-		power := input.power
-		result := bagOfTokensScore(tokens, power)
+		data := input.data
+		result := validUtf8(data)
 		fmt.Println(result)
 	}
 }

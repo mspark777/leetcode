@@ -7,51 +7,49 @@ from typing import Optional
 
 
 class Solution:
-    def bagOfTokensScore(self, tokens: list[int], power: int) -> int:
-        tokens.sort()
+    def validUtf8(self, data: list[int]) -> bool:
+        bytes = 0
 
-        score = 0
-        result = 0
-        i = 0
-        j = len(tokens) - 1
+        for i in data:
+            if bytes == 0:
+                mask = 128
+                while (mask & i) != 0:
+                    bytes += 1
+                    mask >>= 1
 
-        while (i <= j) and ((power >= tokens[i]) or (score > 0)):
-            while (i <= j) and (power >= tokens[i]):
-                power -= tokens[i]
-                i += 1
-                score += 1
+                if bytes == 0:
+                    continue
 
-            result = max(result, score)
+                if (bytes > 4) or (bytes == 1):
+                    return False
+            else:
+                check0 = i & 128
+                check1 = i & 64
+                if (check0 == 0) or (check1 != 0):
+                    return False
 
-            if (i <= j) and (score > 0):
-                power += tokens[j]
-                j -= 1
-                score -= 1
+            bytes -= 1
 
-        return result
+        return bytes == 0
 
 
 class Input:
-    tokens: list[int]
-    power: int
+    data: list[int]
 
-    def __init__(self, tokens: list[int], power: int):
-        self.tokens = tokens
-        self.power = power
+    def __init__(self, data: list[int]):
+        self.data = data
 
 
 def main():
     inputs: list[Input] = [
-        Input(tokens=[100], power=50),
-        Input(tokens=[100, 200], power=150),
-        Input(tokens=[100, 200, 300, 400], power=200),
+        Input(data=[197, 130, 1]),
+        Input(data=[235, 140, 4]),
     ]
 
     solution = Solution()
     for input in inputs:
-        tokens = input.tokens
-        power = input.power
-        result = solution.bagOfTokensScore(tokens, power)
+        data = input.data
+        result = solution.validUtf8(data)
         print(result)
 
 

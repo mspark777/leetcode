@@ -1,52 +1,54 @@
 /**
- * @param {number[]} tokens
- * @param {number} power
- * @returns {number}
+ * @param {number[]} data
+ * @returns {boolean}
 */
-function bagOfTokensScore (tokens, power) {
-  tokens.sort((a, b) => a - b)
+function validUtf8 (data) {
+  const mask1 = 128n
+  const mask2 = 64n
 
-  let score = 0
-  let result = 0
-  let i = 0
-  let j = tokens.length - 1
-  while ((i <= j) && ((power >= tokens[i]) || (score > 0))) {
-    while ((i <= j) && (power >= tokens[i])) {
-      power -= tokens[i]
-      i += 1
-      score += 1
+  let bytes = 0n
+  for (const n of data) {
+    const i = BigInt(n)
+    if (bytes === 0n) {
+      let mask = 128n
+      while ((mask & i) !== 0n) {
+        bytes += 1n
+        mask >>= 1n
+      }
+
+      if (bytes === 0n) {
+        continue
+      }
+
+      if ((bytes > 4n) || (bytes === 1n)) {
+        return false
+      }
+    } else {
+      const check0 = i & mask1
+      const check1 = i & mask2
+      if ((check0 === 0n) || (check1 !== 0n)) {
+        return false
+      }
     }
 
-    result = Math.max(result, score)
-
-    if ((i <= j) && (score > 0)) {
-      power += tokens[j]
-      j -= 1
-      score -= 1
-    }
+    bytes -= 1n
   }
 
-  return result
+  return bytes === 0n
 }
 
 async function main () {
   const inputs = [
     {
-      tokens: [100],
-      power: 50
+      data: [197, 130, 1]
     },
     {
-      tokens: [100, 200],
-      power: 150
-    },
-    {
-      tokens: [100, 200, 300, 400],
-      power: 200
+      data: [235, 140, 4]
     }
   ]
 
-  for (const { tokens, power } of inputs) {
-    const result = bagOfTokensScore(tokens, power)
+  for (const { data } of inputs) {
+    const result = validUtf8(data)
     console.log(result)
   }
 }

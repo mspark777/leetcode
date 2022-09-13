@@ -1,63 +1,55 @@
 struct Solution {}
 impl Solution {
-    pub fn bag_of_tokens_score(tokens: Vec<i32>, power: i32) -> i32 {
-        if tokens.is_empty() {
-            return 0;
-        }
+    pub fn valid_utf8(data: Vec<i32>) -> bool {
+        let mut bytes = 0;
 
-        let mut tokens = tokens;
-        let mut power = power;
+        for i in data.into_iter() {
+            if bytes == 0 {
+                let mut mask = 128;
+                while (mask & i) != 0 {
+                    bytes += 1;
+                    mask >>= 1;
+                }
 
-        tokens.sort_unstable();
+                if bytes == 0 {
+                    continue;
+                }
 
-        let mut score = 0;
-        let mut result = 0;
-        let mut i = 0usize;
-        let mut j = tokens.len() - 1;
-
-        while (i <= j) && ((power >= tokens[i]) || (score > 0)) {
-            while (i <= j) && (power >= tokens[i]) {
-                power -= tokens[i];
-                i += 1;
-                score += 1;
+                if (bytes > 4) || (bytes == 1) {
+                    return false;
+                }
+            } else {
+                if ((i & 128) == 0) || ((i & 64) != 0) {
+                    return false;
+                }
             }
 
-            result = result.max(score);
-
-            if (i <= j) && (score > 0) {
-                power += tokens[j];
-                j -= 1;
-                score -= 1;
-            }
+            bytes -= 1;
         }
 
-        result
+        bytes == 0
     }
 }
 
 struct Input {
-    tokens: Vec<i32>,
-    power: i32,
+    data: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            tokens: vec![100],
-            power: 50,
+            data: vec![197, 130, 1],
         },
         Input {
-            tokens: vec![100, 200],
-            power: 150,
+            data: vec![235, 140, 4],
         },
         Input {
-            tokens: vec![100, 200, 300, 400],
-            power: 200,
+            data: vec![240, 162, 138, 147],
         },
     ];
 
-    for Input { tokens, power } in inputs.into_iter() {
-        let result = Solution::bag_of_tokens_score(tokens, power);
+    for Input { data } in inputs.into_iter() {
+        let result = Solution::valid_utf8(data);
         println!("{result}");
     }
 }
