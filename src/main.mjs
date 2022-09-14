@@ -1,54 +1,67 @@
+class TreeNode {
+  constructor (val, left, right) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
+
+function newnode (val, left, right) {
+  return new TreeNode(val, left, right)
+}
+
+function newright (val, right) {
+  return newnode(val, null, right)
+}
+
+function newval (val) {
+  return newnode(val, null, null)
+}
+
 /**
- * @param {number[]} data
- * @returns {boolean}
+ * @param {TreeNode | null} root
+ * @returns {number}
 */
-function validUtf8 (data) {
-  const mask1 = 128n
-  const mask2 = 64n
+function pseudoPalindromicPaths (root) {
+  let result = 0
+  const stack = [{ node: root, path: 0n }]
+  for (let top = stack.pop(); top != null; top = stack.pop()) {
+    const { node, path } = top
 
-  let bytes = 0n
-  for (const n of data) {
-    const i = BigInt(n)
-    if (bytes === 0n) {
-      let mask = 128n
-      while ((mask & i) !== 0n) {
-        bytes += 1n
-        mask >>= 1n
-      }
-
-      if (bytes === 0n) {
-        continue
-      }
-
-      if ((bytes > 4n) || (bytes === 1n)) {
-        return false
-      }
-    } else {
-      const check0 = i & mask1
-      const check1 = i & mask2
-      if ((check0 === 0n) || (check1 !== 0n)) {
-        return false
-      }
+    if (node == null) {
+      continue
     }
 
-    bytes -= 1n
+    const { left, right, val } = node
+    const newPath = path ^ (1n << BigInt(val))
+    if ((left == null) && (right == null)) {
+      if ((newPath & (newPath - 1n)) === 0n) {
+        result += 1
+      }
+    } else {
+      stack.push({ node: left, path: newPath })
+      stack.push({ node: right, path: newPath })
+    }
   }
 
-  return bytes === 0n
+  return result
 }
 
 async function main () {
   const inputs = [
     {
-      data: [197, 130, 1]
+      root: newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1)))
     },
     {
-      data: [235, 140, 4]
+      root: newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1))
+    },
+    {
+      root: newval(9)
     }
   ]
 
-  for (const { data } of inputs) {
-    const result = validUtf8(data)
+  for (const { root } of inputs) {
+    const result = pseudoPalindromicPaths(root)
     console.log(result)
   }
 }

@@ -6,50 +6,81 @@ from __future__ import annotations
 from typing import Optional
 
 
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
+    return TreeNode(val, left, right)
+
+
+def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
+    return newnode(val, None, right)
+
+
+def newval(val: int) -> TreeNode:
+    return newnode(val, None, None)
+
+
+class StackNode:
+    node: Optional[TreeNode]
+    path: int
+
+    def __init__(self, node: Optional[TreeNode], path: int) -> None:
+        self.node = node
+        self.path = path
+
+
 class Solution:
-    def validUtf8(self, data: list[int]) -> bool:
-        bytes = 0
+    def pseudoPalindromicPaths(self, root: Optional[TreeNode]) -> int:
+        result = 0
+        stack: list[StackNode] = [StackNode(root, 0)]
 
-        for i in data:
-            if bytes == 0:
-                mask = 128
-                while (mask & i) != 0:
-                    bytes += 1
-                    mask >>= 1
+        while stack:
+            top = stack.pop()
+            node = top.node
+            if node is None:
+                continue
 
-                if bytes == 0:
-                    continue
-
-                if (bytes > 4) or (bytes == 1):
-                    return False
+            val = node.val
+            left = node.left
+            right = node.right
+            path = top.path ^ (1 << val)
+            if (left is None) and (right is None):
+                if (path & (path - 1)) == 0:
+                    result += 1
             else:
-                check0 = i & 128
-                check1 = i & 64
-                if (check0 == 0) or (check1 != 0):
-                    return False
+                stack.append(StackNode(left, path))
+                stack.append(StackNode(right, path))
 
-            bytes -= 1
-
-        return bytes == 0
+        return result
 
 
 class Input:
-    data: list[int]
+    root: Optional[TreeNode]
 
-    def __init__(self, data: list[int]):
-        self.data = data
+    def __init__(self, root: Optional[TreeNode]):
+        self.root = root
 
 
 def main():
     inputs: list[Input] = [
-        Input(data=[197, 130, 1]),
-        Input(data=[235, 140, 4]),
+        Input(newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1)))),
+        Input(newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1))),
+        Input(newval(9)),
     ]
 
     solution = Solution()
     for input in inputs:
-        data = input.data
-        result = solution.validUtf8(data)
+        root = input.root
+        result = solution.pseudoPalindromicPaths(root)
         print(result)
 
 

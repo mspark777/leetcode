@@ -4,54 +4,83 @@ import (
 	"fmt"
 )
 
-func validUtf8(data []int) bool {
-	bytes := 0
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
 
-	for _, i := range data {
-		if bytes == 0 {
-			for mask := 128; (mask & i) != 0; mask >>= 1 {
-				bytes += 1
-			}
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
+}
 
-			if bytes == 0 {
-				continue
-			}
+func newright(val int, right *TreeNode) *TreeNode {
+	return newnode(val, nil, right)
+}
 
-			if (bytes > 4) || (bytes == 1) {
-				return false
-			}
-		} else {
-			if ((i & 128) == 0) || ((i & 64) != 0) {
-				return false
-			}
+func newval(val int) *TreeNode {
+	return newnode(val, nil, nil)
+}
+
+type stackNode struct {
+	node *TreeNode
+	path int
+}
+
+func pseudoPalindromicPaths(root *TreeNode) int {
+	result := 0
+	stack := []stackNode{{node: root, path: 0}}
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+
+		node := top.node
+		if node == nil {
+			continue
 		}
 
-		bytes -= 1
+		val := node.Val
+		left := node.Left
+		right := node.Right
+		path := top.path ^ (1 << val)
+
+		if (left == nil) && (right == nil) {
+			if (path & (path - 1)) == 0 {
+				result += 1
+			}
+		} else {
+			stack = append(
+				stack,
+				stackNode{node: left, path: path},
+				stackNode{node: right, path: path},
+			)
+		}
 	}
 
-	return bytes == 0
+	return result
 }
 
 type input struct {
-	data []int
+	root *TreeNode
 }
 
 func main() {
 	inputs := []input{
 		{
-			data: []int{197, 130, 1},
+			root: newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1))),
 		},
 		{
-			data: []int{235, 140, 4},
+			root: newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1)),
 		},
 		{
-			data: []int{240, 162, 138, 147},
+			root: newval(9),
 		},
 	}
 
 	for _, input := range inputs {
-		data := input.data
-		result := validUtf8(data)
+		root := input.root
+		result := pseudoPalindromicPaths(root)
 		fmt.Println(result)
 	}
 }
