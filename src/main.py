@@ -6,81 +6,49 @@ from __future__ import annotations
 from typing import Optional
 
 
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
-
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
-def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
-    return TreeNode(val, left, right)
-
-
-def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
-    return newnode(val, None, right)
-
-
-def newval(val: int) -> TreeNode:
-    return newnode(val, None, None)
-
-
-class StackNode:
-    node: Optional[TreeNode]
-    path: int
-
-    def __init__(self, node: Optional[TreeNode], path: int) -> None:
-        self.node = node
-        self.path = path
-
-
 class Solution:
-    def pseudoPalindromicPaths(self, root: Optional[TreeNode]) -> int:
-        result = 0
-        stack: list[StackNode] = [StackNode(root, 0)]
+    def findOriginalArray(self, changed: list[int]) -> list[int]:
+        if (len(changed) % 2) == 1:
+            return []
 
-        while stack:
-            top = stack.pop()
-            node = top.node
-            if node is None:
-                continue
+        queue: list[int] = []
+        result: list[int] = []
+        changed.sort()
 
-            val = node.val
-            left = node.left
-            right = node.right
-            path = top.path ^ (1 << val)
-            if (left is None) and (right is None):
-                if (path & (path - 1)) == 0:
-                    result += 1
+        head = 0
+        for i in changed:
+            if len(queue) > head:
+                if queue[head] == i:
+                    head += 1
+                else:
+                    result.append(i)
+                    queue.append(i * 2)
             else:
-                stack.append(StackNode(left, path))
-                stack.append(StackNode(right, path))
+                result.append(i)
+                queue.append(i * 2)
 
-        return result
+        return result if len(queue) == head else []
 
 
 class Input:
-    root: Optional[TreeNode]
+    changed: list[int]
 
-    def __init__(self, root: Optional[TreeNode]):
-        self.root = root
+    def __init__(self, changed: list[int]):
+        self.changed = changed
 
 
 def main():
     inputs: list[Input] = [
-        Input(newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1)))),
-        Input(newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1))),
-        Input(newval(9)),
+        Input([1, 3, 4, 2, 6, 8]),
+        Input([6, 3, 0, 1]),
+        Input([1]),
+        Input([0, 0, 0, 0]),
     ]
 
     solution = Solution()
     for input in inputs:
-        root = input.root
-        result = solution.pseudoPalindromicPaths(root)
+        changed = input.changed
+        result = solution.findOriginalArray(changed)
         print(result)
 
 

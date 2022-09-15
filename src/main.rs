@@ -1,81 +1,65 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-type OTreeNode = Option<Rc<RefCell<TreeNode>>>;
-
-fn newnode(val: i32, left: OTreeNode, right: OTreeNode) -> OTreeNode {
-    Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
-}
-
-fn newright(val: i32, right: OTreeNode) -> OTreeNode {
-    newnode(val, None, right)
-}
-
-fn newval(val: i32) -> OTreeNode {
-    newnode(val, None, None)
-}
-
 struct Solution {}
 impl Solution {
-    pub fn pseudo_palindromic_paths(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
-        if root.is_none() {
-            return 0;
+    pub fn find_original_array(changed: Vec<i32>) -> Vec<i32> {
+        if (changed.len() & 1) == 1 {
+            return vec![];
         }
 
-        let mut result = 0;
-        let mut stack = vec![(Rc::clone(&root.unwrap()), 0)];
+        let mut changed = changed;
+        changed.sort_unstable();
 
-        while let Some(top) = stack.pop() {
-            let (noderef, path) = top;
-            let node = noderef.borrow();
-            let new_path = path ^ (1 << node.val);
+        let mut queue = Vec::<i32>::with_capacity(changed.len());
+        let mut result = Vec::<i32>::with_capacity(changed.len() / 2);
 
-            let mut is_leaf = true;
-            if let Some(left) = &node.left {
-                is_leaf = false;
-                stack.push((Rc::clone(left), new_path));
-            }
-
-            if let Some(right) = &node.right {
-                is_leaf = false;
-                stack.push((Rc::clone(right), new_path));
-            }
-
-            if is_leaf {
-                if (new_path & (new_path - 1)) == 0 {
-                    result += 1;
+        let mut head = 0usize;
+        for i in changed.into_iter() {
+            if let Some(n) = queue.get(head) {
+                if *n == i {
+                    head += 1;
+                } else {
+                    result.push(i);
+                    queue.push(i * 2);
                 }
+            } else {
+                result.push(i);
+                queue.push(i * 2);
             }
         }
 
-        result
+        if result.len() == head {
+            result
+        } else {
+            vec![]
+        }
     }
 }
 
 struct Input {
-    root: OTreeNode,
+    changed: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            root: newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1))),
+            changed: vec![1, 3, 4, 2, 6, 8],
         },
         Input {
-            root: newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1)),
+            changed: vec![6, 3, 0, 1],
         },
-        Input { root: newval(9) },
+        Input { changed: vec![1] },
+        Input {
+            changed: vec![0, 0, 0, 0],
+        },
+        Input {
+            changed: vec![6, 3, 0, 1],
+        },
+        Input {
+            changed: vec![2, 1],
+        },
     ];
 
-    for Input { root } in inputs.into_iter() {
-        let result = Solution::pseudo_palindromic_paths(root);
-        println!("{result}");
+    for Input { changed } in inputs.into_iter() {
+        let result = Solution::find_original_array(changed);
+        println!("{result:?}");
     }
 }

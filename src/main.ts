@@ -1,75 +1,47 @@
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+function findOriginalArray (changed: number[]): number[] {
+  if ((changed.length % 2) === 1) {
+    return []
   }
-}
 
-function newnode (val: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
-  return new TreeNode(val, left, right)
-}
+  const queue: number[] = []
+  const result: number[] = []
+  changed.sort((a, b) => a - b)
 
-function newright (val: number, right: TreeNode): TreeNode {
-  return newnode(val, null, right)
-}
-
-function newval (val: number): TreeNode {
-  return newnode(val, null, null)
-}
-
-interface StackNode {
-  readonly node: TreeNode | null
-  readonly path: bigint
-}
-
-function pseudoPalindromicPaths (root: TreeNode | null): number {
-  let result = 0
-  const stack: StackNode[] = [{ node: root, path: 0n }]
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { node, path } = top
-
-    if (node == null) {
-      continue
-    }
-
-    const { left, right, val } = node
-    const newPath = path ^ (1n << BigInt(val))
-    if ((left == null) && (right == null)) {
-      if ((newPath & (newPath - 1n)) === 0n) {
-        result += 1
-      }
+  let head = 0
+  for (const i of changed) {
+    if (queue[head] === i) {
+      head += 1
     } else {
-      stack.push({ node: left, path: newPath })
-      stack.push({ node: right, path: newPath })
+      result.push(i)
+      queue.push(i * 2)
     }
   }
 
-  return result
+  return queue.length === head ? result : []
 }
 
 interface Input {
-  readonly root: TreeNode | null
+  readonly changed: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1)))
+      changed: [1, 3, 4, 2, 6, 8]
     },
     {
-      root: newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1))
+      changed: [6, 3, 0, 1]
     },
     {
-      root: newval(9)
+      changed: [1]
+    },
+    {
+      changed: [0, 0, 0, 0]
     }
   ]
 
-  for (const { root } of inputs) {
-    const result = pseudoPalindromicPaths(root)
+  for (const { changed } of inputs) {
+    const result = findOriginalArray(changed)
     console.log(result)
   }
 }

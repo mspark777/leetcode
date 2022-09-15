@@ -2,85 +2,69 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
+func findOriginalArray(changed []int) []int {
+	result := []int{}
+	if (len(changed) % 2) == 1 {
+		return result
+	}
 
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
+	queue := []int{}
+	head := 0
+	sort.Sort(sort.IntSlice(changed))
 
-func newright(val int, right *TreeNode) *TreeNode {
-	return newnode(val, nil, right)
-}
-
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
-
-type stackNode struct {
-	node *TreeNode
-	path int
-}
-
-func pseudoPalindromicPaths(root *TreeNode) int {
-	result := 0
-	stack := []stackNode{{node: root, path: 0}}
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		stack = stack[:topidx]
-
-		node := top.node
-		if node == nil {
-			continue
-		}
-
-		val := node.Val
-		left := node.Left
-		right := node.Right
-		path := top.path ^ (1 << val)
-
-		if (left == nil) && (right == nil) {
-			if (path & (path - 1)) == 0 {
-				result += 1
+	for _, i := range changed {
+		if len(queue) > head {
+			if queue[head] == i {
+				head += 1
+			} else {
+				result = append(result, i)
+				queue = append(queue, i*2)
 			}
 		} else {
-			stack = append(
-				stack,
-				stackNode{node: left, path: path},
-				stackNode{node: right, path: path},
-			)
+			result = append(result, i)
+			queue = append(queue, i*2)
 		}
 	}
 
-	return result
+	if len(queue) == head {
+		return result
+	}
+
+	return []int{}
 }
 
 type input struct {
-	root *TreeNode
+	changed []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			root: newnode(2, newnode(3, newval(3), newval(1)), newright(1, newval(1))),
+			changed: []int{1, 3, 4, 2, 6, 8},
 		},
 		{
-			root: newnode(2, newnode(1, newval(1), newright(3, newval(1))), newval(1)),
+			changed: []int{6, 3, 0, 1},
 		},
 		{
-			root: newval(9),
+			changed: []int{1},
+		},
+		{
+			changed: []int{0, 0, 0, 0},
+		},
+		{
+			changed: []int{6, 3, 0, 1},
+		},
+		{
+			changed: []int{2, 1},
 		},
 	}
 
 	for _, input := range inputs {
-		root := input.root
-		result := pseudoPalindromicPaths(root)
+		changed := input.changed
+		result := findOriginalArray(changed)
 		fmt.Println(result)
 	}
 }
