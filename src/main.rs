@@ -1,65 +1,43 @@
 struct Solution {}
 impl Solution {
-    pub fn find_original_array(changed: Vec<i32>) -> Vec<i32> {
-        if (changed.len() & 1) == 1 {
-            return vec![];
-        }
+    pub fn maximum_score(nums: Vec<i32>, multipliers: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let m = multipliers.len();
 
-        let mut changed = changed;
-        changed.sort_unstable();
+        let mut dp = vec![0; m + 1];
+        for op in (0..m).rev() {
+            let row = dp.clone();
 
-        let mut queue = Vec::<i32>::with_capacity(changed.len());
-        let mut result = Vec::<i32>::with_capacity(changed.len() / 2);
-
-        let mut head = 0usize;
-        for i in changed.into_iter() {
-            if let Some(n) = queue.get(head) {
-                if *n == i {
-                    head += 1;
-                } else {
-                    result.push(i);
-                    queue.push(i * 2);
-                }
-            } else {
-                result.push(i);
-                queue.push(i * 2);
+            for left in (0..=op).rev() {
+                let n0 = multipliers[op] * nums[left] + row[left + 1];
+                let n1 = multipliers[op] * nums[n - 1 - (op - left)] + row[left];
+                dp[left] = n0.max(n1);
             }
         }
 
-        if result.len() == head {
-            result
-        } else {
-            vec![]
-        }
+        dp[0]
     }
 }
 
 struct Input {
-    changed: Vec<i32>,
+    nums: Vec<i32>,
+    multipliers: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            changed: vec![1, 3, 4, 2, 6, 8],
+            nums: vec![1, 2, 3],
+            multipliers: vec![3, 2, 1],
         },
         Input {
-            changed: vec![6, 3, 0, 1],
-        },
-        Input { changed: vec![1] },
-        Input {
-            changed: vec![0, 0, 0, 0],
-        },
-        Input {
-            changed: vec![6, 3, 0, 1],
-        },
-        Input {
-            changed: vec![2, 1],
+            nums: vec![-5, -3, -3, -2, 7, 1],
+            multipliers: vec![-10, -5, 3, 4, 6],
         },
     ];
 
-    for Input { changed } in inputs.into_iter() {
-        let result = Solution::find_original_array(changed);
+    for Input { nums, multipliers } in inputs.into_iter() {
+        let result = Solution::maximum_score(nums, multipliers);
         println!("{result:?}");
     }
 }

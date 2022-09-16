@@ -7,48 +7,42 @@ from typing import Optional
 
 
 class Solution:
-    def findOriginalArray(self, changed: list[int]) -> list[int]:
-        if (len(changed) % 2) == 1:
-            return []
+    def maximumScore(self, nums: list[int], multipliers: list[int]) -> int:
+        n = len(nums)
+        m = len(multipliers)
+        dp = [0 for _ in range(m + 1)]
 
-        queue: list[int] = []
-        result: list[int] = []
-        changed.sort()
+        for op in range(m - 1, -1, -1):
+            row = dp.copy()
 
-        head = 0
-        for i in changed:
-            if len(queue) > head:
-                if queue[head] == i:
-                    head += 1
-                else:
-                    result.append(i)
-                    queue.append(i * 2)
-            else:
-                result.append(i)
-                queue.append(i * 2)
+            for left in range(op, -1, -1):
+                n0 = multipliers[op] * nums[left] + row[left + 1]
+                n1 = multipliers[op] * nums[n - 1 - (op - left)] + row[left]
+                dp[left] = max(n0, n1)
 
-        return result if len(queue) == head else []
+        return dp[0]
 
 
 class Input:
-    changed: list[int]
+    nums: list[int]
+    multipliers: list[int]
 
-    def __init__(self, changed: list[int]):
-        self.changed = changed
+    def __init__(self, nums: list[int], multipliers: list[int]):
+        self.nums = nums
+        self.multipliers = multipliers
 
 
 def main():
     inputs: list[Input] = [
-        Input([1, 3, 4, 2, 6, 8]),
-        Input([6, 3, 0, 1]),
-        Input([1]),
-        Input([0, 0, 0, 0]),
+        Input([1, 2, 3], [3, 2, 1]),
+        Input([-5, -3, -3, -2, 7, 1], [-10, -5, 3, 4, 6]),
     ]
 
     solution = Solution()
     for input in inputs:
-        changed = input.changed
-        result = solution.findOriginalArray(changed)
+        nums = input.nums
+        multipliers = input.multipliers
+        result = solution.maximumScore(nums, multipliers)
         print(result)
 
 

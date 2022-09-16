@@ -1,47 +1,40 @@
-function findOriginalArray (changed: number[]): number[] {
-  if ((changed.length % 2) === 1) {
-    return []
-  }
+function maximumScore (nums: number[], multipliers: number[]): number {
+  const n = nums.length
+  const m = multipliers.length
+  const dp = new Array<number>(m + 1).fill(0)
 
-  const queue: number[] = []
-  const result: number[] = []
-  changed.sort((a, b) => a - b)
+  for (let op = m - 1; op >= 0; op -= 1) {
+    const row = dp.slice()
 
-  let head = 0
-  for (const i of changed) {
-    if (queue[head] === i) {
-      head += 1
-    } else {
-      result.push(i)
-      queue.push(i * 2)
+    for (let left = op; left >= 0; left -= 1) {
+      const n0 = multipliers[op] * nums[left] + row[left + 1]
+      const n1 = multipliers[op] * nums[n - 1 - (op - left)] + row[left]
+      dp[left] = Math.max(n0, n1)
     }
   }
 
-  return queue.length === head ? result : []
+  return dp[0]
 }
 
 interface Input {
-  readonly changed: number[]
+  readonly nums: number[]
+  readonly multipliers: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      changed: [1, 3, 4, 2, 6, 8]
+      nums: [1, 2, 3],
+      multipliers: [3, 2, 1]
     },
     {
-      changed: [6, 3, 0, 1]
-    },
-    {
-      changed: [1]
-    },
-    {
-      changed: [0, 0, 0, 0]
+      nums: [-5, -3, -3, -2, 7, 1],
+      multipliers: [-10, -5, 3, 4, 6]
     }
   ]
 
-  for (const { changed } of inputs) {
-    const result = findOriginalArray(changed)
+  for (const { nums, multipliers } of inputs) {
+    const result = maximumScore(nums, multipliers)
     console.log(result)
   }
 }
