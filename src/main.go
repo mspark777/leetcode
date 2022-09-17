@@ -4,50 +4,112 @@ import (
 	"fmt"
 )
 
-func maximumScore(nums []int, multipliers []int) int {
-	n := len(nums)
-	m := len(multipliers)
-	dp := make([]int, m+1)
+type trieNode struct {
+	children []*trieNode
+	index    int
+	indices  []int
+}
 
-	for op := m - 1; op >= 0; op -= 1 {
-		row := make([]int, m+1)
-		copy(row, dp)
+func newnode() *trieNode {
+	return &trieNode{
+		children: make([]*trieNode, 26),
+		index:    -1,
+		indices:  []int{},
+	}
+}
 
-		for left := op; left >= 0; left -= 1 {
-			n0 := multipliers[op]*nums[left] + row[left+1]
-			n1 := multipliers[op]*nums[n-1-(op-left)] + row[left]
-			if n0 > n1 {
-				dp[left] = n0
-			} else {
-				dp[left] = n1
-			}
+func isPalindrome(s []byte, head, tail int) bool {
+	for head < tail {
+		if s[head] != s[tail] {
+			return false
+		}
+
+		head += 1
+		tail -= 1
+	}
+
+	return true
+}
+
+func addNode(node *trieNode, word []byte, index int) {
+	for i := len(word) - 1; i >= 0; i -= 1 {
+		ch := word[i] - byte('a')
+		if node.children[ch] == nil {
+			node.children[ch] = newnode()
+		}
+
+		if isPalindrome(word, 0, i) {
+			node.indices = append(node.indices, index)
+		}
+
+		node = node.children[ch]
+	}
+
+	node.indices = append(node.indices, index)
+	node.index = index
+}
+
+func searchNode(result [][]int, word []byte, index int, node *trieNode) [][]int {
+	for i := 0; i < len(word); i += 1 {
+		if node == nil {
+			return result
+		}
+
+		if (node.index >= 0) && (node.index != index) && isPalindrome(word, i, len(word)-1) {
+			result = append(result, []int{index, node.index})
+		}
+
+		ch := word[i] - byte('a')
+		node = node.children[ch]
+	}
+
+	if node == nil {
+		return result
+	}
+
+	for _, j := range node.indices {
+		if index != j {
+			result = append(result, []int{index, j})
 		}
 	}
 
-	return dp[0]
+	return result
+}
+
+func palindromePairs(words []string) [][]int {
+	root := newnode()
+	for i, word := range words {
+		addNode(root, []byte(word), i)
+	}
+
+	result := [][]int{}
+	for i, word := range words {
+		result = searchNode(result, []byte(word), i, root)
+	}
+
+	return result
 }
 
 type input struct {
-	nums        []int
-	multipliers []int
+	words []string
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums:        []int{1, 2, 3},
-			multipliers: []int{3, 2, 1},
+			words: []string{"abcd", "dcba", "lls", "s", "sssll"},
 		},
 		{
-			nums:        []int{-5, -3, -3, -2, 7, 1},
-			multipliers: []int{-10, -5, 3, 4, 6},
+			words: []string{"bat", "tab", "cat"},
+		},
+		{
+			words: []string{"a", ""},
 		},
 	}
 
 	for _, input := range inputs {
-		nums := input.nums
-		multipliers := input.multipliers
-		result := maximumScore(nums, multipliers)
+		words := input.words
+		result := palindromePairs(words)
 		fmt.Println(result)
 	}
 }
