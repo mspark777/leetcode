@@ -1,43 +1,52 @@
 struct Solution {}
 impl Solution {
-    pub fn maximum_score(nums: Vec<i32>, multipliers: Vec<i32>) -> i32 {
-        let n = nums.len();
-        let m = multipliers.len();
+    pub fn trap(height: Vec<i32>) -> i32 {
+        let mut left = 0usize;
+        let mut right = height.len() - 1;
+        let mut left_max = 0;
+        let mut right_max = 0;
+        let mut result = 0;
 
-        let mut dp = vec![0; m + 1];
-        for op in (0..m).rev() {
-            let row = dp.clone();
-
-            for left in (0..=op).rev() {
-                let n0 = multipliers[op] * nums[left] + row[left + 1];
-                let n1 = multipliers[op] * nums[n - 1 - (op - left)] + row[left];
-                dp[left] = n0.max(n1);
+        while left < right {
+            let lheight = height[left];
+            let rheight = height[right];
+            if lheight < rheight {
+                left += 1;
+                if lheight >= left_max {
+                    left_max = lheight;
+                } else {
+                    result += left_max - lheight;
+                }
+            } else {
+                right -= 1;
+                if rheight >= right_max {
+                    right_max = rheight;
+                } else {
+                    result += right_max - rheight;
+                }
             }
         }
 
-        dp[0]
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    multipliers: Vec<i32>,
+    height: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            nums: vec![1, 2, 3],
-            multipliers: vec![3, 2, 1],
+            height: vec![0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1],
         },
         Input {
-            nums: vec![-5, -3, -3, -2, 7, 1],
-            multipliers: vec![-10, -5, 3, 4, 6],
+            height: vec![4, 2, 0, 3, 2, 5],
         },
     ];
 
-    for Input { nums, multipliers } in inputs.into_iter() {
-        let result = Solution::maximum_score(nums, multipliers);
+    for Input { height } in inputs.into_iter() {
+        let result = Solution::trap(height);
         println!("{result:?}");
     }
 }

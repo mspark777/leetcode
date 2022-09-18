@@ -1,40 +1,49 @@
-function maximumScore (nums: number[], multipliers: number[]): number {
-  const n = nums.length
-  const m = multipliers.length
-  const dp = new Array<number>(m + 1).fill(0)
+function trap (height: number[]): number {
+  let left = 0
+  let right = height.length - 1
+  let leftMax = 0
+  let rightMax = 0
+  let result = 0
 
-  for (let op = m - 1; op >= 0; op -= 1) {
-    const row = dp.slice()
-
-    for (let left = op; left >= 0; left -= 1) {
-      const n0 = multipliers[op] * nums[left] + row[left + 1]
-      const n1 = multipliers[op] * nums[n - 1 - (op - left)] + row[left]
-      dp[left] = Math.max(n0, n1)
+  while (left < right) {
+    const lheight = height[left]
+    const rheight = height[right]
+    if (lheight < rheight) {
+      left += 1
+      if (lheight >= leftMax) {
+        leftMax = lheight
+      } else {
+        result += leftMax - lheight
+      }
+    } else {
+      right -= 1
+      if (rheight >= rightMax) {
+        rightMax = rheight
+      } else {
+        result += rightMax - rheight
+      }
     }
   }
 
-  return dp[0]
+  return result
 }
 
 interface Input {
-  readonly nums: number[]
-  readonly multipliers: number[]
+  readonly height: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [1, 2, 3],
-      multipliers: [3, 2, 1]
+      height: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
     },
     {
-      nums: [-5, -3, -3, -2, 7, 1],
-      multipliers: [-10, -5, 3, 4, 6]
+      height: [4, 2, 0, 3, 2, 5]
     }
   ]
 
-  for (const { nums, multipliers } of inputs) {
-    const result = maximumScore(nums, multipliers)
+  for (const { height } of inputs) {
+    const result = trap(height)
     console.log(result)
   }
 }

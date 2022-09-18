@@ -7,42 +7,49 @@ from typing import Optional
 
 
 class Solution:
-    def maximumScore(self, nums: list[int], multipliers: list[int]) -> int:
-        n = len(nums)
-        m = len(multipliers)
-        dp = [0 for _ in range(m + 1)]
+    def trap(self, height: list[int]) -> int:
+        left = 0
+        right = len(height) - 1
+        left_max = 0
+        right_max = 0
+        result = 0
 
-        for op in range(m - 1, -1, -1):
-            row = dp.copy()
+        while left < right:
+            lheight = height[left]
+            rheight = height[right]
+            if lheight < rheight:
+                left += 1
+                if lheight >= left_max:
+                    left_max = lheight
+                else:
+                    result += left_max - lheight
+            else:
+                right -= 1
+                if rheight >= right_max:
+                    right_max = rheight
+                else:
+                    result += right_max - rheight
 
-            for left in range(op, -1, -1):
-                n0 = multipliers[op] * nums[left] + row[left + 1]
-                n1 = multipliers[op] * nums[n - 1 - (op - left)] + row[left]
-                dp[left] = max(n0, n1)
-
-        return dp[0]
+        return result
 
 
 class Input:
-    nums: list[int]
-    multipliers: list[int]
+    height: list[int]
 
-    def __init__(self, nums: list[int], multipliers: list[int]):
-        self.nums = nums
-        self.multipliers = multipliers
+    def __init__(self, height: list[int]):
+        self.height = height
 
 
 def main():
     inputs: list[Input] = [
-        Input([1, 2, 3], [3, 2, 1]),
-        Input([-5, -3, -3, -2, 7, 1], [-10, -5, 3, 4, 6]),
+        Input([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]),
+        Input([4, 2, 0, 3, 2, 5]),
     ]
 
     solution = Solution()
     for input in inputs:
-        nums = input.nums
-        multipliers = input.multipliers
-        result = solution.maximumScore(nums, multipliers)
+        height = input.height
+        result = solution.trap(height)
         print(result)
 
 
