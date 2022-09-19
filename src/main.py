@@ -7,49 +7,62 @@ from typing import Optional
 
 
 class Solution:
-    def trap(self, height: list[int]) -> int:
-        left = 0
-        right = len(height) - 1
-        left_max = 0
-        right_max = 0
-        result = 0
-
-        while left < right:
-            lheight = height[left]
-            rheight = height[right]
-            if lheight < rheight:
-                left += 1
-                if lheight >= left_max:
-                    left_max = lheight
+    def findDuplicate(self, paths: list[str]) -> list[list[str]]:
+        path_map: dict[str, list[str]] = {}
+        for path in paths:
+            segments = path.split(" ")
+            root = segments[0]
+            for i in range(1, len(segments)):
+                file = segments[i]
+                sep = file.find("(")
+                name = file[0:sep]
+                content = file[sep:-1]
+                filepath = f"{root}/{name}"
+                if content not in path_map:
+                    path_map[content] = [filepath]
                 else:
-                    result += left_max - lheight
-            else:
-                right -= 1
-                if rheight >= right_max:
-                    right_max = rheight
-                else:
-                    result += right_max - rheight
+                    path_map[content].append(filepath)
 
-        return result
+        return [value for value in path_map.values() if len(value) > 1]
 
 
 class Input:
-    height: list[int]
+    paths: list[str]
 
-    def __init__(self, height: list[int]):
-        self.height = height
+    def __init__(self, paths: list[str]):
+        self.paths = paths
 
 
 def main():
     inputs: list[Input] = [
-        Input([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]),
-        Input([4, 2, 0, 3, 2, 5]),
+        Input(
+            [
+                "root/a 1.txt(abcd) 2.txt(efgh)",
+                "root/c 3.txt(abcd)",
+                "root/c/d 4.txt(efgh)",
+                "root 4.txt(efgh)",
+            ]
+        ),
+        Input(
+            [
+                "root/a 1.txt(abcd) 2.txt(efgh)",
+                "root/c 3.txt(abcd)",
+                "root/c/d 4.txt(efgh)",
+            ]
+        ),
+        Input(
+            [
+                "root/a 1.txt(abcd) 2.txt(efsfgh)",
+                "root/c 3.txt(abdfcd)",
+                "root/c/d 4.txt(efggdfh)",
+            ]
+        ),
     ]
 
     solution = Solution()
     for input in inputs:
-        height = input.height
-        result = solution.trap(height)
+        paths = input.paths
+        result = solution.findDuplicate(paths)
         print(result)
 
 

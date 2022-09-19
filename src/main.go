@@ -2,32 +2,32 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func trap(height []int) int {
-	left := 0
-	right := len(height) - 1
-	leftMax := 0
-	rightMax := 0
-	result := 0
+func findDuplicate(paths []string) [][]string {
+	pathMap := make(map[string][]string)
+	for _, path := range paths {
+		segments := strings.Split(path, " ")
+		root := segments[0]
+		for i := 1; i < len(segments); i += 1 {
+			file := segments[i]
+			sep := strings.Index(file, "(")
+			name := file[0:sep]
+			content := file[sep : len(file)-1]
+			filepath := fmt.Sprintf("%v/%v", root, name)
+			if list, ok := pathMap[content]; ok {
+				pathMap[content] = append(list, filepath)
+			} else {
+				pathMap[content] = []string{filepath}
+			}
+		}
+	}
 
-	for left < right {
-		lheight := height[left]
-		rheight := height[right]
-		if lheight < rheight {
-			left += 1
-			if lheight >= leftMax {
-				leftMax = lheight
-			} else {
-				result += leftMax - lheight
-			}
-		} else {
-			right -= 1
-			if rheight >= rightMax {
-				rightMax = rheight
-			} else {
-				result += rightMax - rheight
-			}
+	result := [][]string{}
+	for _, value := range pathMap {
+		if len(value) > 1 {
+			result = append(result, value)
 		}
 	}
 
@@ -35,22 +35,38 @@ func trap(height []int) int {
 }
 
 type input struct {
-	height []int
+	paths []string
 }
 
 func main() {
 	inputs := []input{
 		{
-			height: []int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1},
+			[]string{
+				"root/a 1.txt(abcd) 2.txt(efgh)",
+				"root/c 3.txt(abcd)",
+				"root/c/d 4.txt(efgh)",
+				"root 4.txt(efgh)",
+			},
 		},
 		{
-			height: []int{4, 2, 0, 3, 2, 5},
+			[]string{
+				"root/a 1.txt(abcd) 2.txt(efgh)",
+				"root/c 3.txt(abcd)",
+				"root/c/d 4.txt(efgh)",
+			},
+		},
+		{
+			[]string{
+				"root/a 1.txt(abcd) 2.txt(efsfgh)",
+				"root/c 3.txt(abdfcd)",
+				"root/c/d 4.txt(efggdfh)",
+			},
 		},
 	}
 
 	for _, input := range inputs {
-		height := input.height
-		result := trap(height)
+		paths := input.paths
+		result := findDuplicate(paths)
 		fmt.Println(result)
 	}
 }

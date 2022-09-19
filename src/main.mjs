@@ -1,31 +1,27 @@
 /**
- * @param {number[]} height
- * @returns {number}
+ * @param {string[]} paths
+ * @returns {string[][]}
  */
-function trap (height) {
-  let left = 0
-  let right = height.length - 1
-  let leftMax = 0
-  let rightMax = 0
-  let result = 0
+function findDuplicate (paths) {
+  const pathMap = new Map()
+  for (const path of paths) {
+    const segments = path.split(' ')
+    const root = segments[0]
+    for (let i = 1; i < segments.length; i += 1) {
+      const file = segments[i]
+      const sep = file.indexOf('(')
+      const name = file.substring(0, sep)
+      const content = file.substring(sep)
+      const list = pathMap.get(content) ?? []
+      list.push(`${root}/${name}`)
+      pathMap.set(content, list)
+    }
+  }
 
-  while (left < right) {
-    const lheight = height[left]
-    const rheight = height[right]
-    if (lheight < rheight) {
-      left += 1
-      if (lheight >= leftMax) {
-        leftMax = lheight
-      } else {
-        result += leftMax - lheight
-      }
-    } else {
-      right -= 1
-      if (rheight >= rightMax) {
-        rightMax = rheight
-      } else {
-        result += rightMax - rheight
-      }
+  const result = []
+  for (const value of pathMap.values()) {
+    if (value.length > 1) {
+      result.push(value)
     }
   }
 
@@ -35,15 +31,18 @@ function trap (height) {
 async function main () {
   const inputs = [
     {
-      height: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+      paths: ['root/a 1.txt(abcd) 2.txt(efgh)', 'root/c 3.txt(abcd)', 'root/c/d 4.txt(efgh)', 'root 4.txt(efgh)']
     },
     {
-      height: [4, 2, 0, 3, 2, 5]
+      paths: ['root/a 1.txt(abcd) 2.txt(efgh)', 'root/c 3.txt(abcd)', 'root/c/d 4.txt(efgh)']
+    },
+    {
+      paths: ['root/a 1.txt(abcd) 2.txt(efsfgh)', 'root/c 3.txt(abdfcd)', 'root/c/d 4.txt(efggdfh)']
     }
   ]
 
-  for (const { height } of inputs) {
-    const result = trap(height)
+  for (const { paths } of inputs) {
+    const result = findDuplicate(paths)
     console.log(result)
   }
 }

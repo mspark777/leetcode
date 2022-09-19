@@ -1,29 +1,31 @@
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn trap(height: Vec<i32>) -> i32 {
-        let mut left = 0usize;
-        let mut right = height.len() - 1;
-        let mut left_max = 0;
-        let mut right_max = 0;
-        let mut result = 0;
+    pub fn find_duplicate(paths: Vec<String>) -> Vec<Vec<String>> {
+        let mut path_map = HashMap::<&str, Vec<String>>::with_capacity(paths.len());
+        for path in paths.iter() {
+            let mut segments = path.split(" ").into_iter();
+            let root = segments.next().unwrap();
+            for file in segments {
+                let sep = file.find("(").unwrap();
+                let name = &file[0..sep];
+                let content = &file[sep..file.len() - 1];
 
-        while left < right {
-            let lheight = height[left];
-            let rheight = height[right];
-            if lheight < rheight {
-                left += 1;
-                if lheight >= left_max {
-                    left_max = lheight;
+                let filename = format!("{root}/{name}");
+                if let Some(list) = path_map.get_mut(content) {
+                    list.push(filename);
                 } else {
-                    result += left_max - lheight;
+                    path_map.insert(content, vec![filename]);
                 }
-            } else {
-                right -= 1;
-                if rheight >= right_max {
-                    right_max = rheight;
-                } else {
-                    result += right_max - rheight;
-                }
+            }
+        }
+
+        let mut result: Vec<Vec<String>> = Vec::with_capacity(path_map.len());
+
+        for value in path_map.into_values() {
+            if value.len() > 1 {
+                result.push(value)
             }
         }
 
@@ -32,21 +34,37 @@ impl Solution {
 }
 
 struct Input {
-    height: Vec<i32>,
+    paths: Vec<&'static str>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            height: vec![0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1],
+            paths: vec![
+                "root/a 1.txt(abcd) 2.txt(efgh)",
+                "root/c 3.txt(abcd)",
+                "root/c/d 4.txt(efgh)",
+                "root 4.txt(efgh)",
+            ],
         },
         Input {
-            height: vec![4, 2, 0, 3, 2, 5],
+            paths: vec![
+                "root/a 1.txt(abcd) 2.txt(efgh)",
+                "root/c 3.txt(abcd)",
+                "root/c/d 4.txt(efgh)",
+            ],
+        },
+        Input {
+            paths: vec![
+                "root/a 1.txt(abcd) 2.txt(efsfgh)",
+                "root/c 3.txt(abdfcd)",
+                "root/c/d 4.txt(efggdfh)",
+            ],
         },
     ];
 
-    for Input { height } in inputs.into_iter() {
-        let result = Solution::trap(height);
+    for Input { paths } in inputs.into_iter() {
+        let result = Solution::find_duplicate(paths.iter().map(|s| s.to_string()).collect());
         println!("{result:?}");
     }
 }
