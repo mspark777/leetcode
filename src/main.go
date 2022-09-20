@@ -2,32 +2,27 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func findDuplicate(paths []string) [][]string {
-	pathMap := make(map[string][]string)
-	for _, path := range paths {
-		segments := strings.Split(path, " ")
-		root := segments[0]
-		for i := 1; i < len(segments); i += 1 {
-			file := segments[i]
-			sep := strings.Index(file, "(")
-			name := file[0:sep]
-			content := file[sep : len(file)-1]
-			filepath := fmt.Sprintf("%v/%v", root, name)
-			if list, ok := pathMap[content]; ok {
-				pathMap[content] = append(list, filepath)
-			} else {
-				pathMap[content] = []string{filepath}
-			}
-		}
+func findLength(nums1 []int, nums2 []int) int {
+	result := 0
+
+	lengths := make([][]int, len(nums1)+1)
+	for i := 0; i <= len(nums1); i += 1 {
+		lengths[i] = make([]int, len(nums2)+1)
 	}
 
-	result := [][]string{}
-	for _, value := range pathMap {
-		if len(value) > 1 {
-			result = append(result, value)
+	for i := len(nums1) - 1; i >= 0; i -= 1 {
+		for j := len(nums2) - 1; j >= 0; j -= 1 {
+			if nums1[i] != nums2[j] {
+				continue
+			}
+
+			length := lengths[i+1][j+1] + 1
+			lengths[i][j] = length
+			if length > result {
+				result = length
+			}
 		}
 	}
 
@@ -35,38 +30,26 @@ func findDuplicate(paths []string) [][]string {
 }
 
 type input struct {
-	paths []string
+	nums1 []int
+	nums2 []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			[]string{
-				"root/a 1.txt(abcd) 2.txt(efgh)",
-				"root/c 3.txt(abcd)",
-				"root/c/d 4.txt(efgh)",
-				"root 4.txt(efgh)",
-			},
+			nums1: []int{1, 2, 3, 2, 1},
+			nums2: []int{3, 2, 1, 4, 7},
 		},
 		{
-			[]string{
-				"root/a 1.txt(abcd) 2.txt(efgh)",
-				"root/c 3.txt(abcd)",
-				"root/c/d 4.txt(efgh)",
-			},
-		},
-		{
-			[]string{
-				"root/a 1.txt(abcd) 2.txt(efsfgh)",
-				"root/c 3.txt(abdfcd)",
-				"root/c/d 4.txt(efggdfh)",
-			},
+			nums1: []int{0, 0, 0, 0, 0},
+			nums2: []int{0, 0, 0, 0, 0},
 		},
 	}
 
 	for _, input := range inputs {
-		paths := input.paths
-		result := findDuplicate(paths)
+		nums1 := input.nums1
+		nums2 := input.nums2
+		result := findLength(nums1, nums2)
 		fmt.Println(result)
 	}
 }

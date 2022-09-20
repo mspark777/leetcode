@@ -7,62 +7,42 @@ from typing import Optional
 
 
 class Solution:
-    def findDuplicate(self, paths: list[str]) -> list[list[str]]:
-        path_map: dict[str, list[str]] = {}
-        for path in paths:
-            segments = path.split(" ")
-            root = segments[0]
-            for i in range(1, len(segments)):
-                file = segments[i]
-                sep = file.find("(")
-                name = file[0:sep]
-                content = file[sep:-1]
-                filepath = f"{root}/{name}"
-                if content not in path_map:
-                    path_map[content] = [filepath]
-                else:
-                    path_map[content].append(filepath)
+    def findLength(self, nums1: list[int], nums2: list[int]) -> int:
+        result = 0
+        lengths = [[0] * (len(nums2) + 1) for _ in range(len(nums1) + 1)]
 
-        return [value for value in path_map.values() if len(value) > 1]
+        for i in range(len(nums1) - 1, -1, -1):
+            for j in range(len(nums2) - 1, -1, -1):
+                if nums1[i] != nums2[j]:
+                    continue
+
+                length = lengths[i + 1][j + 1] + 1
+                lengths[i][j] = length
+                result = max(result, length)
+
+        return result
 
 
 class Input:
-    paths: list[str]
+    nums1: list[int]
+    nums2: list[int]
 
-    def __init__(self, paths: list[str]):
-        self.paths = paths
+    def __init__(self, nums1: list[int], nums2: list[int]):
+        self.nums1 = nums1
+        self.nums2 = nums2
 
 
 def main():
     inputs: list[Input] = [
-        Input(
-            [
-                "root/a 1.txt(abcd) 2.txt(efgh)",
-                "root/c 3.txt(abcd)",
-                "root/c/d 4.txt(efgh)",
-                "root 4.txt(efgh)",
-            ]
-        ),
-        Input(
-            [
-                "root/a 1.txt(abcd) 2.txt(efgh)",
-                "root/c 3.txt(abcd)",
-                "root/c/d 4.txt(efgh)",
-            ]
-        ),
-        Input(
-            [
-                "root/a 1.txt(abcd) 2.txt(efsfgh)",
-                "root/c 3.txt(abdfcd)",
-                "root/c/d 4.txt(efggdfh)",
-            ]
-        ),
+        Input([1, 2, 3, 2, 1], [3, 2, 1, 4, 7]),
+        Input([0, 0, 0, 0, 0], [0, 0, 0, 0, 0]),
     ]
 
     solution = Solution()
     for input in inputs:
-        paths = input.paths
-        result = solution.findDuplicate(paths)
+        nums1 = input.nums1
+        nums2 = input.nums2
+        result = solution.findLength(nums1, nums2)
         print(result)
 
 

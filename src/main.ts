@@ -1,23 +1,17 @@
-function findDuplicate (paths: string[]): string[][] {
-  const pathMap = new Map<string, string[]>()
-  for (const path of paths) {
-    const segments = path.split(' ')
-    const root = segments[0]
-    for (let i = 1; i < segments.length; i += 1) {
-      const file = segments[i]
-      const sep = file.indexOf('(')
-      const name = file.substring(0, sep)
-      const content = file.substring(sep)
-      const list = pathMap.get(content) ?? []
-      list.push(`${root}/${name}`)
-      pathMap.set(content, list)
-    }
-  }
+function findLength (nums1: number[], nums2: number[]): number {
+  let result = 0
+  const lengths = new Array<number[]>(nums1.length + 1).fill([])
+    .map(() => new Array<number>(nums2.length + 1).fill(0))
 
-  const result: string[][] = []
-  for (const value of pathMap.values()) {
-    if (value.length > 1) {
-      result.push(value)
+  for (let i = nums1.length - 1; i >= 0; i -= 1) {
+    for (let j = nums2.length - 1; j >= 0; j -= 1) {
+      if (nums1[i] !== nums2[j]) {
+        continue
+      }
+
+      const length = lengths[i + 1][j + 1] + 1
+      lengths[i][j] = length
+      result = Math.max(result, length)
     }
   }
 
@@ -25,24 +19,24 @@ function findDuplicate (paths: string[]): string[][] {
 }
 
 interface Input {
-  readonly paths: string[]
+  readonly nums1: number[]
+  readonly nums2: number[]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      paths: ['root/a 1.txt(abcd) 2.txt(efgh)', 'root/c 3.txt(abcd)', 'root/c/d 4.txt(efgh)', 'root 4.txt(efgh)']
+      nums1: [1, 2, 3, 2, 1],
+      nums2: [3, 2, 1, 4, 7]
     },
     {
-      paths: ['root/a 1.txt(abcd) 2.txt(efgh)', 'root/c 3.txt(abcd)', 'root/c/d 4.txt(efgh)']
-    },
-    {
-      paths: ['root/a 1.txt(abcd) 2.txt(efsfgh)', 'root/c 3.txt(abdfcd)', 'root/c/d 4.txt(efggdfh)']
+      nums1: [0, 0, 0, 0, 0],
+      nums2: [0, 0, 0, 0, 0]
     }
   ]
 
-  for (const { paths } of inputs) {
-    const result = findDuplicate(paths)
+  for (const { nums1, nums2 } of inputs) {
+    const result = findLength(nums1, nums2)
     console.log(result)
   }
 }
