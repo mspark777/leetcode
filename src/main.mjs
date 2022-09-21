@@ -1,23 +1,31 @@
 /**
- * @param {number[]} nums1
- * @param {number[]} nums2
- * @returns {number}
+ * @param {number[]} nums
+ * @param {number[][]} queries
+ * @returns {number[]}
  */
-function findLength (nums1, nums2) {
-  let result = 0
-  const lengths = new Array(nums1.length + 1).fill([])
-    .map(() => new Array(nums2.length + 1).fill(0))
-
-  for (let i = nums1.length - 1; i >= 0; i -= 1) {
-    for (let j = nums2.length - 1; j >= 0; j -= 1) {
-      if (nums1[i] !== nums2[j]) {
-        continue
-      }
-
-      const length = lengths[i + 1][j + 1] + 1
-      lengths[i][j] = length
-      result = Math.max(result, length)
+function sumEvenAfterQueries (nums, queries) {
+  let sum = 0
+  for (const num of nums) {
+    if ((num % 2) === 0) {
+      sum += num
     }
+  }
+
+  const result = new Array(queries.length).fill(0)
+  for (let i = 0; i < queries.length; i += 1) {
+    const [val, index] = queries[i]
+    let num = nums[index]
+    if ((num % 2) === 0) {
+      sum -= num
+    }
+
+    num += val
+    if ((num % 2) === 0) {
+      sum += num
+    }
+
+    nums[index] = num
+    result[i] = sum
   }
 
   return result
@@ -26,17 +34,17 @@ function findLength (nums1, nums2) {
 async function main () {
   const inputs = [
     {
-      nums1: [1, 2, 3, 2, 1],
-      nums2: [3, 2, 1, 4, 7]
+      nums: [1, 2, 3, 4],
+      queries: [[1, 0], [-3, 1], [-4, 0], [2, 3]]
     },
     {
-      nums1: [0, 0, 0, 0, 0],
-      nums2: [0, 0, 0, 0, 0]
+      nums: [1],
+      queries: [[4, 0]]
     }
   ]
 
-  for (const { nums1, nums2 } of inputs) {
-    const result = findLength(nums1, nums2)
+  for (const { nums, queries } of inputs) {
+    const result = sumEvenAfterQueries(nums, queries)
     console.log(result)
   }
 }

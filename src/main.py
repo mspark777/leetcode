@@ -7,42 +7,51 @@ from typing import Optional
 
 
 class Solution:
-    def findLength(self, nums1: list[int], nums2: list[int]) -> int:
-        result = 0
-        lengths = [[0] * (len(nums2) + 1) for _ in range(len(nums1) + 1)]
+    def sumEvenAfterQueries(
+        self, nums: list[int], queries: list[list[int]]
+    ) -> list[int]:
+        sum = 0
+        for num in nums:
+            if (num % 2) == 0:
+                sum += num
 
-        for i in range(len(nums1) - 1, -1, -1):
-            for j in range(len(nums2) - 1, -1, -1):
-                if nums1[i] != nums2[j]:
-                    continue
+        result = [0 for _ in range(len(queries))]
+        for i, query in enumerate(queries):
+            val = query[0]
+            index = query[1]
+            num = nums[index]
+            if (num % 2) == 0:
+                sum -= num
 
-                length = lengths[i + 1][j + 1] + 1
-                lengths[i][j] = length
-                result = max(result, length)
+            num += val
+            if (num % 2) == 0:
+                sum += num
 
+            nums[index] = num
+            result[i] = sum
         return result
 
 
 class Input:
-    nums1: list[int]
-    nums2: list[int]
+    nums: list[int]
+    queries: list[list[int]]
 
-    def __init__(self, nums1: list[int], nums2: list[int]):
-        self.nums1 = nums1
-        self.nums2 = nums2
+    def __init__(self, nums: list[int], queries: list[list[int]]):
+        self.nums = nums
+        self.queries = queries
 
 
 def main():
     inputs: list[Input] = [
-        Input([1, 2, 3, 2, 1], [3, 2, 1, 4, 7]),
-        Input([0, 0, 0, 0, 0], [0, 0, 0, 0, 0]),
+        Input([1, 2, 3, 4], [[1, 0], [-3, 1], [-4, 0], [2, 3]]),
+        Input([1], [[4, 0]]),
     ]
 
     solution = Solution()
     for input in inputs:
-        nums1 = input.nums1
-        nums2 = input.nums2
-        result = solution.findLength(nums1, nums2)
+        nums = input.nums
+        queries = input.queries
+        result = solution.sumEvenAfterQueries(nums, queries)
         print(result)
 
 
