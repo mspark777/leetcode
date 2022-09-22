@@ -2,58 +2,46 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func sumEvenAfterQueries(nums []int, queries [][]int) []int {
-	sum := 0
-	for _, num := range nums {
-		if (num % 2) == 0 {
-			sum += num
+func reverseWords(s string) string {
+	words := strings.Split(s, " ")
+	result := make([]string, len(words))
+
+	for i, word := range words {
+		bytes := []rune(word)
+		j := 0
+		k := len(bytes) - 1
+		for j < k {
+			bytes[j], bytes[k] = bytes[k], bytes[j]
+			j += 1
+			k -= 1
 		}
+
+		result[i] = string(bytes)
 	}
 
-	result := make([]int, len(queries))
-	for i, query := range queries {
-		index := query[1]
-		num := nums[index]
-		if (num % 2) == 0 {
-			sum -= num
-		}
-
-		val := query[0]
-		num += val
-		if (num % 2) == 0 {
-			sum += num
-		}
-
-		nums[index] = num
-		result[i] = sum
-	}
-
-	return result
+	return strings.Join(result, " ")
 }
 
 type input struct {
-	nums    []int
-	queries [][]int
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums:    []int{1, 2, 3, 4},
-			queries: [][]int{{1, 0}, {-3, 1}, {-4, 0}, {2, 3}},
+			s: "Let's take LeetCode contest",
 		},
 		{
-			nums:    []int{1},
-			queries: [][]int{{4, 0}},
+			s: "God Ding",
 		},
 	}
 
 	for _, input := range inputs {
-		nums := input.nums
-		queries := input.queries
-		result := sumEvenAfterQueries(nums, queries)
+		s := input.s
+		result := reverseWords(s)
 		fmt.Println(result)
 	}
 }
