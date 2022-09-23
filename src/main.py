@@ -7,27 +7,38 @@ from typing import Optional
 
 
 class Solution:
-    def reverseWords(self, s: str) -> str:
-        return " ".join([word[::-1] for word in s.split()])
+    def concatenatedBinary(self, n: int) -> int:
+        result = 1
+        len = 4
+        mod = 1000000007
+
+        for i in range(2, n + 1):
+            if i == len:
+                len *= 2
+
+            result = ((result * len) + i) % mod
+
+        return result
 
 
 class Input:
-    s: str
+    n: int
 
-    def __init__(self, s: str):
-        self.s = s
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
     inputs: list[Input] = [
-        Input("Let's take LeetCode contest"),
-        Input("God Ding"),
+        Input(1),
+        Input(3),
+        Input(12),
     ]
 
     solution = Solution()
     for input in inputs:
-        s = input.s
-        result = solution.reverseWords(s)
+        n = input.n
+        result = solution.concatenatedBinary(n)
         print(result)
 
 

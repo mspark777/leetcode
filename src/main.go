@@ -2,46 +2,44 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func reverseWords(s string) string {
-	words := strings.Split(s, " ")
-	result := make([]string, len(words))
+func concatenatedBinary(n int) int {
+	result := 1
+	length := 4
+	mod := 1000000007
 
-	for i, word := range words {
-		bytes := []rune(word)
-		j := 0
-		k := len(bytes) - 1
-		for j < k {
-			bytes[j], bytes[k] = bytes[k], bytes[j]
-			j += 1
-			k -= 1
+	for i := 2; i <= n; i += 1 {
+		if i == length {
+			length *= 2
 		}
 
-		result[i] = string(bytes)
+		result = ((result * length) + i) % mod
 	}
 
-	return strings.Join(result, " ")
+	return result
 }
 
 type input struct {
-	s string
+	n int
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "Let's take LeetCode contest",
+			n: 1,
 		},
 		{
-			s: "God Ding",
+			n: 3,
+		},
+		{
+			n: 12,
 		},
 	}
 
 	for _, input := range inputs {
-		s := input.s
-		result := reverseWords(s)
+		n := input.n
+		result := concatenatedBinary(n)
 		fmt.Println(result)
 	}
 }

@@ -1,23 +1,38 @@
-function reverseWords (s: string): string {
-  return s.split(' ').map(ss => ss.split('').reverse().join('')).join(' ')
+function concatenatedBinary (n: number): number {
+  let result = 1
+  let len = 4
+  const mod = 10 ** 9 + 7
+
+  for (let i = 2; i <= n; i += 1) {
+    if (i === len) {
+      len *= 2
+    }
+
+    result = ((result * len) + i) % mod
+  }
+
+  return result
 }
 
 interface Input {
-  readonly s: string
+  readonly n: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      s: "Let's take LeetCode contest"
+      n: 1
     },
     {
-      s: 'God Ding'
+      n: 3
+    },
+    {
+      n: 12
     }
   ]
 
-  for (const { s } of inputs) {
-    const result = reverseWords(s)
+  for (const { n } of inputs) {
+    const result = concatenatedBinary(n)
     console.log(result)
   }
 }
