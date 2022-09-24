@@ -1,38 +1,96 @@
-function concatenatedBinary (n: number): number {
-  let result = 1
-  let len = 4
-  const mod = 10 ** 9 + 7
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
 
-  for (let i = 2; i <= n; i += 1) {
-    if (i === len) {
-      len *= 2
+function newnode (val: number, left?: TreeNode, right?: TreeNode): TreeNode {
+  return new TreeNode(val, left, right)
+}
+
+function newleft (val: number, left?: TreeNode): TreeNode {
+  return newnode(val, left)
+}
+
+function newval (val: number): TreeNode {
+  return newnode(val)
+}
+
+interface StackNode {
+  readonly path: number[]
+  readonly node: TreeNode
+  readonly sum: number
+}
+
+function pathSum (root: TreeNode | null, targetSum: number): number[][] {
+  if (root == null) {
+    return []
+  }
+
+  const result: number[][] = []
+  const stack: StackNode[] = [{ path: [], node: root, sum: 0 }]
+  for (let top = stack.pop(); top != null; top = stack.pop()) {
+    const { path, sum, node: { val, left, right } } = top
+    const newsum = val + sum
+    let isLeft = true
+    if (left != null) {
+      isLeft = false
+      stack.push({
+        path: [...path, val],
+        node: left,
+        sum: newsum
+      })
     }
 
-    result = ((result * len) + i) % mod
+    if (right != null) {
+      isLeft = false
+      stack.push({
+        path: [...path, val],
+        node: right,
+        sum: newsum
+      })
+    }
+
+    if (!isLeft) {
+      continue
+    }
+
+    if (newsum === targetSum) {
+      result.push([...path, val])
+    }
   }
 
   return result
 }
 
 interface Input {
-  readonly n: number
+  readonly root: TreeNode | null
+  readonly targetSum: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      n: 1
+      root: newnode(5, newleft(4, newnode(11, newval(7), newval(2))), newnode(8, newval(13), newnode(4, newval(5), newval(1)))),
+      targetSum: 22
     },
     {
-      n: 3
+      root: newnode(1, newval(2), newval(3)),
+      targetSum: 5
     },
     {
-      n: 12
+      root: newleft(1, newval(2)),
+      targetSum: 0
     }
   ]
 
-  for (const { n } of inputs) {
-    const result = concatenatedBinary(n)
+  for (const { root, targetSum } of inputs) {
+    const result = pathSum(root, targetSum)
     console.log(result)
   }
 }
