@@ -1,116 +1,84 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
+struct MyCircularQueue {
+    queue: Vec<i32>,
+    begin: usize,
+    end: usize,
+    size: usize,
 }
 
-fn newnode(
-    val: i32,
-    left: Option<Rc<RefCell<TreeNode>>>,
-    right: Option<Rc<RefCell<TreeNode>>>,
-) -> Option<Rc<RefCell<TreeNode>>> {
-    Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
-}
-
-fn newleft(val: i32, left: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-    newnode(val, left, None)
-}
-
-fn newval(val: i32) -> Option<Rc<RefCell<TreeNode>>> {
-    newnode(val, None, None)
-}
-
-struct StackNode {
-    path: Vec<i32>,
-    node: Rc<RefCell<TreeNode>>,
-    sum: i32,
-}
-
-struct Solution {}
-impl Solution {
-    pub fn path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> Vec<Vec<i32>> {
-        if root.is_none() {
-            return Vec::new();
+impl MyCircularQueue {
+    fn new(k: i32) -> Self {
+        Self {
+            queue: vec![0; k as usize],
+            begin: 0,
+            end: 0,
+            size: 0,
         }
-
-        let mut result = Vec::<Vec<i32>>::new();
-        let mut stack = vec![StackNode {
-            path: vec![],
-            node: Rc::clone(&root.unwrap()),
-            sum: 0,
-        }];
-
-        while let Some(top) = &stack.pop() {
-            let path = &top.path;
-            let node = top.node.borrow();
-            let val = node.val;
-            let sum = top.sum + val;
-            let mut is_leaf = true;
-
-            if let Some(left) = &node.left {
-                is_leaf = false;
-                let mut newpath = path.clone();
-                newpath.push(val);
-                stack.push(StackNode {
-                    path: newpath,
-                    node: Rc::clone(left),
-                    sum,
-                });
-            }
-
-            if let Some(right) = &node.right {
-                is_leaf = false;
-                let mut newpath = path.clone();
-                newpath.push(val);
-                stack.push(StackNode {
-                    path: newpath,
-                    node: Rc::clone(right),
-                    sum,
-                });
-            }
-
-            if is_leaf && (sum == target_sum) {
-                let mut newpath = path.clone();
-                newpath.push(val);
-                result.push(newpath);
-            }
-        }
-
-        result
     }
-}
 
-struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
-    target_sum: i32,
+    fn en_queue(&mut self, value: i32) -> bool {
+        if self.is_full() {
+            return false;
+        }
+
+        let end = self.end;
+        self.queue[end] = value;
+        self.end = self.next_index(end);
+        self.size += 1;
+        true
+    }
+
+    fn de_queue(&mut self) -> bool {
+        if self.is_empty() {
+            return false;
+        }
+
+        self.begin = self.next_index(self.begin);
+        self.size -= 1;
+        true
+    }
+
+    fn front(&self) -> i32 {
+        if self.is_empty() {
+            -1
+        } else {
+            self.queue[self.begin]
+        }
+    }
+
+    fn rear(&self) -> i32 {
+        if self.is_empty() {
+            return -1;
+        }
+
+        let end = self.end;
+        let queue = &self.queue;
+        let tail = if end == 0 { queue.len() - 1 } else { end - 1 };
+
+        queue[tail]
+    }
+
+    fn is_empty(&self) -> bool {
+        self.size < 1
+    }
+
+    fn is_full(&self) -> bool {
+        self.size >= self.queue.len()
+    }
+
+    fn next_index(&self, cur: usize) -> usize {
+        (cur + 1) % self.queue.len()
+    }
 }
 
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input {
-            root: newnode(
-                5,
-                newleft(4, newnode(11, newval(7), newval(2))),
-                newnode(8, newval(13), newnode(4, newval(5), newval(1))),
-            ),
-            target_sum: 22,
-        },
-        Input {
-            root: newnode(1, newval(2), newval(3)),
-            target_sum: 5,
-        },
-        Input {
-            root: newleft(1, newval(2)),
-            target_sum: 0,
-        },
-    ];
-
-    for Input { root, target_sum } in inputs.into_iter() {
-        let result = Solution::path_sum(root, target_sum);
-        println!("{result:?}");
-    }
+    let mut queue = MyCircularQueue::new(3);
+    println!("{}", queue.en_queue(1));
+    println!("{}", queue.en_queue(2));
+    println!("{}", queue.en_queue(3));
+    println!("{}", queue.en_queue(4));
+    println!("{}", queue.rear());
+    println!("{}", queue.is_full());
+    println!("{}", queue.de_queue());
+    println!("{}", queue.en_queue(4));
+    println!("{}", queue.rear());
 }

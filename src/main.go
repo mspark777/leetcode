@@ -1,118 +1,91 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
+type MyCircularQueue struct {
+	queue []int
+	begin int
+	end   int
+	size  int
 }
 
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
+func Constructor(k int) MyCircularQueue {
+	return MyCircularQueue{
+		queue: make([]int, k),
+		begin: 0,
+		end:   0,
+		size:  0,
+	}
 }
 
-func newleft(val int, left *TreeNode) *TreeNode {
-	return newnode(val, left, nil)
-}
-
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
-
-type stackNode struct {
-	path []int
-	node *TreeNode
-	sum  int
-}
-
-func pathSum(root *TreeNode, targetSum int) [][]int {
-	result := [][]int{}
-	if root == nil {
-		return result
+func (this *MyCircularQueue) EnQueue(value int) bool {
+	if this.IsFull() {
+		return false
 	}
 
-	stack := []stackNode{{
-		path: []int{},
-		node: root,
-		sum:  0,
-	}}
+	end := this.end
+	this.queue[end] = value
+	this.end = this.nextIndex(end)
+	this.size += 1
 
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		stack = stack[:topidx]
-
-		path := top.path
-		sum := top.sum
-		node := top.node
-		val := node.Val
-		left := node.Left
-		right := node.Right
-		newsum := sum + val
-		isLeaf := true
-
-		if left != nil {
-			isLeaf = false
-			newpath := make([]int, len(path)+1)
-			copy(newpath, path)
-			newpath[len(path)] = val
-			stack = append(stack, stackNode{
-				path: newpath,
-				node: left,
-				sum:  newsum,
-			})
-		}
-
-		if right != nil {
-			isLeaf = false
-			newpath := make([]int, len(path)+1)
-			copy(newpath, path)
-			newpath[len(path)] = val
-			stack = append(stack, stackNode{
-				path: newpath,
-				node: right,
-				sum:  newsum,
-			})
-		}
-
-		if isLeaf && (newsum == targetSum) {
-			newpath := make([]int, len(path)+1)
-			copy(newpath, path)
-			newpath[len(path)] = val
-			result = append(result, newpath)
-		}
-	}
-	return result
+	return true
 }
 
-type input struct {
-	root      *TreeNode
-	targetSum int
+func (this *MyCircularQueue) DeQueue() bool {
+	if this.IsEmpty() {
+		return false
+	}
+
+	this.begin = this.nextIndex(this.begin)
+	this.size -= 1
+
+	return true
+}
+
+func (this *MyCircularQueue) Front() int {
+	if this.IsEmpty() {
+		return -1
+	} else {
+		return this.queue[this.begin]
+	}
+}
+
+func (this *MyCircularQueue) Rear() int {
+	if this.IsEmpty() {
+		return -1
+	}
+
+	end := this.end
+	queue := this.queue
+	tail := end - 1
+	if tail < 0 {
+		tail = len(queue) - 1
+	}
+
+	return queue[tail]
+}
+
+func (this *MyCircularQueue) IsEmpty() bool {
+	return this.size < 1
+}
+
+func (this *MyCircularQueue) IsFull() bool {
+	return this.size >= len(this.queue)
+}
+
+func (this *MyCircularQueue) nextIndex(cur int) int {
+	return (cur + 1) % len(this.queue)
 }
 
 func main() {
-	inputs := []input{
-		{
-			root:      newnode(5, newleft(4, newnode(11, newval(7), newval(2))), newnode(8, newval(13), newnode(4, newval(5), newval(1)))),
-			targetSum: 22,
-		},
-		{
-			root:      newnode(1, newval(2), newval(3)),
-			targetSum: 5,
-		},
-		{
-			root:      newleft(1, newval(2)),
-			targetSum: 0,
-		},
-	}
-
-	for _, input := range inputs {
-		root := input.root
-		targetSum := input.targetSum
-		result := pathSum(root, targetSum)
-		fmt.Println(result)
-	}
+	queue := Constructor(3)
+	fmt.Println(queue.EnQueue(1))
+	fmt.Println(queue.EnQueue(2))
+	fmt.Println(queue.EnQueue(3))
+	fmt.Println(queue.EnQueue(4))
+	fmt.Println(queue.Rear())
+	fmt.Println(queue.IsFull())
+	fmt.Println(queue.DeQueue())
+	fmt.Println(queue.EnQueue(4))
+	fmt.Println(queue.Rear())
 }

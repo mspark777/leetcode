@@ -6,109 +6,71 @@ from __future__ import annotations
 from typing import Optional
 
 
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
+class MyCircularQueue:
+    queue: list[int]
+    begin: int
+    end: int
+    size: int
 
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+    def __init__(self, k: int):
+        self.queue = [0] * k
+        self.begin = 0
+        self.end = 0
+        self.size = 0
 
+    def enQueue(self, value: int) -> bool:
+        if self.isFull():
+            return False
 
-def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
-    return TreeNode(val, left, right)
+        end = self.end
+        self.queue[end] = value
+        self.end = self.next_index(end)
+        self.size += 1
 
+        return True
 
-def newleft(val: int, left: Optional[TreeNode]) -> TreeNode:
-    return newnode(val, left, None)
+    def deQueue(self) -> bool:
+        if self.isEmpty():
+            return False
 
+        self.begin = self.next_index(self.begin)
+        self.size -= 1
 
-def newval(val: int) -> TreeNode:
-    return newnode(val, None, None)
+        return True
 
+    def Front(self) -> int:
+        return self.queue[self.begin] if not self.isEmpty() else -1
 
-class StackNode:
-    path: list[int]
-    node: TreeNode
-    sum: int
+    def Rear(self) -> int:
+        if self.isEmpty():
+            return -1
 
-    def __init__(self, path: list[int], node: TreeNode, sum: int) -> None:
-        self.path = path
-        self.node = node
-        self.sum = sum
+        end = self.end
+        queue = self.queue
+        tail = end - 1 if end != 0 else len(queue) - 1
+        return queue[tail]
 
+    def isEmpty(self) -> bool:
+        return self.size < 1
 
-class Solution:
-    def pathSum(self, root: Optional[TreeNode], target_sum: int) -> list[list[int]]:
-        if root is None:
-            return []
+    def isFull(self) -> bool:
+        return self.size >= len(self.queue)
 
-        result: list[list[int]] = []
-        stack: list[StackNode] = [StackNode([], root, 0)]
-
-        while stack:
-            top = stack.pop()
-            path = top.path
-            sum = top.sum
-            node = top.node
-            val = node.val
-            left = node.left
-            right = node.right
-            newsum = sum + val
-
-            is_leaf = True
-
-            if left is not None:
-                is_leaf = False
-                newpath = path.copy()
-                newpath.append(val)
-                stack.append(StackNode(newpath, left, newsum))
-
-            if right is not None:
-                is_leaf = False
-                newpath = path.copy()
-                newpath.append(val)
-                stack.append(StackNode(newpath, right, newsum))
-
-            if is_leaf and (newsum == target_sum):
-                newpath = path.copy()
-                newpath.append(val)
-                result.append(newpath)
-
-        return result
-
-
-class Input:
-    root: Optional[TreeNode]
-    target_sum: int
-
-    def __init__(self, root: Optional[TreeNode], target_sum: int):
-        self.root = root
-        self.target_sum = target_sum
+    def next_index(self, cur: int) -> int:
+        return (cur + 1) % len(self.queue)
 
 
 def main():
-    inputs: list[Input] = [
-        Input(
-            newnode(
-                5,
-                newleft(4, newnode(11, newval(7), newval(2))),
-                newnode(8, newval(13), newnode(4, newval(5), newval(1))),
-            ),
-            22,
-        ),
-        Input(newnode(1, newval(2), newval(3)), 5),
-        Input(newleft(1, newval(2)), 0),
-    ]
-
-    solution = Solution()
-    for input in inputs:
-        root = input.root
-        target_sum = input.target_sum
-        result = solution.pathSum(root, target_sum)
-        print(result)
+    queue = MyCircularQueue(3)
+    print(queue.enQueue(1))
+    print(queue.enQueue(2))
+    print(queue.enQueue(3))
+    print(queue.enQueue(4))
+    print(queue.Rear())
+    print(queue.isFull())
+    print(queue.deQueue())
+    print(queue.enQueue(4))
+    print(queue.Rear())
 
 
 if __name__ == "__main__":

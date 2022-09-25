@@ -1,89 +1,99 @@
-class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val, left, right) {
-  return new TreeNode(val, left, right)
-}
-
-function newleft (val, left) {
-  return newnode(val, left)
-}
-
-function newval (val) {
-  return newnode(val)
-}
-
-/**
- * @param {TreeNode} root
- * @param {number} targetSum
- * @returns {number[][]}
- */
-function pathSum (root, targetSum) {
-  if (root == null) {
-    return []
+class MyCircularQueue {
+  /**
+   * @param {number} k
+   */
+  constructor (k) {
+    /** @type number[] */
+    this.queue = new Array(k)
+    this.begin = 0
+    this.end = 0
+    this.size = 0
   }
 
-  const result = []
-  const stack = [{ path: [], node: root, sum: 0 }]
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { path, sum, node: { val, left, right } } = top
-    const newsum = val + sum
-    let isLeft = true
-    if (left != null) {
-      isLeft = false
-      stack.push({
-        path: [...path, val],
-        node: left,
-        sum: newsum
-      })
+  /**
+   * @param {number} value
+   * @returns {boolean}
+   */
+  enQueue (value) {
+    if (this.isFull()) {
+      return false
     }
 
-    if (right != null) {
-      isLeft = false
-      stack.push({
-        path: [...path, val],
-        node: right,
-        sum: newsum
-      })
-    }
-
-    if (!isLeft) {
-      continue
-    }
-
-    if (newsum === targetSum) {
-      result.push([...path, val])
-    }
+    const end = this.end
+    this.queue[end] = value
+    this.end = this.#nextIndex(end)
+    this.size += 1
+    return true
   }
 
-  return result
+  /**
+   * @returns {boolean}
+   */
+  deQueue () {
+    if (this.isEmpty()) {
+      return false
+    }
+
+    this.begin = this.#nextIndex(this.begin)
+    this.size -= 1
+    return true
+  }
+
+  /**
+   * @returns {number}
+   */
+  Front () {
+    return this.isEmpty() ? -1 : this.queue[this.begin]
+  }
+
+  /**
+   * @returns {number}
+   */
+  Rear () {
+    if (this.isEmpty()) {
+      return -1
+    }
+
+    const end = this.end
+    const queue = this.queue
+    const tail = end === 0 ? queue.length - 1 : end - 1
+    return queue[tail]
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  isEmpty () {
+    return this.size < 1
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  isFull () {
+    return this.size >= this.queue.length
+  }
+
+  /**
+   * @param {number} cur
+   * @returns {number}
+   */
+  #nextIndex (cur) {
+    return (cur + 1) % this.queue.length
+  }
 }
 
 async function main () {
-  const inputs = [
-    {
-      root: newnode(5, newleft(4, newnode(11, newval(7), newval(2))), newnode(8, newval(13), newnode(4, newval(5), newval(1)))),
-      targetSum: 22
-    },
-    {
-      root: newnode(1, newval(2), newval(3)),
-      targetSum: 5
-    },
-    {
-      root: newleft(1, newval(2)),
-      targetSum: 0
-    }
-  ]
-
-  for (const { root, targetSum } of inputs) {
-    const result = pathSum(root, targetSum)
-    console.log(result)
-  }
+  const queue = new MyCircularQueue(3)
+  console.log(queue.enQueue(1))
+  console.log(queue.enQueue(2))
+  console.log(queue.enQueue(3))
+  console.log(queue.enQueue(4))
+  console.log(queue.Rear())
+  console.log(queue.isFull())
+  console.log(queue.deQueue())
+  console.log(queue.enQueue(4))
+  console.log(queue.Rear())
 }
 
 main().catch(e => {
