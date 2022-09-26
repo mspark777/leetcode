@@ -1,99 +1,76 @@
-class MyCircularQueue {
-  /**
-   * @param {number} k
-   */
-  constructor (k) {
-    /** @type number[] */
-    this.queue = new Array(k)
-    this.begin = 0
-    this.end = 0
-    this.size = 0
+/**
+ * @param {Map<string, string>} parents
+ * @param {string} code
+ * @returns {string}
+ */
+function find (parents, code) {
+  let parent = parents.get(code)
+  if (parent === code) {
+    return code
   }
 
-  /**
-   * @param {number} value
-   * @returns {boolean}
-   */
-  enQueue (value) {
-    if (this.isFull()) {
-      return false
+  parent = find(parents, parent)
+  parents.set(code, parent)
+  return parent
+}
+
+/**
+ * @param {Map<string, string>} parents
+ * @param {string} a
+ * @param {string} b
+ * @returns {void}
+ */
+function union (parents, a, b) {
+  const parenta = find(parents, a)
+  const parentb = find(parents, b)
+  parents.set(parentb, parenta)
+}
+
+/**
+ * @param {string[]} equations
+ * @returns {boolean}
+ */
+function equationsPossible (equations) {
+  const parents = new Map()
+  for (let i = 0; i < 26; i += 1) {
+    const key = String.fromCharCode('a'.charCodeAt(0) + i)
+    parents.set(key, key)
+  }
+
+  for (const equation of equations) {
+    if (equation[1] === '=') {
+      const a = parents.get(equation[0])
+      const b = parents.get(equation[3])
+      if (find(parents, a) !== find(parents, b)) {
+        union(parents, a, b)
+      }
     }
-
-    const end = this.end
-    this.queue[end] = value
-    this.end = this.#nextIndex(end)
-    this.size += 1
-    return true
   }
 
-  /**
-   * @returns {boolean}
-   */
-  deQueue () {
-    if (this.isEmpty()) {
-      return false
+  for (const equation of equations) {
+    if (equation[1] === '!') {
+      const a = parents.get(equation[0])
+      const b = parents.get(equation[3])
+      if (find(parents, a) === find(parents, b)) {
+        return false
+      }
     }
-
-    this.begin = this.#nextIndex(this.begin)
-    this.size -= 1
-    return true
   }
 
-  /**
-   * @returns {number}
-   */
-  Front () {
-    return this.isEmpty() ? -1 : this.queue[this.begin]
-  }
-
-  /**
-   * @returns {number}
-   */
-  Rear () {
-    if (this.isEmpty()) {
-      return -1
-    }
-
-    const end = this.end
-    const queue = this.queue
-    const tail = end === 0 ? queue.length - 1 : end - 1
-    return queue[tail]
-  }
-
-  /**
-   * @returns {boolean}
-   */
-  isEmpty () {
-    return this.size < 1
-  }
-
-  /**
-   * @returns {boolean}
-   */
-  isFull () {
-    return this.size >= this.queue.length
-  }
-
-  /**
-   * @param {number} cur
-   * @returns {number}
-   */
-  #nextIndex (cur) {
-    return (cur + 1) % this.queue.length
-  }
+  return true
 }
 
 async function main () {
-  const queue = new MyCircularQueue(3)
-  console.log(queue.enQueue(1))
-  console.log(queue.enQueue(2))
-  console.log(queue.enQueue(3))
-  console.log(queue.enQueue(4))
-  console.log(queue.Rear())
-  console.log(queue.isFull())
-  console.log(queue.deQueue())
-  console.log(queue.enQueue(4))
-  console.log(queue.Rear())
+  const inputs = [
+    ['a==b', 'b!=a'],
+    ['b==a', 'a==b'],
+    ['c==c', 'b==d', 'x!=z']
+  ]
+
+  for (const input of inputs) {
+    const result = equationsPossible(input)
+    console.log(result)
+  }
 }
 
 main().catch(e => {

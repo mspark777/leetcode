@@ -1,84 +1,62 @@
-struct MyCircularQueue {
-    queue: Vec<i32>,
-    begin: usize,
-    end: usize,
-    size: usize,
-}
+struct Solution {}
+impl Solution {
+    pub fn equations_possible(equations: Vec<String>) -> bool {
+        let mut parents: Vec<usize> = (0..=26).collect();
 
-impl MyCircularQueue {
-    fn new(k: i32) -> Self {
-        Self {
-            queue: vec![0; k as usize],
-            begin: 0,
-            end: 0,
-            size: 0,
-        }
-    }
-
-    fn en_queue(&mut self, value: i32) -> bool {
-        if self.is_full() {
-            return false;
+        for equation in equations.iter() {
+            let bytes = equation.as_bytes();
+            if bytes[1] == b'=' {
+                let a = (bytes[0] - b'a') as usize;
+                let b = (bytes[3] - b'a') as usize;
+                Self::union(&mut parents, a, b);
+            }
         }
 
-        let end = self.end;
-        self.queue[end] = value;
-        self.end = self.next_index(end);
-        self.size += 1;
-        true
-    }
+        for equation in equations.iter() {
+            let bytes = equation.as_bytes();
+            if bytes[1] == b'!' {
+                let a = (bytes[0] - b'a') as usize;
+                let b = (bytes[3] - b'a') as usize;
 
-    fn de_queue(&mut self) -> bool {
-        if self.is_empty() {
-            return false;
+                let parenta = Self::find(&mut parents, a);
+                let parentb = Self::find(&mut parents, b);
+                if parenta == parentb {
+                    return false;
+                }
+            }
         }
 
-        self.begin = self.next_index(self.begin);
-        self.size -= 1;
-        true
+        return true;
     }
 
-    fn front(&self) -> i32 {
-        if self.is_empty() {
-            -1
-        } else {
-            self.queue[self.begin]
-        }
-    }
-
-    fn rear(&self) -> i32 {
-        if self.is_empty() {
-            return -1;
+    fn find(parents: &mut Vec<usize>, code: usize) -> usize {
+        let mut parent = parents[code];
+        if parent == code {
+            return parent;
         }
 
-        let end = self.end;
-        let queue = &self.queue;
-        let tail = if end == 0 { queue.len() - 1 } else { end - 1 };
-
-        queue[tail]
+        parent = Self::find(parents, parent);
+        parents[code] = parent;
+        return parent;
     }
 
-    fn is_empty(&self) -> bool {
-        self.size < 1
-    }
-
-    fn is_full(&self) -> bool {
-        self.size >= self.queue.len()
-    }
-
-    fn next_index(&self, cur: usize) -> usize {
-        (cur + 1) % self.queue.len()
+    fn union(parents: &mut Vec<usize>, a: usize, b: usize) {
+        let parenta = Self::find(parents, a);
+        let parentb = Self::find(parents, b);
+        parents[parentb] = parenta;
     }
 }
 
 fn main() {
-    let mut queue = MyCircularQueue::new(3);
-    println!("{}", queue.en_queue(1));
-    println!("{}", queue.en_queue(2));
-    println!("{}", queue.en_queue(3));
-    println!("{}", queue.en_queue(4));
-    println!("{}", queue.rear());
-    println!("{}", queue.is_full());
-    println!("{}", queue.de_queue());
-    println!("{}", queue.en_queue(4));
-    println!("{}", queue.rear());
+    let inputs = vec![
+        vec!["a==b", "b!=a"],
+        vec!["b==a", "a==b"],
+        vec!["c==c", "b==d", "x!=z"],
+    ];
+
+    for input in inputs.into_iter() {
+        let equations = input.iter().map(|s| s.to_string()).collect();
+        let result = Solution::equations_possible(equations);
+        println!("{result}");
+    }
 }
