@@ -1,62 +1,63 @@
 struct Solution {}
 impl Solution {
-    pub fn equations_possible(equations: Vec<String>) -> bool {
-        let mut parents: Vec<usize> = (0..=26).collect();
+    pub fn push_dominoes(dominoes: String) -> String {
+        const LEFT: u8 = b'L';
+        const RIGHT: u8 = b'R';
+        const STAND: u8 = b'.';
 
-        for equation in equations.iter() {
-            let bytes = equation.as_bytes();
-            if bytes[1] == b'=' {
-                let a = (bytes[0] - b'a') as usize;
-                let b = (bytes[3] - b'a') as usize;
-                Self::union(&mut parents, a, b);
+        let bytes = dominoes.as_bytes();
+        let length = dominoes.len();
+
+        let mut force = 0;
+        let mut forces = vec![0; length];
+        for i in 0..length {
+            let ch = bytes[i];
+            if ch == LEFT {
+                force = 0;
+            } else if ch == RIGHT {
+                force = length as i32;
+            } else {
+                force = force.max(1) - 1;
+            }
+
+            forces[i] += force
+        }
+
+        force = 0;
+        for i in (0..length).rev() {
+            let ch = bytes[i];
+            if ch == LEFT {
+                force = length as i32;
+            } else if ch == RIGHT {
+                force = 0;
+            } else {
+                force = force.max(1) - 1;
+            }
+
+            forces[i] -= force
+        }
+
+        let mut result = vec![0u8; length];
+        for (i, force) in forces.into_iter().enumerate() {
+            if force < 0 {
+                result[i] = LEFT;
+            } else if force > 0 {
+                result[i] = RIGHT;
+            } else {
+                result[i] = STAND;
             }
         }
 
-        for equation in equations.iter() {
-            let bytes = equation.as_bytes();
-            if bytes[1] == b'!' {
-                let a = (bytes[0] - b'a') as usize;
-                let b = (bytes[3] - b'a') as usize;
-
-                let parenta = Self::find(&mut parents, a);
-                let parentb = Self::find(&mut parents, b);
-                if parenta == parentb {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    fn find(parents: &mut Vec<usize>, code: usize) -> usize {
-        let mut parent = parents[code];
-        if parent == code {
-            return parent;
-        }
-
-        parent = Self::find(parents, parent);
-        parents[code] = parent;
-        return parent;
-    }
-
-    fn union(parents: &mut Vec<usize>, a: usize, b: usize) {
-        let parenta = Self::find(parents, a);
-        let parentb = Self::find(parents, b);
-        parents[parentb] = parenta;
+        String::from_utf8_lossy(result.as_slice()).to_string()
     }
 }
 
 fn main() {
-    let inputs = vec![
-        vec!["a==b", "b!=a"],
-        vec!["b==a", "a==b"],
-        vec!["c==c", "b==d", "x!=z"],
-    ];
+    let inputs = vec!["RR.L", ".L.R...LR..L.."];
 
     for input in inputs.into_iter() {
-        let equations = input.iter().map(|s| s.to_string()).collect();
-        let result = Solution::equations_possible(equations);
+        let dominoes = input.to_string();
+        let result = Solution::push_dominoes(dominoes);
         println!("{result}");
     }
 }

@@ -7,45 +7,47 @@ from typing import Optional
 
 
 class Solution:
-    def equationsPossible(self, equations: list[str]) -> bool:
-        parents = [i for i in range(27)]
+    def pushDominoes(self, dominoes: str) -> str:
+        LEFT = "L"
+        RIGHT = "R"
+        STAND = "."
+        LENGTH = len(dominoes)
 
-        for equation in equations:
-            if equation[1] == "=":
-                a = parents[ord(equation[0]) - ord("a")]
-                b = parents[ord(equation[3]) - ord("a")]
-                self.union(parents, a, b)
+        forces = [0 for _ in range(LENGTH)]
+        force = 0
+        for i, ch in enumerate(dominoes):
+            if ch == LEFT:
+                force = 0
+            elif ch == RIGHT:
+                force = LENGTH
+            else:
+                force = max(0, force - 1)
 
-        for equation in equations:
-            if equation[1] == "!":
-                a = parents[ord(equation[0]) - ord("a")]
-                b = parents[ord(equation[3]) - ord("a")]
-                if self.find(parents, a) == self.find(parents, b):
-                    return False
+            forces[i] += force
 
-        return True
+        force = 0
+        for i in range(LENGTH - 1, -1, -1):
+            ch = dominoes[i]
+            if ch == LEFT:
+                force = LENGTH
+            elif ch == RIGHT:
+                force = 0
+            else:
+                force = max(0, force - 1)
 
-    def find(self, parents: list[int], code: int) -> int:
-        parent = parents[code]
-        if parent == code:
-            return code
+            forces[i] -= force
 
-        parent = self.find(parents, parent)
-        parents[code] = parent
-        return parent
-
-    def union(self, parents: list[int], a: int, b: int):
-        parenta = self.find(parents, a)
-        parentb = self.find(parents, b)
-        parents[parentb] = parenta
+        return "".join(
+            [RIGHT if force > 0 else LEFT if force < 0 else STAND for force in forces]
+        )
 
 
 def main():
-    inputs = [["a==b", "b!=a"], ["b==a", "a==b"], ["c==c", "b==d", "x!=z"]]
+    inputs = ["RR.L", ".L.R...LR..L.."]
 
     solution = Solution()
     for input in inputs:
-        result = solution.equationsPossible(input)
+        result = solution.pushDominoes(input)
         print(result)
 
 

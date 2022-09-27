@@ -4,61 +4,72 @@ import (
 	"fmt"
 )
 
-func find(parents []int, code int) int {
-	parent := parents[code]
-	if parent == code {
-		return parent
-	}
+func pushDominoes(dominoes string) string {
+	const LEFT = 'L'
+	const RIGHT = 'R'
+	const STAND = '.'
+	length := len(dominoes)
+	forces := make([]int, length)
 
-	parent = find(parents, parent)
-	parents[code] = parent
-	return parent
-}
+	chars := []rune(dominoes)
 
-func union(parents []int, a int, b int) {
-	parenta := find(parents, a)
-	parentb := find(parents, b)
-	parents[parentb] = parenta
-}
-
-func equationsPossible(equations []string) bool {
-	parents := make([]int, 26)
-	for i := range parents {
-		parents[i] = i
-	}
-
-	for _, equation := range equations {
-		chars := []rune(equation)
-		if chars[1] == '=' {
-			a := int(chars[0] - 'a')
-			b := int(chars[3] - 'a')
-			union(parents, a, b)
-		}
-	}
-
-	for _, equation := range equations {
-		chars := []rune(equation)
-		if chars[1] == '!' {
-			a := int(chars[0] - 'a')
-			b := int(chars[3] - 'a')
-			if find(parents, a) == find(parents, b) {
-				return false
+	force := 0
+	for i, ch := range chars {
+		if ch == LEFT {
+			force = 0
+		} else if ch == RIGHT {
+			force = length
+		} else {
+			if force > 0 {
+				force -= 1
+			} else {
+				force = 0
 			}
 		}
+
+		forces[i] += force
 	}
 
-	return true
+	force = 0
+	for i := range chars {
+		idx := length - i - 1
+		ch := chars[idx]
+		if ch == LEFT {
+			force = length
+		} else if ch == RIGHT {
+			force = 0
+		} else {
+			if force > 0 {
+				force -= 1
+			} else {
+				force = 0
+			}
+		}
+
+		forces[idx] -= force
+	}
+
+	result := make([]rune, length)
+	for i, force := range forces {
+		if force < 0 {
+			result[i] = LEFT
+		} else if force > 0 {
+			result[i] = RIGHT
+		} else {
+			result[i] = STAND
+		}
+	}
+
+	return string(result)
 }
 
 func main() {
-	inputs := [][]string{
-		{"a==b", "b!=a"},
-		{"b==a", "a==b"},
-		{"c==c", "b==d", "x!=z"},
+	inputs := []string{
+		"RR.L", ".L.R...LR..L..",
 	}
 
 	for _, input := range inputs {
-		result := equationsPossible(input)
+		result := pushDominoes(input)
 		fmt.Println(result)
 	}
 }

@@ -1,59 +1,60 @@
-function find (parents: Map<string, string>, code: string): string {
-  let parent = parents.get(code) as string
-  if (parent === code) {
-    return code
+function pushDominoes (dominoes: string): string {
+  const LEFT = 'L'
+  const RIGHT = 'R'
+  const STAND = '.'
+  const forces = new Array<number>(dominoes.length).fill(0)
+
+  let force = 0
+  for (let i = 0; i < dominoes.length; i += 1) {
+    const ch = dominoes[i]
+    if (ch === LEFT) {
+      force = 0
+    } else if (ch === RIGHT) {
+      force = dominoes.length
+    } else {
+      force = Math.max(force - 1, 0)
+    }
+
+    forces[i] += force
   }
 
-  parent = find(parents, parent)
-  parents.set(code, parent)
-  return parent
-}
+  force = 0
+  for (let i = dominoes.length - 1; i >= 0; i -= 1) {
+    const ch = dominoes[i]
+    if (ch === LEFT) {
+      force = dominoes.length
+    } else if (ch === RIGHT) {
+      force = 0
+    } else {
+      force = Math.max(force - 1, 0)
+    }
 
-function union (parents: Map<string, string>, a: string, b: string): void {
-  const parenta = find(parents, a)
-  const parentb = find(parents, b)
-  parents.set(parentb, parenta)
-}
-
-function equationsPossible (equations: string[]): boolean {
-  const parents = new Map<string, string>()
-  for (let i = 0; i < 26; i += 1) {
-    const key = String.fromCharCode('a'.charCodeAt(0) + i)
-    parents.set(key, key)
+    forces[i] -= force
   }
 
-  for (const equation of equations) {
-    if (equation[1] === '=') {
-      const a = parents.get(equation[0]) as string
-      const b = parents.get(equation[3]) as string
-      if (find(parents, a) !== find(parents, b)) {
-        union(parents, a, b)
-      }
+  const result = new Array<string>(dominoes.length)
+  for (let i = 0; i < dominoes.length; i += 1) {
+    const force = forces[i]
+    if (force < 0) {
+      result[i] = LEFT
+    } else if (force > 0) {
+      result[i] = RIGHT
+    } else {
+      result[i] = STAND
     }
   }
 
-  for (const equation of equations) {
-    if (equation[1] === '!') {
-      const a = parents.get(equation[0]) as string
-      const b = parents.get(equation[3]) as string
-      if (find(parents, a) === find(parents, b)) {
-        return false
-      }
-    }
-  }
-
-  return true
+  return result.join('')
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][] = [
-    ['a==b', 'b!=a'],
-    ['b==a', 'a==b'],
-    ['c==c', 'b==d', 'x!=z']
+  const inputs: string[] = [
+    'RR.L',
+    '.L.R...LR..L..'
   ]
 
   for (const input of inputs) {
-    const result = equationsPossible(input)
+    const result = pushDominoes(input)
     console.log(result)
   }
 }
