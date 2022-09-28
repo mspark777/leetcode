@@ -1,65 +1,79 @@
+
+class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
+
+function arrtolist (nums) {
+  const dummy = new ListNode()
+  let tail = dummy
+  for (const num of nums) {
+    tail.next = new ListNode(num)
+    tail = tail.next
+  }
+
+  return dummy.next
+}
+
+function listtoarr (node) {
+  const nums = []
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
+  }
+
+  return nums
+}
+
 /**
- * @param {string} dominoes
- * @returns {string}
- */
-function pushDominoes (dominoes) {
-  const LEFT = 'L'
-  const RIGHT = 'R'
-  const STAND = '.'
-  const forces = new Array(dominoes.length).fill(0)
-
-  let force = 0
-  for (let i = 0; i < dominoes.length; i += 1) {
-    const ch = dominoes[i]
-    if (ch === LEFT) {
-      force = 0
-    } else if (ch === RIGHT) {
-      force = dominoes.length
-    } else {
-      force = Math.max(force - 1, 0)
-    }
-
-    forces[i] += force
+ * @param {ListNode | null} head
+ * @param {number} n
+ * @returns {ListNode | null}
+*/
+function removeNthFromEnd (head, n) {
+  if (head == null) {
+    return null
   }
 
-  force = 0
-  for (let i = dominoes.length - 1; i >= 0; i -= 1) {
-    const ch = dominoes[i]
-    if (ch === LEFT) {
-      force = dominoes.length
-    } else if (ch === RIGHT) {
-      force = 0
-    } else {
-      force = Math.max(force - 1, 0)
-    }
-
-    forces[i] -= force
+  let right = head
+  for (let i = 0; i < n; i += 1) {
+    right = right?.next ?? null
   }
 
-  const result = new Array(dominoes.length)
-  for (let i = 0; i < dominoes.length; i += 1) {
-    const force = forces[i]
-    if (force < 0) {
-      result[i] = LEFT
-    } else if (force > 0) {
-      result[i] = RIGHT
-    } else {
-      result[i] = STAND
-    }
+  if (right == null) {
+    return head.next
   }
 
-  return result.join('')
+  let left = head
+  while (right.next != null) {
+    right = right.next
+    left = left?.next ?? null
+  }
+
+  if (left != null) {
+    left.next = left?.next?.next ?? null
+  }
+
+  return head
 }
 
 async function main () {
-  const inputs = [
-    'RR.L',
-    '.L.R...LR..L..'
-  ]
+  const inputs = [{
+    head: arrtolist([1, 2, 3, 4, 5]),
+    n: 2
+  }, {
+    head: arrtolist([1]),
+    n: 1
+  }, {
+    head: arrtolist([1, 2]),
+    n: 1
+  }]
 
-  for (const input of inputs) {
-    const result = pushDominoes(input)
-    console.log(result)
+  for (const { head, n } of inputs) {
+    const result = removeNthFromEnd(head, n)
+    console.log(listtoarr(result))
   }
 }
 

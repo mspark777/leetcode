@@ -4,72 +4,82 @@ import (
 	"fmt"
 )
 
-func pushDominoes(dominoes string) string {
-	const LEFT = 'L'
-	const RIGHT = 'R'
-	const STAND = '.'
-	length := len(dominoes)
-	forces := make([]int, length)
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
 
-	chars := []rune(dominoes)
+func arrtolist(nums []int) *ListNode {
+	dummy := ListNode{}
+	tail := &dummy
 
-	force := 0
-	for i, ch := range chars {
-		if ch == LEFT {
-			force = 0
-		} else if ch == RIGHT {
-			force = length
-		} else {
-			if force > 0 {
-				force -= 1
-			} else {
-				force = 0
-			}
-		}
-
-		forces[i] += force
+	for _, num := range nums {
+		tail.Next = &ListNode{Val: num}
+		tail = tail.Next
 	}
 
-	force = 0
-	for i := range chars {
-		idx := length - i - 1
-		ch := chars[idx]
-		if ch == LEFT {
-			force = length
-		} else if ch == RIGHT {
-			force = 0
-		} else {
-			if force > 0 {
-				force -= 1
-			} else {
-				force = 0
-			}
-		}
+	return dummy.Next
+}
 
-		forces[idx] -= force
+func listtoarr(node *ListNode) []int {
+	nums := []int{}
+
+	for node != nil {
+		nums = append(nums, node.Val)
+		node = node.Next
 	}
 
-	result := make([]rune, length)
-	for i, force := range forces {
-		if force < 0 {
-			result[i] = LEFT
-		} else if force > 0 {
-			result[i] = RIGHT
-		} else {
-			result[i] = STAND
-		}
+	return nums
+}
+
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	if head == nil {
+		return nil
 	}
 
-	return string(result)
+	right := head
+	for i := 0; i < n; i += 1 {
+		right = right.Next
+	}
+
+	if right == nil {
+		return head.Next
+	}
+
+	left := head
+	for right.Next != nil {
+		right = right.Next
+		left = left.Next
+	}
+
+	left.Next = left.Next.Next
+
+	return head
+}
+
+type input struct {
+	head *ListNode
+	n    int
 }
 
 func main() {
-	inputs := []string{
-		"RR.L", ".L.R...LR..L..",
+	inputs := []*input{
+		{
+			head: arrtolist([]int{1, 2, 3, 4, 5}),
+			n:    2,
+		}, {
+			head: arrtolist([]int{1}),
+			n:    1,
+		}, {
+			head: arrtolist([]int{1, 2}),
+			n:    1,
+		},
 	}
 
 	for _, input := range inputs {
-		result := pushDominoes(input)
-		fmt.Println(result)
+		head := input.head
+		n := input.n
+		result := removeNthFromEnd(head, n)
+		fmt.Println(listtoarr(result))
 	}
 }

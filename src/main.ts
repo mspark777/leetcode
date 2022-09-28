@@ -1,61 +1,83 @@
-function pushDominoes (dominoes: string): string {
-  const LEFT = 'L'
-  const RIGHT = 'R'
-  const STAND = '.'
-  const forces = new Array<number>(dominoes.length).fill(0)
 
-  let force = 0
-  for (let i = 0; i < dominoes.length; i += 1) {
-    const ch = dominoes[i]
-    if (ch === LEFT) {
-      force = 0
-    } else if (ch === RIGHT) {
-      force = dominoes.length
-    } else {
-      force = Math.max(force - 1, 0)
-    }
+class ListNode {
+  val: number
+  next: ListNode | null
+  constructor (val?: number, next?: ListNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
 
-    forces[i] += force
+function arrtolist (nums: number[]): ListNode | null {
+  const dummy = new ListNode()
+  let tail = dummy
+  for (const num of nums) {
+    tail.next = new ListNode(num)
+    tail = tail.next
   }
 
-  force = 0
-  for (let i = dominoes.length - 1; i >= 0; i -= 1) {
-    const ch = dominoes[i]
-    if (ch === LEFT) {
-      force = dominoes.length
-    } else if (ch === RIGHT) {
-      force = 0
-    } else {
-      force = Math.max(force - 1, 0)
-    }
+  return dummy.next
+}
 
-    forces[i] -= force
+function listtoarr (node: ListNode | null): number[] {
+  const nums: number[] = []
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
   }
 
-  const result = new Array<string>(dominoes.length)
-  for (let i = 0; i < dominoes.length; i += 1) {
-    const force = forces[i]
-    if (force < 0) {
-      result[i] = LEFT
-    } else if (force > 0) {
-      result[i] = RIGHT
-    } else {
-      result[i] = STAND
-    }
+  return nums
+}
+
+function removeNthFromEnd (head: ListNode | null, n: number): ListNode | null {
+  if (head == null) {
+    return null
   }
 
-  return result.join('')
+  let right: ListNode | null = head
+  for (let i = 0; i < n; i += 1) {
+    right = right?.next ?? null
+  }
+
+  if (right == null) {
+    return head.next
+  }
+
+  let left: ListNode | null = head
+  while (right.next != null) {
+    right = right.next
+    left = left?.next ?? null
+  }
+
+  if (left != null) {
+    left.next = left?.next?.next ?? null
+  }
+
+  return head
+}
+
+interface Input {
+  readonly head: ListNode | null
+  readonly n: number
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    'RR.L',
-    '.L.R...LR..L..'
+  const inputs: Input[] = [
+    {
+      head: arrtolist([1, 2, 3, 4, 5]),
+      n: 2
+    }, {
+      head: arrtolist([1]),
+      n: 1
+    }, {
+      head: arrtolist([1, 2]),
+      n: 1
+    }
   ]
 
-  for (const input of inputs) {
-    const result = pushDominoes(input)
-    console.log(result)
+  for (const { head, n } of inputs) {
+    const result = removeNthFromEnd(head, n)
+    console.log(listtoarr(result))
   }
 }
 
