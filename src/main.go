@@ -4,82 +4,48 @@ import (
 	"fmt"
 )
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
+func findClosestElements(arr []int, k int, x int) []int {
+	left := 0
+	right := len(arr) - k
 
-func arrtolist(nums []int) *ListNode {
-	dummy := ListNode{}
-	tail := &dummy
-
-	for _, num := range nums {
-		tail.Next = &ListNode{Val: num}
-		tail = tail.Next
+	for left < right {
+		mid := (left + right) / 2
+		a := arr[mid+k] - x
+		b := x - arr[mid]
+		if a < b {
+			left = mid + 1
+		} else {
+			right = mid
+		}
 	}
 
-	return dummy.Next
-}
-
-func listtoarr(node *ListNode) []int {
-	nums := []int{}
-
-	for node != nil {
-		nums = append(nums, node.Val)
-		node = node.Next
-	}
-
-	return nums
-}
-
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	if head == nil {
-		return nil
-	}
-
-	right := head
-	for i := 0; i < n; i += 1 {
-		right = right.Next
-	}
-
-	if right == nil {
-		return head.Next
-	}
-
-	left := head
-	for right.Next != nil {
-		right = right.Next
-		left = left.Next
-	}
-
-	left.Next = left.Next.Next
-
-	return head
+	return arr[left : left+k]
 }
 
 type input struct {
-	head *ListNode
-	n    int
+	arr []int
+	k   int
+	x   int
 }
 
 func main() {
 	inputs := []*input{
 		{
-			head: arrtolist([]int{1, 2, 3, 4, 5}),
-			n:    2,
+			arr: []int{1, 2, 3, 4, 5},
+			k:   4,
+			x:   3,
 		}, {
-			head: arrtolist([]int{1}),
-			n:    1,
-		}, {
-			head: arrtolist([]int{1, 2}),
-			n:    1,
+			arr: []int{1, 2, 3, 4, 5},
+			k:   4,
+			x:   -1,
 		},
 	}
 
 	for _, input := range inputs {
-		head := input.head
-		n := input.n
-		result := removeNthFromEnd(head, n)
-		fmt.Println(listtoarr(result))
+		arr := input.arr
+		k := input.k
+		x := input.x
+		result := findClosestElements(arr, k, x)
+		fmt.Println(result)
 	}
 }

@@ -1,83 +1,43 @@
+function findClosestElements (arr: number[], k: number, x: number): number[] {
+  let left = 0
+  let right = arr.length - k
 
-class ListNode {
-  val: number
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
-  }
-}
-
-function arrtolist (nums: number[]): ListNode | null {
-  const dummy = new ListNode()
-  let tail = dummy
-  for (const num of nums) {
-    tail.next = new ListNode(num)
-    tail = tail.next
+  while (left < right) {
+    const mid = Math.trunc((left + right) / 2)
+    const a = arr[mid + k] - x
+    const b = x - arr[mid]
+    if (a < b) {
+      left = mid + 1
+    } else {
+      right = mid
+    }
   }
 
-  return dummy.next
-}
-
-function listtoarr (node: ListNode | null): number[] {
-  const nums: number[] = []
-  while (node != null) {
-    nums.push(node.val)
-    node = node.next
-  }
-
-  return nums
-}
-
-function removeNthFromEnd (head: ListNode | null, n: number): ListNode | null {
-  if (head == null) {
-    return null
-  }
-
-  let right: ListNode | null = head
-  for (let i = 0; i < n; i += 1) {
-    right = right?.next ?? null
-  }
-
-  if (right == null) {
-    return head.next
-  }
-
-  let left: ListNode | null = head
-  while (right.next != null) {
-    right = right.next
-    left = left?.next ?? null
-  }
-
-  if (left != null) {
-    left.next = left?.next?.next ?? null
-  }
-
-  return head
+  return arr.slice(left, left + k)
 }
 
 interface Input {
-  readonly head: ListNode | null
-  readonly n: number
+  readonly arr: number[]
+  readonly k: number
+  readonly x: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      head: arrtolist([1, 2, 3, 4, 5]),
-      n: 2
+      arr: [1, 2, 3, 4, 5],
+      k: 4,
+      x: 3
     }, {
-      head: arrtolist([1]),
-      n: 1
-    }, {
-      head: arrtolist([1, 2]),
-      n: 1
+      arr: [1, 2, 3, 4, 5],
+      k: 4,
+      x: -1
     }
   ]
 
-  for (const { head, n } of inputs) {
-    const result = removeNthFromEnd(head, n)
-    console.log(listtoarr(result))
+  for (const { arr, k, x } of inputs) {
+    const result = findClosestElements(arr, k, x)
+    console.log(result)
   }
 }
 

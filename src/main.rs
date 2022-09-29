@@ -1,63 +1,48 @@
 struct Solution {}
 impl Solution {
-    pub fn push_dominoes(dominoes: String) -> String {
-        const LEFT: u8 = b'L';
-        const RIGHT: u8 = b'R';
-        const STAND: u8 = b'.';
+    pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let k = k as usize;
+        let mut left = 0usize;
+        let mut right = arr.len() - k;
 
-        let bytes = dominoes.as_bytes();
-        let length = dominoes.len();
-
-        let mut force = 0;
-        let mut forces = vec![0; length];
-        for i in 0..length {
-            let ch = bytes[i];
-            if ch == LEFT {
-                force = 0;
-            } else if ch == RIGHT {
-                force = length as i32;
+        while left < right {
+            let mid = (left + right) / 2;
+            let a = arr[mid + k] - x;
+            let b = x - arr[mid];
+            if a < b {
+                left = mid + 1;
             } else {
-                force = force.max(1) - 1;
-            }
-
-            forces[i] += force
-        }
-
-        force = 0;
-        for i in (0..length).rev() {
-            let ch = bytes[i];
-            if ch == LEFT {
-                force = length as i32;
-            } else if ch == RIGHT {
-                force = 0;
-            } else {
-                force = force.max(1) - 1;
-            }
-
-            forces[i] -= force
-        }
-
-        let mut result = vec![0u8; length];
-        for (i, force) in forces.into_iter().enumerate() {
-            if force < 0 {
-                result[i] = LEFT;
-            } else if force > 0 {
-                result[i] = RIGHT;
-            } else {
-                result[i] = STAND;
+                right = mid;
             }
         }
 
-        String::from_utf8_lossy(result.as_slice()).to_string()
+        let range = left..left + k;
+        return arr[range].to_vec();
     }
 }
 
-fn main() {
-    let inputs = vec!["RR.L", ".L.R...LR..L.."];
+struct Input {
+    arr: Vec<i32>,
+    k: i32,
+    x: i32,
+}
 
-    for input in inputs.into_iter() {
-        let dominoes = input.to_string();
-        let result = Solution::push_dominoes(dominoes);
-        println!("{result}");
+fn main() {
+    let inputs = vec![
+        Input {
+            arr: vec![1, 2, 3, 4, 5],
+            k: 4,
+            x: 3,
+        },
+        Input {
+            arr: vec![1, 2, 3, 4, 5],
+            k: 4,
+            x: -1,
+        },
+    ];
+
+    for Input { arr, k, x } in inputs.into_iter() {
+        let result = Solution::find_closest_elements(arr, k, x);
+        println!("{result:?}");
     }
 }
