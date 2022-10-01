@@ -3,45 +3,45 @@ from typing import Optional, List
 
 
 class Solution:
-    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
-        left = 0
-        right = len(arr) - k
+    def numDecodings(self, s: str) -> int:
+        slen = len(s)
+        if slen == 0:
+            return 0
 
-        while left < right:
-            mid = (left + right) // 2
-            a = arr[mid + k] - x
-            b = x - arr[mid]
-            if a < b:
-                left = mid + 1
-            else:
-                right = mid
+        if s[0] == "0":
+            return 0
 
-        return arr[left : left + k]
+        if slen == 1:
+            return 1
 
+        ZERO = ord("0")
 
-class Input:
-    arr: List[int]
-    k: int
-    x: int
+        d1 = 1
+        d2 = 1
 
-    def __init__(self, arr: List[int], k: int, x: int) -> None:
-        self.arr = arr
-        self.k = k
-        self.x = x
+        for i in range(1, slen):
+            code1 = ord(s[i]) - ZERO
+            code0 = ((ord(s[i - 1]) - ZERO) * 10) + code1
+
+            n = 0
+            if code1 != 0:
+                n += d1
+
+            if (10 <= code0) and (code0 <= 26):
+                n += d2
+
+            d2 = d1
+            d1 = n
+
+        return d1
 
 
 def main():
-    inputs: list[Input] = [
-        Input([1, 2, 3, 4, 5], 4, 3),
-        Input([1, 2, 3, 4, 5], 4, -1),
-    ]
+    inputs: list[str] = ["12", "226", "06"]
 
     solution = Solution()
     for input in inputs:
-        arr = input.arr
-        k = input.k
-        x = input.x
-        result = solution.findClosestElements(arr, k, x)
+        result = solution.numDecodings(input)
         print(result)
 
 

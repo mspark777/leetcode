@@ -4,48 +4,53 @@ import (
 	"fmt"
 )
 
-func findClosestElements(arr []int, k int, x int) []int {
-	left := 0
-	right := len(arr) - k
-
-	for left < right {
-		mid := (left + right) / 2
-		a := arr[mid+k] - x
-		b := x - arr[mid]
-		if a < b {
-			left = mid + 1
-		} else {
-			right = mid
-		}
+func numDecodings(s string) int {
+	bytes := []rune(s)
+	slen := len(bytes)
+	if slen == 0 {
+		return 0
 	}
 
-	return arr[left : left+k]
-}
+	const ZERO = rune('0')
 
-type input struct {
-	arr []int
-	k   int
-	x   int
+	if bytes[0] == ZERO {
+		return 0
+	}
+
+	if slen == 1 {
+		return 1
+	}
+
+	d1 := 1
+	d2 := 1
+
+	for i := 1; i < slen; i += 1 {
+		code1 := bytes[i] - ZERO
+		code0 := ((bytes[i-1] - ZERO) * 10) + code1
+
+		n := 0
+
+		if code1 != 0 {
+			n += d1
+		}
+
+		if (10 <= code0) && (code0 <= 26) {
+			n += d2
+		}
+
+		d1, d2 = n, d1
+	}
+
+	return d1
 }
 
 func main() {
-	inputs := []*input{
-		{
-			arr: []int{1, 2, 3, 4, 5},
-			k:   4,
-			x:   3,
-		}, {
-			arr: []int{1, 2, 3, 4, 5},
-			k:   4,
-			x:   -1,
-		},
+	inputs := []string{
+		"12", "226", "06",
 	}
 
 	for _, input := range inputs {
-		arr := input.arr
-		k := input.k
-		x := input.x
-		result := findClosestElements(arr, k, x)
+		result := numDecodings(input)
 		fmt.Println(result)
 	}
 }

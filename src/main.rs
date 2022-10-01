@@ -1,48 +1,51 @@
 struct Solution {}
 impl Solution {
-    pub fn find_closest_elements(arr: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
-        let k = k as usize;
-        let mut left = 0usize;
-        let mut right = arr.len() - k;
+    pub fn num_decodings(s: String) -> i32 {
+        const ZERO: u8 = b'0';
 
-        while left < right {
-            let mid = (left + right) / 2;
-            let a = arr[mid + k] - x;
-            let b = x - arr[mid];
-            if a < b {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
+        let bytes = s.as_bytes();
+
+        if bytes.is_empty() {
+            return 0;
         }
 
-        let range = left..left + k;
-        return arr[range].to_vec();
+        if bytes[0] == ZERO {
+            return 0;
+        }
+
+        if bytes.len() == 1 {
+            return 1;
+        }
+
+        let mut d1 = 1;
+        let mut d2 = 1;
+
+        for i in 1..bytes.len() {
+            let code1 = bytes[i] - ZERO;
+            let code0 = ((bytes[i - 1] - ZERO) * 10) + code1;
+
+            let mut n = 0;
+            if code1 != 0 {
+                n += d1;
+            }
+
+            if (10 <= code0) && (code0 <= 26) {
+                n += d2;
+            }
+
+            d2 = d1;
+            d1 = n;
+        }
+
+        return d1;
     }
 }
 
-struct Input {
-    arr: Vec<i32>,
-    k: i32,
-    x: i32,
-}
-
 fn main() {
-    let inputs = vec![
-        Input {
-            arr: vec![1, 2, 3, 4, 5],
-            k: 4,
-            x: 3,
-        },
-        Input {
-            arr: vec![1, 2, 3, 4, 5],
-            k: 4,
-            x: -1,
-        },
-    ];
+    let inputs = vec!["12", "226", "06"];
 
-    for Input { arr, k, x } in inputs.into_iter() {
-        let result = Solution::find_closest_elements(arr, k, x);
+    for input in inputs.into_iter() {
+        let result = Solution::num_decodings(input.to_string());
         println!("{result:?}");
     }
 }
