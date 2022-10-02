@@ -4,53 +4,56 @@ import (
 	"fmt"
 )
 
-func numDecodings(s string) int {
-	bytes := []rune(s)
-	slen := len(bytes)
-	if slen == 0 {
-		return 0
-	}
+func numRollsToTarget(n int, k int, target int) int {
+	const MOD = 1000000007
+	dp := make([]int, target+1)
+	dp[0] = 1
 
-	const ZERO = rune('0')
+	for i := 1; i <= n; i += 1 {
+		for j := target; j >= 0; j -= 1 {
+			dp[j] = 0
 
-	if bytes[0] == ZERO {
-		return 0
-	}
-
-	if slen == 1 {
-		return 1
-	}
-
-	d1 := 1
-	d2 := 1
-
-	for i := 1; i < slen; i += 1 {
-		code1 := bytes[i] - ZERO
-		code0 := ((bytes[i-1] - ZERO) * 10) + code1
-
-		n := 0
-
-		if code1 != 0 {
-			n += d1
+			for p := 1; p <= k; p += 1 {
+				if j >= p {
+					dp[j] = (dp[j] + dp[j-p]) % MOD
+				} else {
+					break
+				}
+			}
 		}
-
-		if (10 <= code0) && (code0 <= 26) {
-			n += d2
-		}
-
-		d1, d2 = n, d1
 	}
 
-	return d1
+	return dp[target]
+}
+
+type input struct {
+	n, k, target int
 }
 
 func main() {
-	inputs := []string{
-		"12", "226", "06",
+	inputs := []input{
+		{
+			n:      1,
+			k:      6,
+			target: 3,
+		},
+		{
+			n:      2,
+			k:      6,
+			target: 7,
+		},
+		{
+			n:      30,
+			k:      30,
+			target: 500,
+		},
 	}
 
 	for _, input := range inputs {
-		result := numDecodings(input)
+		n := input.n
+		k := input.k
+		target := input.target
+		result := numRollsToTarget(n, k, target)
 		fmt.Println(result)
 	}
 }

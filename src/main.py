@@ -3,45 +3,45 @@ from typing import Optional, List
 
 
 class Solution:
-    def numDecodings(self, s: str) -> int:
-        slen = len(s)
-        if slen == 0:
-            return 0
+    def numRollsToTarget(self, n: int, k: int, target: int) -> int:
+        MOD = 1000000007
 
-        if s[0] == "0":
-            return 0
+        dp = [0] * (target + 1)
+        dp[0] = 1
 
-        if slen == 1:
-            return 1
+        for i in range(1, n + 1):
+            for j in range(target, -1, -1):
+                dp[j] = 0
 
-        ZERO = ord("0")
+                for p in range(1, k + 1):
+                    if j >= p:
+                        dp[j] = (dp[j] + dp[j - p]) % MOD
+                    else:
+                        break
 
-        d1 = 1
-        d2 = 1
+        return dp[target]
 
-        for i in range(1, slen):
-            code1 = ord(s[i]) - ZERO
-            code0 = ((ord(s[i - 1]) - ZERO) * 10) + code1
 
-            n = 0
-            if code1 != 0:
-                n += d1
+class Input:
+    n: int
+    k: int
+    target: int
 
-            if (10 <= code0) and (code0 <= 26):
-                n += d2
-
-            d2 = d1
-            d1 = n
-
-        return d1
+    def __init__(self, n: int, k: int, target: int) -> None:
+        self.n = n
+        self.k = k
+        self.target = target
 
 
 def main():
-    inputs: list[str] = ["12", "226", "06"]
+    inputs: list[Input] = [Input(1, 6, 3), Input(2, 6, 7), Input(30, 30, 500)]
 
     solution = Solution()
     for input in inputs:
-        result = solution.numDecodings(input)
+        n = input.n
+        k = input.k
+        target = input.target
+        result = solution.numRollsToTarget(n, k, target)
         print(result)
 
 

@@ -1,45 +1,53 @@
-function numDecodings (s: string): number {
-  const ZERO = '0'.charCodeAt(0)
-  if (s.charCodeAt(0) === ZERO) {
-    return 0
-  }
+function numRollsToTarget (n: number, k: number, target: number): number {
+  const MOD = 1000000007
 
-  if (s.length === 1) {
-    return 1
-  }
+  const dp = new Array<number>(target + 1).fill(0)
+  dp[0] = 1
 
-  let d1 = 1
-  let d2 = 1
+  for (let i = 1; i <= n; i += 1) {
+    for (let j = target; j >= 0; j -= 1) {
+      dp[j] = 0
 
-  for (let i = 1; i < s.length; i += 1) {
-    const code1 = s.charCodeAt(i) - ZERO
-    const code0 = ((s.charCodeAt(i - 1) - ZERO) * 10) + code1
-
-    let n = 0
-    if (code1 !== 0) {
-      n += d1
+      for (let p = 1; p <= k; p += 1) {
+        if (j >= p) {
+          dp[j] = (dp[j] + dp[j - p]) % MOD
+        } else {
+          break
+        }
+      }
     }
-
-    if ((code0 >= 10) && (code0 <= 26)) {
-      n += d2
-    }
-
-    d2 = d1
-    d1 = n
   }
 
-  return d1
+  return dp[target]
+}
+
+interface Input {
+  readonly n: number
+  readonly k: number
+  readonly target: number
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    '12',
-    '226',
-    '06'
+  const inputs: Input[] = [
+    {
+      n: 1,
+      k: 6,
+      target: 3
+    },
+    {
+      n: 2,
+      k: 6,
+      target: 7
+    },
+    {
+      n: 30,
+      k: 30,
+      target: 500
+    }
   ]
 
-  for (const input of inputs) {
-    const result = numDecodings(input)
+  for (const { n, k, target } of inputs) {
+    const result = numRollsToTarget(n, k, target)
     console.log(result)
   }
 }
