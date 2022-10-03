@@ -1,53 +1,42 @@
 /**
- * @param {number} n
- * @param {number} k
- * @param {number} target
+ * @param {string} colors
+ * @param {number[]} neededTime
  * @returns {number}
  */
-function numRollsToTarget (n, k, target) {
-  const MOD = 1000000007
-
-  const dp = new Array(target + 1).fill(0)
-  dp[0] = 1
-
-  for (let i = 1; i <= n; i += 1) {
-    for (let j = target; j >= 0; j -= 1) {
-      dp[j] = 0
-
-      for (let p = 1; p <= k; p += 1) {
-        if (j >= p) {
-          dp[j] = (dp[j] + dp[j - p]) % MOD
-        } else {
-          break
-        }
-      }
+function minCost (colors, neededTime) {
+  let totalTime = 0
+  let currMaxTime = neededTime[0]
+  for (let i = 1; i < colors.length; i += 1) {
+    if (colors[i] !== colors[i - 1]) {
+      currMaxTime = 0
     }
+
+    const needed = neededTime[i]
+    totalTime += Math.min(currMaxTime, needed)
+    currMaxTime = Math.max(currMaxTime, needed)
   }
 
-  return dp[target]
+  return totalTime
 }
 
 async function main () {
   const inputs = [
     {
-      n: 1,
-      k: 6,
-      target: 3
+      colors: 'abaac',
+      neededTime: [1, 2, 3, 4, 5]
     },
     {
-      n: 2,
-      k: 6,
-      target: 7
+      colors: 'abc',
+      neededTime: [1, 2, 3]
     },
     {
-      n: 30,
-      k: 30,
-      target: 500
+      colors: 'aabaa',
+      neededTime: [1, 2, 3, 4, 1]
     }
   ]
 
-  for (const { n, k, target } of inputs) {
-    const result = numRollsToTarget(n, k, target)
+  for (const { colors, neededTime } of inputs) {
+    const result = minCost(colors, neededTime)
     console.log(result)
   }
 }

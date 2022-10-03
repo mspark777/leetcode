@@ -1,57 +1,50 @@
 struct Solution {}
 impl Solution {
-    pub fn num_rolls_to_target(n: i32, k: i32, target: i32) -> i32 {
-        let n = n as usize;
-        let k = k as usize;
-        let target = target as usize;
+    pub fn min_cost(colors: String, needed_time: Vec<i32>) -> i32 {
+        let mut total = 0;
+        let mut cur = needed_time[0];
 
-        const MOD: i32 = 1000000007;
-        let mut dp = vec![0; target + 1];
-        dp[0] = 1;
-
-        for _ in 1..=n {
-            for j in (0..=target).rev() {
-                dp[j] = 0;
-
-                for p in 1..=k {
-                    if j >= p {
-                        dp[j] = (dp[j] + dp[j - p]) % MOD;
-                    } else {
-                        break;
-                    }
-                }
+        let colors = colors.as_bytes();
+        for i in 1..colors.len() {
+            if colors[i] != colors[i - 1] {
+                cur = 0;
             }
+
+            let needed = needed_time[i];
+            total += cur.min(needed);
+            cur = cur.max(needed);
         }
-        return dp[target];
+
+        return total;
     }
 }
 
 struct Input {
-    n: i32,
-    k: i32,
-    target: i32,
+    colors: &'static str,
+    needed_time: Vec<i32>,
 }
 fn main() {
     let inputs = vec![
         Input {
-            n: 1,
-            k: 6,
-            target: 3,
+            colors: "abaac",
+            needed_time: vec![1, 2, 3, 4, 5],
         },
         Input {
-            n: 2,
-            k: 6,
-            target: 7,
+            colors: "abc",
+            needed_time: vec![1, 2, 3],
         },
         Input {
-            n: 30,
-            k: 30,
-            target: 500,
+            colors: "aabaa",
+            needed_time: vec![1, 2, 3, 4, 1],
         },
     ];
 
-    for Input { n, k, target } in inputs.into_iter() {
-        let result = Solution::num_rolls_to_target(n, k, target);
+    for Input {
+        colors,
+        needed_time,
+    } in inputs.into_iter()
+    {
+        let result = Solution::min_cost(colors.to_string(), needed_time);
         println!("{result:?}");
     }
 }
