@@ -4,52 +4,95 @@ import (
 	"fmt"
 )
 
-func minCost(colors string, neededTime []int) int {
-	total := 0
-	cur := neededTime[0]
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
 
-	for i := 1; i < len(colors); i += 1 {
-		if colors[i] != colors[i-1] {
-			cur = 0
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
+}
+
+func newleft(val int, left *TreeNode) *TreeNode {
+	return newnode(val, left, nil)
+}
+
+func newright(val int, right *TreeNode) *TreeNode {
+	return newnode(val, nil, right)
+}
+
+func newval(val int) *TreeNode {
+	return newnode(val, nil, nil)
+}
+
+type stackNode struct {
+	node   *TreeNode
+	target int
+}
+
+func hasPathSum(root *TreeNode, targetSum int) bool {
+	if root == nil {
+		return false
+	}
+
+	stack := []*stackNode{{node: root, target: targetSum}}
+
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+
+		node := top.node
+		target := top.target
+		newval := target - node.Val
+		left := node.Left
+		right := node.Right
+		isleaf := true
+
+		if left != nil {
+			isleaf = false
+			stack = append(stack, &stackNode{node: left, target: newval})
 		}
 
-		needed := neededTime[i]
-		if cur < needed {
-			total += cur
-			cur = needed
-		} else {
-			total += needed
+		if right != nil {
+			isleaf = false
+			stack = append(stack, &stackNode{node: right, target: newval})
+		}
+
+		if isleaf && (newval == 0) {
+			return true
 		}
 	}
 
-	return total
+	return false
 }
 
 type input struct {
-	colors     string
-	neededTime []int
+	root      *TreeNode
+	targetSum int
 }
 
 func main() {
 	inputs := []input{
 		{
-			colors:     "abaac",
-			neededTime: []int{1, 2, 3, 4, 5},
+			root:      newnode(5, newleft(4, newnode(11, newval(7), newval(2))), newnode(8, newval(13), newright(4, newval(1)))),
+			targetSum: 22,
 		},
 		{
-			colors:     "abc",
-			neededTime: []int{1, 2, 3},
+			root:      newnode(5, newval(2), newval(3)),
+			targetSum: 5,
 		},
 		{
-			colors:     "aabaa",
-			neededTime: []int{1, 2, 3, 4, 1},
+			root:      nil,
+			targetSum: 0,
 		},
 	}
 
 	for _, input := range inputs {
-		colors := input.colors
-		neededTime := input.neededTime
-		result := minCost(colors, neededTime)
+		root := input.root
+		targetSum := input.targetSum
+		result := hasPathSum(root, targetSum)
 		fmt.Println(result)
 	}
 }
