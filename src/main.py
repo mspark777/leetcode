@@ -29,65 +29,83 @@ def newval(val: int) -> TreeNode:
     return newnode(val, None, None)
 
 
+def treetoarr(node: Optional[TreeNode]) -> list[int]:
+    nums: list[int] = []
+
+    def travel(n: Optional[TreeNode]):
+        if n is not None:
+            nums.append(n.val)
+            travel(n.left)
+            travel(n.right)
+
+    travel(node)
+    return nums
+
+
 class Solution:
-    def hasPathSum(self, root: Optional[TreeNode], target_sum: int) -> bool:
+    def addOneRow(
+        self, root: Optional[TreeNode], val: int, depth: int
+    ) -> Optional[TreeNode]:
         if root is None:
-            return False
+            return None
 
-        stack: list[tuple[TreeNode, int]] = [(root, target_sum)]
+        if depth == 1:
+            return TreeNode(val, root)
+
+        stack: list[tuple[TreeNode, int]] = [(root, 2)]
+        targets: list[TreeNode] = []
         while stack:
-            (node, target) = stack.pop()
+            (node, pos) = stack.pop()
+            if pos > depth:
+                continue
+
+            if pos == depth:
+                targets.append(node)
+                continue
+
             left = node.left
-            right = node.right
-            newval = target - node.val
-            isleaf = True
-
             if left is not None:
-                isleaf = False
-                stack.append((left, newval))
-
+                stack.append((left, pos + 1))
+            right = node.right
             if right is not None:
-                isleaf = False
-                stack.append((right, newval))
+                stack.append((right, pos + 1))
 
-            if isleaf and (newval == 0):
-                return True
+        for target in targets:
+            target.left = TreeNode(val, target.left)
+            target.right = TreeNode(val, None, target.right)
 
-        return False
+        return root
 
 
 class Input:
     root: Optional[TreeNode]
-    target_sum: int
+    val: int
+    depth: int
 
-    def __init__(self, root: Optional[TreeNode], target_sum: int) -> None:
+    def __init__(self, root: Optional[TreeNode], val: int, depth: int) -> None:
         self.root = root
-        self.target_sum = target_sum
+        self.val = val
+        self.depth = depth
 
 
 def main():
     inputs: list[Input] = [
         Input(
-            newnode(
-                5,
-                newleft(4, newnode(11, newval(7), newval(2))),
-                newnode(8, newval(13), newright(4, newval(1))),
-            ),
-            22,
+            newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))), 1, 2
         ),
+        Input(newleft(4, newnode(2, newval(3), newval(1))), 1, 3),
         Input(
-            newnode(5, newval(2), newval(3)),
-            5,
+            newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))), 1, 1
         ),
-        Input(None, 0),
     ]
 
     solution = Solution()
     for input in inputs:
         root = input.root
-        target_sum = input.target_sum
-        result = solution.hasPathSum(root, target_sum)
-        print(result)
+        val = input.val
+        depth = input.depth
+        result = solution.addOneRow(root, val, depth)
+        print(treetoarr(result))
 
 
 if __name__ == "__main__":

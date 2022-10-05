@@ -25,70 +25,103 @@ function newval (val: number): TreeNode {
   return newnode(val)
 }
 
-interface StackNode {
-  readonly node: TreeNode
-  readonly target: number
+function treetoarr (node: TreeNode | null): number[] {
+  const nums: number[] = []
+  const travel = (n: TreeNode | null): void => {
+    if (n != null) {
+      nums.push(n.val)
+      travel(n.left)
+      travel(n.right)
+    }
+  }
+  travel(node)
+
+  return nums
 }
 
-function hasPathSum (root: TreeNode | null, targetSum: number): boolean {
+interface StackNode {
+  readonly node: TreeNode
+  readonly pos: number
+}
+
+function addOneRow (root: TreeNode | null, val: number, depth: number): TreeNode | null {
   if (root == null) {
-    return false
+    return null
   }
 
-  const stack: StackNode[] = [{ node: root, target: targetSum }]
+  if (depth === 1) {
+    return new TreeNode(val, root)
+  }
+
+  const stack: StackNode[] = [{
+    node: root,
+    pos: 2
+  }]
+
+  const targets: TreeNode[] = []
   for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { node, target } = top
-    const { val, left, right } = node
-    const newTarget = target - val
-    let isleaf = true
+    const { pos, node } = top
+    if (pos > depth) {
+      continue
+    }
+
+    if (pos === depth) {
+      targets.push(node)
+      continue
+    }
+
+    const { left, right } = node
     if (left != null) {
-      isleaf = false
       stack.push({
         node: left,
-        target: newTarget
+        pos: pos + 1
       })
     }
 
     if (right != null) {
-      isleaf = false
       stack.push({
         node: right,
-        target: newTarget
+        pos: pos + 1
       })
-    }
-
-    if (isleaf && (newTarget === 0)) {
-      return true
     }
   }
 
-  return false
+  for (const target of targets) {
+    target.left = new TreeNode(val, target.left)
+    target.right = new TreeNode(val, undefined, target.right)
+  }
+
+  return root
 }
 
 interface Input {
   readonly root: TreeNode | null
-  readonly targetSum: number
+  readonly val: number
+  readonly depth: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      root: newnode(5, newleft(4, newnode(11, newval(7), newval(2))), newnode(8, newval(13), newright(4, newval(1)))),
-      targetSum: 22
+      root: newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
+      val: 1,
+      depth: 2
     },
     {
-      root: newnode(5, newval(2), newval(3)),
-      targetSum: 5
+      root: newleft(4, newnode(2, newval(3), newval(1))),
+      val: 1,
+      depth: 3
     },
     {
-      root: null,
-      targetSum: 0
+      root: newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
+      val: 1,
+      depth: 1
     }
   ]
 
-  for (const { root, targetSum } of inputs) {
-    const result = hasPathSum(root, targetSum)
-    console.log(result)
+  for (const { root, val, depth } of inputs) {
+    const result = addOneRow(root, val, depth)
+    console.log(treetoarr(result))
   }
 }
 

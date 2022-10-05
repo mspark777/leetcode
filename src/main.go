@@ -26,73 +26,98 @@ func newval(val int) *TreeNode {
 	return newnode(val, nil, nil)
 }
 
-type stackNode struct {
-	node   *TreeNode
-	target int
-}
-
-func hasPathSum(root *TreeNode, targetSum int) bool {
-	if root == nil {
-		return false
+func treetoarr(node *TreeNode, nums []int) []int {
+	if node != nil {
+		nums = append(nums, node.Val)
+		nums = treetoarr(node.Left, nums)
+		nums = treetoarr(node.Right, nums)
 	}
 
-	stack := []*stackNode{{node: root, target: targetSum}}
+	return nums
+}
+
+type stackNode struct {
+	node *TreeNode
+	pos  int
+}
+
+func addOneRow(root *TreeNode, val int, depth int) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	if depth == 1 {
+		return &TreeNode{Val: val, Left: root}
+	}
+
+	stack := []*stackNode{{node: root, pos: 2}}
+	targets := []*TreeNode{}
 
 	for len(stack) > 0 {
 		topidx := len(stack) - 1
 		top := stack[topidx]
 		stack = stack[:topidx]
 
+		pos := top.pos
 		node := top.node
-		target := top.target
-		newval := target - node.Val
+
+		if pos > depth {
+			continue
+		}
+
+		if pos == depth {
+			targets = append(targets, node)
+		}
+
 		left := node.Left
-		right := node.Right
-		isleaf := true
-
 		if left != nil {
-			isleaf = false
-			stack = append(stack, &stackNode{node: left, target: newval})
+			stack = append(stack, &stackNode{node: left, pos: pos + 1})
 		}
 
+		right := node.Right
 		if right != nil {
-			isleaf = false
-			stack = append(stack, &stackNode{node: right, target: newval})
-		}
-
-		if isleaf && (newval == 0) {
-			return true
+			stack = append(stack, &stackNode{node: right, pos: pos + 1})
 		}
 	}
 
-	return false
+	for _, target := range targets {
+		target.Left = &TreeNode{Val: val, Left: target.Left}
+		target.Right = &TreeNode{Val: val, Right: target.Right}
+	}
+
+	return root
 }
 
 type input struct {
-	root      *TreeNode
-	targetSum int
+	root  *TreeNode
+	val   int
+	depth int
 }
 
 func main() {
 	inputs := []input{
 		{
-			root:      newnode(5, newleft(4, newnode(11, newval(7), newval(2))), newnode(8, newval(13), newright(4, newval(1)))),
-			targetSum: 22,
+			root:  newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
+			val:   1,
+			depth: 2,
 		},
 		{
-			root:      newnode(5, newval(2), newval(3)),
-			targetSum: 5,
+			root:  newleft(4, newnode(2, newval(3), newval(1))),
+			val:   1,
+			depth: 3,
 		},
 		{
-			root:      nil,
-			targetSum: 0,
+			root:  newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
+			val:   1,
+			depth: 1,
 		},
 	}
 
 	for _, input := range inputs {
 		root := input.root
-		targetSum := input.targetSum
-		result := hasPathSum(root, targetSum)
-		fmt.Println(result)
+		val := input.val
+		depth := input.depth
+		result := addOneRow(root, val, depth)
+		fmt.Println(treetoarr(result, []int{}))
 	}
 }
