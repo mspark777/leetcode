@@ -1,123 +1,68 @@
-class TreeNode {
-  val
-  left
-  right
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val, left, right) {
-  return new TreeNode(val, left, right)
-}
-
-function newleft (val, left) {
-  return newnode(val, left)
-}
-
-function newright (val, right) {
-  return newnode(val, undefined, right)
-}
-
-function newval (val) {
-  return newnode(val)
-}
-
-function treetoarr (node) {
-  const nums = []
-  const travel = n => {
-    if (n != null) {
-      nums.push(n.val)
-      travel(n.left)
-      travel(n.right)
-    }
-  }
-  travel(node)
-
-  return nums
-}
-
-/**
- * @param {TreeNode} root
- * @param {number} val
- * @param {number} depth
- * @returns {TreeNode}
- */
-function addOneRow (root, val, depth) {
-  if (root == null) {
-    return null
+class TimeMap {
+  constructor () {
+    this.store = new Map()
   }
 
-  if (depth === 1) {
-    return new TreeNode(val, root)
-  }
-
-  const stack = [{
-    node: root,
-    pos: 2
-  }]
-
-  const targets = []
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const { pos, node } = top
-    if (pos > depth) {
-      continue
+  /**
+   * @param {string} key
+   * @param {string} value
+   * @param {number} timestamp
+   * @returns {undefined}
+  */
+  set (key, value, timestamp) {
+    if (!this.store.has(key)) {
+      this.store.set(key, [])
     }
 
-    if (pos === depth) {
-      targets.push(node)
-      continue
-    }
+    const nodes = this.store.get(key) ?? []
+    nodes.push({ value, timestamp })
 
-    const { left, right } = node
-    if (left != null) {
-      stack.push({
-        node: left,
-        pos: pos + 1
-      })
-    }
-
-    if (right != null) {
-      stack.push({
-        node: right,
-        pos: pos + 1
-      })
-    }
+    this.store.set(key, nodes)
   }
 
-  for (const target of targets) {
-    target.left = new TreeNode(val, target.left)
-    target.right = new TreeNode(val, undefined, target.right)
-  }
+  /**
+   * @param {string} key
+   * @param {number} timestamp
+   * @returns {string}
+  */
+  get (key, timestamp) {
+    const nodes = this.store.get(key)
+    if (nodes == null) {
+      return ''
+    }
 
-  return root
+    if (timestamp < nodes[0].timestamp) {
+      return ''
+    }
+
+    let left = 0
+    let right = nodes.length
+
+    while (left < right) {
+      const mid = Math.trunc((left + right) / 2)
+      if (nodes[mid].timestamp <= timestamp) {
+        left = mid + 1
+      } else {
+        right = mid
+      }
+    }
+
+    if (right === 0) {
+      return ''
+    }
+
+    return nodes[right - 1].value
+  }
 }
 
 async function main () {
-  const inputs = [
-    {
-      root: newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
-      val: 1,
-      depth: 2
-    },
-    {
-      root: newleft(4, newnode(2, newval(3), newval(1))),
-      val: 1,
-      depth: 3
-    },
-    {
-      root: newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
-      val: 1,
-      depth: 1
-    }
-  ]
-
-  for (const { root, val, depth } of inputs) {
-    const result = addOneRow(root, val, depth)
-    console.log(treetoarr(result))
-  }
+  const timeMap = new TimeMap()
+  timeMap.set('foo', 'bar', 1)
+  console.log(timeMap.get('foo', 1))
+  console.log(timeMap.get('foo', 3))
+  timeMap.set('foo', 'bar2', 4)
+  console.log(timeMap.get('foo', 4))
+  console.log(timeMap.get('foo', 5))
 }
 
 main().catch(e => {

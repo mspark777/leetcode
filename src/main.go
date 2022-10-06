@@ -1,123 +1,66 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
+type node struct {
+	value     string
+	timestamp int
 }
 
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
+type TimeMap struct {
+	store map[string][]node
 }
 
-func newleft(val int, left *TreeNode) *TreeNode {
-	return newnode(val, left, nil)
+func Constructor() TimeMap {
+	return TimeMap{
+		store: make(map[string][]node),
+	}
 }
 
-func newright(val int, right *TreeNode) *TreeNode {
-	return newnode(val, nil, right)
+func (this *TimeMap) Set(key string, value string, timestamp int) {
+	if nodes, ok := this.store[key]; ok {
+		nodes = append(nodes, node{value, timestamp})
+		this.store[key] = nodes
+	} else {
+		this.store[key] = []node{{value, timestamp}}
+	}
 }
 
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
-
-func treetoarr(node *TreeNode, nums []int) []int {
-	if node != nil {
-		nums = append(nums, node.Val)
-		nums = treetoarr(node.Left, nums)
-		nums = treetoarr(node.Right, nums)
+func (this *TimeMap) Get(key string, timestamp int) string {
+	nodes, ok := this.store[key]
+	if !ok {
+		return ""
 	}
 
-	return nums
-}
-
-type stackNode struct {
-	node *TreeNode
-	pos  int
-}
-
-func addOneRow(root *TreeNode, val int, depth int) *TreeNode {
-	if root == nil {
-		return nil
+	if timestamp < nodes[0].timestamp {
+		return ""
 	}
 
-	if depth == 1 {
-		return &TreeNode{Val: val, Left: root}
-	}
+	left := 0
+	right := len(nodes)
 
-	stack := []*stackNode{{node: root, pos: 2}}
-	targets := []*TreeNode{}
-
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		stack = stack[:topidx]
-
-		pos := top.pos
-		node := top.node
-
-		if pos > depth {
-			continue
-		}
-
-		if pos == depth {
-			targets = append(targets, node)
-		}
-
-		left := node.Left
-		if left != nil {
-			stack = append(stack, &stackNode{node: left, pos: pos + 1})
-		}
-
-		right := node.Right
-		if right != nil {
-			stack = append(stack, &stackNode{node: right, pos: pos + 1})
+	for left < right {
+		mid := (left + right) / 2
+		if nodes[mid].timestamp <= timestamp {
+			left = mid + 1
+		} else {
+			right = mid
 		}
 	}
 
-	for _, target := range targets {
-		target.Left = &TreeNode{Val: val, Left: target.Left}
-		target.Right = &TreeNode{Val: val, Right: target.Right}
+	if right < 1 {
+		return ""
 	}
 
-	return root
-}
-
-type input struct {
-	root  *TreeNode
-	val   int
-	depth int
+	return nodes[right-1].value
 }
 
 func main() {
-	inputs := []input{
-		{
-			root:  newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
-			val:   1,
-			depth: 2,
-		},
-		{
-			root:  newleft(4, newnode(2, newval(3), newval(1))),
-			val:   1,
-			depth: 3,
-		},
-		{
-			root:  newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))),
-			val:   1,
-			depth: 1,
-		},
-	}
-
-	for _, input := range inputs {
-		root := input.root
-		val := input.val
-		depth := input.depth
-		result := addOneRow(root, val, depth)
-		fmt.Println(treetoarr(result, []int{}))
-	}
+	timeMap := Constructor()
+	timeMap.Set("foo", "bar", 1)
+	fmt.Println(timeMap.Get("foo", 1))
+	fmt.Println(timeMap.Get("foo", 3))
+	timeMap.Set("foo", "bar2", 4)
+	fmt.Println(timeMap.Get("foo", 4))
+	fmt.Println(timeMap.Get("foo", 5))
 }

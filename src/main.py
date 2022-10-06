@@ -2,110 +2,50 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
+class TimeMap:
+    store: dict[str, list[tuple[str, int]]]
 
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+    def __init__(self):
+        self.store = {}
 
+    def set(self, key: str, value: str, timestamp: int) -> None:
+        if key not in self.store:
+            self.store[key] = []
 
-def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
-    return TreeNode(val, left, right)
+        self.store[key].append((value, timestamp))
 
+    def get(self, key: str, timestamp: int) -> str:
+        if key not in self.store:
+            return ""
 
-def newleft(val: int, left: Optional[TreeNode]) -> TreeNode:
-    return newnode(val, left, None)
+        nodes = self.store[key]
+        if timestamp < nodes[0][1]:
+            return ""
 
+        left = 0
+        right = len(nodes)
 
-def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
-    return newnode(val, None, right)
+        while left < right:
+            mid = (left + right) // 2
+            if nodes[mid][1] <= timestamp:
+                left = mid + 1
+            else:
+                right = mid
 
+        if right == 0:
+            return ""
 
-def newval(val: int) -> TreeNode:
-    return newnode(val, None, None)
-
-
-def treetoarr(node: Optional[TreeNode]) -> list[int]:
-    nums: list[int] = []
-
-    def travel(n: Optional[TreeNode]):
-        if n is not None:
-            nums.append(n.val)
-            travel(n.left)
-            travel(n.right)
-
-    travel(node)
-    return nums
-
-
-class Solution:
-    def addOneRow(
-        self, root: Optional[TreeNode], val: int, depth: int
-    ) -> Optional[TreeNode]:
-        if root is None:
-            return None
-
-        if depth == 1:
-            return TreeNode(val, root)
-
-        stack: list[tuple[TreeNode, int]] = [(root, 2)]
-        targets: list[TreeNode] = []
-        while stack:
-            (node, pos) = stack.pop()
-            if pos > depth:
-                continue
-
-            if pos == depth:
-                targets.append(node)
-                continue
-
-            left = node.left
-            if left is not None:
-                stack.append((left, pos + 1))
-            right = node.right
-            if right is not None:
-                stack.append((right, pos + 1))
-
-        for target in targets:
-            target.left = TreeNode(val, target.left)
-            target.right = TreeNode(val, None, target.right)
-
-        return root
-
-
-class Input:
-    root: Optional[TreeNode]
-    val: int
-    depth: int
-
-    def __init__(self, root: Optional[TreeNode], val: int, depth: int) -> None:
-        self.root = root
-        self.val = val
-        self.depth = depth
+        return nodes[right - 1][0]
 
 
 def main():
-    inputs: list[Input] = [
-        Input(
-            newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))), 1, 2
-        ),
-        Input(newleft(4, newnode(2, newval(3), newval(1))), 1, 3),
-        Input(
-            newnode(4, newnode(2, newval(3), newval(1)), newleft(6, newval(5))), 1, 1
-        ),
-    ]
-
-    solution = Solution()
-    for input in inputs:
-        root = input.root
-        val = input.val
-        depth = input.depth
-        result = solution.addOneRow(root, val, depth)
-        print(treetoarr(result))
+    timemap = TimeMap()
+    timemap.set("foo", "bar", 1)
+    print(timemap.get("foo", 1))
+    print(timemap.get("foo", 3))
+    timemap.set("foo", "bar2", 4)
+    print(timemap.get("foo", 4))
+    print(timemap.get("foo", 5))
 
 
 if __name__ == "__main__":
