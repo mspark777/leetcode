@@ -1,68 +1,64 @@
-class TimeMap {
+class MyMap extends Map {
+  get0 (key) {
+    return this.get(key) ?? 0
+  }
+}
+
+class MyCalendarThree {
   constructor () {
-    this.store = new Map()
+    this.vals = new MyMap()
+    this.lazy = new MyMap()
   }
 
   /**
-   * @param {string} key
-   * @param {string} value
-   * @param {number} timestamp
+   * @param {number} start
+   * @param {number} end
+   * @param {number} left
+   * @param {number} right
+   * @param {number} idx
    * @returns {undefined}
   */
-  set (key, value, timestamp) {
-    if (!this.store.has(key)) {
-      this.store.set(key, [])
+  update (start, end, left, right, idx) {
+    if ((start > right) || (end < left)) {
+      return
     }
 
-    const nodes = this.store.get(key) ?? []
-    nodes.push({ value, timestamp })
+    const { vals, lazy } = this
+    if ((start <= left) && (right <= end)) {
+      vals.set(idx, vals.get0(idx) + 1)
+      lazy.set(idx, lazy.get0(idx) + 1)
+    } else {
+      const mid = Math.trunc((left + right) / 2)
 
-    this.store.set(key, nodes)
+      const idx2 = idx * 2
+      const idx21 = idx2 + 1
+      this.update(start, end, left, mid, idx2)
+      this.update(start, end, mid + 1, right, idx21)
+
+      const max = Math.max(vals.get0(idx2), vals.get0(idx21))
+      vals.set(idx, lazy.get0(idx) + max)
+    }
   }
 
   /**
-   * @param {string} key
-   * @param {number} timestamp
-   * @returns {string}
+   * @param {number} start
+   * @param {number} end
+   * @returns {number}
   */
-  get (key, timestamp) {
-    const nodes = this.store.get(key)
-    if (nodes == null) {
-      return ''
-    }
-
-    if (timestamp < nodes[0].timestamp) {
-      return ''
-    }
-
-    let left = 0
-    let right = nodes.length
-
-    while (left < right) {
-      const mid = Math.trunc((left + right) / 2)
-      if (nodes[mid].timestamp <= timestamp) {
-        left = mid + 1
-      } else {
-        right = mid
-      }
-    }
-
-    if (right === 0) {
-      return ''
-    }
-
-    return nodes[right - 1].value
+  book (start, end) {
+    this.update(start, end - 1, 0, 1000000000, 1)
+    return this.vals.get0(1)
   }
 }
 
 async function main () {
-  const timeMap = new TimeMap()
-  timeMap.set('foo', 'bar', 1)
-  console.log(timeMap.get('foo', 1))
-  console.log(timeMap.get('foo', 3))
-  timeMap.set('foo', 'bar2', 4)
-  console.log(timeMap.get('foo', 4))
-  console.log(timeMap.get('foo', 5))
+  const obj = new MyCalendarThree()
+  console.log(obj.book(10, 20))
+  console.log(obj.book(50, 60))
+  console.log(obj.book(10, 40))
+  console.log(obj.book(5, 15))
+  console.log(obj.book(5, 10))
+  console.log(obj.book(25, 55))
 }
 
 main().catch(e => {

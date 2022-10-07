@@ -2,65 +2,59 @@ package main
 
 import "fmt"
 
-type node struct {
-	value     string
-	timestamp int
+type MyCalendarThree struct {
+	vals map[int]int
+	lazy map[int]int
 }
 
-type TimeMap struct {
-	store map[string][]node
-}
-
-func Constructor() TimeMap {
-	return TimeMap{
-		store: make(map[string][]node),
+func Constructor() MyCalendarThree {
+	return MyCalendarThree{
+		vals: map[int]int{},
+		lazy: map[int]int{},
 	}
 }
 
-func (this *TimeMap) Set(key string, value string, timestamp int) {
-	if nodes, ok := this.store[key]; ok {
-		nodes = append(nodes, node{value, timestamp})
-		this.store[key] = nodes
+func (this *MyCalendarThree) Book(start, end int) int {
+	this.Update(start, end-1, 0, 1000000000, 1)
+	return this.vals[1]
+}
+
+func (this *MyCalendarThree) Update(start, end, left, right, idx int) {
+	if (start > right) || (end < left) {
+		return
+	}
+
+	vals := this.vals
+	lazy := this.lazy
+
+	if (start <= left) && (right <= end) {
+		vals[idx] += 1
+		lazy[idx] += 1
 	} else {
-		this.store[key] = []node{{value, timestamp}}
-	}
-}
-
-func (this *TimeMap) Get(key string, timestamp int) string {
-	nodes, ok := this.store[key]
-	if !ok {
-		return ""
-	}
-
-	if timestamp < nodes[0].timestamp {
-		return ""
-	}
-
-	left := 0
-	right := len(nodes)
-
-	for left < right {
 		mid := (left + right) / 2
-		if nodes[mid].timestamp <= timestamp {
-			left = mid + 1
+		idx2 := idx * 2
+		idx21 := idx2 + 1
+
+		this.Update(start, end, left, mid, idx2)
+		this.Update(start, end, mid+1, right, idx21)
+
+		val2 := vals[idx2]
+		val21 := vals[idx21]
+
+		if val2 > val21 {
+			vals[idx] = lazy[idx] + val2
 		} else {
-			right = mid
+			vals[idx] = lazy[idx] + val21
 		}
 	}
-
-	if right < 1 {
-		return ""
-	}
-
-	return nodes[right-1].value
 }
 
 func main() {
-	timeMap := Constructor()
-	timeMap.Set("foo", "bar", 1)
-	fmt.Println(timeMap.Get("foo", 1))
-	fmt.Println(timeMap.Get("foo", 3))
-	timeMap.Set("foo", "bar2", 4)
-	fmt.Println(timeMap.Get("foo", 4))
-	fmt.Println(timeMap.Get("foo", 5))
+	obj := Constructor()
+	fmt.Println(obj.Book(10, 20))
+	fmt.Println(obj.Book(50, 60))
+	fmt.Println(obj.Book(10, 40))
+	fmt.Println(obj.Book(5, 15))
+	fmt.Println(obj.Book(5, 10))
+	fmt.Println(obj.Book(25, 55))
 }
