@@ -1,66 +1,60 @@
-use std::collections::HashMap;
+struct Solution {}
+impl Solution {
+    pub fn three_sum_closest(nums: Vec<i32>, target: i32) -> i32 {
+        let mut nums = nums;
+        nums.sort_unstable();
 
-struct MyCalendarThree {
-    vals: HashMap<i32, i32>,
-    lazy: HashMap<i32, i32>,
+        let mut result = 0;
+        let mut diffresult = i32::max_value();
+
+        for (i, ni) in nums.iter().enumerate() {
+            let mut j = i + 1;
+            let mut k = nums.len() - 1;
+
+            while j < k {
+                let nj = nums[j];
+                let nk = nums[k];
+                let sum = ni + nj + nk;
+                let diffsum = (target - sum).abs();
+
+                if diffsum < diffresult {
+                    result = sum;
+                    diffresult = diffsum;
+                }
+
+                if sum < target {
+                    j += 1;
+                } else if sum > target {
+                    k -= 1;
+                } else {
+                    return sum;
+                }
+            }
+        }
+
+        return result;
+    }
 }
 
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl MyCalendarThree {
-    fn new() -> Self {
-        MyCalendarThree {
-            vals: HashMap::new(),
-            lazy: HashMap::new(),
-        }
-    }
-
-    fn book(&mut self, start: i32, end: i32) -> i32 {
-        self.update(start, end - 1, 0, 1000000000, 1);
-        return *self.vals.get(&1).unwrap_or(&0);
-    }
-
-    fn update(&mut self, start: i32, end: i32, left: i32, right: i32, idx: i32) {
-        if (start > right) || (end < left) {
-            return;
-        }
-
-        if (start <= left) && (right <= end) {
-            if let Some(val) = self.vals.get_mut(&idx) {
-                *val += 1;
-            } else {
-                self.vals.insert(idx, 1);
-            }
-
-            if let Some(val) = self.lazy.get_mut(&idx) {
-                *val += 1;
-            } else {
-                self.lazy.insert(idx, 1);
-            }
-        } else {
-            let mid = (left + right) / 2;
-            let idx2 = idx * 2;
-            let idx21 = idx2 + 1;
-
-            self.update(start, end, left, mid, idx2);
-            self.update(start, end, mid + 1, right, idx21);
-
-            let val2 = self.vals.get(&idx2).unwrap_or(&0);
-            let val21 = self.vals.get(&idx21).unwrap_or(&0);
-            let newval = self.lazy.get(&idx).unwrap_or(&0) + val2.max(val21);
-            self.vals.insert(idx, newval);
-        }
-    }
+struct Input {
+    nums: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
-    let mut obj = MyCalendarThree::new();
-    println!("{}", obj.book(10, 20));
-    println!("{}", obj.book(50, 60));
-    println!("{}", obj.book(10, 40));
-    println!("{}", obj.book(5, 15));
-    println!("{}", obj.book(5, 10));
-    println!("{}", obj.book(25, 55));
+    let inputs = [
+        Input {
+            nums: vec![-1, 2, 1, -4],
+            target: 1,
+        },
+        Input {
+            nums: vec![0, 0, 0],
+            target: 1,
+        },
+    ];
+
+    for Input { nums, target } in inputs {
+        let result = Solution::three_sum_closest(nums, target);
+        println!("{result}");
+    }
 }

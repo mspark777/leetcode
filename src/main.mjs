@@ -1,64 +1,58 @@
-class MyMap extends Map {
-  get0 (key) {
-    return this.get(key) ?? 0
-  }
-}
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @returns {number}
+*/
+function threeSumClosest (nums, target) {
+  nums.sort((a, b) => a - b)
 
-class MyCalendarThree {
-  constructor () {
-    this.vals = new MyMap()
-    this.lazy = new MyMap()
-  }
+  let result = Number.MIN_SAFE_INTEGER
+  let diffresult = Number.MAX_SAFE_INTEGER
+  for (let i = 0; i < nums.length; i += 1) {
+    const ni = nums[i]
 
-  /**
-   * @param {number} start
-   * @param {number} end
-   * @param {number} left
-   * @param {number} right
-   * @param {number} idx
-   * @returns {undefined}
-  */
-  update (start, end, left, right, idx) {
-    if ((start > right) || (end < left)) {
-      return
-    }
+    let j = i + 1
+    let k = nums.length - 1
+    while (j < k) {
+      const nj = nums[j]
+      const nk = nums[k]
+      const sum = ni + nj + nk
+      const diffsum = Math.abs(target - sum)
 
-    const { vals, lazy } = this
-    if ((start <= left) && (right <= end)) {
-      vals.set(idx, vals.get0(idx) + 1)
-      lazy.set(idx, lazy.get0(idx) + 1)
-    } else {
-      const mid = Math.trunc((left + right) / 2)
+      if (diffsum < diffresult) {
+        result = sum
+        diffresult = diffsum
+      }
 
-      const idx2 = idx * 2
-      const idx21 = idx2 + 1
-      this.update(start, end, left, mid, idx2)
-      this.update(start, end, mid + 1, right, idx21)
-
-      const max = Math.max(vals.get0(idx2), vals.get0(idx21))
-      vals.set(idx, lazy.get0(idx) + max)
+      if (sum < target) {
+        j += 1
+      } else if (sum > target) {
+        k -= 1
+      } else {
+        return sum
+      }
     }
   }
 
-  /**
-   * @param {number} start
-   * @param {number} end
-   * @returns {number}
-  */
-  book (start, end) {
-    this.update(start, end - 1, 0, 1000000000, 1)
-    return this.vals.get0(1)
-  }
+  return result
 }
 
 async function main () {
-  const obj = new MyCalendarThree()
-  console.log(obj.book(10, 20))
-  console.log(obj.book(50, 60))
-  console.log(obj.book(10, 40))
-  console.log(obj.book(5, 15))
-  console.log(obj.book(5, 10))
-  console.log(obj.book(25, 55))
+  const inputs = [
+    {
+      nums: [-1, 2, 1, -4],
+      target: 1
+    },
+    {
+      nums: [0, 0, 0],
+      target: 1
+    }
+  ]
+
+  for (const { nums, target } of inputs) {
+    const result = threeSumClosest(nums, target)
+    console.log(result)
+  }
 }
 
 main().catch(e => {
