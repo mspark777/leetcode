@@ -1,60 +1,83 @@
+use std::cell::RefCell;
+use std::collections::HashSet;
+use std::rc::Rc;
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+fn newnode(
+    val: i32,
+    left: Option<Rc<RefCell<TreeNode>>>,
+    right: Option<Rc<RefCell<TreeNode>>>,
+) -> Option<Rc<RefCell<TreeNode>>> {
+    return Some(Rc::new(RefCell::new(TreeNode { val, left, right })));
+}
+
+fn newright(val: i32, right: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+    return newnode(val, None, right);
+}
+
+fn newval(val: i32) -> Option<Rc<RefCell<TreeNode>>> {
+    return newnode(val, None, None);
+}
+
 struct Solution {}
+
 impl Solution {
-    pub fn three_sum_closest(nums: Vec<i32>, target: i32) -> i32 {
-        let mut nums = nums;
-        nums.sort_unstable();
+    pub fn find_target(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> bool {
+        if root.is_none() {
+            return false;
+        }
 
-        let mut result = 0;
-        let mut diffresult = i32::max_value();
+        let mut stack = vec![Rc::clone(root.as_ref().unwrap())];
+        let mut memo = HashSet::<i32>::new();
 
-        for (i, ni) in nums.iter().enumerate() {
-            let mut j = i + 1;
-            let mut k = nums.len() - 1;
+        while let Some(topref) = stack.pop() {
+            let top = topref.borrow();
+            let val = top.val;
+            let target = k - val;
+            if memo.contains(&target) {
+                return true;
+            }
 
-            while j < k {
-                let nj = nums[j];
-                let nk = nums[k];
-                let sum = ni + nj + nk;
-                let diffsum = (target - sum).abs();
+            memo.insert(val);
 
-                if diffsum < diffresult {
-                    result = sum;
-                    diffresult = diffsum;
-                }
+            if let Some(left) = &top.left {
+                stack.push(Rc::clone(left));
+            }
 
-                if sum < target {
-                    j += 1;
-                } else if sum > target {
-                    k -= 1;
-                } else {
-                    return sum;
-                }
+            if let Some(right) = &top.right {
+                stack.push(Rc::clone(right));
             }
         }
 
-        return result;
+        return false;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    target: i32,
+    root: Option<Rc<RefCell<TreeNode>>>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: vec![-1, 2, 1, -4],
-            target: 1,
+            root: newnode(5, newnode(3, newval(2), newval(4)), newright(6, newval(7))),
+            k: 9,
         },
         Input {
-            nums: vec![0, 0, 0],
-            target: 1,
+            root: newnode(5, newnode(3, newval(2), newval(4)), newright(6, newval(7))),
+            k: 28,
         },
     ];
 
-    for Input { nums, target } in inputs {
-        let result = Solution::three_sum_closest(nums, target);
+    for Input { root, k } in inputs {
+        let result = Solution::find_target(root, k);
         println!("{result}");
     }
 }

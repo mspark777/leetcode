@@ -1,56 +1,65 @@
+class TreeNode {
+  constructor (val, left, right) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
+
+function newnode (val, left, right) {
+  return new TreeNode(val, left, right)
+}
+
+function newright (val, right) {
+  return newnode(val, null, right)
+}
+
+function newval (val) {
+  return newnode(val)
+}
+
 /**
- * @param {number[]} nums
- * @param {number} target
- * @returns {number}
-*/
-function threeSumClosest (nums, target) {
-  nums.sort((a, b) => a - b)
+ * @param {TreeNode} root
+ * @param {number} k
+ * @returns {boolean}
+ */
+function findTarget (root, k) {
+  const stack = [root]
+  const memo = new Set()
 
-  let result = Number.MIN_SAFE_INTEGER
-  let diffresult = Number.MAX_SAFE_INTEGER
-  for (let i = 0; i < nums.length; i += 1) {
-    const ni = nums[i]
-
-    let j = i + 1
-    let k = nums.length - 1
-    while (j < k) {
-      const nj = nums[j]
-      const nk = nums[k]
-      const sum = ni + nj + nk
-      const diffsum = Math.abs(target - sum)
-
-      if (diffsum < diffresult) {
-        result = sum
-        diffresult = diffsum
-      }
-
-      if (sum < target) {
-        j += 1
-      } else if (sum > target) {
-        k -= 1
-      } else {
-        return sum
-      }
+  while (stack.length > 0) {
+    const top = stack.pop()
+    if (top == null) {
+      continue
     }
+
+    const { left, right, val } = top
+    const target = k - val
+    if (memo.has(target)) {
+      return true
+    }
+
+    memo.add(val)
+    stack.push(left, right)
   }
 
-  return result
+  return false
 }
 
 async function main () {
   const inputs = [
     {
-      nums: [-1, 2, 1, -4],
-      target: 1
+      root: newnode(5, newnode(3, newval(2), newval(4)), newright(6, newval(7))),
+      k: 9
     },
     {
-      nums: [0, 0, 0],
-      target: 1
+      root: newnode(5, newnode(3, newval(2), newval(4)), newright(6, newval(7))),
+      k: 28
     }
   ]
 
-  for (const { nums, target } of inputs) {
-    const result = threeSumClosest(nums, target)
+  for (const { root, k } of inputs) {
+    const result = findTarget(root, k)
     console.log(result)
   }
 }
