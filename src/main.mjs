@@ -1,65 +1,33 @@
-class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val, left, right) {
-  return new TreeNode(val, left, right)
-}
-
-function newright (val, right) {
-  return newnode(val, null, right)
-}
-
-function newval (val) {
-  return newnode(val)
-}
-
 /**
- * @param {TreeNode} root
- * @param {number} k
- * @returns {boolean}
- */
-function findTarget (root, k) {
-  const stack = [root]
-  const memo = new Set()
-
-  while (stack.length > 0) {
-    const top = stack.pop()
-    if (top == null) {
-      continue
-    }
-
-    const { left, right, val } = top
-    const target = k - val
-    if (memo.has(target)) {
-      return true
-    }
-
-    memo.add(val)
-    stack.push(left, right)
+ * @param {string} palindrome
+ * @returns {string}
+*/
+function breakPalindrome (palindrome) {
+  if (palindrome.length <= 1) {
+    return ''
   }
 
-  return false
+  const chars = palindrome.split('')
+  for (let i = 0; i < Math.floor(chars.length / 2); i += 1) {
+    if (chars[i] !== 'a') {
+      chars[i] = 'a'
+      return chars.join('')
+    }
+  }
+
+  chars[chars.length - 1] = 'b'
+  return chars.join('')
 }
 
 async function main () {
   const inputs = [
-    {
-      root: newnode(5, newnode(3, newval(2), newval(4)), newright(6, newval(7))),
-      k: 9
-    },
-    {
-      root: newnode(5, newnode(3, newval(2), newval(4)), newright(6, newval(7))),
-      k: 28
-    }
+    'abccba',
+    'a',
+    'aba'
   ]
 
-  for (const { root, k } of inputs) {
-    const result = findTarget(root, k)
+  for (const palindrome of inputs) {
+    const result = breakPalindrome(palindrome)
     console.log(result)
   }
 }
