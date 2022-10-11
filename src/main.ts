@@ -1,29 +1,33 @@
-function breakPalindrome (palindrome: string): string {
-  if (palindrome.length <= 1) {
-    return ''
+function increasingTriplet (nums: number[]): boolean {
+  if (nums.length < 3) {
+    return false
   }
 
-  const chars = palindrome.split('')
-  for (let i = 0; i < Math.floor(chars.length / 2); i += 1) {
-    if (chars[i] !== 'a') {
-      chars[i] = 'a'
-      return chars.join('')
+  let min = Number.MAX_SAFE_INTEGER
+  let middle = Number.MAX_SAFE_INTEGER
+  for (const n of nums) {
+    if (n <= min) {
+      min = n
+    } else if (n <= middle) {
+      middle = n
+    } else {
+      return true
     }
   }
 
-  chars[chars.length - 1] = 'b'
-  return chars.join('')
+  return false
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    'abccba',
-    'a',
-    'aba'
+  const inputs: number[][] = [
+    [1, 2, 3, 4, 5],
+    [5, 4, 3, 2, 1],
+    [2, 1, 5, 0, 4, 6],
+    [2, 6, 1, 8]
   ]
 
-  for (const palindrome of inputs) {
-    const result = breakPalindrome(palindrome)
+  for (const nums of inputs) {
+    const result = increasingTriplet(nums)
     console.log(result)
   }
 }

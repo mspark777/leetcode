@@ -1,33 +1,36 @@
 struct Solution {}
 impl Solution {
-    pub fn break_palindrome(palindrome: String) -> String {
-        let mut chars: Vec<u8> = palindrome.bytes().collect();
-        let slen = chars.len();
-        if slen <= 1 {
-            return String::new();
+    pub fn increasing_triplet(nums: Vec<i32>) -> bool {
+        if nums.len() < 3 {
+            return false;
         }
 
-        for i in 0..(slen / 2) {
-            if chars[i] != b'a' {
-                chars[i] = b'a';
-                return Self::to_string(&chars);
+        let mut min = i32::max_value();
+        let mut middle = i32::max_value();
+        for n in nums.into_iter() {
+            if n <= min {
+                min = n;
+            } else if n <= middle {
+                middle = n;
+            } else {
+                return true;
             }
         }
 
-        chars[slen - 1] = b'b';
-        return Self::to_string(&chars);
-    }
-
-    fn to_string(chars: &Vec<u8>) -> String {
-        return String::from_utf8_lossy(chars.as_slice()).to_string();
+        return false;
     }
 }
 
 fn main() {
-    let inputs = ["abccba", "a", "aba"];
+    let inputs = [
+        vec![1, 2, 3, 4, 5],
+        vec![5, 4, 3, 2, 1],
+        vec![2, 1, 5, 0, 4, 6],
+        vec![2, 6, 1, 8],
+    ];
 
-    for input in inputs {
-        let result = Solution::break_palindrome(input.to_string());
+    for nums in inputs {
+        let result = Solution::increasing_triplet(nums);
         println!("{result}");
     }
 }

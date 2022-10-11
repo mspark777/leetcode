@@ -4,32 +4,37 @@ import (
 	"fmt"
 )
 
-func breakPalindrome(palindrome string) string {
-	chars := []rune(palindrome)
-	slen := len(chars)
-	if slen <= 1 {
-		return ""
+func increasingTriplet(nums []int) bool {
+	if len(nums) < 3 {
+		return false
 	}
 
-	for i := 0; i < slen/2; i += 1 {
-		ch := chars[i]
-		if ch != 'a' {
-			chars[i] = 'a'
-			return string(chars)
+	min := 2147483647
+	middle := min
+
+	for _, n := range nums {
+		if n <= min {
+			min = n
+		} else if n <= middle {
+			middle = n
+		} else {
+			return true
 		}
 	}
 
-	chars[slen-1] = 'b'
-	return string(chars)
+	return false
 }
 
 func main() {
-	inputs := []string{
-		"abccba", "a", "aba",
+	inputs := [][]int{
+		{1, 2, 3, 4, 5},
+		{5, 4, 3, 2, 1},
+		{2, 1, 5, 0, 4, 6},
+		{2, 6, 1, 8},
 	}
 
-	for _, input := range inputs {
-		result := breakPalindrome(input)
+	for _, nums := range inputs {
+		result := increasingTriplet(nums)
 		fmt.Println(result)
 	}
 }

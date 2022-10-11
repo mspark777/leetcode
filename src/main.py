@@ -3,25 +3,35 @@ from typing import Optional, List
 
 
 class Solution:
-    def breakPalindrome(self, palindrome: str) -> str:
-        slen = len(palindrome)
-        if slen <= 1:
-            return ""
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        if len(nums) < 3:
+            return False
 
-        for i in range(slen // 2):
-            ch = palindrome[i]
-            if ch != "a":
-                return "{}a{}".format(palindrome[:i], palindrome[i + 1 :])
+        min = 2147483647
+        middle = min
 
-        return "{}b".format(palindrome[:-1])
+        for n in nums:
+            if n <= min:
+                min = n
+            elif n <= middle:
+                middle = n
+            else:
+                return True
+
+        return False
 
 
 def main():
-    inputs: list[str] = ["abccba", "a", "aba"]
+    inputs: list[list[int]] = [
+        [1, 2, 3, 4, 5],
+        [5, 4, 3, 2, 1],
+        [2, 1, 5, 0, 4, 6],
+        [2, 6, 1, 8],
+    ]
 
     solution = Solution()
-    for palindrome in inputs:
-        result = solution.breakPalindrome(palindrome)
+    for nums in inputs:
+        result = solution.increasingTriplet(nums)
         print(result)
 
 
