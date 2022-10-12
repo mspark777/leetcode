@@ -2,39 +2,30 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func increasingTriplet(nums []int) bool {
-	if len(nums) < 3 {
-		return false
-	}
-
-	min := 2147483647
-	middle := min
-
-	for _, n := range nums {
-		if n <= min {
-			min = n
-		} else if n <= middle {
-			middle = n
-		} else {
-			return true
+func largestPerimeter(nums []int) int {
+	sort.Sort(sort.Reverse(sort.IntSlice(nums)))
+	for i := 0; i <= len(nums)-3; i += 1 {
+		a := nums[i]
+		b := nums[i+1] + nums[i+2]
+		if a < b {
+			return a + b
 		}
 	}
 
-	return false
+	return 0
 }
 
 func main() {
 	inputs := [][]int{
-		{1, 2, 3, 4, 5},
-		{5, 4, 3, 2, 1},
-		{2, 1, 5, 0, 4, 6},
-		{2, 6, 1, 8},
+		{2, 1, 2},
+		{1, 2, 1},
 	}
 
 	for _, nums := range inputs {
-		result := increasingTriplet(nums)
+		result := largestPerimeter(nums)
 		fmt.Println(result)
 	}
 }

@@ -1,33 +1,24 @@
-function increasingTriplet (nums: number[]): boolean {
-  if (nums.length < 3) {
-    return false
-  }
-
-  let min = Number.MAX_SAFE_INTEGER
-  let middle = Number.MAX_SAFE_INTEGER
-  for (const n of nums) {
-    if (n <= min) {
-      min = n
-    } else if (n <= middle) {
-      middle = n
-    } else {
-      return true
+function largestPerimeter (nums: number[]): number {
+  nums.sort((a, b) => b - a)
+  for (let i = 0; i <= nums.length - 3; i += 1) {
+    const a = nums[i]
+    const b = nums[i + 1] + nums[i + 2]
+    if (a < b) {
+      return a + b
     }
   }
 
-  return false
+  return 0
 }
 
 async function main (): Promise<void> {
   const inputs: number[][] = [
-    [1, 2, 3, 4, 5],
-    [5, 4, 3, 2, 1],
-    [2, 1, 5, 0, 4, 6],
-    [2, 6, 1, 8]
+    [2, 1, 2],
+    [1, 2, 1]
   ]
 
   for (const nums of inputs) {
-    const result = increasingTriplet(nums)
+    const result = largestPerimeter(nums)
     console.log(result)
   }
 }

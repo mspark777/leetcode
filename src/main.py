@@ -3,35 +3,24 @@ from typing import Optional, List
 
 
 class Solution:
-    def increasingTriplet(self, nums: List[int]) -> bool:
-        if len(nums) < 3:
-            return False
+    def largestPerimeter(self, nums: List[int]) -> int:
+        nums.sort(reverse=True)
 
-        min = 2147483647
-        middle = min
+        for i in range(len(nums) - 2):
+            a = nums[i]
+            b = nums[i + 1] + nums[i + 2]
+            if a < b:
+                return a + b
 
-        for n in nums:
-            if n <= min:
-                min = n
-            elif n <= middle:
-                middle = n
-            else:
-                return True
-
-        return False
+        return 0
 
 
 def main():
-    inputs: list[list[int]] = [
-        [1, 2, 3, 4, 5],
-        [5, 4, 3, 2, 1],
-        [2, 1, 5, 0, 4, 6],
-        [2, 6, 1, 8],
-    ]
+    inputs: list[list[int]] = [[2, 1, 2], [1, 2, 1]]
 
     solution = Solution()
     for nums in inputs:
-        result = solution.increasingTriplet(nums)
+        result = solution.largestPerimeter(nums)
         print(result)
 
 
