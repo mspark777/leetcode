@@ -1,29 +1,64 @@
-/**
- * @param {number[]} nums
- * @returns {number}
-*/
-function largestPerimeter (nums) {
-  nums.sort((a, b) => b - a)
-  for (let i = 0; i <= nums.length - 3; i += 1) {
-    const a = nums[i]
-    const b = nums[i + 1] + nums[i + 2]
-    if (a < b) {
-      return a + b
-    }
+class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
+
+function arrlist (nums) {
+  const temp = new ListNode()
+  let tail = temp
+
+  for (const num of nums) {
+    tail.next = new ListNode(num)
+    tail = tail.next
   }
 
-  return 0
+  return temp.next
+}
+
+function listarr (node) {
+  const nums = []
+
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
+  }
+
+  return nums
+}
+
+/**
+ * @param {ListNode | null} head
+ * @returns {ListNode | null}
+*/
+function deleteMiddle (head) {
+  if (head?.next == null) {
+    return null
+  }
+
+  let slow = head
+  let fast = head.next.next
+
+  while (fast?.next != null) {
+    slow = slow.next
+    fast = fast.next.next
+  }
+
+  slow.next = slow.next?.next ?? null
+  return head
 }
 
 async function main () {
   const inputs = [
-    [2, 1, 2],
-    [1, 2, 1]
+    [1, 3, 4, 7, 1, 2, 6],
+    [1, 2, 3, 4],
+    [2, 1]
   ]
 
   for (const nums of inputs) {
-    const result = largestPerimeter(nums)
-    console.log(result)
+    const result = deleteMiddle(arrlist(nums))
+    console.log(listarr(result))
   }
 }
 
