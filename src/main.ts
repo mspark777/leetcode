@@ -1,62 +1,45 @@
-class ListNode {
-  val: number
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
+function minDifficulty (jobDifficulty: number[], d: number): number {
+  const days = jobDifficulty.length
+  if (days < d) {
+    return -1
   }
+
+  const dp = new Array<number>(days + 1).fill(0)
+
+  for (let i = days - 1; i >= 0; i -= 1) {
+    dp[i] = Math.max(dp[i + 1], jobDifficulty[i])
+  }
+
+  for (let i = 2; i <= d; i += 1) {
+    const remain = days - i
+    for (let j = 0; j <= remain; j += 1) {
+      let maxd = 0
+      dp[j] = Number.MAX_SAFE_INTEGER
+      for (let k = j; k <= remain; k += 1) {
+        maxd = Math.max(maxd, jobDifficulty[k])
+        dp[j] = Math.min(dp[j], maxd + dp[k + 1])
+      }
+    }
+  }
+
+  return dp[0]
 }
 
-function arrlist (nums: number[]): ListNode | null {
-  const temp = new ListNode()
-  let tail = temp
-
-  for (const num of nums) {
-    tail.next = new ListNode(num)
-    tail = tail.next
-  }
-
-  return temp.next
-}
-
-function listarr (node: ListNode | null): number[] {
-  const nums: number[] = []
-
-  while (node != null) {
-    nums.push(node.val)
-    node = node.next
-  }
-
-  return nums
-}
-
-function deleteMiddle (head: ListNode | null): ListNode | null {
-  if (head?.next == null) {
-    return null
-  }
-
-  let slow = head
-  let fast = head.next.next
-
-  while (fast?.next != null) {
-    slow = slow.next as ListNode
-    fast = fast.next.next
-  }
-
-  slow.next = slow.next?.next ?? null
-  return head
+interface Input {
+  readonly jobDifficulty: number[]
+  readonly d: number
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [
-    [1, 3, 4, 7, 1, 2, 6],
-    [1, 2, 3, 4],
-    [2, 1]
+  const inputs: Input[] = [
+    { jobDifficulty: [6, 5, 4, 3, 2, 1], d: 2 },
+    { jobDifficulty: [9, 9, 9], d: 4 },
+    { jobDifficulty: [1, 1, 1], d: 3 }
   ]
 
-  for (const nums of inputs) {
-    const result = deleteMiddle(arrlist(nums))
-    console.log(listarr(result))
+  for (const { jobDifficulty, d } of inputs) {
+    const result = minDifficulty(jobDifficulty, d)
+    console.log(result)
   }
 }
 

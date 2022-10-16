@@ -4,60 +4,64 @@ import (
 	"fmt"
 )
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
+func max(i, j int) int {
+	if i < j {
+		return j
+	}
+
+	return i
 }
 
-func arrlist(nums []int) *ListNode {
-	temp := &ListNode{}
-	tail := temp
-
-	for _, num := range nums {
-		tail.Next = &ListNode{Val: num}
-		tail = tail.Next
+func min(i, j int) int {
+	if i < j {
+		return i
 	}
 
-	return temp.Next
+	return j
 }
 
-func listarr(node *ListNode) []int {
-	nums := []int{}
-
-	for node != nil {
-		nums = append(nums, node.Val)
-		node = node.Next
+func minDifficulty(jobDifficulty []int, d int) int {
+	days := len(jobDifficulty)
+	if days < d {
+		return -1
 	}
 
-	return nums
+	dp := make([]int, days+1)
+	for i := days - 1; i >= 0; i -= 1 {
+		dp[i] = max(dp[i+1], jobDifficulty[i])
+	}
+
+	for i := 2; i <= d; i += 1 {
+		remain := days - i
+		for j := 0; j <= remain; j += 1 {
+			maxd := 0
+			dp[j] = 2147483647
+			for k := j; k <= remain; k += 1 {
+				maxd = max(maxd, jobDifficulty[k])
+				dp[j] = min(dp[j], maxd+dp[k+1])
+			}
+		}
+	}
+
+	return dp[0]
 }
 
-func deleteMiddle(head *ListNode) *ListNode {
-	if (head == nil) || (head.Next == nil) {
-		return nil
-	}
-
-	slow := head
-	fast := head.Next.Next
-
-	for (fast != nil) && (fast.Next != nil) {
-		slow = slow.Next
-		fast = fast.Next.Next
-	}
-
-	slow.Next = slow.Next.Next
-	return head
+type input struct {
+	jobDifficulty []int
+	d             int
 }
 
 func main() {
-	inputs := [][]int{
-		{1, 3, 4, 7, 1, 2, 6},
-		{1, 2, 3, 4},
-		{2, 1},
+	inputs := []input{
+		{jobDifficulty: []int{6, 5, 4, 3, 2, 1}, d: 2},
+		{jobDifficulty: []int{9, 9, 9}, d: 4},
+		{jobDifficulty: []int{1, 1, 1}, d: 3},
 	}
 
-	for _, nums := range inputs {
-		result := deleteMiddle(arrlist(nums))
-		fmt.Println(listarr(result))
+	for _, input := range inputs {
+		jobDifficulty := input.jobDifficulty
+		d := input.d
+		result := minDifficulty(jobDifficulty, d)
+		fmt.Println(result)
 	}
 }

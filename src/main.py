@@ -2,64 +2,39 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-
-def listarr(node: Optional[ListNode]) -> list[int]:
-    nums: list[int] = []
-
-    while node is not None:
-        nums.append(node.val)
-        node = node.next
-
-    return nums
-
-
-def arrlist(nums: list[int]) -> Optional[ListNode]:
-    temp = ListNode()
-    tail = temp
-
-    for num in nums:
-        tail.next = ListNode(num)
-        tail = tail.next
-
-    return temp.next
-
-
 class Solution:
-    def deleteMiddle(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if not head:
-            return None
+    def minDifficulty(self, jobDifficulty: List[int], d: int) -> int:
+        days = len(jobDifficulty)
+        if days < d:
+            return -1
 
-        if not head.next:
-            return None
+        dp = [0 for i in range(days + 1)]
+        for i in range(days - 1, -1, -1):
+            dp[i] = max(dp[i + 1], jobDifficulty[i])
 
-        slow = head
-        fast = head.next.next
+        for i in range(2, d + 1):
+            remain = days - i
+            for j in range(0, remain + 1):
+                maxd = 0
+                dp[j] = 2147483647
+                for k in range(j, remain + 1):
+                    maxd = max(maxd, jobDifficulty[k])
+                    dp[j] = min(dp[j], maxd + dp[k + 1])
 
-        while slow and fast and fast.next:
-            slow = slow.next
-            fast = fast.next.next
-
-        if slow and slow.next:
-            slow.next = slow.next.next
-
-        return head
+        return dp[0]
 
 
 def main():
-    inputs: list[list[int]] = [[1, 3, 4, 7, 1, 2, 6], [1, 2, 3, 4], [2, 1]]
+    inputs: list[tuple[list[int], int]] = [
+        ([6, 5, 4, 3, 2, 1], 2),
+        ([9, 9, 9], 4),
+        ([1, 1, 1], 3),
+    ]
 
     solution = Solution()
-    for nums in inputs:
-        result = solution.deleteMiddle(arrlist(nums))
-        print(listarr(result))
+    for jobDifficulty, d in inputs:
+        result = solution.minDifficulty(jobDifficulty, d)
+        print(result)
 
 
 if __name__ == "__main__":

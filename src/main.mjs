@@ -1,64 +1,45 @@
-class ListNode {
-  constructor (val, next) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
-  }
-}
-
-function arrlist (nums) {
-  const temp = new ListNode()
-  let tail = temp
-
-  for (const num of nums) {
-    tail.next = new ListNode(num)
-    tail = tail.next
-  }
-
-  return temp.next
-}
-
-function listarr (node) {
-  const nums = []
-
-  while (node != null) {
-    nums.push(node.val)
-    node = node.next
-  }
-
-  return nums
-}
-
 /**
- * @param {ListNode | null} head
- * @returns {ListNode | null}
+ * @param {number[]} jobDifficulty
+ * @param {number} d
+ * @returns {number}
 */
-function deleteMiddle (head) {
-  if (head?.next == null) {
-    return null
+function minDifficulty (jobDifficulty, d) {
+  const days = jobDifficulty.length
+  if (days < d) {
+    return -1
   }
 
-  let slow = head
-  let fast = head.next.next
+  const dp = new Array(days + 1).fill(0)
 
-  while (fast?.next != null) {
-    slow = slow.next
-    fast = fast.next.next
+  for (let i = days - 1; i >= 0; i -= 1) {
+    dp[i] = Math.max(dp[i + 1], jobDifficulty[i])
   }
 
-  slow.next = slow.next?.next ?? null
-  return head
+  for (let i = 2; i <= d; i += 1) {
+    const remain = days - i
+    for (let j = 0; j <= remain; j += 1) {
+      let maxd = 0
+      dp[j] = Number.MAX_SAFE_INTEGER
+      for (let k = j; k <= remain; k += 1) {
+        maxd = Math.max(maxd, jobDifficulty[k])
+        dp[j] = Math.min(dp[j], maxd + dp[k + 1])
+      }
+    }
+  }
+
+  return dp[0]
 }
 
 async function main () {
   const inputs = [
-    [1, 3, 4, 7, 1, 2, 6],
-    [1, 2, 3, 4],
-    [2, 1]
+    { jobDifficulty: [6, 5, 4, 3, 2, 1], d: 2 },
+    { jobDifficulty: [9, 9, 9], d: 4 },
+    { jobDifficulty: [1, 1, 1], d: 3 }
   ]
 
-  for (const nums of inputs) {
-    const result = deleteMiddle(arrlist(nums))
-    console.log(listarr(result))
+  for (const { jobDifficulty, d } of inputs) {
+    const result = minDifficulty(jobDifficulty, d)
+    console.log(result)
   }
 }
 
