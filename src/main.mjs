@@ -1,44 +1,29 @@
 /**
- * @param {number[]} jobDifficulty
- * @param {number} d
- * @returns {number}
+ * @param {string} sentence
+ * @returns {boolean}
 */
-function minDifficulty (jobDifficulty, d) {
-  const days = jobDifficulty.length
-  if (days < d) {
-    return -1
+function checkIfPangram (sentence) {
+  const ACODE = 'a'.charCodeAt(0)
+  let bits = 0
+  for (let i = 0; i < sentence.length; i += 1) {
+    const code = sentence.charCodeAt(i)
+    const offset = code - ACODE
+    const bit = 1 << offset
+
+    bits |= bit
   }
 
-  const dp = new Array(days + 1).fill(0)
-
-  for (let i = days - 1; i >= 0; i -= 1) {
-    dp[i] = Math.max(dp[i + 1], jobDifficulty[i])
-  }
-
-  for (let i = 2; i <= d; i += 1) {
-    const remain = days - i
-    for (let j = 0; j <= remain; j += 1) {
-      let maxd = 0
-      dp[j] = Number.MAX_SAFE_INTEGER
-      for (let k = j; k <= remain; k += 1) {
-        maxd = Math.max(maxd, jobDifficulty[k])
-        dp[j] = Math.min(dp[j], maxd + dp[k + 1])
-      }
-    }
-  }
-
-  return dp[0]
+  return bits === 0x03ffffff
 }
 
 async function main () {
   const inputs = [
-    { jobDifficulty: [6, 5, 4, 3, 2, 1], d: 2 },
-    { jobDifficulty: [9, 9, 9], d: 4 },
-    { jobDifficulty: [1, 1, 1], d: 3 }
+    'thequickbrownfoxjumpsoverthelazydog',
+    'leetcode'
   ]
 
-  for (const { jobDifficulty, d } of inputs) {
-    const result = minDifficulty(jobDifficulty, d)
+  for (const sentence of inputs) {
+    const result = checkIfPangram(sentence)
     console.log(result)
   }
 }
