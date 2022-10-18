@@ -3,26 +3,36 @@ from typing import Optional, List
 
 
 class Solution:
-    def checkIfPangram(self, sentence: str) -> bool:
-        ACODE = ord("a")
-        bits = 0
+    def countAndSay(self, n: int) -> str:
+        result = ["1"]
+        while n > 1:
+            n -= 1
+            temp: list[str] = []
+            count = 1
+            ch = result[0]
+            for j in range(1, len(result)):
+                c = result[j]
+                if ch == c:
+                    count += 1
+                else:
+                    temp.append(f"{count}")
+                    temp.append(ch)
 
-        for ch in sentence:
-            code = ord(ch)
-            offset = code - ACODE
-            bit = 1 << offset
+                    ch = c
+                    count = 1
+            temp.append(f"{count}")
+            temp.append(ch)
+            result = temp
 
-            bits |= bit
-
-        return bits == 0x03FFFFFF
+        return "".join(result)
 
 
 def main():
-    inputs: list[str] = ["thequickbrownfoxjumpsoverthelazydog", "leetcode"]
+    inputs: list[int] = [1, 4]
 
     solution = Solution()
-    for sentence in inputs:
-        result = solution.checkIfPangram(sentence)
+    for n in inputs:
+        result = solution.countAndSay(n)
         print(result)
 
 

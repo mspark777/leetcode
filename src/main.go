@@ -2,30 +2,39 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func checkIfPangram(sentence string) bool {
-	const ACODE = rune('a')
-	bits := 0
+func countAndSay(n int) string {
+	result := []string{"1"}
 
-	for _, code := range []rune(sentence) {
-		offset := code - ACODE
-		bit := 1 << offset
+	for i := 1; i < n; i += 1 {
+		temp := []string{}
+		count := 1
+		ch := result[0]
+		for j := 1; j < len(result); j += 1 {
+			c := result[j]
+			if ch == c {
+				count += 1
+			} else {
+				temp = append(temp, fmt.Sprint(count), ch)
 
-		bits |= bit
+				ch = c
+				count = 1
+			}
+		}
+		temp = append(temp, fmt.Sprint(count), ch)
+		result = temp
 	}
 
-	return bits == 0x03ffffff
+	return strings.Join(result, "")
 }
 
 func main() {
-	inputs := []string{
-		"thequickbrownfoxjumpsoverthelazydog",
-		"leetcode",
-	}
+	inputs := []int{1, 4}
 
 	for _, input := range inputs {
-		result := checkIfPangram(input)
+		result := countAndSay(input)
 		fmt.Println(result)
 	}
 }

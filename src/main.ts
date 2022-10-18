@@ -1,25 +1,36 @@
-function checkIfPangram (sentence: string): boolean {
-  const ACODE = 'a'.charCodeAt(0)
-  let bits = 0
-  for (let i = 0; i < sentence.length; i += 1) {
-    const code = sentence.charCodeAt(i)
-    const offset = code - ACODE
-    const bit = 1 << offset
+function countAndSay (n: number): string {
+  let result = ['1']
+  for (let i = 1; i < n; i += 1) {
+    const temp: string[] = []
+    let count = 1
+    let ch = result[0]
+    for (let j = 1; j < result.length; j += 1) {
+      const c = result[j]
+      if (ch === c) {
+        count += 1
+      } else {
+        temp.push(count.toString())
+        temp.push(ch)
 
-    bits |= bit
+        ch = c
+        count = 1
+      }
+    }
+    temp.push(count.toString())
+    temp.push(ch)
+    result = temp
   }
 
-  return bits === 0x03ffffff
+  return result.join('')
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    'thequickbrownfoxjumpsoverthelazydog',
-    'leetcode'
+  const inputs: number[] = [
+    1, 4
   ]
 
-  for (const sentence of inputs) {
-    const result = checkIfPangram(sentence)
+  for (const n of inputs) {
+    const result = countAndSay(n)
     console.log(result)
   }
 }
