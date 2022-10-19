@@ -1,40 +1,70 @@
+use std::{cmp::Ordering, collections::HashMap};
+
+struct Node<'a> {
+    word: &'a String,
+    count: i32,
+}
+
 struct Solution {}
 impl Solution {
-    pub fn count_and_say(n: i32) -> String {
-        let mut result = vec!["1".to_string()];
+    pub fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
+        let mut counts = HashMap::<&String, i32>::new();
 
-        let mut n = n;
-        while n > 1 {
-            n -= 1;
-
-            let mut temp = Vec::<String>::new();
-            let mut count = 1;
-            let mut ch = &result[0];
-            for c in result.iter().skip(1) {
-                if ch == c {
-                    count += 1;
-                } else {
-                    temp.push(format!("{count}"));
-                    temp.push(format!("{ch}"));
-
-                    ch = c;
-                    count = 1;
-                }
+        for word in words.iter() {
+            if let Some(count) = counts.get_mut(word) {
+                *count += 1;
+            } else {
+                counts.insert(word, 1);
             }
-            temp.push(format!("{count}"));
-            temp.push(format!("{ch}"));
-            result = temp;
         }
 
-        return result.join("");
+        let mut heap = Vec::<Node>::with_capacity(counts.len());
+        for (word, count) in counts.iter() {
+            heap.push(Node {
+                word: *word,
+                count: *count,
+            });
+        }
+
+        heap.sort_unstable_by(|a, b| {
+            let c = b.count.cmp(&a.count);
+            if c != Ordering::Equal {
+                return c;
+            }
+
+            return a.word.cmp(b.word);
+        });
+
+        return heap
+            .iter()
+            .take(k as usize)
+            .map(|n| n.word.clone())
+            .collect();
     }
 }
 
-fn main() {
-    let inputs = [1, 4];
+struct Input {
+    words: Vec<&'static str>,
+    k: i32,
+}
 
-    for input in inputs {
-        let result = Solution::count_and_say(input);
-        println!("{result}");
+fn main() {
+    let inputs = [
+        Input {
+            words: vec!["i", "love", "leetcode", "i", "love", "coding"],
+            k: 2,
+        },
+        Input {
+            words: vec![
+                "the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is",
+            ],
+            k: 4,
+        },
+    ];
+
+    for Input { words, k } in inputs {
+        let words = words.iter().map(|s| s.to_string()).collect();
+        let result = Solution::top_k_frequent(words, k);
+        println!("{result:?}");
     }
 }

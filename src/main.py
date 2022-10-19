@@ -1,38 +1,24 @@
 from __future__ import annotations
 from typing import Optional, List
+from collections import Counter
 
 
 class Solution:
-    def countAndSay(self, n: int) -> str:
-        result = ["1"]
-        while n > 1:
-            n -= 1
-            temp: list[str] = []
-            count = 1
-            ch = result[0]
-            for j in range(1, len(result)):
-                c = result[j]
-                if ch == c:
-                    count += 1
-                else:
-                    temp.append(f"{count}")
-                    temp.append(ch)
-
-                    ch = c
-                    count = 1
-            temp.append(f"{count}")
-            temp.append(ch)
-            result = temp
-
-        return "".join(result)
+    def topKFrequent(self, words: List[str], k: int) -> List[str]:
+        counts = Counter(words)
+        result = sorted(counts, key=lambda x: (-counts[x], x))
+        return result[:k]
 
 
 def main():
-    inputs: list[int] = [1, 4]
+    inputs: list[tuple[list[str], int]] = [
+        (["i", "love", "leetcode", "i", "love", "coding"], 2),
+        (["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], 4),
+    ]
 
     solution = Solution()
-    for n in inputs:
-        result = solution.countAndSay(n)
+    for words, k in inputs:
+        result = solution.topKFrequent(words, k)
         print(result)
 
 

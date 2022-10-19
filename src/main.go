@@ -2,39 +2,65 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"sort"
 )
 
-func countAndSay(n int) string {
-	result := []string{"1"}
+type heapNode struct {
+	word  string
+	count int
+}
 
-	for i := 1; i < n; i += 1 {
-		temp := []string{}
-		count := 1
-		ch := result[0]
-		for j := 1; j < len(result); j += 1 {
-			c := result[j]
-			if ch == c {
-				count += 1
-			} else {
-				temp = append(temp, fmt.Sprint(count), ch)
-
-				ch = c
-				count = 1
-			}
-		}
-		temp = append(temp, fmt.Sprint(count), ch)
-		result = temp
+func topKFrequent(words []string, k int) []string {
+	counts := map[string]int{}
+	for _, word := range words {
+		counts[word] += 1
 	}
 
-	return strings.Join(result, "")
+	heap := []heapNode{}
+	for word, count := range counts {
+		heap = append(heap, heapNode{word, count})
+	}
+
+	sort.Slice(heap, func(i, j int) bool {
+		a := &heap[i]
+		b := &heap[j]
+
+		if a.count != b.count {
+			return a.count > b.count
+		}
+
+		return a.word < b.word
+	})
+
+	result := []string{}
+	for _, node := range heap {
+		result = append(result, node.word)
+	}
+
+	return result[0:k]
+}
+
+type input struct {
+	words []string
+	k     int
 }
 
 func main() {
-	inputs := []int{1, 4}
+	inputs := []input{
+		{
+			words: []string{"i", "love", "leetcode", "i", "love", "coding"},
+			k:     2,
+		},
+		{
+			words: []string{"the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"},
+			k:     4,
+		},
+	}
 
 	for _, input := range inputs {
-		result := countAndSay(input)
+		words := input.words
+		k := input.k
+		result := topKFrequent(words, k)
 		fmt.Println(result)
 	}
 }
