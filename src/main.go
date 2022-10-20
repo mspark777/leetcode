@@ -2,65 +2,27 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-type heapNode struct {
-	word  string
-	count int
-}
+func intToRoman(num int) string {
+	M := []string{"", "M", "MM", "MMM"}
+	C := []string{"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"}
+	X := []string{"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"}
+	I := []string{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"}
 
-func topKFrequent(words []string, k int) []string {
-	counts := map[string]int{}
-	for _, word := range words {
-		counts[word] += 1
-	}
+	mi := num / 1000
+	ci := (num % 1000) / 100
+	xi := (num % 100) / 10
+	ii := num % 10
 
-	heap := []heapNode{}
-	for word, count := range counts {
-		heap = append(heap, heapNode{word, count})
-	}
-
-	sort.Slice(heap, func(i, j int) bool {
-		a := &heap[i]
-		b := &heap[j]
-
-		if a.count != b.count {
-			return a.count > b.count
-		}
-
-		return a.word < b.word
-	})
-
-	result := []string{}
-	for _, node := range heap {
-		result = append(result, node.word)
-	}
-
-	return result[0:k]
-}
-
-type input struct {
-	words []string
-	k     int
+	return fmt.Sprint(M[mi], C[ci], X[xi], I[ii])
 }
 
 func main() {
-	inputs := []input{
-		{
-			words: []string{"i", "love", "leetcode", "i", "love", "coding"},
-			k:     2,
-		},
-		{
-			words: []string{"the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"},
-			k:     4,
-		},
-	}
+	inputs := []int{3, 58, 1994}
 
-	for _, input := range inputs {
-		words := input.words
-		k := input.k
-		result := topKFrequent(words, k)
+	for _, num := range inputs {
+		result := intToRoman(num)
 		fmt.Println(result)
 	}
 }

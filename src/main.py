@@ -1,24 +1,28 @@
 from __future__ import annotations
 from typing import Optional, List
-from collections import Counter
 
 
 class Solution:
-    def topKFrequent(self, words: List[str], k: int) -> List[str]:
-        counts = Counter(words)
-        result = sorted(counts, key=lambda x: (-counts[x], x))
-        return result[:k]
+    def intToRoman(self, num: int) -> str:
+        M = ["", "M", "MM", "MMM"]
+        C = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
+        X = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
+        I = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+
+        mi = num // 1000
+        ci = (num % 1000) // 100
+        xi = (num % 100) // 10
+        ii = num % 10
+
+        return f"{M[mi]}{C[ci]}{X[xi]}{I[ii]}"
 
 
 def main():
-    inputs: list[tuple[list[str], int]] = [
-        (["i", "love", "leetcode", "i", "love", "coding"], 2),
-        (["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], 4),
-    ]
+    inputs: list[int] = [3, 58, 1994]
 
     solution = Solution()
-    for words, k in inputs:
-        result = solution.topKFrequent(words, k)
+    for num in inputs:
+        result = solution.intToRoman(num)
         print(result)
 
 

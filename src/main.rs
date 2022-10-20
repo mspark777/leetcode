@@ -1,70 +1,30 @@
-use std::{cmp::Ordering, collections::HashMap};
-
-struct Node<'a> {
-    word: &'a String,
-    count: i32,
-}
+const M: [&'static str; 4] = ["", "M", "MM", "MMM"];
+const C: [&'static str; 10] = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"];
+const X: [&'static str; 10] = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"];
+const I: [&'static str; 10] = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"];
 
 struct Solution {}
 impl Solution {
-    pub fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
-        let mut counts = HashMap::<&String, i32>::new();
+    pub fn int_to_roman(num: i32) -> String {
+        let mi = num / 1000;
+        let ci = (num % 1000) / 100;
+        let xi = (num % 100) / 10;
+        let ii = num % 10;
 
-        for word in words.iter() {
-            if let Some(count) = counts.get_mut(word) {
-                *count += 1;
-            } else {
-                counts.insert(word, 1);
-            }
-        }
+        let m = M[mi as usize];
+        let c = C[ci as usize];
+        let x = X[xi as usize];
+        let i = I[ii as usize];
 
-        let mut heap = Vec::<Node>::with_capacity(counts.len());
-        for (word, count) in counts.iter() {
-            heap.push(Node {
-                word: *word,
-                count: *count,
-            });
-        }
-
-        heap.sort_unstable_by(|a, b| {
-            let c = b.count.cmp(&a.count);
-            if c != Ordering::Equal {
-                return c;
-            }
-
-            return a.word.cmp(b.word);
-        });
-
-        return heap
-            .iter()
-            .take(k as usize)
-            .map(|n| n.word.clone())
-            .collect();
+        return format!("{m}{c}{x}{i}");
     }
 }
 
-struct Input {
-    words: Vec<&'static str>,
-    k: i32,
-}
-
 fn main() {
-    let inputs = [
-        Input {
-            words: vec!["i", "love", "leetcode", "i", "love", "coding"],
-            k: 2,
-        },
-        Input {
-            words: vec![
-                "the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is",
-            ],
-            k: 4,
-        },
-    ];
+    let inputs = [3, 58, 1994];
 
-    for Input { words, k } in inputs {
-        let words = words.iter().map(|s| s.to_string()).collect();
-        let result = Solution::top_k_frequent(words, k);
-        println!("{result:?}");
+    for num in inputs {
+        let result = Solution::int_to_roman(num);
+        println!("{result}");
     }
 }
