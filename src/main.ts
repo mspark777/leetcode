@@ -1,25 +1,35 @@
-function intToRoman (num: number): string {
-  const M: string[] = ['', 'M', 'MM', 'MMM']
-  const C: string[] = ['', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM']
-  const X: string[] = ['', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC']
-  const I: string[] = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
+function findErrorNums (nums: number[]): number[] {
+  const temps = new Array<number>(nums.length).fill(0)
+  for (const num of nums) {
+    temps[num - 1] += 1
+  }
 
-  const n = BigInt(num)
-  const n1000 = 1000n
-  const n100 = 100n
-  const n10 = 10n
-  const mi = Number(n / n1000)
-  const ci = Number((n % n1000) / n100)
-  const xi = Number((n % n100) / n10)
-  const ii = Number(n % n10)
-  return `${M[mi]}${C[ci]}${X[xi]}${I[ii]}`
+  let missing = -1
+  let dup = -1
+  for (let i = 0; i < nums.length; i += 1) {
+    const temp = temps[i]
+    if (temp <= 0) {
+      missing = i + 1
+    } else if (temp > 1) {
+      dup = i + 1
+    }
+
+    if ((missing >= 0) && (dup >= 0)) {
+      break
+    }
+  }
+
+  return [dup, missing]
 }
 
 async function main (): Promise<void> {
-  const inputs: number[] = [3, 58, 1994]
+  const inputs: number[][] = [
+    [1, 2, 2, 4],
+    [1, 1]
+  ]
 
-  for (const num of inputs) {
-    const result = intToRoman(num)
+  for (const nums of inputs) {
+    const result = findErrorNums(nums)
     console.log(result)
   }
 }

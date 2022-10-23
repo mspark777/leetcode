@@ -3,26 +3,34 @@ from typing import Optional, List
 
 
 class Solution:
-    def intToRoman(self, num: int) -> str:
-        M = ["", "M", "MM", "MMM"]
-        C = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
-        X = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
-        I = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+    def findErrorNums(self, nums: List[int]) -> List[int]:
+        nums_len = len(nums)
+        temps = [0] * nums_len
+        for num in nums:
+            temps[num - 1] += 1
 
-        mi = num // 1000
-        ci = (num % 1000) // 100
-        xi = (num % 100) // 10
-        ii = num % 10
+        missing = -1
+        dup = -1
 
-        return f"{M[mi]}{C[ci]}{X[xi]}{I[ii]}"
+        for i in range(nums_len):
+            temp = temps[i]
+            if temp <= 0:
+                missing = i + 1
+            elif temp > 1:
+                dup = i + 1
+
+            if (missing >= 0) and (dup >= 0):
+                break
+
+        return [dup, missing]
 
 
 def main():
-    inputs: list[int] = [3, 58, 1994]
+    inputs: list[list[int]] = [[1, 2, 2, 4], [1, 1]]
 
     solution = Solution()
-    for num in inputs:
-        result = solution.intToRoman(num)
+    for nums in inputs:
+        result = solution.findErrorNums(nums)
         print(result)
 
 
