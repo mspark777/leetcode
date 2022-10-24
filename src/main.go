@@ -2,40 +2,55 @@ package main
 
 import (
 	"fmt"
+	"math/bits"
 )
 
-func findErrorNums(nums []int) []int {
-	temps := make([]int, len(nums))
-	for _, num := range nums {
-		temps[num-1] += 1
-	}
+func maxLength(arr []string) int {
+	dp := []int{0}
+	result := 0
 
-	missing := -1
-	dup := -1
-
-	for i, temp := range temps {
-		if temp <= 0 {
-			missing = i + 1
-		} else if temp > 1 {
-			dup = i + 1
+	for _, str := range arr {
+		n := 0
+		dup := 0
+		for _, ch := range str {
+			code := ch - 'a'
+			shift := 1 << code
+			dup |= n & shift
+			n |= shift
 		}
 
-		if (missing >= 0) && (dup >= 0) {
-			break
+		if dup > 0 {
+			continue
+		}
+
+		for i := len(dp) - 1; i >= 0; i -= 1 {
+			memo := dp[i]
+			if (memo & n) != 0 {
+				continue
+			}
+
+			m := memo | n
+			dp = append(dp, m)
+
+			bitCount := bits.OnesCount(uint(m))
+			if bitCount > result {
+				result = bitCount
+			}
 		}
 	}
 
-	return []int{dup, missing}
+	return result
 }
 
 func main() {
-	inputs := [][]int{
-		{1, 2, 2, 4},
-		{1, 1},
+	inputs := [][]string{
+		{"un", "iq", "ue"},
+		{"cha", "r", "act", "ers"},
+		{"abcdefghijklmnopqrstuvwxyz"},
 	}
 
-	for _, nums := range inputs {
-		result := findErrorNums(nums)
+	for _, arr := range inputs {
+		result := maxLength(arr)
 		fmt.Println(result)
 	}
 }

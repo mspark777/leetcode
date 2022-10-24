@@ -1,35 +1,32 @@
-function findErrorNums (nums: number[]): number[] {
-  const temps = new Array<number>(nums.length).fill(0)
-  for (const num of nums) {
-    temps[num - 1] += 1
-  }
-
-  let missing = -1
-  let dup = -1
-  for (let i = 0; i < nums.length; i += 1) {
-    const temp = temps[i]
-    if (temp <= 0) {
-      missing = i + 1
-    } else if (temp > 1) {
-      dup = i + 1
+function maxLength (arr: string[]): number {
+  const dp: Array<Set<string>> = [new Set()]
+  for (const str of arr) {
+    const memo = new Set(str)
+    if (memo.size < str.length) {
+      continue
     }
 
-    if ((missing >= 0) && (dup >= 0)) {
-      break
+    for (const d of [...dp]) {
+      if ([...d].some(x => memo.has(x))) {
+        continue
+      } else {
+        dp.push(new Set([...d, ...memo]))
+      }
     }
   }
 
-  return [dup, missing]
+  return Math.max(...[...dp].map(s => s.size))
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [
-    [1, 2, 2, 4],
-    [1, 1]
+  const inputs: string[][] = [
+    ['un', 'iq', 'ue'],
+    ['cha', 'r', 'act', 'ers'],
+    ['abcdefghijklmnopqrstuvwxyz']
   ]
 
-  for (const nums of inputs) {
-    const result = findErrorNums(nums)
+  for (const arr of inputs) {
+    const result = maxLength(arr)
     console.log(result)
   }
 }

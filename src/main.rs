@@ -1,36 +1,53 @@
 struct Solution {}
 impl Solution {
-    pub fn find_error_nums(nums: Vec<i32>) -> Vec<i32> {
-        let mut temps = vec![0; nums.len()];
-        for num in nums.into_iter() {
-            let i = (num - 1) as usize;
-            temps[i] += 1;
-        }
+    pub fn max_length(arr: Vec<String>) -> i32 {
+        let mut dp = vec![0usize];
+        let mut result = 0usize;
 
-        let mut missing = 0usize;
-        let mut dup = 0usize;
+        for s in arr.iter() {
+            let mut n = 0usize;
+            let mut dup = 0usize;
 
-        for (i, temp) in temps.into_iter().enumerate() {
-            if temp <= 0 {
-                missing = i;
-            } else if temp > 1 {
-                dup = i;
+            for ch in s.chars() {
+                let code = (ch as usize) - (b'a' as usize);
+                let shift = 1 << code;
+                dup |= n & shift;
+                n |= shift;
             }
 
-            if (missing > 0) && (dup > 0) {
-                break;
+            if dup > 0 {
+                continue;
+            }
+
+            for i in (0..dp.len()).rev() {
+                let memo = dp[i];
+                if (memo & n) != 0 {
+                    continue;
+                }
+
+                let temp = memo | n;
+                dp.push(temp);
+
+                let bits = temp.count_ones() as usize;
+                if bits > result {
+                    result = bits;
+                }
             }
         }
 
-        return vec![(dup + 1) as i32, (missing + 1) as i32];
+        return result as i32;
     }
 }
 
 fn main() {
-    let inputs = [vec![1, 2, 2, 4], vec![1, 1]];
+    let inputs = [
+        vec!["un", "iq", "ue"],
+        vec!["cha", "r", "act", "ers"],
+        vec!["abcdefghijklmnopqrstuvwxyz"],
+    ];
 
-    for nums in inputs {
-        let result = Solution::find_error_nums(nums);
+    for arr in inputs {
+        let result = Solution::max_length(arr.iter().map(|s| s.to_string()).collect());
         println!("{result:?}");
     }
 }
