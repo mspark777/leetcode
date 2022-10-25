@@ -1,53 +1,39 @@
 struct Solution {}
 impl Solution {
-    pub fn max_length(arr: Vec<String>) -> i32 {
-        let mut dp = vec![0usize];
-        let mut result = 0usize;
-
-        for s in arr.iter() {
-            let mut n = 0usize;
-            let mut dup = 0usize;
-
-            for ch in s.chars() {
-                let code = (ch as usize) - (b'a' as usize);
-                let shift = 1 << code;
-                dup |= n & shift;
-                n |= shift;
-            }
-
-            if dup > 0 {
-                continue;
-            }
-
-            for i in (0..dp.len()).rev() {
-                let memo = dp[i];
-                if (memo & n) != 0 {
-                    continue;
-                }
-
-                let temp = memo | n;
-                dp.push(temp);
-
-                let bits = temp.count_ones() as usize;
-                if bits > result {
-                    result = bits;
-                }
-            }
-        }
-
-        return result as i32;
+    pub fn array_strings_are_equal(word1: Vec<String>, word2: Vec<String>) -> bool {
+        return word1.join("") == word2.join("");
     }
+}
+
+struct Input {
+    word1: Vec<&'static str>,
+    word2: Vec<&'static str>,
 }
 
 fn main() {
     let inputs = [
-        vec!["un", "iq", "ue"],
-        vec!["cha", "r", "act", "ers"],
-        vec!["abcdefghijklmnopqrstuvwxyz"],
+        Input {
+            word1: vec!["ab", "c"],
+            word2: vec!["a", "bc"],
+        },
+        Input {
+            word1: vec!["a", "cb"],
+            word2: vec!["ab", "c"],
+        },
+        Input {
+            word1: vec!["abc", "d", "defg"],
+            word2: vec!["abcddefg"],
+        },
+        Input {
+            word1: vec!["abc", "d", "defg"],
+            word2: vec!["abcddef"],
+        },
     ];
 
-    for arr in inputs {
-        let result = Solution::max_length(arr.iter().map(|s| s.to_string()).collect());
+    for Input { word1, word2 } in inputs {
+        let word1 = word1.iter().map(|s| s.to_string()).collect();
+        let word2 = word2.iter().map(|s| s.to_string()).collect();
+        let result = Solution::array_strings_are_equal(word1, word2);
         println!("{result:?}");
     }
 }

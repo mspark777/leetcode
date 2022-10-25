@@ -3,32 +3,21 @@ from typing import Optional, List
 
 
 class Solution:
-    def maxLength(self, arr: List[str]) -> int:
-        dp: list[set[str]] = [set()]
-        for str in arr:
-            memo = set(str)
-            if len(memo) < len(str):
-                continue
-
-            for d in dp[:]:
-                if memo & d:
-                    continue
-                else:
-                    dp.append(memo | d)
-
-        return max(len(a) for a in dp)
+    def arrayStringsAreEqual(self, word1: List[str], word2: List[str]) -> bool:
+        return "".join(word1) == "".join(word2)
 
 
 def main():
-    inputs: list[list[str]] = [
-        ["un", "iq", "ue"],
-        ["cha", "r", "act", "ers"],
-        ["abcdefghijklmnopqrstuvwxyz"],
+    inputs: list[tuple[list[str], list[str]]] = [
+        (["ab", "c"], ["a", "bc"]),
+        (["a", "cb"], ["ab", "c"]),
+        (["abc", "d", "defg"], ["abcddefg"]),
+        (["abc", "d", "defg"], ["abcddef"]),
     ]
 
     solution = Solution()
-    for arr in inputs:
-        result = solution.maxLength(arr)
+    for word1, word2 in inputs:
+        result = solution.arrayStringsAreEqual(word1, word2)
         print(result)
 
 

@@ -2,55 +2,42 @@ package main
 
 import (
 	"fmt"
-	"math/bits"
+	"strings"
 )
 
-func maxLength(arr []string) int {
-	dp := []int{0}
-	result := 0
+func arrayStringsAreEqual(word1 []string, word2 []string) bool {
+	return strings.Join(word1, "") == strings.Join(word2, "")
+}
 
-	for _, str := range arr {
-		n := 0
-		dup := 0
-		for _, ch := range str {
-			code := ch - 'a'
-			shift := 1 << code
-			dup |= n & shift
-			n |= shift
-		}
-
-		if dup > 0 {
-			continue
-		}
-
-		for i := len(dp) - 1; i >= 0; i -= 1 {
-			memo := dp[i]
-			if (memo & n) != 0 {
-				continue
-			}
-
-			m := memo | n
-			dp = append(dp, m)
-
-			bitCount := bits.OnesCount(uint(m))
-			if bitCount > result {
-				result = bitCount
-			}
-		}
-	}
-
-	return result
+type input struct {
+	word1 []string
+	word2 []string
 }
 
 func main() {
-	inputs := [][]string{
-		{"un", "iq", "ue"},
-		{"cha", "r", "act", "ers"},
-		{"abcdefghijklmnopqrstuvwxyz"},
+	inputs := []input{
+		{
+			word1: []string{"ab", "c"},
+			word2: []string{"a", "bc"},
+		},
+		{
+			word1: []string{"a", "cb"},
+			word2: []string{"ab", "c"},
+		},
+		{
+			word1: []string{"abc", "d", "defg"},
+			word2: []string{"abcddefg"},
+		},
+		{
+			word1: []string{"abc", "d", "defg"},
+			word2: []string{"abcddef"},
+		},
 	}
 
-	for _, arr := range inputs {
-		result := maxLength(arr)
+	for _, input := range inputs {
+		word1 := input.word1
+		word2 := input.word2
+		result := arrayStringsAreEqual(word1, word2)
 		fmt.Println(result)
 	}
 }

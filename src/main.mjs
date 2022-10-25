@@ -1,36 +1,34 @@
 /**
- * @param {string[]} arr
- * @returns {number}
+ * @param {string[]} word1
+ * @param {string[]} word2
+ * @returns {boolean}
 */
-function maxLength (arr) {
-  const dp = [new Set()]
-  for (const str of arr) {
-    const memo = new Set(str)
-    if (memo.size < str.length) {
-      continue
-    }
-
-    for (const d of [...dp]) {
-      if ([...d].some(x => memo.has(x))) {
-        continue
-      } else {
-        dp.push(new Set([...d, ...memo]))
-      }
-    }
-  }
-
-  return Math.max(...[...dp].map(s => s.size))
+function arrayStringsAreEqual (word1, word2) {
+  return word1.join('') === word2.join('')
 }
 
 async function main () {
   const inputs = [
-    ['un', 'iq', 'ue'],
-    ['cha', 'r', 'act', 'ers'],
-    ['abcdefghijklmnopqrstuvwxyz']
+    {
+      word1: ['ab', 'c'],
+      word2: ['a', 'bc']
+    },
+    {
+      word1: ['a', 'cb'],
+      word2: ['ab', 'c']
+    },
+    {
+      word1: ['abc', 'd', 'defg'],
+      word2: ['abcddefg']
+    },
+    {
+      word1: ['abc', 'd', 'defg'],
+      word2: ['abcddef']
+    }
   ]
 
-  for (const arr of inputs) {
-    const result = maxLength(arr)
+  for (const { word1, word2 } of inputs) {
+    const result = arrayStringsAreEqual(word1, word2)
     console.log(result)
   }
 }
