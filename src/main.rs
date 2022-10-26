@@ -1,39 +1,57 @@
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn array_strings_are_equal(word1: Vec<String>, word2: Vec<String>) -> bool {
-        return word1.join("") == word2.join("");
+    pub fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
+        let mut map = HashMap::<i32, usize>::with_capacity(nums.len());
+        let mut sum = 0;
+
+        map.insert(0, 0);
+
+        for i in 0..nums.len() {
+            sum += nums[i];
+            let m = sum % k;
+            if let Some(memo) = map.get(&m) {
+                if *memo < i {
+                    return true;
+                }
+            } else {
+                map.insert(m, i + 1);
+            }
+        }
+        map.insert(0, 0);
+
+        return false;
     }
 }
 
 struct Input {
-    word1: Vec<&'static str>,
-    word2: Vec<&'static str>,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            word1: vec!["ab", "c"],
-            word2: vec!["a", "bc"],
+            nums: vec![23, 2, 4, 6, 7],
+            k: 6,
         },
         Input {
-            word1: vec!["a", "cb"],
-            word2: vec!["ab", "c"],
+            nums: vec![23, 2, 6, 4, 7],
+            k: 6,
         },
         Input {
-            word1: vec!["abc", "d", "defg"],
-            word2: vec!["abcddefg"],
+            nums: vec![23, 2, 6, 4, 7],
+            k: 13,
         },
         Input {
-            word1: vec!["abc", "d", "defg"],
-            word2: vec!["abcddef"],
+            nums: vec![23, 2, 4, 6, 6],
+            k: 7,
         },
     ];
 
-    for Input { word1, word2 } in inputs {
-        let word1 = word1.iter().map(|s| s.to_string()).collect();
-        let word2 = word2.iter().map(|s| s.to_string()).collect();
-        let result = Solution::array_strings_are_equal(word1, word2);
+    for Input { nums, k } in inputs {
+        let result = Solution::check_subarray_sum(nums, k);
         println!("{result:?}");
     }
 }

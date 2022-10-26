@@ -2,42 +2,53 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func arrayStringsAreEqual(word1 []string, word2 []string) bool {
-	return strings.Join(word1, "") == strings.Join(word2, "")
+func checkSubarraySum(nums []int, k int) bool {
+	hash := map[int]int{0: 0}
+	sum := 0
+
+	for i, num := range nums {
+		sum += num
+		mod := sum % k
+		if memo, ok := hash[mod]; ok {
+			if memo < i {
+				return true
+			}
+		} else {
+			hash[mod] = i + 1
+		}
+	}
+
+	return false
 }
 
 type input struct {
-	word1 []string
-	word2 []string
+	nums []int
+	k    int
 }
 
 func main() {
 	inputs := []input{
 		{
-			word1: []string{"ab", "c"},
-			word2: []string{"a", "bc"},
+			nums: []int{23, 2, 4, 6, 7},
+			k:    6,
 		},
 		{
-			word1: []string{"a", "cb"},
-			word2: []string{"ab", "c"},
+			nums: []int{23, 2, 6, 4, 7},
+			k:    6,
 		},
 		{
-			word1: []string{"abc", "d", "defg"},
-			word2: []string{"abcddefg"},
-		},
-		{
-			word1: []string{"abc", "d", "defg"},
-			word2: []string{"abcddef"},
+
+			nums: []int{23, 2, 6, 4, 7},
+			k:    13,
 		},
 	}
 
 	for _, input := range inputs {
-		word1 := input.word1
-		word2 := input.word2
-		result := arrayStringsAreEqual(word1, word2)
+		nums := input.nums
+		k := input.k
+		result := checkSubarraySum(nums, k)
 		fmt.Println(result)
 	}
 }

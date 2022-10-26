@@ -3,21 +3,31 @@ from typing import Optional, List
 
 
 class Solution:
-    def arrayStringsAreEqual(self, word1: List[str], word2: List[str]) -> bool:
-        return "".join(word1) == "".join(word2)
+    def checkSubarraySum(self, nums: List[int], k: int) -> bool:
+        map = {0: 0}
+        sum = 0
+
+        for i in range(len(nums)):
+            sum += nums[i]
+            mod = sum % k
+            if mod not in map:
+                map[mod] = i + 1
+            elif map[mod] < i:
+                return True
+
+        return False
 
 
 def main():
-    inputs: list[tuple[list[str], list[str]]] = [
-        (["ab", "c"], ["a", "bc"]),
-        (["a", "cb"], ["ab", "c"]),
-        (["abc", "d", "defg"], ["abcddefg"]),
-        (["abc", "d", "defg"], ["abcddef"]),
+    inputs: list[tuple[list[int], int]] = [
+        ([23, 2, 4, 6, 7], 6),
+        ([23, 2, 6, 4, 7], 6),
+        ([23, 2, 6, 4, 7], 13),
     ]
 
     solution = Solution()
-    for word1, word2 in inputs:
-        result = solution.arrayStringsAreEqual(word1, word2)
+    for nums, k in inputs:
+        result = solution.checkSubarraySum(nums, k)
         print(result)
 
 

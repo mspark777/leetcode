@@ -1,34 +1,44 @@
 /**
- * @param {string[]} word1
- * @param {string[]} word2
+ * @param {number[]} nums
+ * @param {number} k
  * @returns {boolean}
 */
-function arrayStringsAreEqual (word1, word2) {
-  return word1.join('') === word2.join('')
+function checkSubarraySum (nums, k) {
+  const map = new Map([[0, 0]])
+  let sum = 0
+  for (let i = 0; i < nums.length; i += 1) {
+    sum += nums[i]
+    const mod = sum % k
+    const memo = map.get(mod)
+    if (memo == null) {
+      map.set(mod, i + 1)
+    } else if (memo < i) {
+      return true
+    }
+  }
+
+  return false
 }
 
 async function main () {
   const inputs = [
     {
-      word1: ['ab', 'c'],
-      word2: ['a', 'bc']
+      nums: [23, 2, 4, 6, 7],
+      k: 6
     },
     {
-      word1: ['a', 'cb'],
-      word2: ['ab', 'c']
+      nums: [23, 2, 6, 4, 7],
+      k: 6
     },
     {
-      word1: ['abc', 'd', 'defg'],
-      word2: ['abcddefg']
-    },
-    {
-      word1: ['abc', 'd', 'defg'],
-      word2: ['abcddef']
+
+      nums: [23, 2, 6, 4, 7],
+      k: 13
     }
   ]
 
-  for (const { word1, word2 } of inputs) {
-    const result = arrayStringsAreEqual(word1, word2)
+  for (const { nums, k } of inputs) {
+    const result = checkSubarraySum(nums, k)
     console.log(result)
   }
 }
