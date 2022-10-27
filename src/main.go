@@ -1,54 +1,79 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func checkSubarraySum(nums []int, k int) bool {
-	hash := map[int]int{0: 0}
-	sum := 0
+func convolute(img, kernel [][]int, xshift, yshift int) int {
+	N := len(img)
+	result := 0
 
-	for i, num := range nums {
-		sum += num
-		mod := sum % k
-		if memo, ok := hash[mod]; ok {
-			if memo < i {
-				return true
-			}
-		} else {
-			hash[mod] = i + 1
+	for r := 0; r < N; r += 1 {
+		for c := 0; c < N; c += 1 {
+			result += img[r][c] * kernel[r+yshift][c+xshift]
 		}
 	}
 
-	return false
+	return result
+}
+
+func largestOverlap(img1 [][]int, img2 [][]int) int {
+	N := len(img1)
+	BN := (3 * N) - 2
+
+	bpadded := make([][]int, BN)
+	for i := 0; i < BN; i += 1 {
+		bpadded[i] = make([]int, BN)
+	}
+
+	for r := 0; r < N; r += 1 {
+		for c := 0; c < N; c += 1 {
+			bpadded[r+N-1][c+N-1] = img2[r][c]
+		}
+	}
+
+	SN := (2 * N) - 1
+	maxOverlaps := 0
+	for xshift := 0; xshift < SN; xshift += 1 {
+		for yshift := 0; yshift < SN; yshift += 1 {
+			overlaps := convolute(img1, bpadded, xshift, yshift)
+			if overlaps > maxOverlaps {
+				maxOverlaps = overlaps
+			}
+		}
+	}
+
+	return maxOverlaps
 }
 
 type input struct {
-	nums []int
-	k    int
+	img1 [][]int
+	img2 [][]int
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums: []int{23, 2, 4, 6, 7},
-			k:    6,
+			img1: [][]int{{1, 1, 0}, {0, 1, 0}, {0, 1, 0}},
+			img2: [][]int{{0, 0, 0}, {0, 1, 1}, {0, 0, 1}},
 		},
 		{
-			nums: []int{23, 2, 6, 4, 7},
-			k:    6,
+			img1: [][]int{{1}},
+			img2: [][]int{{1}},
+		},
+		{
+			img1: [][]int{{0}},
+			img2: [][]int{{0}},
 		},
 		{
 
-			nums: []int{23, 2, 6, 4, 7},
-			k:    13,
+			img1: [][]int{{0, 0, 0}, {1, 1, 0}, {0, 0, 0}},
+			img2: [][]int{{0, 1, 1}, {0, 0, 0}, {0, 0, 0}},
 		},
 	}
 
 	for _, input := range inputs {
-		nums := input.nums
-		k := input.k
-		result := checkSubarraySum(nums, k)
+		img1 := input.img1
+		img2 := input.img2
+		result := largestOverlap(img1, img2)
 		fmt.Println(result)
 	}
 }

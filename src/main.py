@@ -3,31 +3,49 @@ from typing import Optional, List
 
 
 class Solution:
-    def checkSubarraySum(self, nums: List[int], k: int) -> bool:
-        map = {0: 0}
-        sum = 0
+    def largestOverlap(self, img1: List[List[int]], img2: List[List[int]]) -> int:
+        N = len(img1)
+        BN = (3 * N) - 2
+        bpadded = [[0 for x in range(BN)] for x in range(BN)]
 
-        for i in range(len(nums)):
-            sum += nums[i]
-            mod = sum % k
-            if mod not in map:
-                map[mod] = i + 1
-            elif map[mod] < i:
-                return True
+        for r in range(N):
+            for c in range(N):
+                bpadded[r + N - 1][c + N - 1] = img2[r][c]
 
-        return False
+        SN = 2 * N - 1
+        max_overlaps = 0
+        for xshift in range(SN):
+            for yshift in range(SN):
+                max_overlaps = max(
+                    max_overlaps, self.convolute(img1, bpadded, xshift, yshift)
+                )
+
+        return max_overlaps
+
+    def convolute(
+        self, img: list[list[int]], kernel: list[list[int]], xshift: int, yshift: int
+    ) -> int:
+        N = len(img)
+
+        result = 0
+        for r in range(N):
+            for c in range(N):
+                result += img[r][c] * kernel[r + yshift][c + xshift]
+
+        return result
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([23, 2, 4, 6, 7], 6),
-        ([23, 2, 6, 4, 7], 6),
-        ([23, 2, 6, 4, 7], 13),
+    inputs: list[tuple[list[list[int]], list[list[int]]]] = [
+        ([[1, 1, 0], [0, 1, 0], [0, 1, 0]], [[0, 0, 0], [0, 1, 1], [0, 0, 1]]),
+        ([[1]], [[1]]),
+        ([[0]], [[0]]),
+        ([[0, 0, 0], [1, 1, 0], [0, 0, 0]], [[0, 1, 1], [0, 0, 0], [0, 0, 0]]),
     ]
 
     solution = Solution()
-    for nums, k in inputs:
-        result = solution.checkSubarraySum(nums, k)
+    for img1, img2 in inputs:
+        result = solution.largestOverlap(img1, img2)
         print(result)
 
 

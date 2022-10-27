@@ -1,44 +1,70 @@
-function checkSubarraySum (nums: number[], k: number): boolean {
-  const map = new Map<number, number>([[0, 0]])
-  let sum = 0
-  for (let i = 0; i < nums.length; i += 1) {
-    sum += nums[i]
-    const mod = sum % k
-    const memo = map.get(mod)
-    if (memo == null) {
-      map.set(mod, i + 1)
-    } else if (memo < i) {
-      return true
+function convolute (img: number[][], kernel: number[][], xshift: number, yshift: number): number {
+  const N = img.length
+
+  let result = 0
+  for (let r = 0; r < N; r += 1) {
+    for (let c = 0; c < N; c += 1) {
+      result += img[r][c] * kernel[r + yshift][c + xshift]
     }
   }
 
-  return false
+  return result
+}
+
+function largestOverlap (img1: number[][], img2: number[][]): number {
+  const N = img1.length
+  const BN = (3 * N) - 2
+
+  const bpadded = new Array<number[]>(BN)
+  for (let i = 0; i < BN; i += 1) {
+    bpadded[i] = new Array<number>(BN).fill(0)
+  }
+
+  for (let r = 0; r < N; r += 1) {
+    for (let c = 0; c < N; c += 1) {
+      bpadded[r + N - 1][c + N - 1] = img2[r][c]
+    }
+  }
+
+  const SN = 2 * N - 1
+  let maxOverlaps = 0
+  for (let xshift = 0; xshift < SN; xshift += 1) {
+    for (let yshift = 0; yshift < SN; yshift += 1) {
+      maxOverlaps = Math.max(maxOverlaps, convolute(img1, bpadded, xshift, yshift))
+    }
+  }
+
+  return maxOverlaps
 }
 
 interface Input {
-  readonly nums: number[]
-  readonly k: number
+  readonly img1: number[][]
+  readonly img2: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      nums: [23, 2, 4, 6, 7],
-      k: 6
+      img1: [[1, 1, 0], [0, 1, 0], [0, 1, 0]],
+      img2: [[0, 0, 0], [0, 1, 1], [0, 0, 1]]
     },
     {
-      nums: [23, 2, 6, 4, 7],
-      k: 6
+      img1: [[1]],
+      img2: [[1]]
+    },
+    {
+      img1: [[0]],
+      img2: [[0]]
     },
     {
 
-      nums: [23, 2, 6, 4, 7],
-      k: 13
+      img1: [[0, 0, 0], [1, 1, 0], [0, 0, 0]],
+      img2: [[0, 1, 1], [0, 0, 0], [0, 0, 0]]
     }
   ]
 
-  for (const { nums, k } of inputs) {
-    const result = checkSubarraySum(nums, k)
+  for (const { img1, img2 } of inputs) {
+    const result = largestOverlap(img1, img2)
     console.log(result)
   }
 }

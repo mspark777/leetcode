@@ -1,57 +1,69 @@
-use std::collections::HashMap;
-
 struct Solution {}
 impl Solution {
-    pub fn check_subarray_sum(nums: Vec<i32>, k: i32) -> bool {
-        let mut map = HashMap::<i32, usize>::with_capacity(nums.len());
-        let mut sum = 0;
+    pub fn largest_overlap(img1: Vec<Vec<i32>>, img2: Vec<Vec<i32>>) -> i32 {
+        let n = img1.len();
+        let bn = (3 * n) - 2;
 
-        map.insert(0, 0);
+        let mut bpadded = vec![vec![0; bn]; bn];
 
-        for i in 0..nums.len() {
-            sum += nums[i];
-            let m = sum % k;
-            if let Some(memo) = map.get(&m) {
-                if *memo < i {
-                    return true;
-                }
-            } else {
-                map.insert(m, i + 1);
+        for r in 0..n {
+            for c in 0..n {
+                bpadded[r + n - 1][c + n - 1] = img2[r][c];
             }
         }
-        map.insert(0, 0);
 
-        return false;
+        let sn = (2 * n) - 1;
+        let mut max_overlaps = 0;
+        for xshift in 0..sn {
+            for yshift in 0..sn {
+                max_overlaps = max_overlaps.max(Self::convolute(&img1, &bpadded, xshift, yshift));
+            }
+        }
+
+        return max_overlaps;
+    }
+
+    fn convolute(img: &Vec<Vec<i32>>, kernel: &Vec<Vec<i32>>, xshift: usize, yshift: usize) -> i32 {
+        let n = img.len();
+        let mut result = 0;
+
+        for r in 0..n {
+            for c in 0..n {
+                result += img[r][c] * kernel[r + yshift][c + xshift];
+            }
+        }
+
+        return result;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    img1: Vec<Vec<i32>>,
+    img2: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: vec![23, 2, 4, 6, 7],
-            k: 6,
+            img1: vec![vec![1, 1, 0], vec![0, 1, 0], vec![0, 1, 0]],
+            img2: vec![vec![0, 0, 0], vec![0, 1, 1], vec![0, 0, 1]],
         },
         Input {
-            nums: vec![23, 2, 6, 4, 7],
-            k: 6,
+            img1: vec![vec![1]],
+            img2: vec![vec![1]],
         },
         Input {
-            nums: vec![23, 2, 6, 4, 7],
-            k: 13,
+            img1: vec![vec![0]],
+            img2: vec![vec![0]],
         },
         Input {
-            nums: vec![23, 2, 4, 6, 6],
-            k: 7,
+            img1: vec![vec![0, 0, 0], vec![1, 1, 0], vec![0, 0, 0]],
+            img2: vec![vec![0, 1, 1], vec![0, 0, 0], vec![0, 0, 0]],
         },
     ];
 
-    for Input { nums, k } in inputs {
-        let result = Solution::check_subarray_sum(nums, k);
-        println!("{result:?}");
+    for Input { img1, img2 } in inputs {
+        let result = Solution::largest_overlap(img1, img2);
+        println!("{result}");
     }
 }
