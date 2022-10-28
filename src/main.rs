@@ -1,69 +1,31 @@
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn largest_overlap(img1: Vec<Vec<i32>>, img2: Vec<Vec<i32>>) -> i32 {
-        let n = img1.len();
-        let bn = (3 * n) - 2;
+    pub fn group_anagrams(strs: Vec<String>) -> Vec<Vec<String>> {
+        let mut groups = HashMap::<Vec<char>, Vec<String>>::with_capacity(strs.len());
 
-        let mut bpadded = vec![vec![0; bn]; bn];
+        for s in strs.iter() {
+            let mut key: Vec<char> = s.chars().collect();
+            key.sort();
 
-        for r in 0..n {
-            for c in 0..n {
-                bpadded[r + n - 1][c + n - 1] = img2[r][c];
-            }
+            groups.entry(key).or_insert(vec![]).push(s.clone());
         }
 
-        let sn = (2 * n) - 1;
-        let mut max_overlaps = 0;
-        for xshift in 0..sn {
-            for yshift in 0..sn {
-                max_overlaps = max_overlaps.max(Self::convolute(&img1, &bpadded, xshift, yshift));
-            }
-        }
-
-        return max_overlaps;
+        return groups.values().cloned().collect();
     }
-
-    fn convolute(img: &Vec<Vec<i32>>, kernel: &Vec<Vec<i32>>, xshift: usize, yshift: usize) -> i32 {
-        let n = img.len();
-        let mut result = 0;
-
-        for r in 0..n {
-            for c in 0..n {
-                result += img[r][c] * kernel[r + yshift][c + xshift];
-            }
-        }
-
-        return result;
-    }
-}
-
-struct Input {
-    img1: Vec<Vec<i32>>,
-    img2: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            img1: vec![vec![1, 1, 0], vec![0, 1, 0], vec![0, 1, 0]],
-            img2: vec![vec![0, 0, 0], vec![0, 1, 1], vec![0, 0, 1]],
-        },
-        Input {
-            img1: vec![vec![1]],
-            img2: vec![vec![1]],
-        },
-        Input {
-            img1: vec![vec![0]],
-            img2: vec![vec![0]],
-        },
-        Input {
-            img1: vec![vec![0, 0, 0], vec![1, 1, 0], vec![0, 0, 0]],
-            img2: vec![vec![0, 1, 1], vec![0, 0, 0], vec![0, 0, 0]],
-        },
+        vec!["eat", "tea", "tan", "ate", "nat", "bat"],
+        vec![""],
+        vec!["a"],
     ];
 
-    for Input { img1, img2 } in inputs {
-        let result = Solution::largest_overlap(img1, img2);
-        println!("{result}");
+    for input in inputs {
+        let strs = input.iter().map(|s| s.to_string()).collect();
+        let result = Solution::group_anagrams(strs);
+        println!("{result:?}");
     }
 }

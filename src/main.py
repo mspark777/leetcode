@@ -3,49 +3,26 @@ from typing import Optional, List
 
 
 class Solution:
-    def largestOverlap(self, img1: List[List[int]], img2: List[List[int]]) -> int:
-        N = len(img1)
-        BN = (3 * N) - 2
-        bpadded = [[0 for x in range(BN)] for x in range(BN)]
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        map: dict[str, list[str]] = {}
 
-        for r in range(N):
-            for c in range(N):
-                bpadded[r + N - 1][c + N - 1] = img2[r][c]
+        for str in strs:
+            key = "".join(sorted(str))
 
-        SN = 2 * N - 1
-        max_overlaps = 0
-        for xshift in range(SN):
-            for yshift in range(SN):
-                max_overlaps = max(
-                    max_overlaps, self.convolute(img1, bpadded, xshift, yshift)
-                )
+            if key in map:
+                map[key].append(str)
+            else:
+                map[key] = [str]
 
-        return max_overlaps
-
-    def convolute(
-        self, img: list[list[int]], kernel: list[list[int]], xshift: int, yshift: int
-    ) -> int:
-        N = len(img)
-
-        result = 0
-        for r in range(N):
-            for c in range(N):
-                result += img[r][c] * kernel[r + yshift][c + xshift]
-
-        return result
+        return list(map.values())
 
 
 def main():
-    inputs: list[tuple[list[list[int]], list[list[int]]]] = [
-        ([[1, 1, 0], [0, 1, 0], [0, 1, 0]], [[0, 0, 0], [0, 1, 1], [0, 0, 1]]),
-        ([[1]], [[1]]),
-        ([[0]], [[0]]),
-        ([[0, 0, 0], [1, 1, 0], [0, 0, 0]], [[0, 1, 1], [0, 0, 0], [0, 0, 0]]),
-    ]
+    inputs: list[list[str]] = [["eat", "tea", "tan", "ate", "nat", "bat"], [""], ["a"]]
 
     solution = Solution()
-    for img1, img2 in inputs:
-        result = solution.largestOverlap(img1, img2)
+    for strs in inputs:
+        result = solution.groupAnagrams(strs)
         print(result)
 
 
