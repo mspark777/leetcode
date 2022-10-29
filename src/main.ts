@@ -1,28 +1,47 @@
-function groupAnagrams (strs: string[]): string[][] {
-  const map = new Map<string, string[]>()
-
-  for (const str of strs) {
-    const key = [...str].sort().join('')
-    const group = map.get(key)
-    if (group != null) {
-      group.push(str)
-    } else {
-      map.set(key, [str])
-    }
+function earliestFullBloom (plantTime: number[], growTime: number[]): number {
+  const N = growTime.length
+  const indices = new Array<number>(N)
+  for (let i = 0; i < N; i += 1) {
+    indices[i] = i
   }
 
-  return Array.from(map.values())
+  indices.sort((a, b) => growTime[b] - growTime[a])
+  let result = 0
+  let curPlantTime = 0
+  for (let i = 0; i < N; i += 1) {
+    const idx = indices[i]
+    const ptime = plantTime[idx]
+    const time = curPlantTime + ptime + growTime[idx]
+    result = Math.max(result, time)
+    curPlantTime += ptime
+  }
+
+  return result
+}
+
+interface Input {
+  readonly plantTime: number[]
+  readonly growTime: number[]
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][] = [
-    ['eat', 'tea', 'tan', 'ate', 'nat', 'bat'],
-    [''],
-    ['a']
+  const inputs: Input[] = [
+    {
+      plantTime: [1, 4, 3],
+      growTime: [2, 3, 1]
+    },
+    {
+      plantTime: [1, 2, 3, 2],
+      growTime: [2, 1, 2, 1]
+    },
+    {
+      plantTime: [1],
+      growTime: [1]
+    }
   ]
 
-  for (const strs of inputs) {
-    const result = groupAnagrams(strs)
+  for (const { plantTime, growTime } of inputs) {
+    const result = earliestFullBloom(plantTime, growTime)
     console.log(result)
   }
 }
