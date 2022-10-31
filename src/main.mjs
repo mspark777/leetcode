@@ -1,32 +1,27 @@
 /**
- * @param {string[]} strs
- * @returns {string[][]}
- */
-function groupAnagrams (strs) {
-  const map = new Map()
-
-  for (const str of strs) {
-    const key = [...str].sort().join('')
-    const group = map.get(key)
-    if (group != null) {
-      group.push(str)
-    } else {
-      map.set(key, [str])
+ * @param {number[][]} matrix
+ * @returns {boolean}
+*/
+function isToeplitzMatrix (matrix) {
+  for (let r = 1; r < matrix.length; r += 1) {
+    for (let c = 1; c < matrix[r].length; c += 1) {
+      if (matrix[r - 1][c - 1] !== matrix[r][c]) {
+        return false
+      }
     }
   }
 
-  return Array.from(map.values())
+  return true
 }
 
 async function main () {
   const inputs = [
-    ['eat', 'tea', 'tan', 'ate', 'nat', 'bat'],
-    [''],
-    ['a']
+    [[1, 2, 3, 4], [5, 1, 2, 3], [9, 5, 1, 2]],
+    [[1, 2], [2, 2]]
   ]
 
-  for (const strs of inputs) {
-    const result = groupAnagrams(strs)
+  for (const matrix of inputs) {
+    const result = isToeplitzMatrix(matrix)
     console.log(result)
   }
 }

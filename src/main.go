@@ -2,44 +2,28 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func groupAnagrams(strs []string) [][]string {
-	groups := map[string][]string{}
-
-	for _, str := range strs {
-		runes := []rune(str)
-		sort.Slice(runes, func(i, j int) bool {
-			return runes[i] < runes[j]
-		})
-
-		key := string(runes)
-		if group, ok := groups[key]; ok {
-			group = append(group, str)
-			groups[key] = group
-		} else {
-			groups[key] = []string{str}
+func isToeplitzMatrix(matrix [][]int) bool {
+	for r := 1; r < len(matrix); r += 1 {
+		for c := 1; c < len(matrix[r]); c += 1 {
+			if matrix[r-1][c-1] != matrix[r][c] {
+				return false
+			}
 		}
 	}
 
-	result := make([][]string, 0, len(groups))
-	for _, v := range groups {
-		result = append(result, v)
-	}
-
-	return result
+	return true
 }
 
 func main() {
-	inputs := [][]string{
-		{"eat", "tea", "tan", "ate", "nat", "bat"},
-		{""},
-		{"a"},
+	inputs := [][][]int{
+		{{1, 2, 3, 4}, {5, 1, 2, 3}, {9, 5, 1, 2}},
+		{{1, 2}, {2, 2}},
 	}
 
-	for _, strs := range inputs {
-		result := groupAnagrams(strs)
+	for _, matrix := range inputs {
+		result := isToeplitzMatrix(matrix)
 		fmt.Println(result)
 	}
 }

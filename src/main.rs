@@ -1,31 +1,26 @@
-use std::collections::HashMap;
-
 struct Solution {}
 impl Solution {
-    pub fn group_anagrams(strs: Vec<String>) -> Vec<Vec<String>> {
-        let mut groups = HashMap::<Vec<char>, Vec<String>>::with_capacity(strs.len());
-
-        for s in strs.iter() {
-            let mut key: Vec<char> = s.chars().collect();
-            key.sort();
-
-            groups.entry(key).or_insert(vec![]).push(s.clone());
+    pub fn is_toeplitz_matrix(matrix: Vec<Vec<i32>>) -> bool {
+        for r in 1..matrix.len() {
+            for c in 1..matrix[r].len() {
+                if matrix[r - 1][c - 1] != matrix[r][c] {
+                    return false;
+                }
+            }
         }
 
-        return groups.values().cloned().collect();
+        return true;
     }
 }
 
 fn main() {
     let inputs = [
-        vec!["eat", "tea", "tan", "ate", "nat", "bat"],
-        vec![""],
-        vec!["a"],
+        vec![vec![1, 2, 3, 4], vec![5, 1, 2, 3], vec![9, 5, 1, 2]],
+        vec![vec![1, 2], vec![2, 2]],
     ];
 
-    for input in inputs {
-        let strs = input.iter().map(|s| s.to_string()).collect();
-        let result = Solution::group_anagrams(strs);
-        println!("{result:?}");
+    for matrix in inputs {
+        let result = Solution::is_toeplitz_matrix(matrix);
+        println!("{result}");
     }
 }
