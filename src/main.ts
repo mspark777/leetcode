@@ -1,23 +1,45 @@
-function isToeplitzMatrix (matrix: number[][]): boolean {
-  for (let r = 1; r < matrix.length; r += 1) {
-    for (let c = 1; c < matrix[r].length; c += 1) {
-      if (matrix[r - 1][c - 1] !== matrix[r][c]) {
-        return false
+function findBall (grid: number[][]): number[] {
+  const NO = -1
+  const rowCount = grid.length
+  const colCount = grid[0].length
+  const result = new Array<number>(colCount).fill(0)
+
+  for (let col = 0; col < colCount; col += 1) {
+    let currentCol = col
+    for (let row = 0; row < rowCount; row += 1) {
+      const current = grid[row][currentCol]
+      const nextColumn = currentCol + current
+
+      if (nextColumn < 0) {
+        result[col] = NO
+      } else if (nextColumn > (colCount - 1)) {
+        result[col] = NO
+      } else if (current !== grid[row][nextColumn]) {
+        result[col] = NO
+      } else {
+        result[col] = nextColumn
+        currentCol = nextColumn
+      }
+
+      if (result[col] === NO) {
+        break
       }
     }
   }
 
-  return true
+  return result
 }
 
 async function main (): Promise<void> {
   const inputs: number[][][] = [
-    [[1, 2, 3, 4], [5, 1, 2, 3], [9, 5, 1, 2]],
-    [[1, 2], [2, 2]]
+    [[1, 1, 1, -1, -1], [1, 1, 1, -1, -1], [-1, -1, -1, 1, 1], [1, 1, 1, 1, -1], [-1, -1, -1, -1, -1]],
+    [[-1]],
+    [[1, 1, 1, 1, 1, 1], [-1, -1, -1, -1, -1, -1], [1, 1, 1, 1, 1, 1], [-1, -1, -1, -1, -1, -1]],
+    [[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
   ]
 
-  for (const matrix of inputs) {
-    const result = isToeplitzMatrix(matrix)
+  for (const grid of inputs) {
+    const result = findBall(grid)
     console.log(result)
   }
 }

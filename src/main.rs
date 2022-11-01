@@ -1,26 +1,90 @@
 struct Solution {}
 impl Solution {
-    pub fn is_toeplitz_matrix(matrix: Vec<Vec<i32>>) -> bool {
-        for r in 1..matrix.len() {
-            for c in 1..matrix[r].len() {
-                if matrix[r - 1][c - 1] != matrix[r][c] {
-                    return false;
+    pub fn find_ball(grid: Vec<Vec<i32>>) -> Vec<i32> {
+        const NO: i32 = -1;
+        let row_count = grid.len();
+        let col_count = grid[0].len();
+        let mut result = vec![0; col_count];
+
+        for col in 0..col_count {
+            let mut current_idx = col;
+            let mut current_col = col as i32;
+            for row in 0..row_count {
+                let current = grid[row][current_idx];
+                let next_column = current_col + current;
+
+                if next_column < 0 {
+                    result[col] = NO;
+                    break;
                 }
+
+                let next_idx = next_column as usize;
+                if next_idx >= col_count {
+                    result[col] = NO;
+                    break;
+                } else if current != grid[row][next_idx] {
+                    result[col] = NO;
+                    break;
+                }
+
+                result[col] = next_column;
+                current_col = next_column;
+                current_idx = next_idx;
             }
         }
 
-        return true;
+        return result;
     }
 }
 
 fn main() {
     let inputs = [
-        vec![vec![1, 2, 3, 4], vec![5, 1, 2, 3], vec![9, 5, 1, 2]],
-        vec![vec![1, 2], vec![2, 2]],
+        vec![
+            vec![1, 1, 1, -1, -1],
+            vec![1, 1, 1, -1, -1],
+            vec![-1, -1, -1, 1, 1],
+            vec![1, 1, 1, 1, -1],
+            vec![-1, -1, -1, -1, -1],
+        ],
+        vec![vec![-1]],
+        vec![
+            vec![1, 1, 1, 1, 1, 1],
+            vec![-1, -1, -1, -1, -1, -1],
+            vec![1, 1, 1, 1, 1, 1],
+            vec![-1, -1, -1, -1, -1, -1],
+        ],
+        vec![
+            vec![
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            ],
+            vec![
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            ],
+            vec![
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            ],
+            vec![
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            ],
+        ],
     ];
 
-    for matrix in inputs {
-        let result = Solution::is_toeplitz_matrix(matrix);
-        println!("{result}");
+    for grid in inputs {
+        let result = Solution::find_ball(grid);
+        println!("{result:?}");
     }
 }
