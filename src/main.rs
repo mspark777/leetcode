@@ -1,90 +1,83 @@
+use std::collections::{HashSet, VecDeque};
+use std::iter::FromIterator;
+
 struct Solution {}
 impl Solution {
-    pub fn find_ball(grid: Vec<Vec<i32>>) -> Vec<i32> {
-        const NO: i32 = -1;
-        let row_count = grid.len();
-        let col_count = grid[0].len();
-        let mut result = vec![0; col_count];
+    pub fn min_mutation(start: String, end: String, bank: Vec<String>) -> i32 {
+        let bank_set = HashSet::<String>::from_iter(bank.iter().cloned());
+        let mut seens = HashSet::<String>::with_capacity(bank.len());
+        let mut queue = VecDeque::<String>::with_capacity(bank.len());
+        let mut result = 0;
 
-        for col in 0..col_count {
-            let mut current_idx = col;
-            let mut current_col = col as i32;
-            for row in 0..row_count {
-                let current = grid[row][current_idx];
-                let next_column = current_col + current;
+        seens.insert(start.clone());
+        queue.push_back(start.clone());
 
-                if next_column < 0 {
-                    result[col] = NO;
-                    break;
+        while !queue.is_empty() {
+            let queue_len = queue.len();
+            for _ in 0..queue_len {
+                let gene = queue.pop_front().unwrap();
+                if gene == end {
+                    return result;
                 }
 
-                let next_idx = next_column as usize;
-                if next_idx >= col_count {
-                    result[col] = NO;
-                    break;
-                } else if current != grid[row][next_idx] {
-                    result[col] = NO;
-                    break;
-                }
+                let temp: Vec<char> = gene.chars().collect();
+                for g in "ACGT".chars() {
+                    for j in 0..temp.len() {
+                        let mut genes = temp.clone();
+                        genes[j] = g;
 
-                result[col] = next_column;
-                current_col = next_column;
-                current_idx = next_idx;
+                        let neighbor: String = genes.iter().collect();
+
+                        if !seens.contains(&neighbor) && bank_set.contains(&neighbor) {
+                            queue.push_back(neighbor.clone());
+                            seens.insert(neighbor.clone());
+                        }
+                    }
+                }
             }
+
+            result += 1;
         }
 
-        return result;
+        return -1;
     }
+}
+
+struct Input {
+    start: &'static str,
+    end: &'static str,
+    bank: Vec<&'static str>,
 }
 
 fn main() {
     let inputs = [
-        vec![
-            vec![1, 1, 1, -1, -1],
-            vec![1, 1, 1, -1, -1],
-            vec![-1, -1, -1, 1, 1],
-            vec![1, 1, 1, 1, -1],
-            vec![-1, -1, -1, -1, -1],
-        ],
-        vec![vec![-1]],
-        vec![
-            vec![1, 1, 1, 1, 1, 1],
-            vec![-1, -1, -1, -1, -1, -1],
-            vec![1, 1, 1, 1, 1, 1],
-            vec![-1, -1, -1, -1, -1, -1],
-        ],
-        vec![
-            vec![
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            ],
-            vec![
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            ],
-            vec![
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            ],
-            vec![
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            ],
-        ],
+        Input {
+            start: "AACCGGTT",
+            end: "AACCGGTA",
+            bank: vec!["AACCGGTA"],
+        },
+        Input {
+            start: "AACCGGTT",
+            end: "AAACGGTA",
+            bank: vec!["AACCGGTA", "AACCGCTA", "AAACGGTA"],
+        },
+        Input {
+            start: "AAAAACCC",
+            end: "AACCCCCC",
+            bank: vec!["AAAACCCC", "AAACCCCC", "AACCCCCC"],
+        },
+        Input {
+            start: "AACCGGTT",
+            end: "AACCGCTA",
+            bank: vec!["AACCGGTA", "AACCGCTA", "AAACGGTA"],
+        },
     ];
 
-    for grid in inputs {
-        let result = Solution::find_ball(grid);
-        println!("{result:?}");
+    for Input { start, end, bank } in inputs {
+        let start = start.to_string();
+        let end = end.to_string();
+        let bank = bank.iter().map(|s| s.to_string()).collect();
+        let result = Solution::min_mutation(start, end, bank);
+        println!("{result}");
     }
 }
