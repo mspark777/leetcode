@@ -1,59 +1,44 @@
 from __future__ import annotations
 from typing import Optional, List
-from collections import deque
+from collections import Counter, deque
 
 
 class Solution:
-    def minMutation(self, start: str, end: str, bank: List[str]) -> int:
-        queue = deque([start])
-        seens = set([start])
-        bank_set = set(bank)
-
+    def longestPalindrome(self, words: List[str]) -> int:
+        counts = Counter(words)
         result = 0
+        central = False
 
-        while queue:
-            queue_len = len(queue)
-            for i in range(queue_len):
-                gene = queue.popleft()
-                if gene == end:
-                    return result
+        for word, count in counts.items():
+            first = word[0]
+            second = word[1]
+            if first == second:
+                if (count % 2) == 0:
+                    result += count
+                else:
+                    result += count - 1
+                    central = True
+            elif first < second:
+                rword = f"{second}{first}"
+                if rword in counts:
+                    result += 2 * min(count, counts[rword])
 
-                for g in "ACGT":
-                    for j in range(len(gene)):
-                        neighbor = gene[:j] + g + gene[j + 1 :]
-                        if neighbor not in seens and neighbor in bank_set:
-                            queue.append(neighbor)
-                            seens.add(neighbor)
+        if central:
             result += 1
 
-        return -1
-
-
-class Input:
-    start: str
-    end: str
-    bank: list[str]
-
-    def __init__(self, start: str, end: str, bank: list[str]) -> None:
-        self.start = start
-        self.end = end
-        self.bank = bank
+        return result * 2
 
 
 def main():
-    inputs: list[Input] = [
-        Input("AACCGGTT", "AACCGGTA", ["AACCGGTA"]),
-        Input("AACCGGTT", "AAACGGTA", ["AACCGGTA", "AACCGCTA", "AAACGGTA"]),
-        Input("AAAAACCC", "AACCCCCC", ["AAAACCCC", "AAACCCCC", "AACCCCCC"]),
-        Input("AACCGGTT", "AACCGCTA", ["AACCGGTA", "AACCGCTA", "AAACGGTA"]),
+    inputs: list[list[str]] = [
+        ["lc", "cl", "gg"],
+        ["ab", "ty", "yt", "lc", "cl", "ab"],
+        ["cc", "ll", "xx"],
     ]
 
     solution = Solution()
-    for input in inputs:
-        start = input.start
-        end = input.end
-        bank = input.bank
-        result = solution.minMutation(start, end, bank)
+    for words in inputs:
+        result = solution.longestPalindrome(words)
         print(result)
 
 

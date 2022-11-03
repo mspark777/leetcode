@@ -4,71 +4,53 @@ import (
 	"fmt"
 )
 
-func minMutation(start string, end string, bank []string) int {
-	bankSet := make(map[string]bool)
-	seens := map[string]bool{start: true}
-	queue := []string{start}
-
-	for _, gene := range bank {
-		bankSet[gene] = true
+func longestPalindrome(words []string) int {
+	counts := map[string]int{}
+	for _, word := range words {
+		counts[word] += 1
 	}
 
 	result := 0
+	central := false
 
-	for len(queue) > 0 {
-		queueLen := len(queue)
-		for i := 0; i < queueLen; i += 1 {
-			gene := queue[i]
-
-			if gene == end {
-				return result
+	for word, count := range counts {
+		first := word[0]
+		second := word[1]
+		if first == second {
+			if (count % 2) == 0 {
+				result += count
+			} else {
+				result += count - 1
+				central = true
 			}
-
-			for _, g := range "ACGT" {
-				for j := 0; j < len(gene); j += 1 {
-					genes := []rune(gene)
-					genes[j] = g
-
-					neighbor := string(genes)
-
-					if _, ok := seens[neighbor]; ok {
-						continue
-					}
-
-					if _, ok := bankSet[neighbor]; ok {
-						queue = append(queue, neighbor)
-						seens[neighbor] = true
-					}
+		} else if first < second {
+			rword := string([]byte{second, first})
+			if rcount, ok := counts[rword]; ok {
+				if count < rcount {
+					result += 2 * count
+				} else {
+					result += 2 * rcount
 				}
 			}
 		}
-
-		result += 1
-		queue = queue[queueLen:]
 	}
 
-	return -1
-}
+	if central {
+		result += 1
+	}
 
-type input struct {
-	start string
-	end   string
-	bank  []string
+	return result * 2
 }
 
 func main() {
-	inputs := []input{
-		{start: "AACCGGTT", end: "AACCGGTA", bank: []string{"AACCGGTA"}},
-		{start: "AACCGGTT", end: "AAACGGTA", bank: []string{"AACCGGTA", "AACCGCTA", "AAACGGTA"}},
-		{start: "AAAAACCC", end: "AACCCCCC", bank: []string{"AAAACCCC", "AAACCCCC", "AACCCCCC"}},
-		{start: "AACCGGTT", end: "AACCGCTA", bank: []string{"AACCGGTA", "AACCGCTA", "AAACGGTA"}},
+	inputs := [][]string{
+		{"lc", "cl", "gg"},
+		{"ab", "ty", "yt", "lc", "cl", "ab"},
+		{"cc", "ll", "xx"},
 	}
 
-	for _, input := range inputs {
-		start := input.start
-		end := input.end
-		bank := input.bank
-		result := minMutation(start, end, bank)
+	for _, words := range inputs {
+		result := longestPalindrome(words)
 		fmt.Println(result)
 	}
 }

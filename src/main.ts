@@ -1,56 +1,46 @@
-function minMutation (start: string, end: string, bank: string[]): number {
-  const bankSet = new Set(bank)
-  const seens = new Set([start])
-  let queue = [start]
-
-  let result = 0
-
-  while (queue.length > 0) {
-    const queueLen = queue.length
-    for (let i = 0; i < queueLen; i += 1) {
-      const gene = queue[i]
-
-      if (gene === end) {
-        return result
-      }
-
-      for (const g of 'ACGT') {
-        for (let j = 0; j < gene.length; j += 1) {
-          const genes = [...gene]
-          genes[j] = g
-          const neighbor = genes.join('')
-
-          if (!seens.has(neighbor) && bankSet.has(neighbor)) {
-            queue.push(neighbor)
-            seens.add(neighbor)
-          }
-        }
-      }
-    }
-
-    result += 1
-    queue = queue.slice(queueLen)
+function longestPalindrome (words: string[]): number {
+  const counts = new Map<string, number>()
+  for (const word of words) {
+    const count = counts.get(word) ?? 0
+    counts.set(word, count + 1)
   }
 
-  return -1
-}
+  let result = 0
+  let central = false
 
-interface Input {
-  readonly start: string
-  readonly end: string
-  readonly bank: string[]
+  for (const [word, count] of counts) {
+    const [first, second] = [...word]
+    if (first === second) {
+      if ((count % 2) === 0) {
+        result += count
+      } else {
+        result += count - 1
+        central = true
+      }
+    } else if (first.localeCompare(second) < 0) {
+      const rword = `${second}${first}`
+      if (counts.has(rword)) {
+        result += 2 * Math.min(count, counts.get(rword) as number)
+      }
+    }
+  }
+
+  if (central) {
+    result += 1
+  }
+
+  return result * 2
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { start: 'AACCGGTT', end: 'AACCGGTA', bank: ['AACCGGTA'] },
-    { start: 'AACCGGTT', end: 'AAACGGTA', bank: ['AACCGGTA', 'AACCGCTA', 'AAACGGTA'] },
-    { start: 'AAAAACCC', end: 'AACCCCCC', bank: ['AAAACCCC', 'AAACCCCC', 'AACCCCCC'] },
-    { start: 'AACCGGTT', end: 'AACCGCTA', bank: ['AACCGGTA', 'AACCGCTA', 'AAACGGTA'] }
+  const inputs: string[][] = [
+    ['lc', 'cl', 'gg'],
+    ['ab', 'ty', 'yt', 'lc', 'cl', 'ab'],
+    ['cc', 'll', 'xx']
   ]
 
-  for (const { start, end, bank } of inputs) {
-    const result = minMutation(start, end, bank)
+  for (const words of inputs) {
+    const result = longestPalindrome(words)
     console.log(result)
   }
 }
