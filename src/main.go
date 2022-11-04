@@ -4,53 +4,54 @@ import (
 	"fmt"
 )
 
-func longestPalindrome(words []string) int {
-	counts := map[string]int{}
-	for _, word := range words {
-		counts[word] += 1
+func reverseVowels(s string) string {
+	vowels := map[rune]bool{
+		'a': true,
+		'e': true,
+		'i': true,
+		'o': true,
+		'u': true,
+		'A': true,
+		'E': true,
+		'I': true,
+		'O': true,
+		'U': true,
 	}
 
-	result := 0
-	central := false
+	words := []rune(s)
+	left := 0
+	right := len(words) - 1
 
-	for word, count := range counts {
-		first := word[0]
-		second := word[1]
-		if first == second {
-			if (count % 2) == 0 {
-				result += count
-			} else {
-				result += count - 1
-				central = true
-			}
-		} else if first < second {
-			rword := string([]byte{second, first})
-			if rcount, ok := counts[rword]; ok {
-				if count < rcount {
-					result += 2 * count
-				} else {
-					result += 2 * rcount
-				}
-			}
+	for left < right {
+		l := words[left]
+		if _, ok := vowels[l]; !ok {
+			left += 1
+			continue
 		}
+
+		r := words[right]
+		if _, ok := vowels[r]; !ok {
+			right -= 1
+			continue
+		}
+
+		words[left] = r
+		words[right] = l
+		left += 1
+		right -= 1
 	}
 
-	if central {
-		result += 1
-	}
-
-	return result * 2
+	return string(words)
 }
 
 func main() {
-	inputs := [][]string{
-		{"lc", "cl", "gg"},
-		{"ab", "ty", "yt", "lc", "cl", "ab"},
-		{"cc", "ll", "xx"},
+	inputs := []string{
+		"hello",
+		"leetcode",
 	}
 
-	for _, words := range inputs {
-		result := longestPalindrome(words)
+	for _, s := range inputs {
+		result := reverseVowels(s)
 		fmt.Println(result)
 	}
 }

@@ -4,41 +4,37 @@ from collections import Counter, deque
 
 
 class Solution:
-    def longestPalindrome(self, words: List[str]) -> int:
-        counts = Counter(words)
-        result = 0
-        central = False
+    def reverseVowels(self, s: str) -> str:
+        vowels = set(["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"])
+        words = list(s)
+        left = 0
+        right = len(words) - 1
 
-        for word, count in counts.items():
-            first = word[0]
-            second = word[1]
-            if first == second:
-                if (count % 2) == 0:
-                    result += count
-                else:
-                    result += count - 1
-                    central = True
-            elif first < second:
-                rword = f"{second}{first}"
-                if rword in counts:
-                    result += 2 * min(count, counts[rword])
+        while left < right:
+            l = words[left]
+            if l not in vowels:
+                left += 1
+                continue
 
-        if central:
-            result += 1
+            r = words[right]
+            if r not in vowels:
+                right -= 1
+                continue
 
-        return result * 2
+            words[left] = r
+            words[right] = l
+            left += 1
+            right -= 1
+
+        return "".join(words)
 
 
 def main():
-    inputs: list[list[str]] = [
-        ["lc", "cl", "gg"],
-        ["ab", "ty", "yt", "lc", "cl", "ab"],
-        ["cc", "ll", "xx"],
-    ]
+    inputs: list[str] = ["hello", "leetcode"]
 
     solution = Solution()
-    for words in inputs:
-        result = solution.longestPalindrome(words)
+    for s in inputs:
+        result = solution.reverseVowels(s)
         print(result)
 
 

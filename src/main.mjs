@@ -1,50 +1,41 @@
 /**
- * @param {string[]} words
- * @returns {number}
+ * @param {string} s
+ * @returns {string}
 */
-function longestPalindrome (words) {
-  const counts = new Map()
-  for (const word of words) {
-    const count = counts.get(word) ?? 0
-    counts.set(word, count + 1)
-  }
+function reverseVowels (s) {
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'])
+  const words = [...s]
+  let left = 0
+  let right = words.length - 1
 
-  let result = 0
-  let central = false
-
-  for (const [word, count] of counts) {
-    const [first, second] = [...word]
-    if (first === second) {
-      if ((count % 2) === 0) {
-        result += count
-      } else {
-        result += count - 1
-        central = true
-      }
-    } else if (first.localeCompare(second) < 0) {
-      const rword = `${second}${first}`
-      if (counts.has(rword)) {
-        result += 2 * Math.min(count, counts.get(rword))
-      }
+  while (left < right) {
+    const l = words[left]
+    const r = words[right]
+    if (!vowels.has(l)) {
+      left += 1
+      continue
+    } else if (!vowels.has(r)) {
+      right -= 1
+      continue
     }
+
+    words[left] = r
+    words[right] = l
+    left += 1
+    right -= 1
   }
 
-  if (central) {
-    result += 1
-  }
-
-  return result * 2
+  return words.join('')
 }
 
 async function main () {
   const inputs = [
-    ['lc', 'cl', 'gg'],
-    ['ab', 'ty', 'yt', 'lc', 'cl', 'ab'],
-    ['cc', 'll', 'xx']
+    'hello',
+    'leetcode'
   ]
 
-  for (const words of inputs) {
-    const result = longestPalindrome(words)
+  for (const s of inputs) {
+    const result = reverseVowels(s)
     console.log(result)
   }
 }

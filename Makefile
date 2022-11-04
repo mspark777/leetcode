@@ -8,7 +8,7 @@ js:
 	npm run start:js
 
 rs:
-	cargo run
+	cargo +1.58.1 run
 
 go:
 	go run src/main.go
