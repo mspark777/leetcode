@@ -4,37 +4,22 @@ from collections import Counter, deque
 
 
 class Solution:
-    def reverseVowels(self, s: str) -> str:
-        vowels = set(["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"])
-        words = list(s)
-        left = 0
-        right = len(words) - 1
+    def maximum69Number (self, num: int) -> int:
+        nums = list(str(num))
+        for i, ch in enumerate(nums):
+            if ch == '6':
+                nums[i] = '9'
+                break
 
-        while left < right:
-            l = words[left]
-            if l not in vowels:
-                left += 1
-                continue
-
-            r = words[right]
-            if r not in vowels:
-                right -= 1
-                continue
-
-            words[left] = r
-            words[right] = l
-            left += 1
-            right -= 1
-
-        return "".join(words)
+        return int("".join(nums))
 
 
 def main():
-    inputs: list[str] = ["hello", "leetcode"]
+    inputs: list[int] = [9669, 9996, 9999]
 
     solution = Solution()
-    for s in inputs:
-        result = solution.reverseVowels(s)
+    for num in inputs:
+        result = solution.maximum69Number(num)
         print(result)
 
 
