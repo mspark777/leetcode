@@ -2,29 +2,38 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
-func maximum69Number(num int) int {
-	nums := []rune(fmt.Sprint(num))
-	for i, ch := range nums {
-		if ch == '6' {
-			nums[i] = '9'
-			break
+func makeGood(s string) string {
+	chars := []rune(s)
+	j := 0
+
+	for i, cur := range chars {
+		if j > 0 {
+			next := chars[j-1]
+			diff := cur - next
+			if (diff == 32) || (diff == -32) {
+				j -= 1
+				continue
+			}
 		}
+
+		chars[j] = chars[i]
+		j += 1
 	}
 
-	i, _ := strconv.Atoi(string(nums))
-	return i
+	return string(chars[0:j])
 }
 
 func main() {
-	inputs := []int{
-		9669, 9996, 9999,
+	inputs := []string{
+		"leEeetcode",
+		"abBAcC",
+		"s",
 	}
 
-	for _, num := range inputs {
-		result := maximum69Number(num)
+	for _, s := range inputs {
+		result := makeGood(s)
 		fmt.Println(result)
 	}
 }

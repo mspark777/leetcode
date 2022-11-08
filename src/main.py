@@ -4,22 +4,31 @@ from collections import Counter, deque
 
 
 class Solution:
-    def maximum69Number (self, num: int) -> int:
-        nums = list(str(num))
-        for i, ch in enumerate(nums):
-            if ch == '6':
-                nums[i] = '9'
-                break
+    def makeGood(self, s: str) -> str:
+        chars = list(s)
 
-        return int("".join(nums))
+        j = 0
+        for i in range(len(chars)):
+            if j > 0:
+                cur = chars[i]
+                next = chars[j - 1]
+                diff = abs(ord(cur) - ord(next))
+                if diff == 32:
+                    j -= 1
+                    continue
+
+            chars[j] = chars[i]
+            j += 1
+
+        return "".join(chars[0:j])
 
 
 def main():
-    inputs: list[int] = [9669, 9996, 9999]
+    inputs: list[str] = ["leEeetcode", "abBAcC", "s"]
 
     solution = Solution()
-    for num in inputs:
-        result = solution.maximum69Number(num)
+    for s in inputs:
+        result = solution.makeGood(s)
         print(result)
 
 
