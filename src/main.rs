@@ -1,33 +1,46 @@
-struct Solution {}
-impl Solution {
-    pub fn make_good(s: String) -> String {
-        let mut chars: Vec<u8> = s.bytes().collect();
-        let mut j = 0usize;
+struct StockSpanner {
+    stack: Vec<(i32, i32)>,
+}
 
-        for i in 0..chars.len() {
-            if j > 0 {
-                let cur = chars[i] as i32;
-                let next = chars[j - 1] as i32;
-                let diff = cur - next;
-                if diff.abs() == 32 {
-                    j -= 1;
-                    continue;
-                }
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl StockSpanner {
+    fn new() -> Self {
+        return StockSpanner { stack: vec![] };
+    }
+
+    fn next(&mut self, price: i32) -> i32 {
+        let stack = &mut self.stack;
+        let mut span = 1;
+
+        while !stack.is_empty() {
+            let top = stack.last().unwrap();
+            let (p, s) = top;
+            if *p <= price {
+                span += s;
+                stack.pop();
+            } else {
+                break;
             }
-
-            chars[j] = chars[i];
-            j += 1;
         }
 
-        return String::from_utf8(chars.iter().take(j).cloned().collect()).unwrap();
+        stack.push((price, span));
+        return span;
     }
 }
 
 fn main() {
-    let inputs = ["leEeetcode", "abBAcC", "s"];
-
-    for s in inputs {
-        let result = Solution::make_good(s.to_string());
-        println!("{result}");
-    }
+    let mut stock_spanner = StockSpanner::new();
+    println!(
+        "{} {} {} {} {} {} {}",
+        stock_spanner.next(100),
+        stock_spanner.next(80),
+        stock_spanner.next(60),
+        stock_spanner.next(70),
+        stock_spanner.next(60),
+        stock_spanner.next(75),
+        stock_spanner.next(85)
+    );
 }

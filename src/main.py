@@ -3,33 +3,40 @@ from typing import Optional, List
 from collections import Counter, deque
 
 
-class Solution:
-    def makeGood(self, s: str) -> str:
-        chars = list(s)
+class StockSpanner:
+    stack: list[tuple[int, int]]
 
-        j = 0
-        for i in range(len(chars)):
-            if j > 0:
-                cur = chars[i]
-                next = chars[j - 1]
-                diff = abs(ord(cur) - ord(next))
-                if diff == 32:
-                    j -= 1
-                    continue
+    def __init__(self):
+        self.stack = []
 
-            chars[j] = chars[i]
-            j += 1
+    def next(self, price: int) -> int:
+        stack = self.stack
+        span = 1
 
-        return "".join(chars[0:j])
+        while stack:
+            top = stack.pop()
+            p, s = top
+            if p <= price:
+                span += s
+            else:
+                stack.append(top)
+                break
+
+        stack.append((price, span))
+        return span
 
 
 def main():
-    inputs: list[str] = ["leEeetcode", "abBAcC", "s"]
-
-    solution = Solution()
-    for s in inputs:
-        result = solution.makeGood(s)
-        print(result)
+    stockSpanner = StockSpanner()
+    print(
+        stockSpanner.next(100),
+        stockSpanner.next(80),
+        stockSpanner.next(60),
+        stockSpanner.next(70),
+        stockSpanner.next(60),
+        stockSpanner.next(75),
+        stockSpanner.next(85),
+    )
 
 
 if __name__ == "__main__":

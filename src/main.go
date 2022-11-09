@@ -4,36 +4,45 @@ import (
 	"fmt"
 )
 
-func makeGood(s string) string {
-	chars := []rune(s)
-	j := 0
+type StockSpanner struct {
+	stack [][2]int
+}
 
-	for i, cur := range chars {
-		if j > 0 {
-			next := chars[j-1]
-			diff := cur - next
-			if (diff == 32) || (diff == -32) {
-				j -= 1
-				continue
-			}
+func Constructor() StockSpanner {
+	return StockSpanner{stack: [][2]int{}}
+}
+
+func (this *StockSpanner) Next(price int) int {
+	stack := this.stack
+	span := 1
+
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		p := top[0]
+		s := top[1]
+
+		if p <= price {
+			span += s
+			stack = stack[:topidx]
+		} else {
+			break
 		}
-
-		chars[j] = chars[i]
-		j += 1
 	}
 
-	return string(chars[0:j])
+	this.stack = append(stack, [2]int{price, span})
+	return span
 }
 
 func main() {
-	inputs := []string{
-		"leEeetcode",
-		"abBAcC",
-		"s",
-	}
-
-	for _, s := range inputs {
-		result := makeGood(s)
-		fmt.Println(result)
-	}
+	stockSpanner := Constructor()
+	fmt.Println(
+		stockSpanner.Next(100),
+		stockSpanner.Next(80),
+		stockSpanner.Next(60),
+		stockSpanner.Next(70),
+		stockSpanner.Next(60),
+		stockSpanner.Next(75),
+		stockSpanner.Next(85),
+	)
 }
