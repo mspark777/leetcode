@@ -3,40 +3,26 @@ from typing import Optional, List
 from collections import Counter, deque
 
 
-class StockSpanner:
-    stack: list[tuple[int, int]]
+class Solution:
+    def removeDuplicates(self, s: str) -> str:
+        result: list[str] = []
 
-    def __init__(self):
-        self.stack = []
-
-    def next(self, price: int) -> int:
-        stack = self.stack
-        span = 1
-
-        while stack:
-            top = stack.pop()
-            p, s = top
-            if p <= price:
-                span += s
+        for c in s:
+            if result and (result[-1] == c):
+                result.pop()
             else:
-                stack.append(top)
-                break
+                result.append(c)
 
-        stack.append((price, span))
-        return span
+        return "".join(result)
 
 
 def main():
-    stockSpanner = StockSpanner()
-    print(
-        stockSpanner.next(100),
-        stockSpanner.next(80),
-        stockSpanner.next(60),
-        stockSpanner.next(70),
-        stockSpanner.next(60),
-        stockSpanner.next(75),
-        stockSpanner.next(85),
-    )
+    inputs: list[str] = ["abbaca", "azxxzy"]
+
+    solution = Solution()
+    for s in inputs:
+        result = solution.removeDuplicates(s)
+        print(result)
 
 
 if __name__ == "__main__":

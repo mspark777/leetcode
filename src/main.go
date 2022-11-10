@@ -1,48 +1,30 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type StockSpanner struct {
-	stack [][2]int
-}
+func removeDuplicates(s string) string {
+	result := []rune{}
 
-func Constructor() StockSpanner {
-	return StockSpanner{stack: [][2]int{}}
-}
-
-func (this *StockSpanner) Next(price int) int {
-	stack := this.stack
-	span := 1
-
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		p := top[0]
-		s := top[1]
-
-		if p <= price {
-			span += s
-			stack = stack[:topidx]
+	for _, c := range s {
+		last := len(result) - 1
+		if (last >= 0) && (result[last] == c) {
+			result = result[:last]
 		} else {
-			break
+			result = append(result, c)
 		}
 	}
 
-	this.stack = append(stack, [2]int{price, span})
-	return span
+	return string(result)
 }
 
 func main() {
-	stockSpanner := Constructor()
-	fmt.Println(
-		stockSpanner.Next(100),
-		stockSpanner.Next(80),
-		stockSpanner.Next(60),
-		stockSpanner.Next(70),
-		stockSpanner.Next(60),
-		stockSpanner.Next(75),
-		stockSpanner.Next(85),
-	)
+	inputs := []string{
+		"abbaca",
+		"azxxzy",
+	}
+
+	for _, s := range inputs {
+		result := removeDuplicates(s)
+		fmt.Println(result)
+	}
 }

@@ -1,43 +1,31 @@
-class StockSpanner {
-  constructor () {
-    /** @type {number[][]} */
-    this.stack = []
-  }
+/**
+ * @param {string} s
+ * @returns {string}
+*/
+function removeDuplicates (s) {
+  const result = []
 
-  /**
-   * @param {number} price
-   * @returns {number}
-  */
-  next (price) {
-    const { stack } = this
-    let span = 1
-
-    for (let top = stack.pop(); top != null; top = stack.pop()) {
-      const [p, s] = top
-      if (p <= price) {
-        span += s
-      } else {
-        stack.push(top)
-        break
-      }
+  for (const c of s) {
+    if (result.at(-1) === c) {
+      result.pop()
+    } else {
+      result.push(c)
     }
-
-    stack.push([price, span])
-    return span
   }
+
+  return result.join('')
 }
 
 async function main () {
-  const stockSpanner = new StockSpanner()
-  console.log(
-    stockSpanner.next(100),
-    stockSpanner.next(80),
-    stockSpanner.next(60),
-    stockSpanner.next(70),
-    stockSpanner.next(60),
-    stockSpanner.next(75),
-    stockSpanner.next(85)
-  )
+  const inputs = [
+    'abbaca',
+    'azxxzy'
+  ]
+
+  for (const s of inputs) {
+    const result = removeDuplicates(s)
+    console.log(result)
+  }
 }
 
 main().catch(e => {
