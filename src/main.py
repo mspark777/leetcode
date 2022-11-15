@@ -3,64 +3,64 @@ from typing import Optional, List
 from collections import Counter, deque
 
 
-class Helper:
-    unimap: dict[int, int]
-    islands: int
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
 
-    def __init__(self) -> None:
-        self.unimap = {}
-        self.islands = 0
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-    def find(self, x: int) -> int:
-        if x not in self.unimap:
-            self.unimap[x] = x
-            self.islands += 1
 
-        p = self.unimap[x]
-        if x != p:
-            self.unimap[x] = self.find(p)
+def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
+    return TreeNode(val, left, right)
 
-        return self.unimap[x]
 
-    def uni(self, x: int, y: int) -> None:
-        x = self.find(x)
-        y = self.find(y)
-        if x != y:
-            self.unimap[x] = y
-            self.islands -= 1
+def newleft(val: int, left: Optional[TreeNode]) -> TreeNode:
+    return newnode(val, left, None)
+
+
+def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
+    return newnode(val, None, right)
+
+
+def newval(val: int) -> TreeNode:
+    return newnode(val, None, None)
 
 
 class Solution:
-    def removeStones(self, stones: List[List[int]]) -> int:
-        helper = Helper()
-        for stone in stones:
-            helper.uni(stone[0], ~stone[1])
+    def countNodes(self, root: Optional[TreeNode]) -> int:
+        nodes = 0
+        h = self.get_height(root)
+        while root is not None:
+            next = h - 1
+            if self.get_height(root.right) == next:
+                nodes += 1 << h
+                root = root.right
+            else:
+                nodes += 1 << next
+                root = root.left
+            h = next
 
-        return len(stones) - helper.islands
+        return nodes
+
+    def get_height(self, root: Optional[TreeNode]) -> int:
+        return 1 + self.get_height(root.left) if root is not None else -1
 
 
 def main():
-    inputs: list[list[list[int]]] = [
-        [[0, 0], [0, 1], [1, 0], [1, 2], [2, 1], [2, 2]],
-        [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
-        [
-            [0, 0],
-            [0, 1],
-            [1, 0],
-            [1, 1],
-            [2, 1],
-            [2, 2],
-            [3, 2],
-            [3, 3],
-            [3, 4],
-            [4, 3],
-            [4, 4],
-        ],
+    inputs: list[Optional[TreeNode]] = [
+        newnode(1, newnode(2, newval(4), newval(5)), newleft(3, newval(6))),
+        None,
+        newval(1),
+        newnode(1, newleft(2, newval(4)), newval(3)),
     ]
 
     solution = Solution()
-    for stones in inputs:
-        result = solution.removeStones(stones)
+    for root in inputs:
+        result = solution.countNodes(root)
         print(result)
 
 

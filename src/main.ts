@@ -1,58 +1,64 @@
-class Helper {
-  private readonly map: Map<number, number>
-  private islands: number
-  public constructor () {
-    this.map = new Map()
-    this.islands = 0
-  }
-
-  public find (x: number): number {
-    const { map } = this
-    if (!map.has(x)) {
-      map.set(x, x)
-      this.islands += 1
-    }
-
-    const p = map.get(x) as number
-    if (x !== p) {
-      map.set(x, this.find(p))
-    }
-
-    return map.get(x) as number
-  }
-
-  public uni (x: number, y: number): void {
-    x = this.find(x)
-    y = this.find(y)
-    if (x !== y) {
-      this.map.set(x, y)
-      this.islands -= 1
-    }
-  }
-
-  public getIsLands (): number {
-    return this.islands
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
 }
 
-function removeStones (stones: number[][]): number {
-  const helper = new Helper()
-  for (const [x, y] of stones) {
-    helper.uni(x, ~y)
+function newnode (val: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
+  return new TreeNode(val, left, right)
+}
+
+function newleft (val: number, left: TreeNode | null): TreeNode {
+  return newnode(val, left, null)
+}
+
+function newright (val: number, right: TreeNode | null): TreeNode {
+  return newnode(val, null, right)
+}
+
+function newval (val: number): TreeNode {
+  return newnode(val, null, null)
+}
+
+function getHeight (root: TreeNode | null): number {
+  return root != null
+    ? 1 + getHeight(root.left)
+    : -1
+}
+
+function countNodes (root: TreeNode | null): number {
+  let nodes = 0
+  let h = getHeight(root)
+  while (root != null) {
+    const next = h - 1
+    if (getHeight(root.right) === next) {
+      nodes += 1 << h
+      root = root.right
+    } else {
+      nodes += 1 << next
+      root = root.left
+    }
+    h = next
   }
 
-  return stones.length - helper.getIsLands()
+  return nodes
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][][] = [
-    [[0, 0], [0, 1], [1, 0], [1, 2], [2, 1], [2, 2]],
-    [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
-    [[0, 0], [0, 1], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2], [3, 3], [3, 4], [4, 3], [4, 4]]
+  const inputs: Array<TreeNode | null> = [
+    newnode(1, newnode(2, newval(4), newval(5)), newleft(3, newval(6))),
+    null,
+    newval(1),
+    newnode(1, newleft(2, newval(4)), newval(3))
   ]
 
-  for (const stones of inputs) {
-    const result = removeStones(stones)
+  for (const root of inputs) {
+    const result = countNodes(root)
     console.log(result)
   }
 }
