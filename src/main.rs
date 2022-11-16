@@ -1,25 +1,32 @@
 struct Solution {}
 impl Solution {
-    pub fn remove_duplicates(s: String) -> String {
-        let mut result = Vec::<u8>::new();
-
-        for c in s.as_bytes() {
-            if result.last().unwrap_or(&0).eq(c) {
-                result.pop();
+    #[allow(non_snake_case)]
+    unsafe fn guessNumber(n: i32) -> i32 {
+        let mut left = 1;
+        let mut right = n;
+        while left <= right {
+            let m = (left + right) / 2;
+            let res = guess(m);
+            if res < 0 {
+                right = m - 1;
+            } else if res > 0 {
+                left = m + 1;
             } else {
-                result.push(*c);
+                return m;
             }
         }
 
-        return String::from_utf8(result).unwrap();
+        return -1;
     }
 }
 
 fn main() {
-    let inputs = ["abbaca", "azxxzy"];
+    let inputs = [(10, 6), (1, 1), (2, 1)];
 
-    for s in inputs {
-        let result = Solution::remove_duplicates(s.to_string());
-        println!("{result}");
+    for (n, pick) in inputs {
+        unsafe {
+            let result = Solution::guessNumber(n);
+            println!("{result}");
+        }
     }
 }

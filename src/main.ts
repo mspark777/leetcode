@@ -1,64 +1,40 @@
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
-  return new TreeNode(val, left, right)
-}
-
-function newleft (val: number, left: TreeNode | null): TreeNode {
-  return newnode(val, left, null)
-}
-
-function newright (val: number, right: TreeNode | null): TreeNode {
-  return newnode(val, null, right)
-}
-
-function newval (val: number): TreeNode {
-  return newnode(val, null, null)
-}
-
-function getHeight (root: TreeNode | null): number {
-  return root != null
-    ? 1 + getHeight(root.left)
-    : -1
-}
-
-function countNodes (root: TreeNode | null): number {
-  let nodes = 0
-  let h = getHeight(root)
-  while (root != null) {
-    const next = h - 1
-    if (getHeight(root.right) === next) {
-      nodes += 1 << h
-      root = root.right
+let guess = (n: number): number => n
+function Guess (pick: number): (n: number) => number {
+  return n => {
+    if (n < pick) {
+      return 1
+    } else if (n > pick) {
+      return -1
     } else {
-      nodes += 1 << next
-      root = root.left
+      return 0
     }
-    h = next
+  }
+}
+
+function guessNumber (n: number): number {
+  let left = 1
+  let right = n
+  while (left <= right) {
+    const m = Math.round((left + right) / 2)
+    const res = guess(m)
+    if (res < 0) {
+      right = m - 1
+    } else if (res > 0) {
+      left = m + 1
+    } else {
+      return m
+    }
   }
 
-  return nodes
+  return -1
 }
 
 async function main (): Promise<void> {
-  const inputs: Array<TreeNode | null> = [
-    newnode(1, newnode(2, newval(4), newval(5)), newleft(3, newval(6))),
-    null,
-    newval(1),
-    newnode(1, newleft(2, newval(4)), newval(3))
-  ]
+  const inputs: number[][] = [[10, 6], [1, 1], [2, 1], [2126753390, 1702766719]]
 
-  for (const root of inputs) {
-    const result = countNodes(root)
+  for (const [n, pick] of inputs) {
+    guess = Guess(pick)
+    const result = guessNumber(n)
     console.log(result)
   }
 }

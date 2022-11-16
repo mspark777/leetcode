@@ -2,64 +2,48 @@ package main
 
 import "fmt"
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
+var guess func(n int) int = nil
 
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
-
-func newleft(val int, left *TreeNode) *TreeNode {
-	return newnode(val, left, nil)
-}
-
-func newright(val int, right *TreeNode) *TreeNode {
-	return newnode(val, nil, right)
-}
-
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
-
-func getHeight(root *TreeNode) int {
-	if root == nil {
-		return -1
-	}
-
-	return 1 + getHeight(root.Left)
-}
-
-func countNodes(root *TreeNode) int {
-	nodes := 0
-	h := getHeight(root)
-	for root != nil {
-		next := h - 1
-		if getHeight(root.Right) == next {
-			nodes += 1 << h
-			root = root.Right
+func getGuess(pick int) func(n int) int {
+	return func(n int) int {
+		if n < pick {
+			return 1
+		} else if n > pick {
+			return -1
 		} else {
-			nodes += 1 << next
-			root = root.Left
+			return 0
 		}
-		h = next
+	}
+}
+
+func guessNumber(n int) int {
+	left := 1
+	right := n
+	for left <= right {
+		m := (left + right) / 2
+		res := guess(m)
+		if res < 0 {
+			right = m - 1
+		} else if res > 0 {
+			left = m + 1
+		} else {
+			return m
+		}
 	}
 
-	return nodes
+	return -1
 }
 
 func main() {
-	inputs := []*TreeNode{
-		newnode(1, newnode(2, newval(4), newval(5)), newleft(3, newval(6))),
-		nil,
-		newval(1),
-		newnode(1, newleft(2, newval(4)), newval(3)),
+	inputs := [][]int{
+		{10, 6}, {1, 1}, {2, 1},
 	}
 
-	for _, root := range inputs {
-		result := countNodes(root)
+	for _, input := range inputs {
+		n := input[0]
+		pick := input[1]
+		guess = getGuess(pick)
+		result := guessNumber(n)
 		fmt.Println(result)
 	}
 }

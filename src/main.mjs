@@ -1,69 +1,50 @@
-class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val, left, right) {
-  return new TreeNode(val, left, right)
-}
-
-function newleft (val, left) {
-  return newnode(val, left, null)
-}
-
-function newright (val, right) {
-  return newnode(val, null, right)
-}
-
-function newval (val) {
-  return newnode(val, null, null)
-}
+/** @type {(n: number) => number} */
+let guess = n => n
 
 /**
- * @param {TreeNode | null} root
- * @returns {number}
+ * @param {number} pick
+ * @returns {(n: number) => number}
 */
-function getHeight (root) {
-  return root != null
-    ? 1 + getHeight(root.left)
-    : -1
-}
-
-/**
- * @param {TreeNode | null} root
- * @returns {number}
-*/
-function countNodes (root) {
-  let nodes = 0
-  let h = getHeight(root)
-  while (root != null) {
-    const next = h - 1
-    if (getHeight(root.right) === next) {
-      nodes += 1 << h
-      root = root.right
+function Guess (pick) {
+  return n => {
+    if (n < pick) {
+      return 1
+    } else if (n > pick) {
+      return -1
     } else {
-      nodes += 1 << next
-      root = root.left
+      return 0
     }
-    h = next
+  }
+}
+
+/**
+ * @param {number} n
+ * @returns {number}
+*/
+function guessNumber (n) {
+  let left = 1
+  let right = n
+  while (left <= right) {
+    const m = Math.round((left + right) / 2)
+    const res = guess(m)
+    if (res < 0) {
+      right = m - 1
+    } else if (res > 0) {
+      left = m + 1
+    } else {
+      return m
+    }
   }
 
-  return nodes
+  return -1
 }
 
 async function main () {
-  const inputs = [
-    newnode(1, newnode(2, newval(4), newval(5)), newleft(3, newval(6))),
-    null,
-    newval(1),
-    newnode(1, newleft(2, newval(4)), newval(3))
-  ]
+  const inputs = [[10, 6], [1, 1], [2, 1]]
 
-  for (const root of inputs) {
-    const result = countNodes(root)
+  for (const [n, pick] of inputs) {
+    guess = Guess(pick)
+    const result = guessNumber(n)
     console.log(result)
   }
 }
