@@ -1,40 +1,22 @@
-let guess = (n: number): number => n
-function Guess (pick: number): (n: number) => number {
-  return n => {
-    if (n < pick) {
-      return 1
-    } else if (n > pick) {
-      return -1
-    } else {
-      return 0
-    }
-  }
-}
+function computeArea (ax1: number, ay1: number, ax2: number, ay2: number, bx1: number, by1: number, bx2: number, by2: number): number {
+  const overX = Math.min(ax2, bx2) - Math.max(ax1, bx1)
+  const overY = Math.min(ay2, by2) - Math.max(ay1, by1)
 
-function guessNumber (n: number): number {
-  let left = 1
-  let right = n
-  while (left <= right) {
-    const m = Math.round((left + right) / 2)
-    const res = guess(m)
-    if (res < 0) {
-      right = m - 1
-    } else if (res > 0) {
-      left = m + 1
-    } else {
-      return m
-    }
-  }
+  const areaA = (ay2 - ay1) * (ax2 - ax1)
+  const areaB = (by2 - by1) * (bx2 - bx1)
+  const areaC = ((overX > 0) && (overY > 0)) ? overX * overY : 0
 
-  return -1
+  return Math.abs(areaA) + Math.abs(areaB) - areaC
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [[10, 6], [1, 1], [2, 1], [2126753390, 1702766719]]
+  const inputs: number[][] = [
+    [-3, 0, 3, 4, 0, -1, 9, 2],
+    [-2, -2, 2, 2, -2, -2, 2, 2]
+  ]
 
-  for (const [n, pick] of inputs) {
-    guess = Guess(pick)
-    const result = guessNumber(n)
+  for (const [ax1, ay1, ax2, ay2, bx1, by1, bx2, by2] of inputs) {
+    const result = computeArea(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2)
     console.log(result)
   }
 }

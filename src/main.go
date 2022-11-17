@@ -1,49 +1,64 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-var guess func(n int) int = nil
-
-func getGuess(pick int) func(n int) int {
-	return func(n int) int {
-		if n < pick {
-			return 1
-		} else if n > pick {
-			return -1
-		} else {
-			return 0
-		}
+func min(a, b int) int {
+	if a < b {
+		return a
 	}
+
+	return b
 }
 
-func guessNumber(n int) int {
-	left := 1
-	right := n
-	for left <= right {
-		m := (left + right) / 2
-		res := guess(m)
-		if res < 0 {
-			right = m - 1
-		} else if res > 0 {
-			left = m + 1
-		} else {
-			return m
-		}
+func max(a, b int) int {
+	if a < b {
+		return b
 	}
 
-	return -1
+	return a
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+
+	return a
+}
+
+func computeArea(ax1 int, ay1 int, ax2 int, ay2 int, bx1 int, by1 int, bx2 int, by2 int) int {
+	overX := min(ax2, bx2) - max(ax1, bx1)
+	overY := min(ay2, by2) - max(ay1, by1)
+
+	areaA := (ay2 - ay1) * (ax2 - ax1)
+	areaB := (by2 - by1) * (bx2 - bx1)
+	areaC := 0
+	if (overX > 0) && (overY > 0) {
+		areaC = overX * overY
+	}
+
+	return abs(areaA) + abs(areaB) - areaC
 }
 
 func main() {
 	inputs := [][]int{
-		{10, 6}, {1, 1}, {2, 1},
+		{-3, 0, 3, 4, 0, -1, 9, 2},
+		{-2, -2, 2, 2, -2, -2, 2, 2},
 	}
 
 	for _, input := range inputs {
-		n := input[0]
-		pick := input[1]
-		guess = getGuess(pick)
-		result := guessNumber(n)
+		result := computeArea(
+			input[0],
+			input[1],
+			input[2],
+			input[3],
+			input[4],
+			input[5],
+			input[6],
+			input[7],
+		)
 		fmt.Println(result)
 	}
 }

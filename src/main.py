@@ -3,47 +3,36 @@ from typing import Callable, Optional, List
 from collections import Counter, deque
 
 
-guess: Callable[[int], int] = lambda n: n
-
-
-def getGuess(pick: int) -> Callable[[int], int]:
-    def g(n: int):
-        if n < pick:
-            return 1
-        elif n > pick:
-            return -1
-        else:
-            return 0
-
-    return g
-
-
 class Solution:
-    def guessNumber(self, n: int) -> int:
-        left = 1
-        right = n
-        while left <= right:
-            m = (left + right) // 2
-            res = guess(m)
-            if res < 0:
-                right = m - 1
-            elif res > 0:
-                left = m + 1
-            else:
-                return m
+    def computeArea(
+        self,
+        ax1: int,
+        ay1: int,
+        ax2: int,
+        ay2: int,
+        bx1: int,
+        by1: int,
+        bx2: int,
+        by2: int,
+    ) -> int:
+        overx = min(ax2, bx2) - max(ax1, bx1)
+        overy = min(ay2, by2) - max(ay1, by1)
 
-        return -1
+        areaa = (ay2 - ay1) * (ax2 - ax1)
+        areab = (by2 - by1) * (bx2 - bx1)
+        areac = overx * overy if (overx > 0) and (overy > 0) else 0
+
+        return abs(areaa) + abs(areab) - areac
 
 
 def main():
     global guess
 
-    inputs: list[tuple[int, int]] = [(10, 6), (1, 1), (2, 1)]
+    inputs: list[list[int]] = [[-3, 0, 3, 4, 0, -1, 9, 2], [-2, -2, 2, 2, -2, -2, 2, 2]]
 
     solution = Solution()
-    for n, pick in inputs:
-        guess = getGuess(pick)
-        result = solution.guessNumber(n)
+    for [ax1, ay1, ax2, ay2, bx1, by1, bx2, by2] in inputs:
+        result = solution.computeArea(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2)
         print(result)
 
 
