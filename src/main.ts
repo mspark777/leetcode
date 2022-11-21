@@ -1,22 +1,73 @@
-function computeArea (ax1: number, ay1: number, ax2: number, ay2: number, bx1: number, by1: number, bx2: number, by2: number): number {
-  const overX = Math.min(ax2, bx2) - Math.max(ax1, bx1)
-  const overY = Math.min(ay2, by2) - Math.max(ay1, by1)
+function nearestExit (maze: string[][], entrance: number[]): number {
+  const WALL = '+'
+  const rowCount = maze.length
+  const colCount = maze[0].length
+  const lastRow = rowCount - 1
+  const lastCol = colCount - 1
+  const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
-  const areaA = (ay2 - ay1) * (ax2 - ax1)
-  const areaB = (by2 - by1) * (bx2 - bx1)
-  const areaC = ((overX > 0) && (overY > 0)) ? overX * overY : 0
+  const queue: number[][] = [[...entrance, 0]]
+  maze[entrance[0]][entrance[1]] = WALL
+  for (let front = queue.shift(); front != null; front = queue.shift()) {
+    const [row, col, steps] = front
 
-  return Math.abs(areaA) + Math.abs(areaB) - areaC
+    const nextSteps = steps + 1
+    for (const [r, c] of dirs) {
+      const nextRow = row + r
+      const nextCol = col + c
+      if (nextRow < 0) {
+        continue
+      } else if (nextRow >= rowCount) {
+        continue
+      } else if (nextCol < 0) {
+        continue
+      } else if (nextCol >= colCount) {
+        continue
+      } else if (maze[nextRow][nextCol] === WALL) {
+        continue
+      }
+
+      if (nextRow === 0) {
+        return nextSteps
+      } else if (nextRow === lastRow) {
+        return nextSteps
+      } else if (nextCol === 0) {
+        return nextSteps
+      } else if (nextCol === lastCol) {
+        return nextSteps
+      }
+
+      maze[nextRow][nextCol] = WALL
+      queue.push([nextRow, nextCol, nextSteps])
+    }
+  }
+
+  return -1
+}
+
+interface Input {
+  readonly maze: string[][]
+  readonly entrance: number[]
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [
-    [-3, 0, 3, 4, 0, -1, 9, 2],
-    [-2, -2, 2, 2, -2, -2, 2, 2]
+  const inputs: Input[] = [
+    {
+      maze: [['+', '+', '.', '+'], ['.', '.', '.', '+'], ['+', '+', '+', '.']],
+      entrance: [1, 2]
+    },
+    {
+      maze: [['+', '+', '+'], ['.', '.', '.'], ['+', '+', '+']],
+      entrance: [1, 0]
+    },
+    {
+      maze: [['.', '+']],
+      entrance: [0, 0]
+    }
   ]
 
-  for (const [ax1, ay1, ax2, ay2, bx1, by1, bx2, by2] of inputs) {
-    const result = computeArea(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2)
+  for (const { maze, entrance } of inputs) {
+    const result = nearestExit(maze, entrance)
     console.log(result)
   }
 }

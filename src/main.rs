@@ -1,35 +1,88 @@
+use std::collections::VecDeque;
+
 struct Solution {}
 impl Solution {
-    pub fn compute_area(
-        ax1: i32,
-        ay1: i32,
-        ax2: i32,
-        ay2: i32,
-        bx1: i32,
-        by1: i32,
-        bx2: i32,
-        by2: i32,
-    ) -> i32 {
-        let overx = ax2.min(bx2) - ax1.max(bx1);
-        let overy = ay2.min(by2) - ay1.max(by1);
+    pub fn nearest_exit(maze: Vec<Vec<char>>, entrance: Vec<i32>) -> i32 {
+        let mut maze = maze;
+        const WALL: char = '+';
+        let row_count = maze.len() as i32;
+        let col_count = maze[0].len() as i32;
+        let last_row = row_count - 1;
+        let last_col = col_count - 1;
+        let dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
-        let areaa = (ay2 - ay1) * (ax2 - ax1);
-        let areab = (by2 - by1) * (bx2 - bx1);
-        let areac = if (overx > 0) && (overy > 0) {
-            overx * overy
-        } else {
-            0
-        };
+        let mut queue = VecDeque::<[i32; 3]>::new();
+        queue.push_back([entrance[0], entrance[1], 0]);
 
-        return areaa.abs() + areab.abs() - areac;
+        maze[entrance[0] as usize][entrance[1] as usize] = WALL;
+        while let Some([row, col, steps]) = queue.pop_front() {
+            let next_steps = steps + 1;
+
+            for [r, c] in dirs {
+                let next_row = row + r;
+                let next_col = col + c;
+                if next_row < 0 {
+                    continue;
+                } else if next_row >= row_count {
+                    continue;
+                } else if next_col < 0 {
+                    continue;
+                } else if next_col >= col_count {
+                    continue;
+                } else if maze[next_row as usize][next_col as usize] == WALL {
+                    continue;
+                }
+
+                if next_row == 0 {
+                    return next_steps;
+                } else if next_row == last_row {
+                    return next_steps;
+                } else if next_col == 0 {
+                    return next_steps;
+                } else if next_col == last_col {
+                    return next_steps;
+                }
+
+                maze[next_row as usize][next_col as usize] = WALL;
+                queue.push_back([next_row, next_col, next_steps]);
+            }
+        }
+
+        return -1;
     }
 }
 
-fn main() {
-    let inputs = [[-3, 0, 3, 4, 0, -1, 9, 2], [-2, -2, 2, 2, -2, -2, 2, 2]];
+struct Input {
+    maze: Vec<Vec<char>>,
+    entrance: Vec<i32>,
+}
 
-    for [ax1, ay1, ax2, ay2, bx1, by1, bx2, by2] in inputs {
-        let result = Solution::compute_area(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2);
+fn main() {
+    let inputs = [
+        Input {
+            maze: vec![
+                vec!['+', '+', '.', '+'],
+                vec!['.', '.', '.', '+'],
+                vec!['+', '+', '+', '.'],
+            ],
+            entrance: vec![1, 2],
+        },
+        Input {
+            maze: vec![
+                vec!['+', '+', '+'],
+                vec!['.', '.', '.'],
+                vec!['+', '+', '+'],
+            ],
+            entrance: vec![1, 0],
+        },
+        Input {
+            maze: vec![vec!['.', '+']],
+            entrance: vec![0, 0],
+        },
+    ];
+
+    for Input { maze, entrance } in inputs {
+        let result = Solution::nearest_exit(maze, entrance);
         println!("{result}");
     }
 }
