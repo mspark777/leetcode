@@ -1,73 +1,33 @@
 /**
- * @param {string[][]} maze
- * @param {number[]} entrance
+ * @param {number} n
  * @returns {number}
 */
-function nearestExit (maze, entrance) {
-  const WALL = '+'
-  const rowCount = maze.length
-  const colCount = maze[0].length
-  const lastRow = rowCount - 1
-  const lastCol = colCount - 1
-  const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+function numSquares (n) {
+  const memos = new Array(n + 1).fill(Number.MAX_SAFE_INTEGER)
 
-  const queue = [[...entrance, 0]]
-  maze[entrance[0]][entrance[1]] = WALL
-  for (let front = queue.shift(); front != null; front = queue.shift()) {
-    const [row, col, steps] = front
+  memos[0] = 0
+  let cur = 1
+  let squire = 1
 
-    const nextSteps = steps + 1
-    for (const [r, c] of dirs) {
-      const nextRow = row + r
-      const nextCol = col + c
-      if (nextRow < 0) {
-        continue
-      } else if (nextRow >= rowCount) {
-        continue
-      } else if (nextCol < 0) {
-        continue
-      } else if (nextCol >= colCount) {
-        continue
-      } else if (maze[nextRow][nextCol] === WALL) {
-        continue
-      }
-
-      if (nextRow === 0) {
-        return nextSteps
-      } else if (nextRow === lastRow) {
-        return nextSteps
-      } else if (nextCol === 0) {
-        return nextSteps
-      } else if (nextCol === lastCol) {
-        return nextSteps
-      }
-
-      maze[nextRow][nextCol] = WALL
-      queue.push([nextRow, nextCol, nextSteps])
+  while (squire <= n) {
+    for (let i = squire; i <= n; i += 1) {
+      memos[i] = Math.min(memos[i - squire] + 1, memos[i])
     }
+
+    cur += 1
+    squire = cur * cur
   }
 
-  return -1
+  return memos[n]
 }
 
 async function main () {
   const inputs = [
-    {
-      maze: [['+', '+', '.', '+'], ['.', '.', '.', '+'], ['+', '+', '+', '.']],
-      entrance: [1, 2]
-    },
-    {
-      maze: [['+', '+', '+'], ['.', '.', '.'], ['+', '+', '+']],
-      entrance: [1, 0]
-    },
-    {
-      maze: [['.', '+']],
-      entrance: [0, 0]
-    }
+    12, 13
   ]
 
-  for (const { maze, entrance } of inputs) {
-    const result = nearestExit(maze, entrance)
+  for (const n of inputs) {
+    const result = numSquares(n)
     console.log(result)
   }
 }
