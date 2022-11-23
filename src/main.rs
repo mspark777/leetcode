@@ -1,31 +1,63 @@
+use std::collections::HashSet;
+
 struct Solution {}
 impl Solution {
-    pub fn num_squares(n: i32) -> i32 {
-        let n = n as usize;
-        let mut memos = vec![i32::max_value(); n + 1];
+    pub fn is_valid_sudoku(board: Vec<Vec<char>>) -> bool {
+        let mut seens = HashSet::<String>::new();
+        for r in 0..9usize {
+            for c in 0..9usize {
+                let n = board[r][c];
+                if n == '.' {
+                    continue;
+                }
 
-        memos[0] = 0;
-        let mut cur = 1usize;
-        let mut squire = 1usize;
+                let ns = format!("({n})");
+                let row = format!("{ns}{r}");
+                let col = format!("{c}{ns}");
 
-        while squire <= n {
-            for i in squire..=n {
-                memos[i] = memos[i].min(memos[i - squire] + 1);
+                let cross = format!("{}{ns}{}", r / 3, c / 3);
+                if seens.contains(&row) || seens.contains(&col) || seens.contains(&cross) {
+                    return false;
+                }
+
+                seens.insert(row);
+                seens.insert(col);
+                seens.insert(cross);
             }
-
-            cur += 1;
-            squire = cur * cur;
         }
 
-        return memos[n];
+        return true;
     }
 }
 
 fn main() {
-    let inputs = [12, 13];
+    let inputs = [
+        [
+            ['5', '3', '.', '.', '7', '.', '.', '.', '.'],
+            ['6', '.', '.', '1', '9', '5', '.', '.', '.'],
+            ['.', '9', '8', '.', '.', '.', '.', '6', '.'],
+            ['8', '.', '.', '.', '6', '.', '.', '.', '3'],
+            ['4', '.', '.', '8', '.', '3', '.', '.', '1'],
+            ['7', '.', '.', '.', '2', '.', '.', '.', '6'],
+            ['.', '6', '.', '.', '.', '.', '2', '8', '.'],
+            ['.', '.', '.', '4', '1', '9', '.', '.', '5'],
+            ['.', '.', '.', '.', '8', '.', '.', '7', '9'],
+        ],
+        [
+            ['8', '3', '.', '.', '7', '.', '.', '.', '.'],
+            ['6', '.', '.', '1', '9', '5', '.', '.', '.'],
+            ['.', '9', '8', '.', '.', '.', '.', '6', '.'],
+            ['8', '.', '.', '.', '6', '.', '.', '.', '3'],
+            ['4', '.', '.', '8', '.', '3', '.', '.', '1'],
+            ['7', '.', '.', '.', '2', '.', '.', '.', '6'],
+            ['.', '6', '.', '.', '.', '.', '2', '8', '.'],
+            ['.', '.', '.', '4', '1', '9', '.', '.', '5'],
+            ['.', '.', '.', '.', '8', '.', '.', '7', '9'],
+        ],
+    ];
 
-    for n in inputs {
-        let result = Solution::num_squares(n);
+    for board in inputs {
+        let result = Solution::is_valid_sudoku(board.iter().map(|r| r.to_vec()).collect());
         println!("{result}");
     }
 }

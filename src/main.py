@@ -4,30 +4,58 @@ from collections import Counter, deque
 
 
 class Solution:
-    def numSquares(self, n: int) -> int:
-        memos = [2**31 for i in range(n + 1)]
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        seens: set[str] = set()
 
-        memos[0] = 0
-        cur = 1
-        squire = 1
+        for r in range(9):
+            for c in range(9):
+                n = board[r][c]
+                if n == ".":
+                    continue
 
-        while squire <= n:
-            for i in range(squire, n + 1):
-                memos[i] = min(memos[i - squire] + 1, memos[i])
+                ns = "({})".format(n)
+                row = "{}{}".format(ns, r)
+                col = "{}{}".format(c, ns)
+                cross = "{}{}{}".format(r // 3, ns, c // 3)
+                if (row in seens) or (col in seens) or (cross in seens):
+                    return False
 
-            cur += 1
-            squire = cur * cur
+                seens.add(row)
+                seens.add(col)
+                seens.add(cross)
 
-        return memos[n]
+        return True
 
 
 def main():
-
-    inputs: list[int] = [12, 13]
+    inputs: list[list[list[str]]] = [
+        [
+            ["5", "3", ".", ".", "7", ".", ".", ".", "."],
+            ["6", ".", ".", "1", "9", "5", ".", ".", "."],
+            [".", "9", "8", ".", ".", ".", ".", "6", "."],
+            ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
+            ["4", ".", ".", "8", ".", "3", ".", ".", "1"],
+            ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+            [".", "6", ".", ".", ".", ".", "2", "8", "."],
+            [".", ".", ".", "4", "1", "9", ".", ".", "5"],
+            [".", ".", ".", ".", "8", ".", ".", "7", "9"],
+        ],
+        [
+            ["8", "3", ".", ".", "7", ".", ".", ".", "."],
+            ["6", ".", ".", "1", "9", "5", ".", ".", "."],
+            [".", "9", "8", ".", ".", ".", ".", "6", "."],
+            ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
+            ["4", ".", ".", "8", ".", "3", ".", ".", "1"],
+            ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+            [".", "6", ".", ".", ".", ".", "2", "8", "."],
+            [".", ".", ".", "4", "1", "9", ".", ".", "5"],
+            [".", ".", ".", ".", "8", ".", ".", "7", "9"],
+        ],
+    ]
 
     solution = Solution()
-    for n in inputs:
-        result = solution.numSquares(n)
+    for board in inputs:
+        result = solution.isValidSudoku(board)
         print(result)
 
 
