@@ -4,66 +4,75 @@ import (
 	"fmt"
 )
 
-func hasKey(seens map[string]bool, s string) bool {
-	_, ok := seens[s]
-	return ok
+func dfs(seens map[string]bool, board [][]byte, row, col, length int, word string) bool {
+	if length == len(word) {
+		return true
+	}
+
+	if (row < 0) || (col < 0) {
+		return false
+	} else if (row >= len(board)) || (col >= len(board[0])) {
+		return false
+	}
+
+	seen := fmt.Sprint(row, '|', col)
+	if _, ok := seens[seen]; ok {
+		return false
+	} else if board[row][col] != word[length] {
+		return false
+	}
+
+	seens[seen] = true
+	found := dfs(seens, board, row+1, col, length+1, word) ||
+		dfs(seens, board, row-1, col, length+1, word) ||
+		dfs(seens, board, row, col+1, length+1, word) ||
+		dfs(seens, board, row, col-1, length+1, word)
+
+	delete(seens, seen)
+
+	return found
 }
 
-func isValidSudoku(board [][]byte) bool {
-	seens := map[string]bool{}
-	for r := 0; r < 9; r += 1 {
-		for c := 0; c < 9; c += 1 {
-			n := board[r][c]
-			if n == '.' {
-				continue
+func exist(board [][]byte, word string) bool {
+	for r, row := range board {
+		for c, w := range row {
+			if w == word[0] {
+				seens := map[string]bool{}
+				if dfs(seens, board, r, c, 0, word) {
+					return true
+				}
 			}
-
-			ns := fmt.Sprintf("(%v)", n)
-			row := fmt.Sprint(ns, r)
-			col := fmt.Sprint(c, ns)
-			cross := fmt.Sprint(r/3, ns, c/3)
-
-			if hasKey(seens, row) || hasKey(seens, col) || hasKey(seens, cross) {
-				return false
-			}
-
-			seens[row] = true
-			seens[col] = true
-			seens[cross] = true
 		}
 	}
 
-	return true
+	return false
+}
+
+type input struct {
+	board [][]byte
+	word  string
 }
 
 func main() {
-	inputs := [][][]byte{
+	inputs := []input{
 		{
-			{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
-			{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
-			{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
-			{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
-			{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
-			{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
-			{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
-			{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
-			{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+			board: [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
+			word:  "ABCCED",
 		},
 		{
-			{'8', '3', '.', '.', '7', '.', '.', '.', '.'},
-			{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
-			{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
-			{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
-			{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
-			{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
-			{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
-			{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
-			{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+			board: [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
+			word:  "SEE",
+		},
+		{
+			board: [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
+			word:  "ABCB",
 		},
 	}
 
-	for _, board := range inputs {
-		result := isValidSudoku(board)
+	for _, input := range inputs {
+		board := input.board
+		word := input.word
+		result := exist(board, word)
 		fmt.Println(result)
 	}
 }
