@@ -4,61 +4,36 @@ from collections import Counter, deque
 
 
 class Solution:
-    def exist(self, board: List[List[str]], word: str) -> bool:
-        for r, row in enumerate(board):
-            for c, w in enumerate(row):
-                if w == word[0]:
-                    seens = set()
-                    if self.dfs(seens, board, r, c, 0, word):
-                        return True
+    def sumSubarrayMins(self, arr: List[int]) -> int:
+        stack: list[int] = []
+        dp = [0] * len(arr)
 
-        return False
+        for i, n in enumerate(arr):
+            while stack and (arr[stack[-1]] >= n):
+                stack.pop()
 
-    def dfs(
-        self,
-        seens: set[str],
-        board: list[list[str]],
-        row: int,
-        col: int,
-        length: int,
-        word: str,
-    ) -> bool:
-        if length == len(word):
-            return True
+            if stack:
+                top = stack[-1]
+                dp[i] = dp[top] + (i - top) * n
+            else:
+                dp[i] = (i + 1) * n
 
-        if (row < 0) or (col < 0):
-            return False
-        elif (row >= len(board)) or (col >= len(board[0])):
-            return False
+            stack.append(i)
 
-        seen = "{}|{}".format(row, col)
-        if seen in seens:
-            return False
-        elif board[row][col] != word[length]:
-            return False
+        result = 0
+        for count in dp:
+            result += count
+            result %= 1000000007
 
-        seens.add(seen)
-        found = (
-            self.dfs(seens, board, row + 1, col, length + 1, word)
-            or self.dfs(seens, board, row - 1, col, length + 1, word)
-            or self.dfs(seens, board, row, col + 1, length + 1, word)
-            or self.dfs(seens, board, row, col - 1, length + 1, word)
-        )
-
-        seens.remove(seen)
-        return found
+        return result
 
 
 def main():
-    inputs: list[tuple[list[list[str]], str]] = [
-        ([["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "ABCCED"),
-        ([["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "SEE"),
-        ([["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "ABCB"),
-    ]
+    inputs: list[list[int]] = [[3, 1, 2, 4], [11, 81, 94, 43, 3]]
 
     solution = Solution()
-    for board, word in inputs:
-        result = solution.exist(board, word)
+    for arr in inputs:
+        result = solution.sumSubarrayMins(arr)
         print(result)
 
 

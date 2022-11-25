@@ -4,75 +4,42 @@ import (
 	"fmt"
 )
 
-func dfs(seens map[string]bool, board [][]byte, row, col, length int, word string) bool {
-	if length == len(word) {
-		return true
-	}
+func sumSubarrayMins(arr []int) int {
+	stack := []int{}
+	dp := make([]int, len(arr))
 
-	if (row < 0) || (col < 0) {
-		return false
-	} else if (row >= len(board)) || (col >= len(board[0])) {
-		return false
-	}
-
-	seen := fmt.Sprint(row, '|', col)
-	if _, ok := seens[seen]; ok {
-		return false
-	} else if board[row][col] != word[length] {
-		return false
-	}
-
-	seens[seen] = true
-	found := dfs(seens, board, row+1, col, length+1, word) ||
-		dfs(seens, board, row-1, col, length+1, word) ||
-		dfs(seens, board, row, col+1, length+1, word) ||
-		dfs(seens, board, row, col-1, length+1, word)
-
-	delete(seens, seen)
-
-	return found
-}
-
-func exist(board [][]byte, word string) bool {
-	for r, row := range board {
-		for c, w := range row {
-			if w == word[0] {
-				seens := map[string]bool{}
-				if dfs(seens, board, r, c, 0, word) {
-					return true
-				}
-			}
+	for i, n := range arr {
+		for (len(stack) > 0) && (arr[stack[len(stack)-1]] >= n) {
+			stack = stack[:len(stack)-1]
 		}
+
+		if len(stack) > 0 {
+			top := stack[len(stack)-1]
+			dp[i] = dp[top] + (i-top)*n
+		} else {
+			dp[i] = (i + 1) * n
+		}
+
+		stack = append(stack, i)
 	}
 
-	return false
-}
+	result := 0
+	for _, count := range dp {
+		result += count
+		result %= 1000000007
+	}
 
-type input struct {
-	board [][]byte
-	word  string
+	return result
 }
 
 func main() {
-	inputs := []input{
-		{
-			board: [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
-			word:  "ABCCED",
-		},
-		{
-			board: [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
-			word:  "SEE",
-		},
-		{
-			board: [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
-			word:  "ABCB",
-		},
+	inputs := [][]int{
+		{3, 1, 2, 4},
+		{11, 81, 94, 43, 3},
 	}
 
-	for _, input := range inputs {
-		board := input.board
-		word := input.word
-		result := exist(board, word)
+	for _, arr := range inputs {
+		result := sumSubarrayMins(arr)
 		fmt.Println(result)
 	}
 }

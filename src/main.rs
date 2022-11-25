@@ -1,105 +1,44 @@
 struct Solution {}
 impl Solution {
-    pub fn exist(board: Vec<Vec<char>>, word: String) -> bool {
-        let mut board = board;
-        let first = word.chars().nth(0).unwrap();
-        for r in 0..board.len() {
-            for c in 0..board[r].len() {
-                if board[r][c] == first {
-                    if Self::dfs(&mut board, r as i32, c as i32, word.as_str()) {
-                        return true;
-                    }
+    pub fn sum_subarray_mins(arr: Vec<i32>) -> i32 {
+        let mut stack = Vec::<i32>::new();
+        let mut dp = vec![0; arr.len()];
+
+        for (i, n) in arr.iter().cloned().enumerate() {
+            while let Some(top) = stack.last() {
+                if arr[*top as usize] >= n {
+                    stack.pop();
+                } else {
+                    break;
                 }
             }
+
+            if let Some(top) = stack.last() {
+                let idx = i as i32;
+                dp[i] = dp[*top as usize] + (idx - top) * n;
+            } else {
+                let idx = i as i32;
+                dp[i] = (idx + 1) * n;
+            }
+
+            stack.push(i as i32);
         }
 
-        return false;
-    }
-
-    fn dfs(board: &mut Vec<Vec<char>>, row: i32, col: i32, chars: &str) -> bool {
-        if let Some(ch) = chars.chars().nth(0) {
-            if (row < 0) || (col < 0) {
-                return false;
-            }
-
-            let r = row as usize;
-            let c = col as usize;
-            if r >= board.len() {
-                return false;
-            } else if c >= board[0].len() {
-                return false;
-            }
-
-            if board[r][c] != ch {
-                return false;
-            }
-
-            board[r][c] = 0 as char;
-
-            let next = &chars[1..];
-            let found = Self::dfs(board, row + 1, col, next)
-                || Self::dfs(board, row - 1, col, next)
-                || Self::dfs(board, row, col + 1, next)
-                || Self::dfs(board, row, col - 1, next);
-
-            board[r][c] = ch;
-
-            return found;
-        } else {
-            return true;
+        let mut result = 0;
+        for count in dp {
+            result += count;
+            result %= 1000000007;
         }
+
+        return result;
     }
 }
 
-struct Input {
-    board: Vec<Vec<char>>,
-    word: String,
-}
 fn main() {
-    let inputs = [
-        Input {
-            board: vec![
-                vec!['A', 'B', 'C', 'E'],
-                vec!['S', 'F', 'C', 'S'],
-                vec!['A', 'D', 'E', 'E'],
-            ],
-            word: "ABCCED".to_string(),
-        },
-        Input {
-            board: vec![
-                vec!['A', 'B', 'C', 'E'],
-                vec!['S', 'F', 'C', 'S'],
-                vec!['A', 'D', 'E', 'E'],
-            ],
-            word: "SEE".to_string(),
-        },
-        Input {
-            board: vec![
-                vec!['A', 'B', 'C', 'E'],
-                vec!['S', 'F', 'C', 'S'],
-                vec!['A', 'D', 'E', 'E'],
-            ],
-            word: "ABCB".to_string(),
-        },
-        Input {
-            board: vec![
-                vec!['A', 'A', 'A', 'A', 'A', 'A'],
-                vec!['A', 'A', 'A', 'A', 'A', 'A'],
-                vec!['A', 'A', 'A', 'A', 'A', 'A'],
-                vec!['A', 'A', 'A', 'A', 'A', 'A'],
-                vec!['A', 'A', 'A', 'A', 'A', 'A'],
-                vec!['A', 'A', 'A', 'A', 'A', 'A'],
-            ],
-            word: "AAAAAAAAAAAABAA".to_string(),
-        },
-        Input {
-            board: vec![vec!['a']],
-            word: "a".to_string(),
-        },
-    ];
+    let inputs = [vec![3, 1, 2, 4], vec![11, 81, 94, 43, 3]];
 
-    for Input { board, word } in inputs {
-        let result = Solution::exist(board, word);
+    for arr in inputs {
+        let result = Solution::sum_subarray_mins(arr);
         println!("{result}");
     }
 }
