@@ -4,36 +4,47 @@ from collections import Counter, deque
 
 
 class Solution:
-    def sumSubarrayMins(self, arr: List[int]) -> int:
-        stack: list[int] = []
-        dp = [0] * len(arr)
+    def findWinners(self, matches: List[List[int]]) -> List[List[int]]:
+        lose_counts: Counter[int] = Counter()
+        for [winner, loser] in matches:
+            lose_counts[winner] = lose_counts.get(winner, 0)
+            lose_counts[loser] = lose_counts.get(loser, 0) + 1
 
-        for i, n in enumerate(arr):
-            while stack and (arr[stack[-1]] >= n):
-                stack.pop()
+        winners: list[int] = []
+        losers: list[int] = []
 
-            if stack:
-                top = stack[-1]
-                dp[i] = dp[top] + (i - top) * n
-            else:
-                dp[i] = (i + 1) * n
+        for player, count in lose_counts.items():
+            if count < 1:
+                winners.append(player)
+            elif count == 1:
+                losers.append(player)
 
-            stack.append(i)
+        winners.sort()
+        losers.sort()
 
-        result = 0
-        for count in dp:
-            result += count
-            result %= 1000000007
-
-        return result
+        return [winners, losers]
 
 
 def main():
-    inputs: list[list[int]] = [[3, 1, 2, 4], [11, 81, 94, 43, 3]]
+    inputs: list[list[list[int]]] = [
+        [
+            [1, 3],
+            [2, 3],
+            [3, 6],
+            [5, 6],
+            [5, 7],
+            [4, 5],
+            [4, 8],
+            [4, 9],
+            [10, 4],
+            [10, 9],
+        ],
+        [[2, 3], [1, 3], [5, 4], [6, 4]],
+    ]
 
     solution = Solution()
-    for arr in inputs:
-        result = solution.sumSubarrayMins(arr)
+    for matches in inputs:
+        result = solution.findWinners(matches)
         print(result)
 
 

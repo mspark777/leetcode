@@ -1,43 +1,43 @@
 /**
- * @param {number[]} arr
- * @returns {number}
+ * @param {number[][]} matches
+ * @returns {number[][]}
 */
-function sumSubarrayMins (arr) {
-  const stack = []
-  const dp = new Array(arr.length).fill(0)
-
-  for (let i = 0; i < arr.length; i += 1) {
-    const n = arr[i]
-    while ((stack.length > 0) && arr[stack.at(-1)] >= n) {
-      stack.pop()
+function findWinners (matches) {
+  const loseCounts = new Map()
+  for (const [winner, loser] of matches) {
+    if (!loseCounts.has(winner)) {
+      loseCounts.set(winner, 0)
     }
 
-    if (stack.length > 0) {
-      const top = stack.at(-1)
-      dp[i] = dp[top] + (i - top) * n
-    } else {
-      dp[i] = (i + 1) * n
+    const count = loseCounts.get(loser) ?? 0
+    loseCounts.set(loser, count + 1)
+  }
+
+  const winners = []
+  const losers = []
+
+  for (const [player, count] of loseCounts) {
+    if (count < 1) {
+      winners.push(player)
+    } else if (count === 1) {
+      losers.push(player)
     }
-    stack.push(i)
   }
 
-  let result = 0
-  for (const count of dp) {
-    result += count
-    result %= 1000000007
-  }
-
-  return result
+  return [
+    winners.sort((a, b) => a - b),
+    losers.sort((a, b) => a - b)
+  ]
 }
 
 async function main () {
   const inputs = [
-    [3, 1, 2, 4],
-    [11, 81, 94, 43, 3]
+    [[1, 3], [2, 3], [3, 6], [5, 6], [5, 7], [4, 5], [4, 8], [4, 9], [10, 4], [10, 9]],
+    [[2, 3], [1, 3], [5, 4], [6, 4]]
   ]
 
-  for (const arr of inputs) {
-    const result = sumSubarrayMins(arr)
+  for (const matches of inputs) {
+    const result = findWinners(matches)
     console.log(result)
   }
 }

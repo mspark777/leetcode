@@ -2,44 +2,47 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func sumSubarrayMins(arr []int) int {
-	stack := []int{}
-	dp := make([]int, len(arr))
+func findWinners(matches [][]int) [][]int {
+	loseCounts := map[int]int{}
+	for _, match := range matches {
+		winner := match[0]
+		loser := match[1]
 
-	for i, n := range arr {
-		for (len(stack) > 0) && (arr[stack[len(stack)-1]] >= n) {
-			stack = stack[:len(stack)-1]
+		if _, ok := loseCounts[winner]; !ok {
+			loseCounts[winner] = 0
 		}
 
-		if len(stack) > 0 {
-			top := stack[len(stack)-1]
-			dp[i] = dp[top] + (i-top)*n
-		} else {
-			dp[i] = (i + 1) * n
+		loseCounts[loser] += 1
+	}
+
+	winners := []int{}
+	losers := []int{}
+
+	for player, count := range loseCounts {
+		if count < 1 {
+			winners = append(winners, player)
+		} else if count == 1 {
+			losers = append(losers, player)
 		}
-
-		stack = append(stack, i)
 	}
 
-	result := 0
-	for _, count := range dp {
-		result += count
-		result %= 1000000007
-	}
+	sort.Ints(winners)
+	sort.Ints(losers)
 
-	return result
+	return [][]int{winners, losers}
 }
 
 func main() {
-	inputs := [][]int{
-		{3, 1, 2, 4},
-		{11, 81, 94, 43, 3},
+	inputs := [][][]int{
+		{{1, 3}, {2, 3}, {3, 6}, {5, 6}, {5, 7}, {4, 5}, {4, 8}, {4, 9}, {10, 4}, {10, 9}},
+		{{2, 3}, {1, 3}, {5, 4}, {6, 4}},
 	}
 
-	for _, arr := range inputs {
-		result := sumSubarrayMins(arr)
+	for _, matches := range inputs {
+		result := findWinners(matches)
 		fmt.Println(result)
 	}
 }
