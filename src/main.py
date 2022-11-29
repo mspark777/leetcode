@@ -1,51 +1,56 @@
 from __future__ import annotations
 from typing import Callable, Deque, Optional, List
 from collections import Counter, deque
+from random import randrange
 
 
-class Solution:
-    def findWinners(self, matches: List[List[int]]) -> List[List[int]]:
-        lose_counts: Counter[int] = Counter()
-        for [winner, loser] in matches:
-            lose_counts[winner] = lose_counts.get(winner, 0)
-            lose_counts[loser] = lose_counts.get(loser, 0) + 1
+class RandomizedSet:
+    nums: list[int]
+    indexes: dict[int, int]
 
-        winners: list[int] = []
-        losers: list[int] = []
+    def __init__(self):
+        self.nums = []
+        self.indexes = {}
 
-        for player, count in lose_counts.items():
-            if count < 1:
-                winners.append(player)
-            elif count == 1:
-                losers.append(player)
+    def insert(self, val: int) -> bool:
+        if val in self.indexes:
+            return False
 
-        winners.sort()
-        losers.sort()
+        self.indexes[val] = len(self.nums)
+        self.nums.append(val)
+        return True
 
-        return [winners, losers]
+    def remove(self, val: int) -> bool:
+        if val not in self.indexes:
+            return False
+
+        last = self.nums[-1]
+        pos = self.indexes[val]
+
+        self.indexes[last] = pos
+        self.nums[pos] = last
+
+        self.indexes.pop(val)
+        self.nums.pop()
+
+        return True
+
+    def getRandom(self) -> int:
+        index = randrange(0, len(self.nums))
+        return self.nums[index]
 
 
 def main():
-    inputs: list[list[list[int]]] = [
-        [
-            [1, 3],
-            [2, 3],
-            [3, 6],
-            [5, 6],
-            [5, 7],
-            [4, 5],
-            [4, 8],
-            [4, 9],
-            [10, 4],
-            [10, 9],
-        ],
-        [[2, 3], [1, 3], [5, 4], [6, 4]],
-    ]
-
-    solution = Solution()
-    for matches in inputs:
-        result = solution.findWinners(matches)
-        print(result)
+    obj = RandomizedSet()
+    print(obj.insert(3))
+    print(obj.insert(3))
+    print(obj.getRandom())
+    print(obj.getRandom())
+    print(obj.insert(1))
+    print(obj.remove(3))
+    print(obj.getRandom())
+    print(obj.insert(0))
+    print(obj.remove(0))
 
 
 if __name__ == "__main__":

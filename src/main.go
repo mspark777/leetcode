@@ -2,47 +2,59 @@ package main
 
 import (
 	"fmt"
-	"sort"
+	"math/rand"
 )
 
-func findWinners(matches [][]int) [][]int {
-	loseCounts := map[int]int{}
-	for _, match := range matches {
-		winner := match[0]
-		loser := match[1]
+type RandomizedSet struct {
+	nums    []int
+	indexes map[int]int
+}
 
-		if _, ok := loseCounts[winner]; !ok {
-			loseCounts[winner] = 0
-		}
+func Constructor() RandomizedSet {
+	return RandomizedSet{nums: []int{}, indexes: map[int]int{}}
+}
 
-		loseCounts[loser] += 1
+func (this *RandomizedSet) Insert(val int) bool {
+	if _, ok := this.indexes[val]; ok {
+		return false
 	}
 
-	winners := []int{}
-	losers := []int{}
+	this.indexes[val] = len(this.nums)
+	this.nums = append(this.nums, val)
+	return true
+}
 
-	for player, count := range loseCounts {
-		if count < 1 {
-			winners = append(winners, player)
-		} else if count == 1 {
-			losers = append(losers, player)
-		}
+func (this *RandomizedSet) Remove(val int) bool {
+	if _, ok := this.indexes[val]; !ok {
+		return false
 	}
 
-	sort.Ints(winners)
-	sort.Ints(losers)
+	lastidx := len(this.nums) - 1
+	last := this.nums[lastidx]
+	pos := this.indexes[val]
 
-	return [][]int{winners, losers}
+	this.indexes[last] = pos
+	this.nums[pos] = last
+
+	delete(this.indexes, val)
+	this.nums = this.nums[:lastidx]
+	return true
+}
+
+func (this *RandomizedSet) GetRandom() int {
+	idx := rand.Int() % len(this.nums)
+	return this.nums[idx]
 }
 
 func main() {
-	inputs := [][][]int{
-		{{1, 3}, {2, 3}, {3, 6}, {5, 6}, {5, 7}, {4, 5}, {4, 8}, {4, 9}, {10, 4}, {10, 9}},
-		{{2, 3}, {1, 3}, {5, 4}, {6, 4}},
-	}
-
-	for _, matches := range inputs {
-		result := findWinners(matches)
-		fmt.Println(result)
-	}
+	obj := Constructor()
+	fmt.Println(obj.Insert(3))
+	fmt.Println(obj.Insert(3))
+	fmt.Println(obj.GetRandom())
+	fmt.Println(obj.GetRandom())
+	fmt.Println(obj.Insert(1))
+	fmt.Println(obj.Remove(3))
+	fmt.Println(obj.GetRandom())
+	fmt.Println(obj.Insert(0))
+	fmt.Println(obj.Remove(0))
 }
