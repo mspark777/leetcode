@@ -2,59 +2,31 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 )
 
-type RandomizedSet struct {
-	nums    []int
-	indexes map[int]int
-}
-
-func Constructor() RandomizedSet {
-	return RandomizedSet{nums: []int{}, indexes: map[int]int{}}
-}
-
-func (this *RandomizedSet) Insert(val int) bool {
-	if _, ok := this.indexes[val]; ok {
-		return false
+func uniqueOccurrences(arr []int) bool {
+	counts := map[int]int{}
+	for _, n := range arr {
+		counts[n] += 1
 	}
 
-	this.indexes[val] = len(this.nums)
-	this.nums = append(this.nums, val)
-	return true
-}
-
-func (this *RandomizedSet) Remove(val int) bool {
-	if _, ok := this.indexes[val]; !ok {
-		return false
+	occurrences := map[int]bool{}
+	for _, c := range counts {
+		occurrences[c] = true
 	}
 
-	lastidx := len(this.nums) - 1
-	last := this.nums[lastidx]
-	pos := this.indexes[val]
-
-	this.indexes[last] = pos
-	this.nums[pos] = last
-
-	delete(this.indexes, val)
-	this.nums = this.nums[:lastidx]
-	return true
-}
-
-func (this *RandomizedSet) GetRandom() int {
-	idx := rand.Int() % len(this.nums)
-	return this.nums[idx]
+	return len(counts) == len(occurrences)
 }
 
 func main() {
-	obj := Constructor()
-	fmt.Println(obj.Insert(3))
-	fmt.Println(obj.Insert(3))
-	fmt.Println(obj.GetRandom())
-	fmt.Println(obj.GetRandom())
-	fmt.Println(obj.Insert(1))
-	fmt.Println(obj.Remove(3))
-	fmt.Println(obj.GetRandom())
-	fmt.Println(obj.Insert(0))
-	fmt.Println(obj.Remove(0))
+	inputs := [][]int{
+		{1, 2, 2, 1, 1, 3},
+		{1, 2},
+		{-3, 0, 1, -3, 1, 1, 1, -3, 10, 0},
+	}
+
+	for _, arr := range inputs {
+		result := uniqueOccurrences(arr)
+		fmt.Println(result)
+	}
 }

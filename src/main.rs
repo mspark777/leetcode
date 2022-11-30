@@ -1,70 +1,27 @@
-use rand::random;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-struct RandomizedSet {
-    nums: Vec<i32>,
-    indexes: HashMap<i32, usize>,
-}
-
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl RandomizedSet {
-    fn new() -> Self {
-        return Self {
-            nums: vec![],
-            indexes: HashMap::new(),
-        };
-    }
-
-    fn insert(&mut self, val: i32) -> bool {
-        let indexes = &mut self.indexes;
-        if indexes.contains_key(&val) {
-            return false;
+struct Solution {}
+impl Solution {
+    pub fn unique_occurrences(arr: Vec<i32>) -> bool {
+        let mut counts = HashMap::<i32, i32>::with_capacity(arr.len());
+        for n in arr.iter().cloned() {
+            *counts.entry(n).or_insert(0) += 1;
         }
 
-        let nums = &mut self.nums;
-        indexes.insert(val, nums.len());
-        nums.push(val);
-        return true;
-    }
-
-    fn remove(&mut self, val: i32) -> bool {
-        let indexes = &mut self.indexes;
-        if !indexes.contains_key(&val) {
-            return false;
-        }
-
-        let nums = &mut self.nums;
-        let last = *nums.last().unwrap();
-        let pos = *indexes.get(&val).unwrap();
-
-        *indexes.get_mut(&last).unwrap() = pos;
-        nums[pos] = last;
-
-        indexes.remove(&val);
-        nums.pop();
-        return true;
-    }
-
-    fn get_random(&self) -> i32 {
-        let nums = &self.nums;
-        let idx = random::<usize>() % nums.len();
-
-        return nums[idx];
+        let occurrences: HashSet<i32> = counts.values().cloned().collect();
+        return occurrences.len() == counts.len();
     }
 }
 
 fn main() {
-    let mut obj = RandomizedSet::new();
-    println!("{}", obj.insert(3));
-    println!("{}", obj.insert(3));
-    println!("{}", obj.get_random());
-    println!("{}", obj.get_random());
-    println!("{}", obj.insert(1));
-    println!("{}", obj.remove(3));
-    println!("{}", obj.get_random());
-    println!("{}", obj.insert(0));
-    println!("{}", obj.remove(0));
+    let inputs = [
+        vec![1, 2, 2, 1, 1, 3],
+        vec![1, 2],
+        vec![-3, 0, 1, -3, 1, 1, 1, -3, 10, 0],
+    ];
+
+    for arr in inputs {
+        let result = Solution::unique_occurrences(arr);
+        println!("{result}");
+    }
 }
