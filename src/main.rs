@@ -1,27 +1,41 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 struct Solution {}
 impl Solution {
-    pub fn unique_occurrences(arr: Vec<i32>) -> bool {
-        let mut counts = HashMap::<i32, i32>::with_capacity(arr.len());
-        for n in arr.iter().cloned() {
-            *counts.entry(n).or_insert(0) += 1;
+    pub fn halves_are_alike(s: String) -> bool {
+        let vowels: HashSet<u8> = [b'a', b'e', b'i', b'o', b'u', b'A', b'E', b'I', b'O', b'U']
+            .iter()
+            .cloned()
+            .collect();
+
+        let mut first = 0;
+        let mut second = 0;
+
+        let bytes = s.as_bytes();
+        let mut i = 0usize;
+        let mut j = bytes.len() / 2;
+        while j < bytes.len() {
+            if vowels.contains(&bytes[i]) {
+                first += 1;
+            }
+
+            if vowels.contains(&bytes[j]) {
+                second += 1;
+            }
+
+            i += 1;
+            j += 1;
         }
 
-        let occurrences: HashSet<i32> = counts.values().cloned().collect();
-        return occurrences.len() == counts.len();
+        return first == second;
     }
 }
 
 fn main() {
-    let inputs = [
-        vec![1, 2, 2, 1, 1, 3],
-        vec![1, 2],
-        vec![-3, 0, 1, -3, 1, 1, 1, -3, 10, 0],
-    ];
+    let inputs = ["book", "textbook"];
 
-    for arr in inputs {
-        let result = Solution::unique_occurrences(arr);
+    for s in inputs {
+        let result = Solution::halves_are_alike(s.to_string());
         println!("{result}");
     }
 }

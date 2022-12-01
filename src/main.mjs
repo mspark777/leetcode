@@ -1,27 +1,33 @@
 /**
- * @param {number[]} arr
+ * @param {string} s
  * @returns {boolean}
-*/
-function uniqueOccurrences (arr) {
-  const counts = new Map()
-  for (const n of arr) {
-    const count = counts.get(n) ?? 0
-    counts.set(n, count + 1)
+ */
+function halvesAreAlike (s) {
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'])
+  let first = 0
+  let second = 0
+
+  for (let i = 0, j = Math.round(s.length / 2); j < s.length; i += 1, j += 1) {
+    if (vowels.has(s[i])) {
+      first += 1
+    }
+
+    if (vowels.has(s[j])) {
+      second += 1
+    }
   }
 
-  const occurrences = new Set(counts.values())
-  return occurrences.size === counts.size
+  return first === second
 }
 
 async function main () {
   const inputs = [
-    [1, 2, 2, 1, 1, 3],
-    [1, 2],
-    [-3, 0, 1, -3, 1, 1, 1, -3, 10, 0]
+    'book',
+    'textbook'
   ]
 
-  for (const arr of inputs) {
-    const result = uniqueOccurrences(arr)
+  for (const s of inputs) {
+    const result = halvesAreAlike(s)
     console.log(result)
   }
 }

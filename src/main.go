@@ -4,29 +4,47 @@ import (
 	"fmt"
 )
 
-func uniqueOccurrences(arr []int) bool {
-	counts := map[int]int{}
-	for _, n := range arr {
-		counts[n] += 1
+func halvesAreAlike(s string) bool {
+	vowels := map[byte]bool{
+		'a': true,
+		'e': true,
+		'i': true,
+		'o': true,
+		'u': true,
+		'A': true,
+		'E': true,
+		'I': true,
+		'O': true,
+		'U': true,
 	}
 
-	occurrences := map[int]bool{}
-	for _, c := range counts {
-		occurrences[c] = true
+	first := 0
+	second := 0
+
+	i := 0
+	for j := len(s) / 2; j < len(s); j += 1 {
+		if _, ok := vowels[s[i]]; ok {
+			first += 1
+		}
+
+		if _, ok := vowels[s[j]]; ok {
+			second += 1
+		}
+
+		i += 1
 	}
 
-	return len(counts) == len(occurrences)
+	return first == second
 }
 
 func main() {
-	inputs := [][]int{
-		{1, 2, 2, 1, 1, 3},
-		{1, 2},
-		{-3, 0, 1, -3, 1, 1, 1, -3, 10, 0},
+	inputs := []string{
+		"book",
+		"textbook",
 	}
 
-	for _, arr := range inputs {
-		result := uniqueOccurrences(arr)
+	for _, s := range inputs {
+		result := halvesAreAlike(s)
 		fmt.Println(result)
 	}
 }

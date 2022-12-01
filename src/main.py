@@ -4,23 +4,30 @@ from typing import List
 
 
 class Solution:
-    def uniqueOccurrences(self, arr: List[int]) -> bool:
-        counts = Counter(arr)
-        occurrences = set(counts.values())
+    def halvesAreAlike(self, s: str) -> bool:
+        vowels = set(["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"])
+        first = 0
+        second = 0
 
-        return len(counts) == len(occurrences)
+        i = 0
+        for j in range(len(s) // 2, len(s)):
+            if s[i] in vowels:
+                first += 1
+
+            if s[j] in vowels:
+                second += 1
+
+            i += 1
+
+        return first == second
 
 
 def main():
-    inputs: list[list[int]] = [
-        [1, 2, 2, 1, 1, 3],
-        [1, 2],
-        [-3, 0, 1, -3, 1, 1, 1, -3, 10, 0],
-    ]
+    inputs: list[str] = ["book", "textbook"]
 
     solution = Solution()
-    for arr in inputs:
-        result = solution.uniqueOccurrences(arr)
+    for s in inputs:
+        result = solution.halvesAreAlike(s)
         print(result)
 
 
