@@ -1,33 +1,52 @@
 /**
- * @param {string} s
- * @returns {boolean}
+ * @param {string} word1
+ * @param {string} word2
+ * @returns {string}
  */
-function halvesAreAlike (s) {
-  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'])
-  let first = 0
-  let second = 0
+function closeStrings (word1, word2) {
+  if (word1.length !== word2.length) {
+    return false
+  }
 
-  for (let i = 0, j = Math.round(s.length / 2); j < s.length; i += 1, j += 1) {
-    if (vowels.has(s[i])) {
-      first += 1
-    }
+  const freq1 = new Map()
+  const freq2 = new Map()
+  for (let i = 0; i < word1.length; i += 1) {
+    const ch1 = word1.charAt(i)
+    const ch2 = word2.charAt(i)
 
-    if (vowels.has(s[j])) {
-      second += 1
+    const cnt1 = freq1.get(ch1) ?? 0
+    const cnt2 = freq2.get(ch2) ?? 0
+
+    freq1.set(ch1, cnt1 + 1)
+    freq2.set(ch2, cnt2 + 1)
+  }
+
+  if (freq1.size !== freq2.size) {
+    return false
+  } else if ([...freq1.keys()].some(k => !freq2.has(k))) {
+    return false
+  }
+
+  const counts1 = [...freq1.values()].sort((a, b) => b - a)
+  const counts2 = [...freq2.values()].sort((a, b) => b - a)
+  for (let i = 0; i < counts1.length; i += 1) {
+    if (counts1[i] !== counts2[i]) {
+      return false
     }
   }
 
-  return first === second
+  return true
 }
 
 async function main () {
   const inputs = [
-    'book',
-    'textbook'
+    ['abc', 'bca'],
+    ['a', 'aa'],
+    ['cabbba', 'abbccc']
   ]
 
-  for (const s of inputs) {
-    const result = halvesAreAlike(s)
+  for (const [word1, word2] of inputs) {
+    const result = closeStrings(word1, word2)
     console.log(result)
   }
 }

@@ -4,30 +4,37 @@ from typing import List
 
 
 class Solution:
-    def halvesAreAlike(self, s: str) -> bool:
-        vowels = set(["a", "e", "i", "o", "u", "A", "E", "I", "O", "U"])
-        first = 0
-        second = 0
+    def closeStrings(self, word1: str, word2: str) -> bool:
+        if len(word1) != len(word2):
+            return False
 
-        i = 0
-        for j in range(len(s) // 2, len(s)):
-            if s[i] in vowels:
-                first += 1
+        freq1 = Counter(word1)
+        freq2 = Counter(word2)
 
-            if s[j] in vowels:
-                second += 1
+        if len(freq1) != len(freq2):
+            return False
+        elif [k for k in freq1.keys() if k not in freq2]:
+            return False
 
-            i += 1
+        counts1 = list(freq1.values())
+        counts2 = list(freq2.values())
 
-        return first == second
+        counts1.sort(reverse=True)
+        counts2.sort(reverse=True)
+
+        for i, cnt1 in enumerate(counts1):
+            if cnt1 != counts2[i]:
+                return False
+
+        return True
 
 
 def main():
-    inputs: list[str] = ["book", "textbook"]
+    inputs: list[list[str]] = [["abc", "bca"], ["a", "aa"], ["cabbba", "abbccc"]]
 
     solution = Solution()
-    for s in inputs:
-        result = solution.halvesAreAlike(s)
+    for [word1, word2] in inputs:
+        result = solution.closeStrings(word1, word2)
         print(result)
 
 
