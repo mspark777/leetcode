@@ -1,54 +1,69 @@
-use std::collections::{HashMap, HashSet};
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
 
-struct Solution {}
-impl Solution {
-    pub fn close_strings(word1: String, word2: String) -> bool {
-        if word1.len() != word2.len() {
-            return false;
-        }
-
-        let mut freq1 = HashMap::<u8, i32>::new();
-        let mut freq2 = HashMap::<u8, i32>::new();
-        let bytes1 = word1.as_bytes();
-        let bytes2 = word2.as_bytes();
-        for i in 0..bytes1.len() {
-            let ch1 = bytes1[i];
-            let ch2 = bytes2[i];
-            *freq1.entry(ch1).or_insert(0) += 1;
-            *freq2.entry(ch2).or_insert(0) += 1;
-        }
-
-        if freq1.len() != freq2.len() {
-            return false;
-        }
-
-        let keys1: HashSet<u8> = freq1.keys().cloned().collect();
-        let keys2: HashSet<u8> = freq2.keys().cloned().collect();
-        if keys1 != keys2 {
-            return false;
-        }
-
-        let mut counts1: Vec<i32> = freq1.values().cloned().collect();
-        let mut counts2: Vec<i32> = freq2.values().cloned().collect();
-
-        counts1.sort_unstable_by_key(|k| -k);
-        counts2.sort_unstable_by_key(|k| -k);
-
-        for i in 0..counts1.len() {
-            if counts1[i] != counts2[i] {
-                return false;
-            }
-        }
-
-        return true;
+impl ListNode {
+    #[inline]
+    fn new(val: i32) -> Self {
+        ListNode { next: None, val }
     }
 }
 
-fn main() {
-    let inputs = [("abc", "bca"), ("a", "aa"), ("cabbba", "abbccc")];
+struct Solution {}
+impl Solution {
+    pub fn middle_node(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        let mut slow = head.as_ref();
+        let mut fast = head.as_ref();
 
-    for (word1, word2) in inputs {
-        let result = Solution::close_strings(word1.to_string(), word2.to_string());
-        println!("{result}");
+        while let Some(fnode) = fast {
+            if let Some(ffnode) = &fnode.next {
+                slow = slow.unwrap().next.as_ref();
+                fast = ffnode.next.as_ref();
+            } else {
+                break;
+            }
+        }
+
+        if let Some(s) = slow {
+            return Some(s.clone());
+        } else {
+            return None;
+        }
+    }
+}
+
+fn arrtolist(nums: &Vec<i32>) -> Option<Box<ListNode>> {
+    let mut head = ListNode::new(0);
+    let mut tail = &mut head;
+
+    for val in nums.iter().cloned() {
+        tail.next = Some(Box::new(ListNode::new(val)));
+        tail = tail.next.as_mut().unwrap();
+    }
+
+    return head.next;
+}
+
+fn listtoarr(node: &Option<Box<ListNode>>) -> Vec<i32> {
+    let mut nums = Vec::<i32>::new();
+
+    let mut n = node;
+    while let Some(nn) = n {
+        nums.push(nn.val);
+        n = &nn.next;
+    }
+
+    return nums;
+}
+
+fn main() {
+    let inputs = [vec![1, 2, 3, 4, 5], vec![1, 2, 3, 4, 5, 6]];
+
+    for nums in inputs {
+        let result = Solution::middle_node(arrtolist(&nums));
+        let result = listtoarr(&result);
+        println!("{result:?}");
     }
 }

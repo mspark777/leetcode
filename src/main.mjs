@@ -1,53 +1,55 @@
+class ListNode {
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
+
 /**
- * @param {string} word1
- * @param {string} word2
- * @returns {string}
- */
-function closeStrings (word1, word2) {
-  if (word1.length !== word2.length) {
-    return false
+ * @param {ListNode | null} head
+ * @returns {ListNode | null}
+*/
+function middleNode (head) {
+  let slow = head
+  let fast = head
+  while (fast?.next != null) {
+    slow = slow?.next ?? null
+    fast = fast.next.next
   }
 
-  const freq1 = new Map()
-  const freq2 = new Map()
-  for (let i = 0; i < word1.length; i += 1) {
-    const ch1 = word1.charAt(i)
-    const ch2 = word2.charAt(i)
+  return slow
+}
 
-    const cnt1 = freq1.get(ch1) ?? 0
-    const cnt2 = freq2.get(ch2) ?? 0
-
-    freq1.set(ch1, cnt1 + 1)
-    freq2.set(ch2, cnt2 + 1)
+function arrtolist (nums) {
+  const head = new ListNode()
+  let tail = head
+  for (const val of nums) {
+    tail.next = new ListNode(val)
+    tail = tail.next
   }
 
-  if (freq1.size !== freq2.size) {
-    return false
-  } else if ([...freq1.keys()].some(k => !freq2.has(k))) {
-    return false
+  return head.next
+}
+
+function listtoarr (node) {
+  const nums = []
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
   }
 
-  const counts1 = [...freq1.values()].sort((a, b) => b - a)
-  const counts2 = [...freq2.values()].sort((a, b) => b - a)
-  for (let i = 0; i < counts1.length; i += 1) {
-    if (counts1[i] !== counts2[i]) {
-      return false
-    }
-  }
-
-  return true
+  return nums
 }
 
 async function main () {
   const inputs = [
-    ['abc', 'bca'],
-    ['a', 'aa'],
-    ['cabbba', 'abbccc']
+    [1, 2, 3, 4, 5],
+    [1, 2, 3, 4, 5, 6]
   ]
 
-  for (const [word1, word2] of inputs) {
-    const result = closeStrings(word1, word2)
-    console.log(result)
+  for (const nums of inputs) {
+    const result = middleNode(arrtolist(nums))
+    console.log(listtoarr(result))
   }
 }
 

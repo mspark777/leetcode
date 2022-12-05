@@ -1,41 +1,57 @@
 from __future__ import annotations
 from collections import Counter
-from typing import List
+from typing import List, Optional
+
+
+class ListNode:
+    val: int
+    next: Optional[ListNode]
+
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
 
 class Solution:
-    def closeStrings(self, word1: str, word2: str) -> bool:
-        if len(word1) != len(word2):
-            return False
+    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        slow = head
+        fast = head
 
-        freq1 = Counter(word1)
-        freq2 = Counter(word2)
+        while (fast is not None) and (fast.next is not None):
+            slow = slow.next if slow is not None else None
+            fast = fast.next.next
 
-        if len(freq1) != len(freq2):
-            return False
-        elif [k for k in freq1.keys() if k not in freq2]:
-            return False
+        return slow
 
-        counts1 = list(freq1.values())
-        counts2 = list(freq2.values())
 
-        counts1.sort(reverse=True)
-        counts2.sort(reverse=True)
+def arrtolist(nums: list[int]) -> Optional[ListNode]:
+    head = ListNode()
+    tail = head
 
-        for i, cnt1 in enumerate(counts1):
-            if cnt1 != counts2[i]:
-                return False
+    for val in nums:
+        tail.next = ListNode(val)
+        tail = tail.next
 
-        return True
+    return head.next
+
+
+def listtoarr(node: Optional[ListNode]) -> list[int]:
+    nums: list[int] = []
+
+    while node:
+        nums.append(node.val)
+        node = node.next
+
+    return nums
 
 
 def main():
-    inputs: list[list[str]] = [["abc", "bca"], ["a", "aa"], ["cabbba", "abbccc"]]
+    inputs: list[list[int]] = [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 6]]
 
     solution = Solution()
-    for [word1, word2] in inputs:
-        result = solution.closeStrings(word1, word2)
-        print(result)
+    for nums in inputs:
+        result = solution.middleNode(arrtolist(nums))
+        print(listtoarr(result))
 
 
 if __name__ == "__main__":
