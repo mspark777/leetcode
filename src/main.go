@@ -9,16 +9,23 @@ type ListNode struct {
 	Next *ListNode
 }
 
-func middleNode(head *ListNode) *ListNode {
-	slow := head
-	fast := head
-
-	for (fast != nil) && (fast.Next != nil) {
-		slow = slow.Next
-		fast = fast.Next.Next
+func oddEvenList(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
 	}
 
-	return slow
+	odd := head
+	even := odd.Next
+	evenHead := even
+	for (even != nil) && (even.Next != nil) {
+		odd.Next = even.Next
+		odd = odd.Next
+		even.Next = odd.Next
+		even = even.Next
+	}
+
+	odd.Next = evenHead
+	return head
 }
 
 func arrtolist(nums []int) *ListNode {
@@ -46,11 +53,11 @@ func listtoarr(node *ListNode) []int {
 func main() {
 	inputs := [][]int{
 		{1, 2, 3, 4, 5},
-		{1, 2, 3, 4, 5, 6},
+		{2, 1, 3, 5, 6, 4, 7},
 	}
 
 	for _, nums := range inputs {
-		result := middleNode(arrtolist(nums))
+		result := oddEvenList(arrtolist(nums))
 		fmt.Println(listtoarr(result))
 	}
 }

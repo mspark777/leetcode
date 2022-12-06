@@ -8,16 +8,24 @@ class ListNode {
 /**
  * @param {ListNode | null} head
  * @returns {ListNode | null}
-*/
-function middleNode (head) {
-  let slow = head
-  let fast = head
-  while (fast?.next != null) {
-    slow = slow?.next ?? null
-    fast = fast.next.next
+ */
+function oddEvenList (head) {
+  if (head == null) {
+    return null
   }
 
-  return slow
+  let odd = head
+  let even = head.next
+  const evenHead = even
+  while (even?.next != null) {
+    odd.next = even.next
+    odd = odd.next
+    even.next = odd.next
+    even = even.next
+  }
+
+  odd.next = evenHead
+  return head
 }
 
 function arrtolist (nums) {
@@ -44,11 +52,11 @@ function listtoarr (node) {
 async function main () {
   const inputs = [
     [1, 2, 3, 4, 5],
-    [1, 2, 3, 4, 5, 6]
+    [2, 1, 3, 5, 6, 4, 7]
   ]
 
   for (const nums of inputs) {
-    const result = middleNode(arrtolist(nums))
+    const result = oddEvenList(arrtolist(nums))
     console.log(listtoarr(result))
   }
 }

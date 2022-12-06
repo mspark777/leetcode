@@ -1,6 +1,5 @@
 from __future__ import annotations
-from collections import Counter
-from typing import List, Optional
+from typing import  Optional
 
 
 class ListNode:
@@ -13,15 +12,22 @@ class ListNode:
 
 
 class Solution:
-    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        slow = head
-        fast = head
+    def oddEvenList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head is None:
+            return None
 
-        while (fast is not None) and (fast.next is not None):
-            slow = slow.next if slow is not None else None
-            fast = fast.next.next
+        odd = head
+        even = head.next
+        even_head = even
+        while (even is not None) and (even.next is not None):
+            odd.next = even.next
+            odd = odd.next
 
-        return slow
+            even.next = odd.next
+            even = even.next
+
+        odd.next = even_head
+        return head
 
 
 def arrtolist(nums: list[int]) -> Optional[ListNode]:
@@ -46,13 +52,17 @@ def listtoarr(node: Optional[ListNode]) -> list[int]:
 
 
 def main():
-    inputs: list[list[int]] = [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 6]]
+    inputs: list[list[int]] = [
+            [1, 2, 3, 4, 5], 
+            [2, 1, 3, 5, 6, 4, 7]
+            ]
 
     solution = Solution()
     for nums in inputs:
-        result = solution.middleNode(arrtolist(nums))
+        result = solution.oddEvenList(arrtolist(nums))
         print(listtoarr(result))
 
 
 if __name__ == "__main__":
     main()
+
