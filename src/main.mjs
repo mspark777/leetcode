@@ -1,66 +1,82 @@
-class ListNode {
-  constructor (val, next) {
+class TreeNode {
+  constructor (val, left, right) {
     this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
+}
+
+function newnode (val, left, right) {
+  return new TreeNode(val, left, right)
+}
+
+function newleft (val, left) {
+  return new TreeNode(val, left)
+}
+
+function newright (val, right) {
+  return new TreeNode(val, undefined, right)
+}
+
+function newval (val) {
+  return new TreeNode(val)
 }
 
 /**
- * @param {ListNode | null} head
- * @returns {ListNode | null}
+ * @param {TreeNode | null} root
+ * @param {number} low
+ * @param {number} high
+ * @returns {number}
  */
-function oddEvenList (head) {
-  if (head == null) {
-    return null
+function rangeSumBST (root, low, high) {
+  let result = 0
+
+  const stack = [root]
+  while (stack.length > 0) {
+    const top = stack.pop()
+    if (top == null) {
+      continue
+    }
+
+    const { val, left, right } = top
+    if ((low <= val) && (val <= high)) {
+      result += val
+    }
+
+    if (low < val) {
+      stack.push(left)
+    }
+
+    if (val < high) {
+      stack.push(right)
+    }
   }
 
-  let odd = head
-  let even = head.next
-  const evenHead = even
-  while (even?.next != null) {
-    odd.next = even.next
-    odd = odd.next
-    even.next = odd.next
-    even = even.next
-  }
-
-  odd.next = evenHead
-  return head
-}
-
-function arrtolist (nums) {
-  const head = new ListNode()
-  let tail = head
-  for (const val of nums) {
-    tail.next = new ListNode(val)
-    tail = tail.next
-  }
-
-  return head.next
-}
-
-function listtoarr (node) {
-  const nums = []
-  while (node != null) {
-    nums.push(node.val)
-    node = node.next
-  }
-
-  return nums
+  return result
 }
 
 async function main () {
   const inputs = [
-    [1, 2, 3, 4, 5],
-    [2, 1, 3, 5, 6, 4, 7]
+    {
+      low: 7,
+      high: 15,
+      root: newnode(10,
+        newnode(5, newval(3), newval(7)),
+        newright(15, newval(18))
+      )
+    },
+    {
+      low: 6,
+      high: 10,
+      root: newnode(10, newnode(5, newleft(3, newval(1)), newleft(7, newval(6))), newnode(5, newval(13), newval(18)))
+    }
   ]
 
-  for (const nums of inputs) {
-    const result = oddEvenList(arrtolist(nums))
-    console.log(listtoarr(result))
+  for (const { low, high, root } of inputs) {
+    const result = rangeSumBST(root, low, high)
+    console.log(result)
   }
 }
-
 main().catch(e => {
   console.error(e)
   process.exit(1)

@@ -4,60 +4,89 @@ import (
 	"fmt"
 )
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func oddEvenList(head *ListNode) *ListNode {
-	if head == nil {
-		return nil
-	}
-
-	odd := head
-	even := odd.Next
-	evenHead := even
-	for (even != nil) && (even.Next != nil) {
-		odd.Next = even.Next
-		odd = odd.Next
-		even.Next = odd.Next
-		even = even.Next
-	}
-
-	odd.Next = evenHead
-	return head
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
 }
 
-func arrtolist(nums []int) *ListNode {
-	head := ListNode{}
-	tail := &head
-
-	for _, val := range nums {
-		tail.Next = &ListNode{Val: val}
-		tail = tail.Next
-	}
-
-	return head.Next
+func newleft(val int, left *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left}
 }
 
-func listtoarr(node *ListNode) []int {
-	nums := []int{}
-	for node != nil {
-		nums = append(nums, node.Val)
-		node = node.Next
+func newright(val int, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Right: right}
+}
+
+func newval(val int) *TreeNode {
+	return &TreeNode{Val: val}
+}
+
+func rangeSumBST(root *TreeNode, low int, high int) int {
+	result := 0
+
+	stack := []*TreeNode{root}
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+
+		if top == nil {
+			continue
+		}
+
+		val := top.Val
+		left := top.Left
+		right := top.Right
+
+		if (low <= val) && (val <= high) {
+			result += val
+		}
+
+		if low < val {
+			stack = append(stack, left)
+		}
+
+		if val < high {
+			stack = append(stack, right)
+		}
 	}
 
-	return nums
+	return result
+}
+
+type input struct {
+	root *TreeNode
+	low  int
+	high int
 }
 
 func main() {
-	inputs := [][]int{
-		{1, 2, 3, 4, 5},
-		{2, 1, 3, 5, 6, 4, 7},
+	inputs := []input{
+		{
+			low:  7,
+			high: 15,
+			root: newnode(10,
+				newnode(5, newval(3), newval(7)),
+				newright(15, newval(18)),
+			),
+		},
+		{
+			low:  6,
+			high: 10,
+			root: newnode(10, newnode(5, newleft(3, newval(1)), newleft(7, newval(6))), newnode(5, newval(13), newval(18))),
+		},
 	}
 
-	for _, nums := range inputs {
-		result := oddEvenList(arrtolist(nums))
-		fmt.Println(listtoarr(result))
+	for _, input := range inputs {
+		root := input.root
+		low := input.low
+		high := input.high
+		result := rangeSumBST(root, low, high)
+		fmt.Println(result)
 	}
 }

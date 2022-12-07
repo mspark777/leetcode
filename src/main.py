@@ -1,68 +1,83 @@
 from __future__ import annotations
-from typing import  Optional
+from typing import Optional
 
 
-class ListNode:
+class TreeNode:
     val: int
-    next: Optional[ListNode]
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
 
-    def __init__(self, val=0, next=None):
+    def __init__(self, val=0, left=None, right=None):
         self.val = val
-        self.next = next
+        self.left = left
+        self.right = right
+
+
+def newnode(val: int, left: TreeNode, right: TreeNode) -> TreeNode:
+    return TreeNode(val, left, right)
+
+
+def newleft(val: int, left: TreeNode) -> TreeNode:
+    return TreeNode(val, left)
+
+
+def newright(val: int, right: TreeNode) -> TreeNode:
+    return TreeNode(val, None, right)
+
+
+def newval(val: int) -> TreeNode:
+    return TreeNode(val)
 
 
 class Solution:
-    def oddEvenList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if head is None:
-            return None
+    def rangeSumBST(self, root: Optional[TreeNode], low: int, high: int) -> int:
+        result = 0
 
-        odd = head
-        even = head.next
-        even_head = even
-        while (even is not None) and (even.next is not None):
-            odd.next = even.next
-            odd = odd.next
+        stack = [root]
+        while stack:
+            top = stack.pop()
+            if top is None:
+                continue
 
-            even.next = odd.next
-            even = even.next
+            val = top.val
+            left = top.left
+            right = top.right
 
-        odd.next = even_head
-        return head
+            if (low <= val) and (val <= high):
+                result += val
 
+            if low < val:
+                stack.append(left)
 
-def arrtolist(nums: list[int]) -> Optional[ListNode]:
-    head = ListNode()
-    tail = head
+            if val < high:
+                stack.append(right)
 
-    for val in nums:
-        tail.next = ListNode(val)
-        tail = tail.next
-
-    return head.next
-
-
-def listtoarr(node: Optional[ListNode]) -> list[int]:
-    nums: list[int] = []
-
-    while node:
-        nums.append(node.val)
-        node = node.next
-
-    return nums
+        return result
 
 
 def main():
-    inputs: list[list[int]] = [
-            [1, 2, 3, 4, 5], 
-            [2, 1, 3, 5, 6, 4, 7]
-            ]
+    inputs: list[tuple[int, int, Optional[TreeNode]]] = [
+        (
+            7,
+            15,
+            newnode(10, newnode(5, newval(3), newval(7)), newright(15, newval(18))),
+        ),
+        (
+            6,
+            10,
+            newnode(
+                10,
+                newnode(5, newleft(3, newval(1)), newleft(7, newval(6))),
+                newnode(5, newval(13), newval(18)),
+            ),
+        ),
+    ]
 
     solution = Solution()
-    for nums in inputs:
-        result = solution.oddEvenList(arrtolist(nums))
-        print(listtoarr(result))
+    for low, high, root in inputs:
+        result = solution.rangeSumBST(root, low, high)
+        print(result)
 
 
 if __name__ == "__main__":
     main()
-
