@@ -30,52 +30,66 @@ def newval(val: int) -> TreeNode:
 
 
 class Solution:
-    def rangeSumBST(self, root: Optional[TreeNode], low: int, high: int) -> int:
-        result = 0
+    def leafSimilar(self, root1: Optional[TreeNode], root2: Optional[TreeNode]) -> bool:
+        stack1: list[int] = []
+        stack2: list[int] = []
 
-        stack = [root]
-        while stack:
-            top = stack.pop()
-            if top is None:
-                continue
+        self.dfs(stack1, root1)
+        self.dfs(stack2, root2)
 
-            val = top.val
-            left = top.left
-            right = top.right
+        return stack1 == stack2
 
-            if (low <= val) and (val <= high):
-                result += val
+    def dfs(self, stack: list[int], node: Optional[TreeNode]) -> None:
+        if node is None:
+            return
 
-            if low < val:
-                stack.append(left)
+        val = node.val
+        left = node.left
+        right = node.right
 
-            if val < high:
-                stack.append(right)
+        if (left is None) and (right is None):
+            stack.append(val)
 
-        return result
+        self.dfs(stack, left)
+        self.dfs(stack, right)
 
 
 def main():
-    inputs: list[tuple[int, int, Optional[TreeNode]]] = [
+    inputs: list[tuple[Optional[TreeNode],Optional[TreeNode]]] = [
         (
-            7,
-            15,
-            newnode(10, newnode(5, newval(3), newval(7)), newright(15, newval(18))),
+       newnode(3,
+        newnode(5,
+          newval(6),
+          newnode(2,
+            newval(7),
+            newval(4)
+          )
+        ),
+        newnode(1,
+          newval(9),
+          newval(8)
+        )
+      ),
+       newnode(3,
+        newnode(5, newval(6), newval(7)),
+        newnode(1,
+          newval(4),
+          newnode(2,
+            newval(9),
+            newval(8)
+          )
+        )
+      )
         ),
         (
-            6,
-            10,
-            newnode(
-                10,
-                newnode(5, newleft(3, newval(1)), newleft(7, newval(6))),
-                newnode(5, newval(13), newval(18)),
-            ),
+       newnode(1, newval(2), newval(3)),
+       newnode(1, newval(3), newval(2))
         ),
     ]
 
     solution = Solution()
-    for low, high, root in inputs:
-        result = solution.rangeSumBST(root, low, high)
+    for root1, root2 in inputs:
+        result = solution.leafSimilar(root1, root2)
         print(result)
 
 

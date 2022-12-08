@@ -23,57 +23,83 @@ function newval (val) {
 }
 
 /**
- * @param {TreeNode | null} root
- * @param {number} low
- * @param {number} high
- * @returns {number}
+ * @param {number[]} stack
+ * @param {TreeNode | null} node
+ * @returns {undefined}
  */
-function rangeSumBST (root, low, high) {
-  let result = 0
+function dfs (stack, node) {
+  if (node == null) {
+    return
+  }
 
-  const stack = [root]
-  while (stack.length > 0) {
-    const top = stack.pop()
-    if (top == null) {
-      continue
-    }
+  const { val, left, right } = node
+  if ((left == null) && (right == null)) {
+    stack.push(val)
+  }
 
-    const { val, left, right } = top
-    if ((low <= val) && (val <= high)) {
-      result += val
-    }
+  dfs(stack, left)
+  dfs(stack, right)
+}
 
-    if (low < val) {
-      stack.push(left)
-    }
+/**
+ * @param {TreeNode | null} root1
+ * @param {TreeNode | null} root2
+ * @returns {boolean}
+ */
+function leafSimilar (root1, root2) {
+  const stack1 = []
+  const stack2 = []
+  dfs(stack1, root1)
+  dfs(stack2, root2)
 
-    if (val < high) {
-      stack.push(right)
+  if (stack1.length !== stack2.length) {
+    return false
+  }
+
+  for (let i = 0; i < stack1.length; i += 1) {
+    if (stack1[i] !== stack2[i]) {
+      return false
     }
   }
 
-  return result
+  return true
 }
 
 async function main () {
   const inputs = [
     {
-      low: 7,
-      high: 15,
-      root: newnode(10,
-        newnode(5, newval(3), newval(7)),
-        newright(15, newval(18))
+      root1: newnode(3,
+        newnode(5,
+          newval(6),
+          newnode(2,
+            newval(7),
+            newval(4)
+          )
+        ),
+        newnode(1,
+          newval(9),
+          newval(8)
+        )
+      ),
+      root2: newnode(3,
+        newnode(5, newval(6), newval(7)),
+        newnode(1,
+          newval(4),
+          newnode(2,
+            newval(9),
+            newval(8)
+          )
+        )
       )
     },
     {
-      low: 6,
-      high: 10,
-      root: newnode(10, newnode(5, newleft(3, newval(1)), newleft(7, newval(6))), newnode(5, newval(13), newval(18)))
+      root1: newnode(1, newval(2), newval(3)),
+      root2: newnode(1, newval(3), newval(2))
     }
   ]
 
-  for (const { low, high, root } of inputs) {
-    const result = rangeSumBST(root, low, high)
+  for (const { root1, root2 } of inputs) {
+    const result = leafSimilar(root1, root2)
     console.log(result)
   }
 }

@@ -30,73 +30,63 @@ fn newval(val: i32) -> Option<Rc<RefCell<TreeNode>>> {
 
 struct Solution {}
 impl Solution {
-    pub fn range_sum_bst(root: Option<Rc<RefCell<TreeNode>>>, low: i32, high: i32) -> i32 {
-        if root.is_none() {
-            return 0;
-        }
+    pub fn leaf_similar(
+        root1: Option<Rc<RefCell<TreeNode>>>,
+        root2: Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        let mut stack1 = Vec::<i32>::new();
+        let mut stack2 = Vec::<i32>::new();
 
-        let mut result = 0;
-        let mut stack = vec![Rc::clone(root.as_ref().unwrap())];
+        Self::dfs(&mut stack1, root1.as_ref());
+        Self::dfs(&mut stack2, root2.as_ref());
 
-        while !stack.is_empty() {
-            if let Some(top) = stack.pop() {
-                let node = top.borrow();
-                let val = node.val;
-                let left = node.left.as_ref();
-                let right = node.right.as_ref();
+        return stack1 == stack2;
+    }
 
-                if (low <= val) && (val <= high) {
-                    result += val;
-                }
+    fn dfs(stack: &mut Vec<i32>, node: Option<&Rc<RefCell<TreeNode>>>) {
+        if let Some(n) = node {
+            let r = n.borrow();
+            let val = r.val;
+            let left = r.left.as_ref();
+            let right = r.right.as_ref();
 
-                if low < val {
-                    if let Some(l) = left {
-                        stack.push(Rc::clone(l));
-                    }
-                }
-
-                if val < high {
-                    if let Some(r) = right {
-                        stack.push(Rc::clone(r));
-                    }
-                }
+            if left.is_none() && right.is_none() {
+                stack.push(val);
             }
-        }
 
-        return result;
+            Self::dfs(stack, left);
+            Self::dfs(stack, right);
+        }
     }
 }
 
 struct Input {
-    root: Option<Rc<RefCell<TreeNode>>>,
-    low: i32,
-    high: i32,
+    root1: Option<Rc<RefCell<TreeNode>>>,
+    root2: Option<Rc<RefCell<TreeNode>>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            low: 7,
-            high: 15,
-            root: newnode(
-                10,
-                newnode(5, newval(3), newval(7)),
-                newright(15, newval(18)),
+            root1: newnode(
+                3,
+                newnode(5, newval(6), newnode(2, newval(7), newval(4))),
+                newnode(1, newval(9), newval(8)),
+            ),
+            root2: newnode(
+                3,
+                newnode(5, newval(6), newval(7)),
+                newnode(1, newval(4), newnode(2, newval(9), newval(8))),
             ),
         },
         Input {
-            low: 6,
-            high: 10,
-            root: newnode(
-                10,
-                newnode(5, newleft(3, newval(1)), newleft(7, newval(6))),
-                newnode(5, newval(13), newval(18)),
-            ),
+            root1: newnode(1, newval(2), newval(3)),
+            root2: newnode(1, newval(3), newval(2)),
         },
     ];
 
-    for Input { root, low, high } in inputs {
-        let result = Solution::range_sum_bst(root, low, high);
+    for Input { root1, root2 } in inputs {
+        let result = Solution::leaf_similar(root1, root2);
         println!("{result}");
     }
 }

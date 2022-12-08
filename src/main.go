@@ -26,67 +26,82 @@ func newval(val int) *TreeNode {
 	return &TreeNode{Val: val}
 }
 
-func rangeSumBST(root *TreeNode, low int, high int) int {
-	result := 0
+func dfs(stack []int, node *TreeNode) []int {
+	if node == nil {
+		return stack
+	}
 
-	stack := []*TreeNode{root}
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		stack = stack[:topidx]
+	val := node.Val
+	left := node.Left
+	right := node.Right
 
-		if top == nil {
-			continue
-		}
+	if (left == nil) && (right == nil) {
+		stack = append(stack, val)
+	}
 
-		val := top.Val
-		left := top.Left
-		right := top.Right
+	stack = dfs(stack, left)
+	return dfs(stack, right)
+}
 
-		if (low <= val) && (val <= high) {
-			result += val
-		}
+func leafSimilar(root1 *TreeNode, root2 *TreeNode) bool {
+	stack1 := dfs([]int{}, root1)
+	stack2 := dfs([]int{}, root2)
 
-		if low < val {
-			stack = append(stack, left)
-		}
+	if len(stack1) != len(stack2) {
+		return false
+	}
 
-		if val < high {
-			stack = append(stack, right)
+	for i, v1 := range stack1 {
+		if v1 != stack2[i] {
+			return false
 		}
 	}
 
-	return result
+	return true
 }
 
 type input struct {
-	root *TreeNode
-	low  int
-	high int
+	root1 *TreeNode
+	root2 *TreeNode
 }
 
 func main() {
 	inputs := []input{
 		{
-			low:  7,
-			high: 15,
-			root: newnode(10,
-				newnode(5, newval(3), newval(7)),
-				newright(15, newval(18)),
+			root1: newnode(3,
+				newnode(5,
+					newval(6),
+					newnode(2,
+						newval(7),
+						newval(4),
+					),
+				),
+				newnode(1,
+					newval(9),
+					newval(8),
+				),
+			),
+			root2: newnode(3,
+				newnode(5, newval(6), newval(7)),
+				newnode(1,
+					newval(4),
+					newnode(2,
+						newval(9),
+						newval(8),
+					),
+				),
 			),
 		},
 		{
-			low:  6,
-			high: 10,
-			root: newnode(10, newnode(5, newleft(3, newval(1)), newleft(7, newval(6))), newnode(5, newval(13), newval(18))),
+			root1: newnode(1, newval(2), newval(3)),
+			root2: newnode(1, newval(3), newval(2)),
 		},
 	}
 
 	for _, input := range inputs {
-		root := input.root
-		low := input.low
-		high := input.high
-		result := rangeSumBST(root, low, high)
+		root1 := input.root1
+		root2 := input.root2
+		result := leafSimilar(root1, root2)
 		fmt.Println(result)
 	}
 }
