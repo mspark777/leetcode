@@ -1,5 +1,4 @@
 /.vscode
 /target
 /node_modules
-.tool-versions
 src/__pycache__
