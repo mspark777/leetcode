@@ -30,63 +30,43 @@ fn newval(val: i32) -> Option<Rc<RefCell<TreeNode>>> {
 
 struct Solution {}
 impl Solution {
-    pub fn leaf_similar(
-        root1: Option<Rc<RefCell<TreeNode>>>,
-        root2: Option<Rc<RefCell<TreeNode>>>,
-    ) -> bool {
-        let mut stack1 = Vec::<i32>::new();
-        let mut stack2 = Vec::<i32>::new();
-
-        Self::dfs(&mut stack1, root1.as_ref());
-        Self::dfs(&mut stack2, root2.as_ref());
-
-        return stack1 == stack2;
-    }
-
-    fn dfs(stack: &mut Vec<i32>, node: Option<&Rc<RefCell<TreeNode>>>) {
-        if let Some(n) = node {
-            let r = n.borrow();
-            let val = r.val;
-            let left = r.left.as_ref();
-            let right = r.right.as_ref();
-
-            if left.is_none() && right.is_none() {
-                stack.push(val);
-            }
-
-            Self::dfs(stack, left);
-            Self::dfs(stack, right);
+    pub fn max_ancestor_diff(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        if root.is_none() {
+            return 0;
         }
-    }
-}
 
-struct Input {
-    root1: Option<Rc<RefCell<TreeNode>>>,
-    root2: Option<Rc<RefCell<TreeNode>>>,
+        let node = root.as_ref();
+        let val = node.unwrap().borrow().val;
+        return Self::travel(node, val, val);
+    }
+
+    fn travel(node: Option<&Rc<RefCell<TreeNode>>>, curmax: i32, curmin: i32) -> i32 {
+        if node.is_none() {
+            return curmax - curmin;
+        }
+
+        let rnode = node.unwrap().borrow();
+        let curmax = curmax.max(rnode.val);
+        let curmin = curmin.min(rnode.val);
+
+        let left = Self::travel(rnode.left.as_ref(), curmax, curmin);
+        let right = Self::travel(rnode.right.as_ref(), curmax, curmin);
+        return left.max(right);
+    }
 }
 
 fn main() {
     let inputs = [
-        Input {
-            root1: newnode(
-                3,
-                newnode(5, newval(6), newnode(2, newval(7), newval(4))),
-                newnode(1, newval(9), newval(8)),
-            ),
-            root2: newnode(
-                3,
-                newnode(5, newval(6), newval(7)),
-                newnode(1, newval(4), newnode(2, newval(9), newval(8))),
-            ),
-        },
-        Input {
-            root1: newnode(1, newval(2), newval(3)),
-            root2: newnode(1, newval(3), newval(2)),
-        },
+        newnode(
+            8,
+            newnode(3, newval(1), newnode(6, newval(4), newval(7))),
+            newright(10, newleft(14, newval(13))),
+        ),
+        newright(1, newright(2, newleft(0, newval(3)))),
     ];
 
-    for Input { root1, root2 } in inputs {
-        let result = Solution::leaf_similar(root1, root2);
+    for root in inputs {
+        let result = Solution::max_ancestor_diff(root);
         println!("{result}");
     }
 }

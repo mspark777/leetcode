@@ -23,83 +23,60 @@ function newval (val) {
 }
 
 /**
- * @param {number[]} stack
  * @param {TreeNode | null} node
- * @returns {undefined}
- */
-function dfs (stack, node) {
+ * @param {number} curmax
+ * @param {number} curmin
+ * @returns {number}
+*/
+function travel (node, curmax, curmin) {
   if (node == null) {
-    return
+    return curmax - curmin
   }
 
   const { val, left, right } = node
-  if ((left == null) && (right == null)) {
-    stack.push(val)
-  }
+  curmax = Math.max(curmax, val)
+  curmin = Math.min(curmin, val)
 
-  dfs(stack, left)
-  dfs(stack, right)
+  const l = travel(left, curmax, curmin)
+  const r = travel(right, curmax, curmin)
+  return Math.max(l, r)
 }
 
 /**
- * @param {TreeNode | null} root1
- * @param {TreeNode | null} root2
- * @returns {boolean}
- */
-function leafSimilar (root1, root2) {
-  const stack1 = []
-  const stack2 = []
-  dfs(stack1, root1)
-  dfs(stack2, root2)
-
-  if (stack1.length !== stack2.length) {
-    return false
-  }
-
-  for (let i = 0; i < stack1.length; i += 1) {
-    if (stack1[i] !== stack2[i]) {
-      return false
-    }
-  }
-
-  return true
+ * @param {TreeNode | null} root
+ * @returns {number}
+*/
+function maxAncestorDiff (root) {
+  return root != null ? travel(root, root.val, root.val) : 0
 }
 
 async function main () {
   const inputs = [
-    {
-      root1: newnode(3,
-        newnode(5,
-          newval(6),
-          newnode(2,
-            newval(7),
-            newval(4)
-          )
-        ),
-        newnode(1,
-          newval(9),
-          newval(8)
+    newnode(8,
+      newnode(3,
+        newval(1),
+        newnode(6,
+          newval(4),
+          newval(7)
         )
       ),
-      root2: newnode(3,
-        newnode(5, newval(6), newval(7)),
-        newnode(1,
-          newval(4),
-          newnode(2,
-            newval(9),
-            newval(8)
-          )
+      newright(10,
+        newleft(14,
+          newval(13)
         )
       )
-    },
-    {
-      root1: newnode(1, newval(2), newval(3)),
-      root2: newnode(1, newval(3), newval(2))
-    }
+    ),
+    newright(1,
+      newright(2,
+        newleft(0,
+          newval(3)
+        )
+      )
+    )
   ]
 
-  for (const { root1, root2 } of inputs) {
-    const result = leafSimilar(root1, root2)
+  for (const root of inputs) {
+    const result = maxAncestorDiff(root)
     console.log(result)
   }
 }

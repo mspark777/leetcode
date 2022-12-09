@@ -30,66 +30,38 @@ def newval(val: int) -> TreeNode:
 
 
 class Solution:
-    def leafSimilar(self, root1: Optional[TreeNode], root2: Optional[TreeNode]) -> bool:
-        stack1: list[int] = []
-        stack2: list[int] = []
+    def maxAncestorDiff(self, root: Optional[TreeNode]) -> int:
+        return self.travel(root, root.val, root.val) if root is not None else 0
 
-        self.dfs(stack1, root1)
-        self.dfs(stack2, root2)
-
-        return stack1 == stack2
-
-    def dfs(self, stack: list[int], node: Optional[TreeNode]) -> None:
+    def travel(self, node: Optional[TreeNode], curmax: int, curmin: int) -> int:
         if node is None:
-            return
+            return curmax - curmin
 
         val = node.val
         left = node.left
         right = node.right
+        curmax = max(curmax, val)
+        curmin = min(curmin, val)
 
-        if (left is None) and (right is None):
-            stack.append(val)
+        l = self.travel(left, curmax, curmin)
+        r = self.travel(right, curmax, curmin)
 
-        self.dfs(stack, left)
-        self.dfs(stack, right)
+        return max(l, r)
 
 
 def main():
-    inputs: list[tuple[Optional[TreeNode],Optional[TreeNode]]] = [
-        (
-       newnode(3,
-        newnode(5,
-          newval(6),
-          newnode(2,
-            newval(7),
-            newval(4)
-          )
+    inputs: list[Optional[TreeNode]] = [
+        newnode(
+            8,
+            newnode(3, newval(1), newnode(6, newval(4), newval(7))),
+            newright(10, newleft(14, newval(13))),
         ),
-        newnode(1,
-          newval(9),
-          newval(8)
-        )
-      ),
-       newnode(3,
-        newnode(5, newval(6), newval(7)),
-        newnode(1,
-          newval(4),
-          newnode(2,
-            newval(9),
-            newval(8)
-          )
-        )
-      )
-        ),
-        (
-       newnode(1, newval(2), newval(3)),
-       newnode(1, newval(3), newval(2))
-        ),
+        newright(1, newright(2, newleft(0, newval(3)))),
     ]
 
     solution = Solution()
-    for root1, root2 in inputs:
-        result = solution.leafSimilar(root1, root2)
+    for root in inputs:
+        result = solution.maxAncestorDiff(root)
         print(result)
 
 

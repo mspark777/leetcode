@@ -26,82 +26,64 @@ func newval(val int) *TreeNode {
 	return &TreeNode{Val: val}
 }
 
-func dfs(stack []int, node *TreeNode) []int {
+func travel(node *TreeNode, curmax, curmin int) int {
 	if node == nil {
-		return stack
+		return curmax - curmin
 	}
 
 	val := node.Val
-	left := node.Left
-	right := node.Right
-
-	if (left == nil) && (right == nil) {
-		stack = append(stack, val)
+	if val > curmax {
+		curmax = val
 	}
 
-	stack = dfs(stack, left)
-	return dfs(stack, right)
+	if val < curmin {
+		curmin = val
+	}
+
+	left := travel(node.Left, curmax, curmin)
+	right := travel(node.Right, curmax, curmin)
+	if left > right {
+		return left
+	}
+
+	return right
 }
 
-func leafSimilar(root1 *TreeNode, root2 *TreeNode) bool {
-	stack1 := dfs([]int{}, root1)
-	stack2 := dfs([]int{}, root2)
-
-	if len(stack1) != len(stack2) {
-		return false
+func maxAncestorDiff(root *TreeNode) int {
+	if root == nil {
+		return 0
 	}
 
-	for i, v1 := range stack1 {
-		if v1 != stack2[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
-type input struct {
-	root1 *TreeNode
-	root2 *TreeNode
+	return travel(root, root.Val, root.Val)
 }
 
 func main() {
-	inputs := []input{
-		{
-			root1: newnode(3,
-				newnode(5,
-					newval(6),
-					newnode(2,
-						newval(7),
-						newval(4),
-					),
-				),
-				newnode(1,
-					newval(9),
-					newval(8),
-				),
-			),
-			root2: newnode(3,
-				newnode(5, newval(6), newval(7)),
-				newnode(1,
+	inputs := []*TreeNode{
+		newnode(8,
+			newnode(3,
+				newval(1),
+				newnode(6,
 					newval(4),
-					newnode(2,
-						newval(9),
-						newval(8),
-					),
+					newval(7),
 				),
 			),
-		},
-		{
-			root1: newnode(1, newval(2), newval(3)),
-			root2: newnode(1, newval(3), newval(2)),
-		},
+			newright(10,
+				newleft(14,
+					newval(13),
+				),
+			),
+		),
+		newright(1,
+			newright(2,
+				newleft(0,
+					newval(3),
+				),
+			),
+		),
 	}
 
-	for _, input := range inputs {
-		root1 := input.root1
-		root2 := input.root2
-		result := leafSimilar(root1, root2)
+	for _, root := range inputs {
+		result := maxAncestorDiff(root)
 		fmt.Println(result)
 	}
 }
