@@ -1,48 +1,26 @@
 from __future__ import annotations
-from typing import Optional, List
+from typing import List
 
 
 class Solution:
-    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
-        row_count = len(matrix)
-        col_count = len(matrix[0])
-        last_row_idx = row_count - 1
-        last_col_idx = col_count - 1
+    def rob(self, nums: List[int]) -> int:
+        robbed = 0
+        no_robbed = 0
 
-        dp = [[0 for j in range(col_count)] for i in range(row_count)]
+        for n in nums:
+            temp = no_robbed
+            no_robbed = max(no_robbed, robbed)
+            robbed = n + temp
 
-        for i in range(col_count):
-            dp[last_row_idx][i] = matrix[last_row_idx][i]
-
-        for i in range(row_count - 2, -1, -1):
-            for j in range(col_count):
-                next = i + 1
-                min_val = 2**31
-                if j < last_col_idx:
-                    min_val = min(dp[next][j + 1], min_val)
-
-                if j > 0:
-                    min_val = min(dp[next][j - 1], min_val)
-
-                min_val = min(dp[next][j], min_val)
-                dp[i][j] = matrix[i][j] + min_val
-
-        min_val = 2**31
-        for i in range(col_count):
-            min_val = min(dp[0][i], min_val)
-
-        return min_val
+        return max(no_robbed, robbed)
 
 
 def main():
-    inputs: list[list[list[int]]] = [
-        [[2, 1, 3], [6, 5, 4], [7, 8, 9]],
-        [[-19, 57], [-40, -5]],
-    ]
+    inputs: list[list[int]] = [[1, 2, 3, 1], [2, 7, 9, 3, 1]]
 
     solution = Solution()
-    for matrix in inputs:
-        result = solution.minFallingPathSum(matrix)
+    for nums in inputs:
+        result = solution.rob(nums)
         print(result)
 
 
