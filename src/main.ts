@@ -1,13 +1,13 @@
 class UnionFind {
   private readonly roots: number[]
   private readonly ranks: number[]
-  public constructor(n: number) {
+  public constructor (n: number) {
     this.roots = new Array(n).fill(0).map((_, i) => i)
     this.ranks = new Array(n).fill(1)
   }
 
-  public find(x: number): number {
-    const {roots} = this
+  public find (x: number): number {
+    const { roots } = this
     if (roots[x] !== x) {
       roots[x] = this.find(roots[x])
     }
@@ -15,25 +15,25 @@ class UnionFind {
     return roots[x]
   }
 
-  public union(x: number, y: number): void {
+  public union (x: number, y: number): void {
     let rootx = this.find(x)
     let rooty = this.find(y)
     if (rootx !== rooty) {
-      const {ranks} = this
+      const { ranks } = this
       if (ranks[rootx] > ranks[rooty]) {
         const temp = rootx
         rootx = rooty
         rooty = temp
       }
 
-      const {roots} = this
+      const { roots } = this
       roots[rootx] = rooty
       ranks[rooty] += ranks[rootx]
     }
   }
 }
 
-function validPath(n: number, edges: number[][], source: number, destination: number): boolean {
+function validPath (n: number, edges: number[][], source: number, destination: number): boolean {
   const uf = new UnionFind(n)
   for (const [x, y] of edges) {
     uf.union(x, y)
@@ -49,7 +49,7 @@ interface Input {
   destination: number
 }
 
-async function main(): Promise<void> {
+async function main (): Promise<void> {
   const inputs: Input[] = [
     {
       n: 3,
@@ -65,11 +65,12 @@ async function main(): Promise<void> {
     }
   ]
 
-  for (const {n, edges, source, destination} of inputs) {
+  for (const { n, edges, source, destination } of inputs) {
     const result = validPath(n, edges, source, destination)
     console.log(result)
   }
 }
+
 main().catch(e => {
   console.error(e)
   process.exit(1)

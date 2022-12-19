@@ -8,7 +8,7 @@ class UnionFind:
 
     def __init__(self, n: int):
         self.roots = [i for i in range(n)]
-        self.ranks = [1 for i in range(n)]
+        self.ranks = [1 for _ in range(n)]
 
     def find(self, x: int) -> int:
         roots = self.roots
