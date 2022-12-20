@@ -4,83 +4,41 @@ import (
 	"fmt"
 )
 
-type unionFind struct {
-	roots []int
-	ranks []int
-}
+func canVisitAllRooms(rooms [][]int) bool {
+	seen := make([]bool, len(rooms))
+	seen[0] = true
 
-func newUnionFind(n int) *unionFind {
-	roots := make([]int, n)
-	ranks := make([]int, n)
-	for i := 0; i < n; i += 1 {
-		roots[i] = i
-		ranks[i] = 1
-	}
+	stack := []int{0}
 
-	return &unionFind{roots, ranks}
-}
-
-func (uf *unionFind) find(x int) int {
-	roots := uf.roots
-	if roots[x] != x {
-		roots[x] = uf.find(roots[x])
-	}
-
-	return roots[x]
-}
-
-func (uf *unionFind) union(x, y int) {
-	rootx := uf.find(x)
-	rooty := uf.find(y)
-
-	if rootx != rooty {
-		ranks := uf.ranks
-		if ranks[rootx] > ranks[rooty] {
-			temp := rootx
-			rootx = rooty
-			rooty = temp
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[0:topidx]
+		for _, key := range rooms[top] {
+			if !seen[key] {
+				seen[key] = true
+				stack = append(stack, key)
+			}
 		}
-
-		roots := uf.roots
-		roots[rootx] = rooty
-		ranks[rooty] += ranks[rootx]
-	}
-}
-
-func validPath(n int, edges [][]int, source int, destination int) bool {
-	uf := newUnionFind(n)
-	for _, edge := range edges {
-		uf.union(edge[0], edge[1])
 	}
 
-	return uf.find(source) == uf.find(destination)
-}
+	for _, s := range seen {
+		if !s {
+			return false
+		}
+	}
 
-type input struct {
-	n           int
-	edges       [][]int
-	source      int
-	destination int
+	return true
 }
 
 func main() {
-	inputs := []input{
-		{
-			n:           3,
-			edges:       [][]int{{0, 1}, {1, 2}, {2, 0}},
-			source:      0,
-			destination: 2,
-		},
-		{
-			n:           6,
-			edges:       [][]int{{0, 1}, {0, 2}, {3, 5}, {5, 4}, {4, 3}},
-			source:      0,
-			destination: 5,
-		},
+	inputs := [][][]int{
+		{{1}, {2}, {3}, {}},
+		{{1, 3}, {3, 0, 1}, {2}, {0}},
 	}
 
-	for _, input := range inputs {
-		result := validPath(input.n, input.edges, input.source, input.destination)
+	for _, rooms := range inputs {
+		result := canVisitAllRooms(rooms)
 		fmt.Println(result)
 	}
 }
