@@ -3,28 +3,29 @@ from typing import List
 
 
 class Solution:
-    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
-        seen = [False for _ in range(len(rooms))]
-        seen[0] = True
+    def possibleBipartition(self, n: int, dislikes: List[List[int]]) -> bool:
+        pass
 
-        stack: list[int] = [0]
 
-        while stack:
-            top = stack.pop()
-            for key in rooms[top]:
-                if not seen[key]:
-                    seen[key] = True
-                    stack.append(key)
+class Input:
+    n: int
+    dislikes: list[list[int]]
 
-        return not (False in seen)
+    def __init__(self, n: int, dislikes: list[list[int]]):
+        self.n = n
+        self.dislikes = dislikes
 
 
 def main():
-    inputs: list[list[list[int]]] = [[[1], [2], [3], []], [[1, 3], [3, 0, 1], [2], [0]]]
+    inputs: list[Input] = [
+        Input(4, [[1, 2], [1, 3], [2, 4]]),
+        Input(3, [[1, 2], [1, 3], [2, 3]]),
+        Input(5, [[1, 2], [2, 3], [3, 4], [4, 5], [1, 5]]),
+    ]
 
     solution = Solution()
-    for rooms in inputs:
-        result = solution.canVisitAllRooms(rooms)
+    for input in inputs:
+        result = solution.possibleBipartition(input.n, input.dislikes)
         print(result)
 
 
