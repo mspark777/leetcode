@@ -3,8 +3,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "target": "ES2021",
-    "module": "CommonJS",
-    "declaration": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": false,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
@@ -15,14 +16,20 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "isolatedModules": false,
     "resolveJsonModule": false,
     "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": false,
-    "lib": ["ES2021"],
-    "types": ["@types/node"]
+    "noFallthroughCasesInSwitch": true,
+    "lib": [
+      "ES2021"
+    ],
+    "types": [
+      "@types/node"
+    ]
+  },
+  "ts-node": {
+    "esm": true
   },
   "exclude": [
-    "node_module"
+    "node_module",
   ]
 }

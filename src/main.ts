@@ -1,83 +1,80 @@
-class UnionFind {
-  private readonly parents: number[]
-  private readonly ranks: number[]
-  public constructor (size: number) {
-    this.parents = new Array(size).fill(0).map((_, i) => i)
-    this.ranks = new Array(size).fill(0)
+class DFS {
+  private readonly result: number[]
+  private readonly counts: number[]
+  private readonly graph: Array<Set<number>>
+  private readonly N: number
+  public constructor (N: number) {
+    this.N = N
+    this.graph = []
+    this.counts = new Array(N).fill(1)
+    this.result = new Array(N).fill(0)
   }
 
-  public find (x: number): number {
-    const { parents } = this
-    if (parents[x] !== x) {
-      parents[x] = this.find(parents[x])
+  public dfs (node: number, parent: number): void {
+    const { result, counts } = this
+    for (const child of this.graph[node]) {
+      if (child !== parent) {
+        this.dfs(child, node)
+        counts[node] += counts[child]
+        result[node] += result[child] + counts[child]
+      }
     }
-
-    return parents[x]
   }
 
-  public unionSet (x: number, y: number): void {
-    const { ranks, parents } = this
-    const xset = this.find(x)
-    const yset = this.find(y)
-    if (xset === yset) {
-      return
+  public dfs2 (node: number, parent: number): void {
+    const { result, counts, N } = this
+    for (const child of this.graph[node]) {
+      if (child !== parent) {
+        result[child] = result[node] - counts[child] + N - counts[child]
+        this.dfs2(child, node)
+      }
+    }
+  }
+
+  public sumOfDistancesInTree (edges: number[][]): number[] {
+    for (let i = 0; i < this.N; i += 1) {
+      this.graph.push(new Set())
     }
 
-    if (ranks[xset] < ranks[yset]) {
-      parents[xset] = yset
-    } else if (ranks[xset] > ranks[yset]) {
-      parents[yset] = xset
-    } else {
-      parents[yset] = xset
-      ranks[xset] += 1
+    for (const edge of edges) {
+      this.graph[edge[0]].add(edge[1])
+      this.graph[edge[1]].add(edge[0])
     }
+
+    this.dfs(0, -1)
+    this.dfs2(0, -1)
+    return this.result
   }
 }
 
-function possibleBipartition (n: number, dislikes: number[][]): boolean {
-  const adjusts = new Array<number[]>(n + 1).fill([]).map(() => new Array<number>())
-  for (const [a, b] of dislikes) {
-    adjusts[a].push(b)
-    adjusts[b].push(a)
-  }
-
-  const uf = new UnionFind(n + 1)
-  for (let i = 1; i <= n; i += 1) {
-    for (const neighbor of adjusts[i]) {
-      if (uf.find(i) === uf.find(neighbor)) {
-        return false
-      }
-
-      uf.unionSet(adjusts[i][0], neighbor)
-    }
-  }
-
-  return true
+function sumOfDistancesInTree (n: number, edges: number[][]): number[] {
+  const dfs = new DFS(n)
+  return dfs.sumOfDistancesInTree(edges)
 }
 
 interface Input {
   readonly n: number
-  readonly dislikes: number[][]
+  readonly edges: number[][]
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
     {
-      n: 4,
-      dislikes: [[1, 2], [1, 3], [2, 4]]
+      n: 6,
+      edges: [[0, 1], [0, 2], [2, 3], [2, 4], [2, 5]]
     },
     {
-      n: 3,
-      dislikes: [[1, 2], [1, 3], [2, 3]]
+      n: 1,
+      edges: []
     },
     {
-      n: 5,
-      dislikes: [[1, 2], [2, 3], [3, 4], [4, 5], [1, 5]]
+      n: 2,
+      edges: [[1, 0]]
     }
   ]
 
-  for (const { n, dislikes } of inputs) {
-    const result = possibleBipartition(n, dislikes)
+  for (const { n, edges } of inputs) {
+    const result = sumOfDistancesInTree(n, edges)
     console.log(result)
   }
 }

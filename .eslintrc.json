@@ -1,6 +1,7 @@
 {
   "env": {
     "es2021": true,
+    "jest": true,
     "node": true
   },
   "extends": [
@@ -12,5 +13,8 @@
     "project": "./tsconfig.json"
   },
   "rules": {},
-  "ignorePatterns": ["dist/*", "node_modules/*"]
+  "ignorePatterns": [
+    "dist/*",
+    "node_modules/*"
+  ]
 }
