@@ -2,28 +2,52 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func canJump(nums []int) bool {
-	last := len(nums) - 1
-	for i := last - 1; i >= 0; i -= 1 {
-		cur := i + nums[i]
-		if cur >= last {
-			last = i
+func wordPattern(pattern string, s string) bool {
+	words := strings.Split(s, " ")
+	patterns := strings.Split(pattern, "")
+
+	if len(words) != len(patterns) {
+		return false
+	}
+
+	ptow := make(map[string]string)
+	wtop := make(map[string]string)
+
+	for i, word := range words {
+		ptn := patterns[i]
+		if w, ok := ptow[ptn]; ok {
+			if w != word {
+				return false
+			}
+		} else {
+			ptow[ptn] = word
+		}
+
+		if p, ok := wtop[word]; ok {
+			if p != ptn {
+				return false
+			}
+		} else {
+			wtop[word] = ptn
 		}
 	}
 
-	return last < 1
+	return true
 }
 
 func main() {
-	inputs := [][]int{
-		{2, 3, 1, 1, 4},
-		{3, 2, 1, 0, 4},
+	inputs := [][]string{
+		{"abba", "dog cat cat dog"},
+		{"abba", "dog cat cat fish"},
+		{"aaaa", "dog cat cat dog"},
+		{"abba", "dog dog dog dog"},
 	}
 
-	for _, nums := range inputs {
-		result := canJump(nums)
+	for _, input := range inputs {
+		result := wordPattern(input[0], input[1])
 		fmt.Println(result)
 	}
 }

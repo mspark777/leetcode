@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "strict": true,
-    "allowJs": false,
+    "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -31,5 +31,6 @@
   },
   "exclude": [
     "node_module",
+    "dist"
   ]
 }

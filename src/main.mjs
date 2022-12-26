@@ -1,27 +1,50 @@
 /**
- * @param {number[]} nums
+ * @param {string} pattern
+ * @param {string} s
  * @returns {boolean}
  */
-function canJump (nums) {
-  let last = nums.length - 1
-  for (let i = nums.length - 2; i >= 0; i -= 1) {
-    const cur = i + nums[i]
-    if (cur >= last) {
-      last = i
+function wordPattern(pattern, s) {
+  const words = s.split(' ')
+  const patterns = pattern.split('')
+  if (words.length !== patterns.length) {
+    return false
+  }
+
+  const ptow = new Map()
+  const wtop = new Map()
+  for (let i = 0; i < words.length; i += 1) {
+    const word = words[i]
+    const p = patterns[i]
+    if (ptow.has(p)) {
+      if (ptow.get(p) !== word) {
+        return false
+      }
+    } else {
+      ptow.set(p, word)
+    }
+
+    if (wtop.has(word)) {
+      if (wtop.get(word) !== p) {
+        return false
+      }
+    } else {
+      wtop.set(word, p)
     }
   }
 
-  return last < 1
+  return true
 }
 
-async function main () {
+async function main() {
   const inputs = [
-    [2, 3, 1, 1, 4],
-    [3, 2, 1, 0, 4]
+    ['abba', 'dog cat cat dog'],
+    ['abba', 'dog cat cat fish'],
+    ['aaaa', 'dog cat cat dog'],
+    ['abba', 'dog dog dog dog']
   ]
 
-  for (const nums of inputs) {
-    const result = canJump(nums)
+  for (const [pattern, s] of inputs) {
+    const result = wordPattern(pattern, s)
     console.log(result)
   }
 }
