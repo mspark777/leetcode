@@ -2,3 +2,13 @@
 /target
 /node_modules
 src/__pycache__
+
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+leetcode-*.tar
+/tmp/

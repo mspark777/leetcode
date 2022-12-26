@@ -18,3 +18,9 @@ py:
 
 sh:
 	${SHELL} src/main.sh
+
+ex:
+	mix run
+
+rb:
+	ruby src/main.rb
