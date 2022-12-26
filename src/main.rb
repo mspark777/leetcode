@@ -1,5 +1,3 @@
-# @param {[]} nums
-# @return {Boolean}
 def can_jump(nums)
   last = nums.length - 1
   for i in (nums.length - 2).downto(0)
