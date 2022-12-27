@@ -1,53 +1,54 @@
-use std::collections::HashMap;
-
 struct Solution {}
 impl Solution {
-    pub fn word_pattern(pattern: String, s: String) -> bool {
-        let patterns: Vec<String> = pattern.chars().map(|c| c.to_string()).collect();
-        let words: Vec<String> = s.split(" ").map(|s| s.to_string()).collect();
+    pub fn maximum_bags(capacity: Vec<i32>, rocks: Vec<i32>, additional_rocks: i32) -> i32 {
+        let mut remains: Vec<i32> = capacity
+            .iter()
+            .enumerate()
+            .map(|(i, c)| c - rocks[i])
+            .collect();
+        remains.sort_unstable();
 
-        if patterns.len() != words.len() {
-            return false;
-        }
-
-        let mut ptow = HashMap::<String, String>::new();
-        let mut wtop = HashMap::<String, String>::new();
-
-        for i in 0..words.len() {
-            let word = &words[i];
-            let p = &patterns[i];
-
-            if let Some(w) = ptow.get(p) {
-                if w != word {
-                    return false;
-                }
+        let mut additional = additional_rocks;
+        let mut result = 0;
+        for &remain in remains.iter() {
+            if additional >= remain {
+                additional -= remain;
+                result += 1;
             } else {
-                ptow.insert(p.clone(), word.clone());
-            }
-
-            if let Some(pp) = wtop.get(word) {
-                if pp != p {
-                    return false;
-                }
-            } else {
-                wtop.insert(word.clone(), p.clone());
+                break;
             }
         }
 
-        return true;
+        return result;
     }
 }
 
+struct Input {
+    capacity: Vec<i32>,
+    rocks: Vec<i32>,
+    additional_rocks: i32,
+}
 fn main() {
     let inputs = [
-        ("abba", "dog cat cat dog"),
-        ("abba", "dog cat cat fish"),
-        ("aaaa", "dog cat cat dog"),
-        ("abba", "dog dog dog dog"),
+        Input {
+            capacity: vec![2, 3, 4, 5],
+            rocks: vec![1, 2, 4, 4],
+            additional_rocks: 2,
+        },
+        Input {
+            capacity: vec![10, 2, 2],
+            rocks: vec![2, 2, 0],
+            additional_rocks: 100,
+        },
     ];
 
-    for (p, s) in inputs {
-        let result = Solution::word_pattern(p.to_string(), s.to_string());
+    for Input {
+        capacity,
+        rocks,
+        additional_rocks,
+    } in inputs
+    {
+        let result = Solution::maximum_bags(capacity, rocks, additional_rocks);
         println!("{result}");
     }
 }

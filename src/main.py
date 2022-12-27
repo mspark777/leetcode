@@ -1,45 +1,49 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def wordPattern(self, pattern: str, s: str) -> bool:
-        words = s.split(" ")
-        patterns = [ch for ch in pattern]
-        if len(words) != len(patterns):
-            return False
+    def maximumBags(
+        self, capacity: List[int], rocks: List[int], additionalRocks: int
+    ) -> int:
+        remains = list(map(lambda a, b: a - b, capacity, rocks))
+        remains.sort()
 
-        ptow: dict[str, str] = {}
-        wtop: dict[str, str] = {}
-
-        for i in range(len(words)):
-            word = words[i]
-            p = patterns[i]
-            if p in ptow:
-                if ptow[p] != word:
-                    return False
+        result = 0
+        for remain in remains:
+            if additionalRocks >= remain:
+                additionalRocks -= remain
+                result += 1
             else:
-                ptow[p] = word
+                break
 
-            if word in wtop:
-                if wtop[word] != p:
-                    return False
-            else:
-                wtop[word] = p
+        return result
 
-        return True
+
+class Input:
+    capacity: list[int]
+    rocks: list[int]
+    additional_rocks: int
+
+    def __init__(
+        self, capacity: list[int], rocks: list[int], additional_rocks: int
+    ) -> None:
+        self.capacity = capacity
+        self.rocks = rocks
+        self.additional_rocks = additional_rocks
 
 
 def main():
-    inputs: list[tuple[str, str]] = [
-        ("abba", "dog cat cat dog"),
-        ("abba", "dog cat cat fish"),
-        ("aaaa", "dog cat cat dog"),
-        ("abba", "dog dog dog dog"),
+    inputs: list[Input] = [
+        Input([2, 3, 4, 5], [1, 2, 4, 4], 2),
+        Input([10, 2, 2], [2, 2, 0], 100),
     ]
 
     solution = Solution()
-    for p, s in inputs:
-        result = solution.wordPattern(p, s)
+    for input in inputs:
+        result = solution.maximumBags(
+            input.capacity, input.rocks, input.additional_rocks
+        )
         print(result)
 
 

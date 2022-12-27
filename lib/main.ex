@@ -1,26 +1,18 @@
 defmodule Solution do
-  @spec word_pattern(pattern :: String.t(), s :: String.t()) :: boolean
-  def word_pattern(pattern, s) do
-    words = String.split(s, " ")
-    patterns = String.to_charlist(pattern)
-
-    word_pattern(patterns, words, %{}, %{})
+  @spec maximum_bags(capacity :: [integer], rocks :: [integer], additional_rocks :: integer) ::
+          integer
+  def maximum_bags(capacity, rocks, additional_rocks) do
+    Enum.zip(capacity, rocks)
+    |> Enum.map(fn {c, r} -> c - r end)
+    |> Enum.sort()
+    |> loop(additional_rocks, 0)
   end
 
-  def word_pattern([], [_ | _], _, _), do: false
-  def word_pattern([_ | _], [], _, _), do: false
-  def word_pattern([], [], _, _), do: true
-
-  def word_pattern([pattern | patterns], [word | words], ptow, wtop) do
-    pw = Map.get(ptow, pattern, word)
-    wp = Map.get(wtop, word, pattern)
-
-    case {pw == word, wp == pattern} do
-      {true, true} ->
-        word_pattern(patterns, words, Map.put(ptow, pattern, word), Map.put(wtop, word, pattern))
-
-      _ ->
-        false
-    end
+  defp loop([remain | remains], additional_rocks, result)
+       when additional_rocks >= remain do
+    loop(remains, additional_rocks - remain, result + 1)
   end
+
+  defp loop([], _, result), do: result
+  defp loop(_, _, result), do: result
 end

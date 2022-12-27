@@ -1,45 +1,42 @@
-function wordPattern (pattern: string, s: string): boolean {
-  const words = s.split(' ')
-  const patterns = pattern.split('')
-  if (words.length !== patterns.length) {
-    return false
-  }
+function maximumBags (capacity: number[], rocks: number[], additionalRocks: number): number {
+  const remains = capacity.map((c, i) => c - rocks[i])
+  remains.sort((a, b) => a - b)
 
-  const ptow = new Map<string, string>()
-  const wtop = new Map<string, string>()
-  for (let i = 0; i < words.length; i += 1) {
-    const word = words[i]
-    const p = patterns[i]
-    if (ptow.has(p)) {
-      if (ptow.get(p) !== word) {
-        return false
-      }
+  let result = 0
+  for (const remain of remains) {
+    if (additionalRocks >= remain) {
+      additionalRocks -= remain
+      result += 1
     } else {
-      ptow.set(p, word)
-    }
-
-    if (wtop.has(word)) {
-      if (wtop.get(word) !== p) {
-        return false
-      }
-    } else {
-      wtop.set(word, p)
+      break
     }
   }
 
-  return true
+  return result
+}
+
+interface Input {
+  readonly capacity: number[]
+  readonly rocks: number[]
+  readonly additionalRocks: number
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][] = [
-    ['abba', 'dog cat cat dog'],
-    ['abba', 'dog cat cat fish'],
-    ['aaaa', 'dog cat cat dog'],
-    ['abba', 'dog dog dog dog']
+  const inputs: Input[] = [
+    {
+      capacity: [2, 3, 4, 5],
+      rocks: [1, 2, 4, 4],
+      additionalRocks: 2
+    },
+    {
+      capacity: [10, 2, 2],
+      rocks: [2, 2, 0],
+      additionalRocks: 100
+    }
   ]
 
-  for (const [pattern, s] of inputs) {
-    const result = wordPattern(pattern, s)
+  for (const { capacity, rocks, additionalRocks } of inputs) {
+    const result = maximumBags(capacity, rocks, additionalRocks)
     console.log(result)
   }
 }

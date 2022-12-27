@@ -1,45 +1,40 @@
-# @param {String} pattern
-# @param {String} s
-# @return {Boolean}
-def word_pattern(pattern, s)
-  patterns = pattern.split ''
-  words = s.split ' '
+# @param capacity [Array<Integer>]
+# @param rocks [Array<Integer>]
+# @param additional_rocks [Integer]
+# @return [Integer]
+def maximum_bags(capacity, rocks, additional_rocks)
+  # @type [Array<Integer>]
+  remains = capacity.map.with_index { |c, i| c - rocks[i] }
+  remains.sort!
 
-  return false if patterns.length != words.length
+  result = 0
 
-  ptow = {}
-  wtop = {}
+  for remain in remains do
+    break unless additional_rocks >= remain
 
-  for i in 0..words.length
-    word = words[i]
-    p = patterns[i]
-
-    if ptow.include?(p)
-      return false if ptow[p] != word
-    else
-      ptow[p] = word
-    end
-
-    if wtop.include?(word)
-      return false if wtop[word] != p
-    else
-      wtop[word] = p
-    end
+    additional_rocks -= remain
+    result += 1
   end
 
-  true
+  result
 end
 
 def main
   inputs = [
-    ['abba', 'dog cat cat dog'],
-    ['abba', 'dog cat cat fish'],
-    ['aaaa', 'dog cat cat dog'],
-    ['abba', 'dog dog dog dog']
+    {
+      capacity: [2, 3, 4, 5],
+      rocks: [1, 2, 4, 4],
+      additional_rocks: 2
+    },
+    {
+      capacity: [10, 2, 2],
+      rocks: [2, 2, 0],
+      additional_rocks: 100
+    }
   ]
 
   inputs.each do |input|
-    result = word_pattern input[0], input[1]
+    result = maximum_bags input[:capacity], input[:rocks], input[:additional_rocks]
     puts result
   end
 end

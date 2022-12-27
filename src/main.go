@@ -2,52 +2,51 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"sort"
 )
 
-func wordPattern(pattern string, s string) bool {
-	words := strings.Split(s, " ")
-	patterns := strings.Split(pattern, "")
-
-	if len(words) != len(patterns) {
-		return false
+func maximumBags(capacity []int, rocks []int, additionalRocks int) int {
+	remains := make([]int, len(capacity))
+	for i, rock := range rocks {
+		remains[i] = capacity[i] - rock
 	}
+	sort.Ints(remains)
 
-	ptow := make(map[string]string)
-	wtop := make(map[string]string)
-
-	for i, word := range words {
-		ptn := patterns[i]
-		if w, ok := ptow[ptn]; ok {
-			if w != word {
-				return false
-			}
+	result := 0
+	for _, remain := range remains {
+		if additionalRocks >= remain {
+			additionalRocks -= remain
+			result += 1
 		} else {
-			ptow[ptn] = word
-		}
-
-		if p, ok := wtop[word]; ok {
-			if p != ptn {
-				return false
-			}
-		} else {
-			wtop[word] = ptn
+			break
 		}
 	}
 
-	return true
+	return result
+}
+
+type input struct {
+	capacity        []int
+	rocks           []int
+	additionalRocks int
 }
 
 func main() {
-	inputs := [][]string{
-		{"abba", "dog cat cat dog"},
-		{"abba", "dog cat cat fish"},
-		{"aaaa", "dog cat cat dog"},
-		{"abba", "dog dog dog dog"},
+	inputs := []input{
+		{
+			capacity:        []int{2, 3, 4, 5},
+			rocks:           []int{1, 2, 4, 4},
+			additionalRocks: 2,
+		},
+		{
+			capacity:        []int{10, 2, 2},
+			rocks:           []int{2, 2, 0},
+			additionalRocks: 100,
+		},
 	}
 
 	for _, input := range inputs {
-		result := wordPattern(input[0], input[1])
+		result := maximumBags(input.capacity, input.rocks, input.additionalRocks)
 		fmt.Println(result)
 	}
 }
