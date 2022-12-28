@@ -1,49 +1,44 @@
 from __future__ import annotations
 from typing import List
+from queue import PriorityQueue
 
 
 class Solution:
-    def maximumBags(
-        self, capacity: List[int], rocks: List[int], additionalRocks: int
-    ) -> int:
-        remains = list(map(lambda a, b: a - b, capacity, rocks))
-        remains.sort()
-
+    def minStoneSum(self, piles: List[int], k: int) -> int:
+        queue = PriorityQueue[tuple[int, int]]()
         result = 0
-        for remain in remains:
-            if additionalRocks >= remain:
-                additionalRocks -= remain
-                result += 1
-            else:
-                break
+        for pile in piles:
+            result += pile
+            queue.put((-pile, pile))
+
+        for i in range(k):
+            value = queue.get()[1]
+            remove = value // 2
+            value -= remove
+            result -= remove
+            queue.put((-value, value))
 
         return result
 
 
 class Input:
-    capacity: list[int]
-    rocks: list[int]
-    additional_rocks: int
+    piles: list[int]
+    k: int
 
-    def __init__(
-        self, capacity: list[int], rocks: list[int], additional_rocks: int
-    ) -> None:
-        self.capacity = capacity
-        self.rocks = rocks
-        self.additional_rocks = additional_rocks
+    def __init__(self, piles: list[int], k: int) -> None:
+        self.piles = piles
+        self.k = k
 
 
 def main():
     inputs: list[Input] = [
-        Input([2, 3, 4, 5], [1, 2, 4, 4], 2),
-        Input([10, 2, 2], [2, 2, 0], 100),
+        Input([5, 4, 9], 2),
+        Input([4, 3, 6, 7], 3),
     ]
 
     solution = Solution()
     for input in inputs:
-        result = solution.maximumBags(
-            input.capacity, input.rocks, input.additional_rocks
-        )
+        result = solution.minStoneSum(input.piles, input.k)
         print(result)
 
 

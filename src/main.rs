@@ -1,22 +1,23 @@
+use std::collections::BinaryHeap;
+
 struct Solution {}
 impl Solution {
-    pub fn maximum_bags(capacity: Vec<i32>, rocks: Vec<i32>, additional_rocks: i32) -> i32 {
-        let mut remains: Vec<i32> = capacity
-            .iter()
-            .enumerate()
-            .map(|(i, c)| c - rocks[i])
-            .collect();
-        remains.sort_unstable();
-
-        let mut additional = additional_rocks;
+    pub fn min_stone_sum(piles: Vec<i32>, k: i32) -> i32 {
+        let mut queue = BinaryHeap::<i32>::with_capacity(piles.len());
         let mut result = 0;
-        for &remain in remains.iter() {
-            if additional >= remain {
-                additional -= remain;
-                result += 1;
-            } else {
-                break;
-            }
+
+        for &pile in piles.iter() {
+            result += pile;
+            queue.push(pile);
+        }
+
+        for _ in 0..k {
+            let mut value = queue.pop().unwrap();
+            let remove = value / 2;
+            result -= remove;
+            value -= remove;
+
+            queue.push(value);
         }
 
         return result;
@@ -24,31 +25,23 @@ impl Solution {
 }
 
 struct Input {
-    capacity: Vec<i32>,
-    rocks: Vec<i32>,
-    additional_rocks: i32,
+    piles: Vec<i32>,
+    k: i32,
 }
 fn main() {
     let inputs = [
         Input {
-            capacity: vec![2, 3, 4, 5],
-            rocks: vec![1, 2, 4, 4],
-            additional_rocks: 2,
+            piles: vec![5, 4, 9],
+            k: 2,
         },
         Input {
-            capacity: vec![10, 2, 2],
-            rocks: vec![2, 2, 0],
-            additional_rocks: 100,
+            piles: vec![4, 3, 6, 7],
+            k: 3,
         },
     ];
 
-    for Input {
-        capacity,
-        rocks,
-        additional_rocks,
-    } in inputs
-    {
-        let result = Solution::maximum_bags(capacity, rocks, additional_rocks);
+    for Input { piles, k } in inputs {
+        let result = Solution::min_stone_sum(piles, k);
         println!("{result}");
     }
 }
