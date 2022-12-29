@@ -1,47 +1,33 @@
-use std::collections::BinaryHeap;
+struct NumArray {
+    sums: Vec<i32>,
+}
 
-struct Solution {}
-impl Solution {
-    pub fn min_stone_sum(piles: Vec<i32>, k: i32) -> i32 {
-        let mut queue = BinaryHeap::<i32>::with_capacity(piles.len());
-        let mut result = 0;
-
-        for &pile in piles.iter() {
-            result += pile;
-            queue.push(pile);
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl NumArray {
+    fn new(nums: Vec<i32>) -> Self {
+        let mut sums = vec![0; nums.len() + 1];
+        for (i, &num) in nums.iter().enumerate() {
+            sums[i + 1] += sums[i] + num;
         }
 
-        for _ in 0..k {
-            let mut value = queue.pop().unwrap();
-            let remove = value / 2;
-            result -= remove;
-            value -= remove;
+        return NumArray { sums };
+    }
 
-            queue.push(value);
-        }
+    fn sum_range(&self, left: i32, right: i32) -> i32 {
+        let sums = &self.sums;
+        let left = left as usize;
+        let right = right as usize;
 
-        return result;
+        return sums[right + 1] - sums[left];
     }
 }
 
-struct Input {
-    piles: Vec<i32>,
-    k: i32,
-}
 fn main() {
-    let inputs = [
-        Input {
-            piles: vec![5, 4, 9],
-            k: 2,
-        },
-        Input {
-            piles: vec![4, 3, 6, 7],
-            k: 3,
-        },
-    ];
-
-    for Input { piles, k } in inputs {
-        let result = Solution::min_stone_sum(piles, k);
-        println!("{result}");
-    }
+    let obj = NumArray::new([-2, 0, 3, -5, 2, -1].to_vec());
+    println!("{}", obj.sum_range(0, 2));
+    println!("{}", obj.sum_range(2, 5));
+    println!("{}", obj.sum_range(0, 5));
 }
