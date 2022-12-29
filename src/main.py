@@ -1,44 +1,50 @@
 from __future__ import annotations
 from typing import List
-from queue import PriorityQueue
+import heapq
 
 
 class Solution:
-    def minStoneSum(self, piles: List[int], k: int) -> int:
-        queue = PriorityQueue[tuple[int, int]]()
-        result = 0
-        for pile in piles:
-            result += pile
-            queue.put((-pile, pile))
+    def getOrder(self, tasks: List[List[int]]) -> List[int]:
+        next_tasks: list[tuple[int, int]] = []
+        tasks_processing_order: list[int] = []
 
-        for i in range(k):
-            value = queue.get()[1]
-            remove = value // 2
-            value -= remove
-            result -= remove
-            queue.put((-value, value))
+        sorted_tasks = [
+            (enqueue, process, idx) for idx, (enqueue, process) in enumerate(tasks)
+        ]
+        sorted_tasks.sort()
 
-        return result
+        curr_time = 0
+        task_index = 0
 
+        while task_index < len(tasks) or next_tasks:
+            if not next_tasks and curr_time < sorted_tasks[task_index][0]:
+                curr_time = sorted_tasks[task_index][0]
 
-class Input:
-    piles: list[int]
-    k: int
+            while (
+                task_index < len(sorted_tasks)
+                and curr_time >= sorted_tasks[task_index][0]
+            ):
+                _, process_time, original_index = sorted_tasks[task_index]
+                heapq.heappush(next_tasks, (process_time, original_index))
+                task_index += 1
 
-    def __init__(self, piles: list[int], k: int) -> None:
-        self.piles = piles
-        self.k = k
+            process_time, index = heapq.heappop(next_tasks)
+
+            curr_time += process_time
+            tasks_processing_order.append(index)
+
+        return tasks_processing_order
 
 
 def main():
-    inputs: list[Input] = [
-        Input([5, 4, 9], 2),
-        Input([4, 3, 6, 7], 3),
+    inputs: list[list[list[int]]] = [
+        [[1, 2], [2, 4], [3, 2], [4, 1]],
+        [[7, 10], [7, 12], [7, 5], [7, 4], [7, 2]],
     ]
 
     solution = Solution()
-    for input in inputs:
-        result = solution.minStoneSum(input.piles, input.k)
+    for tasks in inputs:
+        result = solution.getOrder(tasks)
         print(result)
 
 
