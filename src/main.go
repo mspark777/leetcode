@@ -4,27 +4,46 @@ import (
 	"fmt"
 )
 
-type NumArray struct {
-	sums []int
+type dfs struct {
+	results [][]int
+	path    []int
 }
 
-func Constructor(nums []int) NumArray {
-	sums := make([]int, len(nums)+1)
-	for i, num := range nums {
-		sums[i+1] += sums[i] + num
+func (dfs *dfs) dfs(graph [][]int, cur int) {
+	last := len(dfs.path)
+	dfs.path = append(dfs.path, cur)
+
+	if cur == (len(graph) - 1) {
+		path := make([]int, last+1)
+		copy(path, dfs.path)
+		dfs.results = append(dfs.results, path)
+	} else {
+		for _, next := range graph[cur] {
+			dfs.dfs(graph, next)
+		}
 	}
 
-	return NumArray{sums}
+	dfs.path = dfs.path[0:last]
 }
 
-func (this *NumArray) SumRange(left int, right int) int {
-	sums := this.sums
-	return sums[right+1] - sums[left]
+func allPathsSourceTarget(graph [][]int) [][]int {
+	dfs := dfs{
+		results: [][]int{},
+		path:    []int{},
+	}
+	dfs.dfs(graph, 0)
+
+	return dfs.results
 }
 
 func main() {
-	obj := Constructor([]int{-2, 0, 3, -5, 2, -1})
-	fmt.Println(obj.SumRange(0, 2))
-	fmt.Println(obj.SumRange(2, 5))
-	fmt.Println(obj.SumRange(0, 5))
+	inputs := [][][]int{
+		{{1, 2}, {3}, {3}, {}},
+		{{4, 3, 1}, {3, 2, 4}, {3}, {4}, {}},
+	}
+
+	for _, graph := range inputs {
+		result := allPathsSourceTarget(graph)
+		fmt.Println(result)
+	}
 }

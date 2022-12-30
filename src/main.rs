@@ -1,33 +1,37 @@
-struct NumArray {
-    sums: Vec<i32>,
-}
+struct Solution {}
+impl Solution {
+    pub fn all_paths_source_target(graph: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut results = Vec::<Vec<i32>>::new();
+        let mut path = Vec::<i32>::new();
 
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl NumArray {
-    fn new(nums: Vec<i32>) -> Self {
-        let mut sums = vec![0; nums.len() + 1];
-        for (i, &num) in nums.iter().enumerate() {
-            sums[i + 1] += sums[i] + num;
-        }
+        Self::dfs(&graph, &mut results, &mut path, 0);
 
-        return NumArray { sums };
+        return results;
     }
 
-    fn sum_range(&self, left: i32, right: i32) -> i32 {
-        let sums = &self.sums;
-        let left = left as usize;
-        let right = right as usize;
+    fn dfs(graph: &Vec<Vec<i32>>, results: &mut Vec<Vec<i32>>, path: &mut Vec<i32>, cur: usize) {
+        path.push(cur as i32);
 
-        return sums[right + 1] - sums[left];
+        if cur == (graph.len() - 1) {
+            results.push(path.clone());
+        } else {
+            for &next in graph[cur].iter() {
+                Self::dfs(graph, results, path, next as usize);
+            }
+        }
+
+        path.pop();
     }
 }
 
 fn main() {
-    let obj = NumArray::new([-2, 0, 3, -5, 2, -1].to_vec());
-    println!("{}", obj.sum_range(0, 2));
-    println!("{}", obj.sum_range(2, 5));
-    println!("{}", obj.sum_range(0, 5));
+    let inputs = [
+        vec![vec![1, 2], vec![3], vec![3], vec![]],
+        vec![vec![4, 3, 1], vec![3, 2, 4], vec![3], vec![4], vec![]],
+    ];
+
+    for graph in inputs {
+        let result = Solution::all_paths_source_target(graph);
+        println!("{result:?}");
+    }
 }

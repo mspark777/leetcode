@@ -2,23 +2,41 @@ from __future__ import annotations
 from typing import List
 
 
-class NumArray:
-    sums: list[int]
+class Solution:
+    def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
+        results: list[list[int]] = []
+        path: list[int] = []
+        self.dfs(graph, results, path, 0)
+        return results
 
-    def __init__(self, nums: List[int]):
-        self.sums = [0]
-        for num in nums:
-            self.sums.append(self.sums[-1] + num)
+    def dfs(
+        self,
+        graph: list[list[int]],
+        results: list[list[int]],
+        path: list[int],
+        cur: int,
+    ):
+        path.append(cur)
 
-    def sumRange(self, left: int, right: int) -> int:
-        return self.sums[right + 1] - self.sums[left]
+        if cur == (len(graph) - 1):
+            results.append(path[:])
+        else:
+            for next in graph[cur]:
+                self.dfs(graph, results, path, next)
+
+        path.pop()
 
 
 def main():
-    obj = NumArray([-2, 0, 3, -5, 2, -1])
-    print(obj.sumRange(0, 2))
-    print(obj.sumRange(2, 5))
-    print(obj.sumRange(0, 5))
+    inputs: list[list[list[int]]] = [
+        [[1, 2], [3], [3], []],
+        [[4, 3, 1], [3, 2, 4], [3], [4], []],
+    ]
+
+    solution = Solution()
+    for graph in inputs:
+        result = solution.allPathsSourceTarget(graph)
+        print(result)
 
 
 if __name__ == "__main__":
