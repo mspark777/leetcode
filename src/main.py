@@ -3,40 +3,28 @@ from typing import List
 
 
 class Solution:
-    def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
-        results: list[list[int]] = []
-        path: list[int] = []
-        self.dfs(graph, results, path, 0)
-        return results
-
-    def dfs(
-        self,
-        graph: list[list[int]],
-        results: list[list[int]],
-        path: list[int],
-        cur: int,
-    ):
-        path.append(cur)
-
-        if cur == (len(graph) - 1):
-            results.append(path[:])
-        else:
-            for next in graph[cur]:
-                self.dfs(graph, results, path, next)
-
-        path.pop()
+    def reverseString(self, s: List[str]) -> None:
+        """
+        Do not return anything, modify s in-place instead.
+        """
+        i = 0
+        j = len(s) - 1
+        while i < j:
+            s[i], s[j] = s[j], s[i]
+            i += 1
+            j -= 1
 
 
 def main():
-    inputs: list[list[list[int]]] = [
-        [[1, 2], [3], [3], []],
-        [[4, 3, 1], [3, 2, 4], [3], [4], []],
+    inputs: list[list[str]] = [
+        ["h", "e", "l", "l", "o"],
+        ["H", "a", "n", "n", "a", "h"],
     ]
 
     solution = Solution()
-    for graph in inputs:
-        result = solution.allPathsSourceTarget(graph)
-        print(result)
+    for s in inputs:
+        solution.reverseString(s)
+        print(s)
 
 
 if __name__ == "__main__":

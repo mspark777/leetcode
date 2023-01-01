@@ -1,6 +1,6 @@
 defmodule Solution do
-  @spec can_win_nim(n :: integer) :: boolean
-  def can_win_nim(n), do: rem(n, 4) != 0
+  @spec reverse_string(s :: [String.t()]) :: [String.t()]
+  def reverse_string(s), do: Enum.reverse(s)
 end
 
 defmodule Main do
@@ -9,7 +9,7 @@ defmodule Main do
   """
 
   def main([n | inputs]) do
-    result = Solution.can_win_nim(n)
+    result = Solution.reverse_string(n)
 
     IO.puts(result)
     main(inputs)
@@ -20,9 +20,8 @@ defmodule Main do
 
   def main do
     main([
-      4,
-      1,
-      2
+      ["h", "e", "l", "l", "o"],
+      ["H", "a", "n", "n", "a", "h"]
     ])
   end
 end

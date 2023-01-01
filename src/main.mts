@@ -1,33 +1,25 @@
-function dfs(graph: number[][], results: number[][], path: number[], cur: number): void {
-  path.push(cur)
-  if (cur === (graph.length - 1)) {
-    results.push(path.slice())
-  } else {
-    for (const next of graph[cur]) {
-      dfs(graph, results, path, next)
-    }
+/**
+ Do not return anything, modify s in-place instead.
+ */
+function reverseString(s: string[]): void {
+  let i = 0;
+  let j = s.length - 1
+  while (i < j) {
+    [s[i], s[j]] = [s[j], s[i]]
+    i += 1
+    j -= 1
   }
-
-  path.pop()
-}
-
-function allPathsSourceTarget(graph: number[][]): number[][] {
-  const results = new Array<number[]>()
-  const path = new Array<number>()
-
-  dfs(graph, results, path, 0)
-  return results
 }
 
 async function main(): Promise<void> {
-  const inputs: number[][][] = [
-    [[1, 2], [3], [3], []],
-    [[4, 3, 1], [3, 2, 4], [3], [4], []]
+  const inputs: string[][] = [
+    ["h", "e", "l", "l", "o"],
+    ["H", "a", "n", "n", "a", "h"]
   ]
 
-  for (const graph of inputs) {
-    const result = allPathsSourceTarget(graph)
-    console.log(result)
+  for (const s of inputs) {
+    reverseString(s)
+    console.log(s)
   }
 }
 

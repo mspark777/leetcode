@@ -1,41 +1,24 @@
-# @param graph [Array<Array<Integer>>]
-# @param results [Array<Array<Integer>>]
-# @param path [Array<Integer>]
-# @param cur [Integer]
-# @return [Void]
-def dfs(graph, results, path, cur)
-  path.push cur
-
-  if cur == (graph.length - 1)
-    results.push path.clone
-  else
-    graph[cur].each do |n|
-      dfs graph, results, path, n
-    end
+# @param s {Array<String>}
+# @return {Void} Do not return anything, modify s in-place instead.
+def reverse_string(s)
+  i = 0
+  j = s.length - 1
+  while i < j
+    s[i], s[j] = s[j], s[i]
+    i += 1
+    j -= 1
   end
-
-  path.pop
-end
-
-# @param graph [Array<Array<Integer>>]
-# @return [Array<Array<Integer>>]
-def all_paths_source_target(graph)
-  results = []
-  path = []
-  dfs graph, results, path, 0
-
-  results
 end
 
 def main
   inputs = [
-    [[1, 2], [3], [3], []],
-    [[4, 3, 1], [3, 2, 4], [3], [4], []]
+    %w[h e l l o],
+    %w[H a n n a h]
   ]
 
-  inputs.each do |graph|
-    result = all_paths_source_target graph
-    puts result
+  inputs.each do |s|
+    reverse_string s
+    puts s.join ', '
   end
 end
 
