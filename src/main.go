@@ -2,26 +2,29 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
-func reverseString(s []byte) {
-	i := 0
-	j := len(s) - 1
-	for i < j {
-		s[i], s[j] = s[j], s[i]
-		i += 1
-		j -= 1
+func detectCapitalUse(word string) bool {
+	if word == strings.ToUpper(word) {
+		return true
+	} else if word == strings.ToLower(word) {
+		return true
 	}
+
+	return word == strings.ToUpper(string(word[0]))+strings.ToLower(string(word[1:]))
 }
 
 func main() {
-	inputs := [][]byte{
-		{'h', 'e', 'l', 'l', 'o'},
-		{'H', 'a', 'n', 'n', 'a', 'h'},
+	inputs := []string{
+		"USA",
+		"Google",
+		"leetcode",
+		"FlaG",
 	}
 
-	for _, s := range inputs {
-		reverseString(s)
-		fmt.Println(string(s))
+	for _, word := range inputs {
+		result := detectCapitalUse(word)
+		fmt.Println(result)
 	}
 }

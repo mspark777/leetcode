@@ -1,6 +1,22 @@
 defmodule Solution do
-  @spec reverse_string(s :: [String.t()]) :: [String.t()]
-  def reverse_string(s), do: Enum.reverse(s)
+  @spec detect_capital_use(word :: String.t()) :: boolean
+  def detect_capital_use(word) do
+    cond do
+      String.upcase(word) == word ->
+        true
+
+      String.downcase(word) == word ->
+        true
+
+      true ->
+        {first, remains} = {
+          word |> String.slice(0..0) |> String.upcase(),
+          word |> String.slice(1..-1) |> String.downcase()
+        }
+
+        word == first <> remains
+    end
+  end
 end
 
 defmodule Main do
@@ -8,8 +24,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([n | inputs]) do
-    result = Solution.reverse_string(n)
+  def main([word | inputs]) do
+    result = Solution.detect_capital_use(word)
 
     IO.puts(result)
     main(inputs)
@@ -20,8 +36,10 @@ defmodule Main do
 
   def main do
     main([
-      ["h", "e", "l", "l", "o"],
-      ["H", "a", "n", "n", "a", "h"]
+      "USA",
+      "Google",
+      "leetcode",
+      "FlaG"
     ])
   end
 end

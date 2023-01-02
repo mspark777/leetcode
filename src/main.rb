@@ -1,24 +1,23 @@
-# @param s {Array<String>}
-# @return {Void} Do not return anything, modify s in-place instead.
-def reverse_string(s)
-  i = 0
-  j = s.length - 1
-  while i < j
-    s[i], s[j] = s[j], s[i]
-    i += 1
-    j -= 1
-  end
+# @param word [String]
+# @return [Boolean]
+def detect_capital_use(word)
+  return true if word == word.upcase
+  return true if word == word.downcase
+
+  word == word[0].upcase + word[1..-1].downcase
 end
 
 def main
-  inputs = [
-    %w[h e l l o],
-    %w[H a n n a h]
+  inputs = %w[
+    USA
+    Google
+    leetcode
+    FlaG
   ]
 
-  inputs.each do |s|
-    reverse_string s
-    puts s.join ', '
+  inputs.each do |word|
+    result = detect_capital_use word
+    puts result
   end
 end
 

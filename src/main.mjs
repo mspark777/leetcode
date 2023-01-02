@@ -1,26 +1,35 @@
 /**
- * @param {string[]} s
- * @return {void} Do not return anything, modify s in-place instead.
+ * @param {string} word
+ * @returns {boolean}
  */
-function reverseString(s) {
-  let i = 0;
-  let j = s.length - 1
-  while (i < j) {
-    [s[i], s[j]] = [s[j], s[i]]
-    i += 1
-    j -= 1
+function detectCapitalUse(word) {
+  const ACODE = 'A'.charCodeAt(0)
+  const ZCODE = 'Z'.charCodeAt(0)
+  const inRange = code => (ACODE <= code) && (code <= ZCODE)
+  let count = 0
+  let begin = -1
+  for (let i = 0; i < word.length; i += 1) {
+    const code = word.charCodeAt(i)
+    if (inRange(code)) {
+      count += 1
+      begin = i
+    }
   }
+
+  return (count < 1) || (count === word.length) || ((count === 1) && (begin === 0))
 }
 
 async function main() {
   const inputs = [
-    ["h", "e", "l", "l", "o"],
-    ["H", "a", "n", "n", "a", "h"]
+    "USA",
+    "Google",
+    "leetcode",
+    "FlaG"
   ]
 
-  for (const s of inputs) {
-    reverseString(s)
-    console.log(s)
+  for (const word of inputs) {
+    const result = detectCapitalUse(word)
+    console.log(result)
   }
 }
 

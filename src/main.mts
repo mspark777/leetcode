@@ -1,25 +1,25 @@
-/**
- Do not return anything, modify s in-place instead.
- */
-function reverseString(s: string[]): void {
-  let i = 0;
-  let j = s.length - 1
-  while (i < j) {
-    [s[i], s[j]] = [s[j], s[i]]
-    i += 1
-    j -= 1
+function detectCapitalUse(word: string): boolean {
+  if (word === word.toUpperCase()) {
+    return true
+  } else if (word === word.toLowerCase()) {
+    return true
   }
+
+
+  return word === `${word[0].toUpperCase()}${word.substring(1).toLowerCase()}`
 }
 
 async function main(): Promise<void> {
-  const inputs: string[][] = [
-    ["h", "e", "l", "l", "o"],
-    ["H", "a", "n", "n", "a", "h"]
+  const inputs: string[] = [
+    "USA",
+    "Google",
+    "leetcode",
+    "FlaG"
   ]
 
-  for (const s of inputs) {
-    reverseString(s)
-    console.log(s)
+  for (const word of inputs) {
+    const result = detectCapitalUse(word)
+    console.log(result)
   }
 }
 

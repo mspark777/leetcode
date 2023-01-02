@@ -3,28 +3,28 @@ from typing import List
 
 
 class Solution:
-    def reverseString(self, s: List[str]) -> None:
-        """
-        Do not return anything, modify s in-place instead.
-        """
-        i = 0
-        j = len(s) - 1
-        while i < j:
-            s[i], s[j] = s[j], s[i]
-            i += 1
-            j -= 1
+    def detectCapitalUse(self, word: str) -> bool:
+        ACODE = ord("A")
+        ZCODE = ord("Z")
+        count = 0
+        begin = -1
+
+        for i, ch in enumerate(word):
+            code = ord(ch)
+            if (ACODE <= code) and (code <= ZCODE):
+                count += 1
+                begin = i
+
+        return (count < 1) or (count == len(word)) or ((count == 1) and (begin == 0))
 
 
 def main():
-    inputs: list[list[str]] = [
-        ["h", "e", "l", "l", "o"],
-        ["H", "a", "n", "n", "a", "h"],
-    ]
+    inputs: list[str] = ["USA", "Google", "leetcode", "FlaG"]
 
     solution = Solution()
-    for s in inputs:
-        solution.reverseString(s)
-        print(s)
+    for word in inputs:
+        result = solution.detectCapitalUse(word)
+        print(result)
 
 
 if __name__ == "__main__":
