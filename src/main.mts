@@ -1,28 +1,44 @@
-function minDeletionSize(strs: string[]): number {
-  let result = 0
-  for (let c = 0; c < strs[0].length; c += 1) {
-    for (let r = 1; r < strs.length; r += 1) {
-      const c0 = strs[r - 1].charCodeAt(c)
-      const c1 = strs[r].charCodeAt(c)
-      if (c0 > c1) {
-        result += 1
-        break
+function search(nums: number[], target: number): number {
+  let left = 0
+  let right = nums.length - 1
+  while (left <= right) {
+    const mid = Math.round((left + right) / 2)
+    if (nums[mid] === target) {
+      return mid
+    }
+
+    if (nums[mid] >= nums[left]) {
+      if ((target >= nums[left]) && (target < nums[mid])) {
+        right = mid - 1
+      } else {
+        left = mid + 1
+      }
+    } else {
+      if ((target > nums[mid]) && (target <= nums[right])) {
+        left = mid + 1
+      } else {
+        right = mid - 1
       }
     }
   }
 
-  return result
+  return -1
+}
+
+interface Input {
+  readonly nums: number[]
+  readonly target: number
 }
 
 async function main(): Promise<void> {
-  const inputs: string[][] = [
-    ["cba", "daf", "ghi"],
-    ["a", "b"],
-    ["zyx", "wvu", "tsr"]
+  const inputs: Input[] = [
+    {nums: [4, 5, 6, 7, 0, 1, 2], target: 0},
+    {nums: [4, 5, 6, 7, 0, 1, 2], target: 3},
+    {nums: [1], target: 0}
   ]
 
-  for (const strs of inputs) {
-    const result = minDeletionSize(strs)
+  for (const {nums, target} of inputs) {
+    const result = search(nums, target)
     console.log(result)
   }
 }

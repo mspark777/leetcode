@@ -3,26 +3,38 @@ from typing import List
 
 
 class Solution:
-    def minDeletionSize(self, strs: List[str]) -> int:
-        result = 0
+    def search(self, nums: List[int], target: int) -> int:
+        left = 0
+        right = len(nums) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] == target:
+                return mid
 
-        for c in range(len(strs[0])):
-            for r in range(1, len(strs)):
-                c0 = ord(strs[r - 1][c])
-                c1 = ord(strs[r][c])
-                if c0 > c1:
-                    result += 1
-                    break
+            if nums[mid] >= nums[left]:
+                if (target >= nums[left]) and (target < nums[mid]):
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            else:
+                if (target > nums[mid]) and (target <= nums[right]):
+                    left = mid + 1
+                else:
+                    right = mid - 1
 
-        return result
+        return -1
 
 
 def main():
-    inputs: list[list[str]] = [["cba", "daf", "ghi"], ["a", "b"], ["zyx", "wvu", "tsr"]]
+    inputs: list[tuple[list[int], int]] = [
+        ([4, 5, 6, 7, 0, 1, 2], 0),
+        ([4, 5, 6, 7, 0, 1, 2], 3),
+        ([1], 0),
+    ]
 
     solution = Solution()
-    for strs in inputs:
-        result = solution.minDeletionSize(strs)
+    for nums, target in inputs:
+        result = solution.search(nums, target)
         print(result)
 
 

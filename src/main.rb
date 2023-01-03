@@ -1,31 +1,38 @@
-# @param strs [Array<String>]
+# @param nums [Array<Integer>]
+# @param target [Integer]
 # @return [Integer]
-def min_deletion_size(strs)
-  result = 0
+def search(nums, target)
+  left = 0
+  right = nums.length - 1
+  while left <= right
+    mid = (left + right) / 2
+    return mid if nums[mid] == target
 
-  for c in 0..(strs[0].length - 1) do
-    for r in 1..(strs.length - 1) do
-      c0 = strs[r - 1][c]
-      c1 = strs[r][c]
-      if c0 > c1
-        result += 1
-        break
+    if nums[mid] >= nums[left]
+      if (target >= nums[left]) && (target < nums[mid])
+        right = mid - 1
+      else
+        left = mid + 1
       end
+    elsif (target > nums[mid]) && (target <= nums[right])
+      left = mid + 1
+    else
+      right = mid - 1
     end
   end
 
-  result
+  -1
 end
 
 def main
   inputs = [
-    %w[cba daf ghi],
-    %w[a b],
-    %w[zyx wvu tsr]
+    { nums: [4, 5, 6, 7, 0, 1, 2], target: 0 },
+    { nums: [4, 5, 6, 7, 0, 1, 2], target: 3 },
+    { nums: [1], target: 0 }
   ]
 
-  inputs.each do |strs|
-    result = min_deletion_size strs
+  inputs.each do |input|
+    result = search input[:nums], input[:target]
     puts result
   end
 end
