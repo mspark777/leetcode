@@ -1,25 +1,32 @@
 struct Solution {}
 impl Solution {
-    pub fn detect_capital_use(word: String) -> bool {
-        if word == word.to_uppercase() {
-            return true;
-        } else if word == word.to_lowercase() {
-            return true;
+    pub fn min_deletion_size(strs: Vec<String>) -> i32 {
+        let mut result = 0;
+
+        for c in 0..strs[0].len() {
+            for r in 1..strs.len() {
+                let c0 = strs[r - 1].as_bytes()[c];
+                let c1 = strs[r].as_bytes()[c];
+                if c0 > c1 {
+                    result += 1;
+                    break;
+                }
+            }
         }
 
-        let mut chars = word.chars();
-        let first = chars.next().unwrap().to_string().to_uppercase();
-        let remains: String = chars.into_iter().collect();
-
-        return word == format!("{}{}", first, remains.to_lowercase());
+        return result;
     }
 }
 
 fn main() {
-    let inputs = ["USA", "Google", "leetcode", "FlaG"];
+    let inputs = [
+        vec!["cba", "daf", "ghi"],
+        vec!["a", "b"],
+        vec!["zyx", "wvu", "tsr"],
+    ];
 
-    for word in inputs {
-        let result = Solution::detect_capital_use(word.to_string());
+    for strs in inputs {
+        let result = Solution::min_deletion_size(strs.iter().map(|s| s.to_string()).collect());
         println!("{result}");
     }
 }

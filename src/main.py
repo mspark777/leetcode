@@ -3,27 +3,26 @@ from typing import List
 
 
 class Solution:
-    def detectCapitalUse(self, word: str) -> bool:
-        ACODE = ord("A")
-        ZCODE = ord("Z")
-        count = 0
-        begin = -1
+    def minDeletionSize(self, strs: List[str]) -> int:
+        result = 0
 
-        for i, ch in enumerate(word):
-            code = ord(ch)
-            if (ACODE <= code) and (code <= ZCODE):
-                count += 1
-                begin = i
+        for c in range(len(strs[0])):
+            for r in range(1, len(strs)):
+                c0 = ord(strs[r - 1][c])
+                c1 = ord(strs[r][c])
+                if c0 > c1:
+                    result += 1
+                    break
 
-        return (count < 1) or (count == len(word)) or ((count == 1) and (begin == 0))
+        return result
 
 
 def main():
-    inputs: list[str] = ["USA", "Google", "leetcode", "FlaG"]
+    inputs: list[list[str]] = [["cba", "daf", "ghi"], ["a", "b"], ["zyx", "wvu", "tsr"]]
 
     solution = Solution()
-    for word in inputs:
-        result = solution.detectCapitalUse(word)
+    for strs in inputs:
+        result = solution.minDeletionSize(strs)
         print(result)
 
 

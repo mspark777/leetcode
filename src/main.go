@@ -2,29 +2,34 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func detectCapitalUse(word string) bool {
-	if word == strings.ToUpper(word) {
-		return true
-	} else if word == strings.ToLower(word) {
-		return true
+func minDeletionSize(strs []string) int {
+	result := 0
+
+	for c := 0; c < len(strs[0]); c += 1 {
+		for r := 1; r < len(strs); r += 1 {
+			c0 := strs[r-1][c]
+			c1 := strs[r][c]
+			if c0 > c1 {
+				result += 1
+				break
+			}
+		}
 	}
 
-	return word == strings.ToUpper(string(word[0]))+strings.ToLower(string(word[1:]))
+	return result
 }
 
 func main() {
-	inputs := []string{
-		"USA",
-		"Google",
-		"leetcode",
-		"FlaG",
+	inputs := [][]string{
+		{"cba", "daf", "ghi"},
+		{"a", "b"},
+		{"zyx", "wvu", "tsr"},
 	}
 
-	for _, word := range inputs {
-		result := detectCapitalUse(word)
+	for _, strs := range inputs {
+		result := minDeletionSize(strs)
 		fmt.Println(result)
 	}
 }

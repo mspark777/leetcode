@@ -1,20 +1,25 @@
 defmodule Solution do
-  @spec detect_capital_use(word :: String.t()) :: boolean
-  def detect_capital_use(word) do
-    cond do
-      String.upcase(word) == word ->
-        true
+  @spec min_deletion_size(strs :: [String.t()]) :: integer
+  def min_deletion_size(strs) do
+    strs
+    |> Enum.map(&String.to_charlist/1)
+    |> List.zip()
+    |> Enum.map(&Tuple.to_list/1)
+    |> Enum.map(&check/1)
+    |> Enum.count(& &1)
+  end
 
-      String.downcase(word) == word ->
-        true
+  def check([]), do: false
+  def check([_ | []]), do: false
 
-      true ->
-        {first, remains} = {
-          word |> String.slice(0..0) |> String.upcase(),
-          word |> String.slice(1..-1) |> String.downcase()
-        }
+  @spec check(chars :: charlist()) :: boolean
+  def check([first | remains]) do
+    second = hd(remains)
 
-        word == first <> remains
+    if first <= second do
+      check(remains)
+    else
+      true
     end
   end
 end
@@ -24,11 +29,12 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([word | inputs]) do
-    result = Solution.detect_capital_use(word)
+  @spec main(inputs :: [[String.t()]]) :: nil
+  def main([strs | remains]) do
+    result = Solution.min_deletion_size(strs)
 
     IO.puts(result)
-    main(inputs)
+    main(remains)
   end
 
   def main([]) do
@@ -36,10 +42,9 @@ defmodule Main do
 
   def main do
     main([
-      "USA",
-      "Google",
-      "leetcode",
-      "FlaG"
+      ["cba", "daf", "ghi"],
+      ["a", "b"],
+      ["zyx", "wvu", "tsr"]
     ])
   end
 end
