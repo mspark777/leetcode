@@ -1,27 +1,13 @@
 defmodule Solution do
-  @spec min_deletion_size(strs :: [String.t()]) :: integer
-  def min_deletion_size(strs) do
-    strs
-    |> Enum.map(&String.to_charlist/1)
-    |> List.zip()
-    |> Enum.map(&Tuple.to_list/1)
-    |> Enum.map(&check/1)
-    |> Enum.count(& &1)
+  @spec search(nums :: [integer], target :: integer) :: integer
+  def search(nums, target) do
+    nums
+    |> Enum.find_index(&(&1 == target))
+    |> to_result()
   end
 
-  def check([]), do: false
-  def check([_ | []]), do: false
-
-  @spec check(chars :: charlist()) :: boolean
-  def check([first | remains]) do
-    second = hd(remains)
-
-    if first <= second do
-      check(remains)
-    else
-      true
-    end
-  end
+  defp to_result(nil), do: -1
+  defp to_result(i), do: i
 end
 
 defmodule Main do
@@ -29,9 +15,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  @spec main(inputs :: [[String.t()]]) :: nil
-  def main([strs | remains]) do
-    result = Solution.min_deletion_size(strs)
+  def main([%{:nums => nums, :target => target} | remains]) do
+    result = Solution.search(nums, target)
 
     IO.puts(result)
     main(remains)
@@ -42,9 +27,9 @@ defmodule Main do
 
   def main do
     main([
-      ["cba", "daf", "ghi"],
-      ["a", "b"],
-      ["zyx", "wvu", "tsr"]
+      %{nums: [4, 5, 6, 7, 0, 1, 2], target: 0},
+      %{nums: [4, 5, 6, 7, 0, 1, 2], target: 3},
+      %{nums: [1], target: 0}
     ])
   end
 end

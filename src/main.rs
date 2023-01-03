@@ -1,32 +1,55 @@
 struct Solution {}
 impl Solution {
-    pub fn min_deletion_size(strs: Vec<String>) -> i32 {
-        let mut result = 0;
+    pub fn search(nums: Vec<i32>, target: i32) -> i32 {
+        let mut left = 0usize;
+        let mut right = nums.len() - 1;
 
-        for c in 0..strs[0].len() {
-            for r in 1..strs.len() {
-                let c0 = strs[r - 1].as_bytes()[c];
-                let c1 = strs[r].as_bytes()[c];
-                if c0 > c1 {
-                    result += 1;
-                    break;
+        while left <= right {
+            let mid = (left + right) / 2;
+            if nums[mid] == target {
+                return mid as i32;
+            }
+
+            if nums[mid] >= nums[left] {
+                if (target >= nums[left]) && (target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
                 }
+            } else if (target > nums[mid]) && (target <= nums[right]) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
 
-        return result;
+        return -1;
     }
+}
+
+struct Input {
+    nums: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
     let inputs = [
-        vec!["cba", "daf", "ghi"],
-        vec!["a", "b"],
-        vec!["zyx", "wvu", "tsr"],
+        Input {
+            nums: vec![4, 5, 6, 7, 0, 1, 2],
+            target: 0,
+        },
+        Input {
+            nums: vec![4, 5, 6, 7, 0, 1, 2],
+            target: 3,
+        },
+        Input {
+            nums: vec![1],
+            target: 0,
+        },
     ];
 
-    for strs in inputs {
-        let result = Solution::min_deletion_size(strs.iter().map(|s| s.to_string()).collect());
+    for Input { nums, target } in inputs {
+        let result = Solution::search(nums, target);
         println!("{result}");
     }
 }
