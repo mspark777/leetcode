@@ -1,38 +1,31 @@
-# @param nums [Array<Integer>]
-# @param target [Integer]
+# @param tasks [Array<Integer>]
 # @return [Integer]
-def search(nums, target)
-  left = 0
-  right = nums.length - 1
-  while left <= right
-    mid = (left + right) / 2
-    return mid if nums[mid] == target
-
-    if nums[mid] >= nums[left]
-      if (target >= nums[left]) && (target < nums[mid])
-        right = mid - 1
-      else
-        left = mid + 1
-      end
-    elsif (target > nums[mid]) && (target <= nums[right])
-      left = mid + 1
-    else
-      right = mid - 1
-    end
+def minimum_rounds(tasks)
+  counts = Hash.new 0
+  tasks.each do |task|
+    counts[task] += 1
   end
 
-  -1
+  result = 0
+
+  counts.each_value do |count|
+    return -1 if count == 1
+
+    result += count / 3
+    result += 1 unless (count % 3) == 0
+  end
+
+  result
 end
 
 def main
   inputs = [
-    { nums: [4, 5, 6, 7, 0, 1, 2], target: 0 },
-    { nums: [4, 5, 6, 7, 0, 1, 2], target: 3 },
-    { nums: [1], target: 0 }
+    [2, 2, 3, 3, 2, 4, 4, 4, 4, 4],
+    [2, 3, 3]
   ]
 
-  inputs.each do |input|
-    result = search input[:nums], input[:target]
+  inputs.each do |tasks|
+    result = minimum_rounds tasks
     puts result
   end
 end

@@ -1,13 +1,26 @@
 defmodule Solution do
-  @spec search(nums :: [integer], target :: integer) :: integer
-  def search(nums, target) do
-    nums
-    |> Enum.find_index(&(&1 == target))
-    |> to_result()
+  @spec minimum_rounds(tasks :: [integer]) :: integer
+  def minimum_rounds(tasks) do
+    tasks |> count_frequencies(%{}) |> Map.values() |> calc_result(0)
   end
 
-  defp to_result(nil), do: -1
-  defp to_result(i), do: i
+  defp calc_result([count | _], _) when count == 1, do: -1
+  defp calc_result([], result), do: result
+
+  defp calc_result([count | counts], result) do
+    if rem(count, 3) == 0 do
+      calc_result(counts, result + div(count, 3))
+    else
+      calc_result(counts, result + div(count, 3) + 1)
+    end
+  end
+
+  defp count_frequencies([], counts), do: counts
+
+  defp count_frequencies([task | tasks], counts) do
+    count = Map.get(counts, task, 0)
+    count_frequencies(tasks, Map.put(counts, task, count + 1))
+  end
 end
 
 defmodule Main do
@@ -15,8 +28,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([%{:nums => nums, :target => target} | remains]) do
-    result = Solution.search(nums, target)
+  def main([tasks | remains]) do
+    result = Solution.minimum_rounds(tasks)
 
     IO.puts(result)
     main(remains)
@@ -27,9 +40,8 @@ defmodule Main do
 
   def main do
     main([
-      %{nums: [4, 5, 6, 7, 0, 1, 2], target: 0},
-      %{nums: [4, 5, 6, 7, 0, 1, 2], target: 3},
-      %{nums: [1], target: 0}
+      [2, 2, 3, 3, 2, 4, 4, 4, 4, 4],
+      [2, 3, 3]
     ])
   end
 end

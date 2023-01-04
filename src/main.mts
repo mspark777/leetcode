@@ -1,44 +1,33 @@
-function search(nums: number[], target: number): number {
-  let left = 0
-  let right = nums.length - 1
-  while (left <= right) {
-    const mid = Math.round((left + right) / 2)
-    if (nums[mid] === target) {
-      return mid
+function minimumRounds(tasks: number[]): number {
+  const frequencies = new Map<number, number>()
+  for (const task of tasks) {
+    const count = frequencies.get(task) ?? 0
+    frequencies.set(task, count + 1)
+  }
+
+  let result = 0
+  for (const count of frequencies.values()) {
+    if (count === 1) {
+      return -1
     }
 
-    if (nums[mid] >= nums[left]) {
-      if ((target >= nums[left]) && (target < nums[mid])) {
-        right = mid - 1
-      } else {
-        left = mid + 1
-      }
-    } else {
-      if ((target > nums[mid]) && (target <= nums[right])) {
-        left = mid + 1
-      } else {
-        right = mid - 1
-      }
+    result += Math.trunc(count / 3)
+    if ((count % 3) !== 0) {
+      result += 1
     }
   }
 
-  return -1
-}
-
-interface Input {
-  readonly nums: number[]
-  readonly target: number
+  return result
 }
 
 async function main(): Promise<void> {
-  const inputs: Input[] = [
-    {nums: [4, 5, 6, 7, 0, 1, 2], target: 0},
-    {nums: [4, 5, 6, 7, 0, 1, 2], target: 3},
-    {nums: [1], target: 0}
+  const inputs: number[][] = [
+    [2, 2, 3, 3, 2, 4, 4, 4, 4, 4],
+    [2, 3, 3]
   ]
 
-  for (const {nums, target} of inputs) {
-    const result = search(nums, target)
+  for (const tasks of inputs) {
+    const result = minimumRounds(tasks)
     console.log(result)
   }
 }

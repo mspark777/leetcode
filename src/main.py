@@ -1,40 +1,31 @@
 from __future__ import annotations
-from typing import List
+from typing import Counter, List
+from collections import Counter
 
 
 class Solution:
-    def search(self, nums: List[int], target: int) -> int:
-        left = 0
-        right = len(nums) - 1
-        while left <= right:
-            mid = (left + right) // 2
-            if nums[mid] == target:
-                return mid
+    def minimumRounds(self, tasks: List[int]) -> int:
+        counts = Counter(tasks)
 
-            if nums[mid] >= nums[left]:
-                if (target >= nums[left]) and (target < nums[mid]):
-                    right = mid - 1
-                else:
-                    left = mid + 1
-            else:
-                if (target > nums[mid]) and (target <= nums[right]):
-                    left = mid + 1
-                else:
-                    right = mid - 1
+        result = 0
 
-        return -1
+        for count in counts.values():
+            if count == 1:
+                return -1
+
+            result += count // 3
+            if (count % 3) != 0:
+                result += 1
+
+        return result
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([4, 5, 6, 7, 0, 1, 2], 0),
-        ([4, 5, 6, 7, 0, 1, 2], 3),
-        ([1], 0),
-    ]
+    inputs: list[list[int]] = [[2, 2, 3, 3, 2, 4, 4, 4, 4, 4], [2, 3, 3]]
 
     solution = Solution()
-    for nums, target in inputs:
-        result = solution.search(nums, target)
+    for tasks in inputs:
+        result = solution.minimumRounds(tasks)
         print(result)
 
 
