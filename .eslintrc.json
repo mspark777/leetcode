@@ -5,25 +5,13 @@
     "node": true
   },
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "standard-with-typescript"
   ],
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "root": true,
-  "rules": {
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_"
-      }
-    ]
+  "parserOptions": {
+    "project": "./tsconfig.json"
   },
+  "root": true,
+  "rules": {},
   "ignorePatterns": [
     "dist/*",
     "node_modules/*"
