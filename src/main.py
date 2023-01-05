@@ -1,31 +1,32 @@
 from __future__ import annotations
 from typing import Counter, List
-from collections import Counter
 
 
 class Solution:
-    def minimumRounds(self, tasks: List[int]) -> int:
-        counts = Counter(tasks)
+    def findMinArrowShots(self, points: List[List[int]]) -> int:
+        points.sort(key=lambda a: a[1])
 
-        result = 0
+        result = 1
+        prev = 0
 
-        for count in counts.values():
-            if count == 1:
-                return -1
-
-            result += count // 3
-            if (count % 3) != 0:
+        for cur in range(1, len(points)):
+            if points[cur][0] > points[prev][1]:
                 result += 1
+                prev = cur
 
         return result
 
 
 def main():
-    inputs: list[list[int]] = [[2, 2, 3, 3, 2, 4, 4, 4, 4, 4], [2, 3, 3]]
+    inputs: list[list[list[int]]] = [
+        [[10, 16], [2, 8], [1, 6], [7, 12]],
+        [[1, 2], [3, 4], [5, 6], [7, 8]],
+        [[1, 2], [2, 3], [3, 4], [4, 5]],
+    ]
 
     solution = Solution()
-    for tasks in inputs:
-        result = solution.minimumRounds(tasks)
+    for points in inputs:
+        result = solution.findMinArrowShots(points)
         print(result)
 
 

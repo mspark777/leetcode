@@ -1,25 +1,18 @@
 defmodule Solution do
-  @spec minimum_rounds(tasks :: [integer]) :: integer
-  def minimum_rounds(tasks) do
-    tasks |> count_frequencies(%{}) |> Map.values() |> calc_result(0)
+  @spec find_min_arrow_shots(points :: [[integer]]) :: integer
+  def find_min_arrow_shots(points) do
+    [cur | remains] = points |> Enum.sort_by(&Enum.at(&1, 1))
+    loop(remains, cur, 1)
   end
 
-  defp calc_result([count | _], _) when count == 1, do: -1
-  defp calc_result([], result), do: result
+  defp loop([], _, result), do: result
 
-  defp calc_result([count | counts], result) do
-    if rem(count, 3) == 0 do
-      calc_result(counts, result + div(count, 3))
+  defp loop([[cl, _] = cur | points], [_, pr] = prev, result) do
+    if cl > pr do
+      loop(points, cur, result + 1)
     else
-      calc_result(counts, result + div(count, 3) + 1)
+      loop(points, prev, result)
     end
-  end
-
-  defp count_frequencies([], counts), do: counts
-
-  defp count_frequencies([task | tasks], counts) do
-    count = Map.get(counts, task, 0)
-    count_frequencies(tasks, Map.put(counts, task, count + 1))
   end
 end
 
@@ -28,8 +21,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([tasks | remains]) do
-    result = Solution.minimum_rounds(tasks)
+  def main([points | remains]) do
+    result = Solution.find_min_arrow_shots(points)
 
     IO.puts(result)
     main(remains)
@@ -40,8 +33,9 @@ defmodule Main do
 
   def main do
     main([
-      [2, 2, 3, 3, 2, 4, 4, 4, 4, 4],
-      [2, 3, 3]
+      [[10, 16], [2, 8], [1, 6], [7, 12]],
+      [[1, 2], [3, 4], [5, 6], [7, 8]],
+      [[1, 2], [2, 3], [3, 4], [4, 5]]
     ])
   end
 end

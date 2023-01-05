@@ -2,24 +2,21 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func minimumRounds(tasks []int) int {
-	counts := make(map[int]int)
-	for _, task := range tasks {
-		counts[task] += 1
-	}
+func findMinArrowShots(points [][]int) int {
+	sort.Slice(points, func(i, j int) bool {
+		return points[i][1] < points[j][1]
+	})
 
-	result := 0
+	result := 1
+	prev := 0
 
-	for _, count := range counts {
-		if count == 1 {
-			return -1
-		}
-
-		result += count / 3
-		if (count % 3) != 0 {
+	for cur := 1; cur < len(points); cur += 1 {
+		if points[cur][0] > points[prev][1] {
 			result += 1
+			prev = cur
 		}
 	}
 
@@ -27,13 +24,14 @@ func minimumRounds(tasks []int) int {
 }
 
 func main() {
-	inputs := [][]int{
-		{2, 2, 3, 3, 2, 4, 4, 4, 4, 4},
-		{2, 3, 3},
+	inputs := [][][]int{
+		{{10, 16}, {2, 8}, {1, 6}, {7, 12}},
+		{{1, 2}, {3, 4}, {5, 6}, {7, 8}},
+		{{1, 2}, {2, 3}, {3, 4}, {4, 5}},
 	}
 
-	for _, tasks := range inputs {
-		result := minimumRounds(tasks)
+	for _, points := range inputs {
+		result := findMinArrowShots(points)
 		fmt.Println(result)
 	}
 }

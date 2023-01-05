@@ -1,19 +1,13 @@
-function minimumRounds(tasks: number[]): number {
-  const frequencies = new Map<number, number>()
-  for (const task of tasks) {
-    const count = frequencies.get(task) ?? 0
-    frequencies.set(task, count + 1)
-  }
+function findMinArrowShots(points: number[][]): number {
+  points.sort(([_l0, r0], [_l1, r1]) => r0 - r1)
 
-  let result = 0
-  for (const count of frequencies.values()) {
-    if (count === 1) {
-      return -1
-    }
+  let result = 1
+  let prev = 0
 
-    result += Math.trunc(count / 3)
-    if ((count % 3) !== 0) {
+  for (let cur = 1; cur < points.length; cur += 1) {
+    if (points[cur][0] > points[prev][1]) {
       result += 1
+      prev = cur
     }
   }
 
@@ -21,13 +15,14 @@ function minimumRounds(tasks: number[]): number {
 }
 
 async function main(): Promise<void> {
-  const inputs: number[][] = [
-    [2, 2, 3, 3, 2, 4, 4, 4, 4, 4],
-    [2, 3, 3]
+  const inputs: number[][][] = [
+    [[10, 16], [2, 8], [1, 6], [7, 12]],
+    [[1, 2], [3, 4], [5, 6], [7, 8]],
+    [[1, 2], [2, 3], [3, 4], [4, 5]]
   ]
 
-  for (const tasks of inputs) {
-    const result = minimumRounds(tasks)
+  for (const points of inputs) {
+    const result = findMinArrowShots(points)
     console.log(result)
   }
 }
