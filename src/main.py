@@ -1,32 +1,33 @@
 from __future__ import annotations
-from typing import Counter, List
+from typing import List
 
 
 class Solution:
-    def findMinArrowShots(self, points: List[List[int]]) -> int:
-        points.sort(key=lambda a: a[1])
+    def maxIceCream(self, costs: List[int], coins: int) -> int:
+        costs.sort()
 
-        result = 1
-        prev = 0
+        result = 0
 
-        for cur in range(1, len(points)):
-            if points[cur][0] > points[prev][1]:
+        for cost in costs:
+            if coins >= cost:
+                coins -= cost
                 result += 1
-                prev = cur
+            else:
+                break
 
         return result
 
 
 def main():
-    inputs: list[list[list[int]]] = [
-        [[10, 16], [2, 8], [1, 6], [7, 12]],
-        [[1, 2], [3, 4], [5, 6], [7, 8]],
-        [[1, 2], [2, 3], [3, 4], [4, 5]],
+    inputs: list[tuple[list[int], int]] = [
+        ([1, 3, 2, 4, 1], 7),
+        ([10, 6, 8, 7, 7, 8], 5),
+        ([1, 6, 3, 1, 2, 5], 20),
     ]
 
     solution = Solution()
-    for points in inputs:
-        result = solution.findMinArrowShots(points)
+    for costs, coins in inputs:
+        result = solution.maxIceCream(costs, coins)
         print(result)
 
 

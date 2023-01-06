@@ -1,30 +1,28 @@
-# @param points [Array<Array<Integer>>]
+# @param costs [Array<Integer>]
+# @param coins [Integer]
 # @return [Integer]
-def find_min_arrow_shots(points)
-  points.sort_by! { |p| p[1] }
+def max_ice_cream(costs, coins)
+  costs.sort!
 
-  result = 1
-  prev = 0
+  result = 0
+  costs.each do |cost|
+    break if coins < cost
 
-  points[1..-1].each_with_index do |p, cur|
-    if p[0] > points[prev][1]
-      result += 1
-      prev = cur + 1
-    end
+    coins -= cost
+    result += 1
   end
-
   result
 end
 
 def main
   inputs = [
-    [[10, 16], [2, 8], [1, 6], [7, 12]],
-    [[1, 2], [3, 4], [5, 6], [7, 8]],
-    [[1, 2], [2, 3], [3, 4], [4, 5]]
+    { costs: [1, 3, 2, 4, 1], coins: 7 },
+    { costs: [10, 6, 8, 7, 7, 8], coins: 5 },
+    { costs: [1, 6, 3, 1, 2, 5], coins: 20 }
   ]
 
-  inputs.each do |points|
-    result = find_min_arrow_shots points
+  inputs.each do |input|
+    result = max_ice_cream input[:costs], input[:coins]
     puts result
   end
 end

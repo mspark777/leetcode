@@ -1,32 +1,34 @@
 /**
- * @param {number[][]} points
+ * @param {number[]} costs
+ * @param {number} coins
  * @returns {number}
  */
-function findMinArrowShots(points) {
-  points.sort(([_l0, r0], [_l1, r1]) => r0 - r1)
+function maxIceCream (costs, coins) {
+  costs.sort((a, b) => a - b)
 
-  let result = 1
-  let prev = 0
+  let result = 0
 
-  for (let cur = 1; cur < points.length; cur += 1) {
-    if (points[cur][0] > points[prev][1]) {
+  for (const cost of costs) {
+    if (coins >= cost) {
+      coins -= cost
       result += 1
-      prev = cur
+    } else {
+      break
     }
   }
 
   return result
 }
 
-async function main() {
+async function main () {
   const inputs = [
-    [[10, 16], [2, 8], [1, 6], [7, 12]],
-    [[1, 2], [3, 4], [5, 6], [7, 8]],
-    [[1, 2], [2, 3], [3, 4], [4, 5]]
+    { costs: [1, 3, 2, 4, 1], coins: 7 },
+    { costs: [10, 6, 8, 7, 7, 8], coins: 5 },
+    { costs: [1, 6, 3, 1, 2, 5], coins: 20 }
   ]
 
-  for (const points of inputs) {
-    const result = findMinArrowShots(points)
+  for (const { costs, coins } of inputs) {
+    const result = maxIceCream(costs, coins)
     console.log(result)
   }
 }

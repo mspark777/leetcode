@@ -1,16 +1,18 @@
 struct Solution {}
 impl Solution {
-    pub fn find_min_arrow_shots(points: Vec<Vec<i32>>) -> i32 {
-        let mut points = points;
-        points.sort_unstable_by_key(|p| p[1]);
+    pub fn max_ice_cream(costs: Vec<i32>, coins: i32) -> i32 {
+        let mut costs = costs;
+        let mut coins = coins;
 
-        let mut result = 1;
-        let mut prev = 0usize;
+        costs.sort_unstable();
 
-        for (cur, point) in points.iter().skip(1).enumerate() {
-            if point[0] > points[prev][1] {
+        let mut result = 0;
+        for &cost in costs.iter() {
+            if coins >= cost {
+                coins -= cost;
                 result += 1;
-                prev = cur + 1;
+            } else {
+                break;
             }
         }
 
@@ -20,13 +22,13 @@ impl Solution {
 
 fn main() {
     let inputs = [
-        vec![vec![10, 16], vec![2, 8], vec![1, 6], vec![7, 12]],
-        vec![vec![1, 2], vec![3, 4], vec![5, 6], vec![7, 8]],
-        vec![vec![1, 2], vec![2, 3], vec![3, 4], vec![4, 5]],
+        (vec![1, 3, 2, 4, 1], 7),
+        (vec![10, 6, 8, 7, 7, 8], 5),
+        (vec![1, 6, 3, 1, 2, 5], 20),
     ];
 
-    for points in inputs {
-        let result = Solution::find_min_arrow_shots(points);
+    for (costs, coins) in inputs {
+        let result = Solution::max_ice_cream(costs, coins);
         println!("{result}");
     }
 }

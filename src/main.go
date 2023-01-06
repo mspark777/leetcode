@@ -5,33 +5,37 @@ import (
 	"sort"
 )
 
-func findMinArrowShots(points [][]int) int {
-	sort.Slice(points, func(i, j int) bool {
-		return points[i][1] < points[j][1]
-	})
+func maxIceCream(costs []int, coins int) int {
+	sort.Ints(costs)
 
-	result := 1
-	prev := 0
+	result := 0
 
-	for cur := 1; cur < len(points); cur += 1 {
-		if points[cur][0] > points[prev][1] {
+	for _, cost := range costs {
+		if coins >= cost {
+			coins -= cost
 			result += 1
-			prev = cur
+		} else {
+			break
 		}
 	}
 
 	return result
 }
 
+type input struct {
+	costs []int
+	coins int
+}
+
 func main() {
-	inputs := [][][]int{
-		{{10, 16}, {2, 8}, {1, 6}, {7, 12}},
-		{{1, 2}, {3, 4}, {5, 6}, {7, 8}},
-		{{1, 2}, {2, 3}, {3, 4}, {4, 5}},
+	inputs := []input{
+		{costs: []int{1, 3, 2, 4, 1}, coins: 7},
+		{costs: []int{10, 6, 8, 7, 7, 8}, coins: 5},
+		{costs: []int{1, 6, 3, 1, 2, 5}, coins: 20},
 	}
 
-	for _, points := range inputs {
-		result := findMinArrowShots(points)
+	for _, input := range inputs {
+		result := maxIceCream(input.costs, input.coins)
 		fmt.Println(result)
 	}
 }
