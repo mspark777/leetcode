@@ -1,34 +1,52 @@
-function maxIceCream (costs: number[], coins: number): number {
-  costs.sort((a, b) => a - b)
+function GCD (a: number, b: number): number {
+  return b === 0 ? a : GCD(b, a % b)
+}
 
-  let result = 0
+function maxPoints (points: number[][]): number {
+  const N = points.length
+  if (N < 2) {
+    return 1
+  }
 
-  for (const cost of costs) {
-    if (coins >= cost) {
-      coins -= cost
-      result += 1
-    } else {
-      break
+  let result = 2
+
+  for (let i = 0; i < N; i += 1) {
+    const slopes = new Map<string, number>()
+    for (let j = 0; j < N; j += 1) {
+      if (i === j) {
+        continue
+      }
+
+      const [ix, iy] = points[i]
+      const [jx, jy] = points[j]
+      let x = jx - ix
+      let y = jy - iy
+      const gcd = GCD(Math.abs(x), Math.abs(y))
+      if (gcd !== 0) {
+        x = Math.trunc(x / gcd)
+        y = Math.trunc(y / gcd)
+      }
+      const key = `${x}:${y}`
+      const count = slopes.get(key) ?? 0
+      slopes.set(key, count + 1)
+    }
+
+    for (const count of slopes.values()) {
+      result = Math.max(result, count + 1)
     }
   }
 
   return result
 }
 
-interface Input {
-  readonly costs: number[]
-  readonly coins: number
-}
-
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { costs: [1, 3, 2, 4, 1], coins: 7 },
-    { costs: [10, 6, 8, 7, 7, 8], coins: 5 },
-    { costs: [1, 6, 3, 1, 2, 5], coins: 20 }
+  const inputs: number[][][] = [
+    [[1, 1], [2, 2], [3, 3]],
+    [[1, 1], [3, 2], [5, 3], [4, 1], [2, 3], [1, 4]]
   ]
 
-  for (const { costs, coins } of inputs) {
-    const result = maxIceCream(costs, coins)
+  for (const points of inputs) {
+    const result = maxPoints(points)
     console.log(result)
   }
 }

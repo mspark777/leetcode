@@ -1,19 +1,47 @@
 /**
- * @param {number[]} costs
- * @param {number} coins
+ * @param {number} a
+ * @param {number} b
  * @returns {number}
  */
-function maxIceCream (costs, coins) {
-  costs.sort((a, b) => a - b)
+function GCD (a, b) {
+  return b === 0 ? a : GCD(b, a % b)
+}
 
-  let result = 0
+/**
+ * @param {number[][]} points
+ * @returns {number}
+ */
+function maxPoints (points) {
+  const N = points.length
+  if (N < 2) {
+    return 1
+  }
 
-  for (const cost of costs) {
-    if (coins >= cost) {
-      coins -= cost
-      result += 1
-    } else {
-      break
+  let result = 2
+
+  for (let i = 0; i < N; i += 1) {
+    const slopes = new Map()
+    for (let j = 0; j < N; j += 1) {
+      if (i === j) {
+        continue
+      }
+
+      const [ix, iy] = points[i]
+      const [jx, jy] = points[j]
+      let x = jx - ix
+      let y = jy - iy
+      const gcd = GCD(Math.abs(x), Math.abs(y))
+      if (gcd !== 0) {
+        x = Math.trunc(x / gcd)
+        y = Math.trunc(y / gcd)
+      }
+      const key = `${x}:${y}`
+      const count = slopes.get(key) ?? 0
+      slopes.set(key, count + 1)
+    }
+
+    for (const count of slopes.values()) {
+      result = Math.max(result, count + 1)
     }
   }
 
@@ -22,15 +50,17 @@ function maxIceCream (costs, coins) {
 
 async function main () {
   const inputs = [
-    { costs: [1, 3, 2, 4, 1], coins: 7 },
-    { costs: [10, 6, 8, 7, 7, 8], coins: 5 },
-    { costs: [1, 6, 3, 1, 2, 5], coins: 20 }
+    [[1, 1], [2, 2], [3, 3]],
+    [[1, 1], [3, 2], [5, 3], [4, 1], [2, 3], [1, 4]]
   ]
 
-  for (const { costs, coins } of inputs) {
-    const result = maxIceCream(costs, coins)
+  for (const points of inputs) {
+    const result = maxPoints(points)
     console.log(result)
   }
 }
 
-await main()
+main().catch(e => {
+  console.error(e)
+  process.exit(1)
+})
