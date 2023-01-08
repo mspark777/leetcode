@@ -26,9 +26,6 @@
       "@types/node"
     ]
   },
-  "ts-node": {
-    "esm": true
-  },
   "exclude": [
     "node_module",
     "dist"

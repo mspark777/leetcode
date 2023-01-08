@@ -1,4 +1,4 @@
-function maxIceCream(costs: number[], coins: number): number {
+function maxIceCream (costs: number[], coins: number): number {
   costs.sort((a, b) => a - b)
 
   let result = 0
@@ -20,17 +20,20 @@ interface Input {
   readonly coins: number
 }
 
-async function main(): Promise<void> {
+async function main (): Promise<void> {
   const inputs: Input[] = [
-    {costs: [1, 3, 2, 4, 1], coins: 7},
-    {costs: [10, 6, 8, 7, 7, 8], coins: 5},
-    {costs: [1, 6, 3, 1, 2, 5], coins: 20}
+    { costs: [1, 3, 2, 4, 1], coins: 7 },
+    { costs: [10, 6, 8, 7, 7, 8], coins: 5 },
+    { costs: [1, 6, 3, 1, 2, 5], coins: 20 }
   ]
 
-  for (const {costs, coins} of inputs) {
+  for (const { costs, coins } of inputs) {
     const result = maxIceCream(costs, coins)
     console.log(result)
   }
 }
 
-await main()
+main().catch(e => {
+  console.error(e)
+  process.exit(1)
+})
