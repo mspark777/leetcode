@@ -1,62 +1,77 @@
+const MAX = 9
+const ROW = 9
+const COL = 9
+const EMPTY = '.'
+
 /**
- * @param {number} a
- * @param {number} b
- * @returns {number}
+ * @param {number} row
+ * @param {number} col
+ * @param {string} cell
+ * @param {string[][]} board
+ * @returns {boolean}
  */
-function GCD (a, b) {
-  return b === 0 ? a : GCD(b, a % b)
+function isValid (row, col, cell, board) {
+  for (let i = 0; i < MAX; i += 1) {
+    if (board[row][i] === cell) {
+      return false
+    }
+
+    if (board[i][col] === cell) {
+      return false
+    }
+
+    const r = 3 * Math.trunc(row / 3) + Math.trunc(i / 3)
+    const c = 3 * Math.trunc(col / 3) + (i % 3)
+    if (board[r][c] === cell) {
+      return false
+    }
+  }
+
+  return true
 }
 
 /**
- * @param {number[][]} points
- * @returns {number}
+ * @param {string[][]} board
+ * @returns {boolean}
  */
-function maxPoints (points) {
-  const N = points.length
-  if (N < 2) {
-    return 1
-  }
-
-  let result = 2
-
-  for (let i = 0; i < N; i += 1) {
-    const slopes = new Map()
-    for (let j = 0; j < N; j += 1) {
-      if (i === j) {
-        continue
+function solve (board) {
+  for (let r = 0; r < ROW; r += 1) {
+    for (let c = 0; c < COL; c += 1) {
+      if (board[r][c] === EMPTY) {
+        for (let i = 1; i <= MAX; i += 1) {
+          const cell = i.toString()
+          if (isValid(r, c, cell, board)) {
+            board[r][c] = cell
+            if (solve(board)) {
+              return true
+            }
+            board[r][c] = EMPTY
+          }
+        }
+        return false
       }
-
-      const [ix, iy] = points[i]
-      const [jx, jy] = points[j]
-      let x = jx - ix
-      let y = jy - iy
-      const gcd = GCD(Math.abs(x), Math.abs(y))
-      if (gcd !== 0) {
-        x = Math.trunc(x / gcd)
-        y = Math.trunc(y / gcd)
-      }
-      const key = `${x}:${y}`
-      const count = slopes.get(key) ?? 0
-      slopes.set(key, count + 1)
-    }
-
-    for (const count of slopes.values()) {
-      result = Math.max(result, count + 1)
     }
   }
+  return true
+}
 
-  return result
+/**
+ * Do not return anything, modify board in-place instead.
+ * @param {string[][]} board
+ * @returns {undefined}
+ */
+function solveSudoku (board) {
+  solve(board)
 }
 
 async function main () {
   const inputs = [
-    [[1, 1], [2, 2], [3, 3]],
-    [[1, 1], [3, 2], [5, 3], [4, 1], [2, 3], [1, 4]]
+    [['5', '3', '.', '.', '7', '.', '.', '.', '.'], ['6', '.', '.', '1', '9', '5', '.', '.', '.'], ['.', '9', '8', '.', '.', '.', '.', '6', '.'], ['8', '.', '.', '.', '6', '.', '.', '.', '3'], ['4', '.', '.', '8', '.', '3', '.', '.', '1'], ['7', '.', '.', '.', '2', '.', '.', '.', '6'], ['.', '6', '.', '.', '.', '.', '2', '8', '.'], ['.', '.', '.', '4', '1', '9', '.', '.', '5'], ['.', '.', '.', '.', '8', '.', '.', '7', '9']]
   ]
 
-  for (const points of inputs) {
-    const result = maxPoints(points)
-    console.log(result)
+  for (const board of inputs) {
+    solveSudoku(board)
+    console.log(board)
   }
 }
 
