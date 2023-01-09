@@ -1,54 +1,57 @@
-# @param a [Integer]
-# @param b [Integer]
-# @return [Integer]
-def GCD(a, b)
-  return a if b == 0
+class TreeNode
+  attr_accessor :val, :left, :right
 
-  GCD(b, a % b)
+  def initialize(val = 0, left = nil, right = nil)
+    @val = val
+    @left = left
+    @right = right
+  end
 end
 
-# @param points [Array<Array<Integer>>]
-# @return [Integer]
-def max_points(points)
-  plength = points.length
-  return 1 if plength < 2
+def newnode(val, left, right)
+  TreeNode.new(val, left, right)
+end
 
-  result = 2
+def newleft(val, left)
+  newnode(val, left, nil)
+end
 
-  points.each_index do |i|
-    slopes = Hash.new(0)
-    points.each_index do |j|
-      next if i == j
+def newright(val, right)
+  newnode(val, nil, right)
+end
 
-      x = points[j][0] - points[i][0]
-      y = points[j][1] - points[i][1]
-      gcd = GCD x.abs, y.abs
-      if gcd != 0
-        x /= gcd
-        y /= gcd
-      end
+def newval(val)
+  newnode(val, nil, nil)
+end
 
-      key = format('%d:%d', x, y)
-      slopes[key] += 1
-    end
+# @param list [Array<Integer>]
+# @param root [TreeNode]
+def travel(list, root)
+  return unless root
 
-    slopes.each_value do |value|
-      result = [result, value + 1].max
-    end
-  end
+  list.push root.val
+  travel list, root.left
+  travel list, root.right
+end
 
+# @param root [TreeNode]
+# @return [Array<Integer>]
+def preorder_traversal(root)
+  result = []
+  travel(result, root)
   result
 end
 
 def main
   inputs = [
-    [[1, 1], [2, 2], [3, 3]],
-    [[1, 1], [3, 2], [5, 3], [4, 1], [2, 3], [1, 4]]
+    newright(1, newleft(2, newval(3))),
+    nil,
+    newval(1)
   ]
 
-  inputs.each do |points|
-    result = max_points points
-    puts result
+  inputs.each do |root|
+    result = preorder_traversal root
+    puts result.join ', '
   end
 end
 
