@@ -1,16 +1,19 @@
+defmodule TreeNode do
+  @type t :: %__MODULE__{
+          val: integer,
+          left: TreeNode.t() | nil,
+          right: TreeNode.t() | nil
+        }
+  defstruct val: 0, left: nil, right: nil
+end
+
 defmodule Solution do
-  @spec max_ice_cream(costs :: [integer], coins :: integer) :: integer
-  def max_ice_cream(costs, coins) do
-    costs |> Enum.sort() |> loop(coins, 0)
-  end
-
-  defp loop([], _, result), do: result
-
-  defp loop([cost | costs], coins, result) when coins >= cost do
-    loop(costs, coins - cost, result + 1)
-  end
-
-  defp loop(_, _, result), do: result
+  @spec is_same_tree(p :: TreeNode.t() | nil, q :: TreeNode.t() | nil) :: boolean
+  def is_same_tree(nil, nil), do: true
+  def is_same_tree(_, nil), do: false
+  def is_same_tree(nil, _), do: false
+  def is_same_tree(p, q) when p.val != q.val, do: false
+  def is_same_tree(p, q), do: is_same_tree(p.left, q.left) && is_same_tree(p.right, q.right)
 end
 
 defmodule Main do
@@ -18,8 +21,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([input | remains]) do
-    result = Solution.max_ice_cream(input.costs, input.coins)
+  def main([[p, q] | remains]) do
+    result = Solution.is_same_tree(p, q)
 
     IO.puts(result)
     main(remains)
@@ -30,11 +33,25 @@ defmodule Main do
 
   def main do
     main([
-      %{costs: [1, 3, 2, 4, 1], coins: 7},
-      %{costs: [10, 6, 8, 7, 7, 8], coins: 5},
-      %{costs: [1, 6, 3, 1, 2, 5], coins: 20}
+      [
+        newnode(1, newval(2), newval(3)),
+        newnode(1, newval(2), newval(3))
+      ],
+      [
+        newleft(1, newval(2)),
+        newright(1, newval(2))
+      ],
+      [
+        newnode(1, newval(2), newval(1)),
+        newnode(1, newval(1), newval(2))
+      ]
     ])
   end
+
+  def newnode(val, left, right), do: %TreeNode{val: val, left: left, right: right}
+  def newleft(val, left), do: newnode(val, left, nil)
+  def newright(val, right), do: newnode(val, nil, right)
+  def newval(val), do: newnode(val, nil, nil)
 end
 
 Main.main()

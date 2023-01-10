@@ -1,64 +1,63 @@
-const MAX = 9
-const ROW = 9
-const COL = 9
-const EMPTY = '.'
-
-function isValid (row: number, col: number, cell: string, board: string[][]): boolean {
-  for (let i = 0; i < MAX; i += 1) {
-    if (board[row][i] === cell) {
-      return false
-    }
-
-    if (board[i][col] === cell) {
-      return false
-    }
-
-    const r = 3 * Math.trunc(row / 3) + Math.trunc(i / 3)
-    const c = 3 * Math.trunc(col / 3) + (i % 3)
-    if (board[r][c] === cell) {
-      return false
-    }
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
-
-  return true
 }
 
-function solve (board: string[][]): boolean {
-  for (let r = 0; r < ROW; r += 1) {
-    for (let c = 0; c < COL; c += 1) {
-      if (board[r][c] === EMPTY) {
-        for (let i = 1; i <= MAX; i += 1) {
-          const cell = i.toString()
-          if (isValid(r, c, cell, board)) {
-            board[r][c] = cell
-            if (solve(board)) {
-              return true
-            }
-            board[r][c] = EMPTY
-          }
-        }
-        return false
-      }
-    }
-  }
-  return true
+function newnode (val: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
+  return new TreeNode(val, left, right)
 }
 
-/**
- Do not return anything, modify board in-place instead.
- */
-function solveSudoku (board: string[][]): void {
-  solve(board)
+function newleft (val: number, left: TreeNode): TreeNode {
+  return newnode(val, left, null)
+}
+
+function newright (val: number, right: TreeNode): TreeNode {
+  return newnode(val, null, right)
+}
+
+function newval (val: number): TreeNode {
+  return newnode(val, null, null)
+}
+
+function isSameTree (p: TreeNode | null, q: TreeNode | null): boolean {
+  if ((p == null) && (q == null)) {
+    return true
+  }
+
+  if ((p == null) || (q == null)) {
+    return false
+  }
+
+  return p.val === q.val
+    ? isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
+    : false
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][][] = [
-    [['5', '3', '.', '.', '7', '.', '.', '.', '.'], ['6', '.', '.', '1', '9', '5', '.', '.', '.'], ['.', '9', '8', '.', '.', '.', '.', '6', '.'], ['8', '.', '.', '.', '6', '.', '.', '.', '3'], ['4', '.', '.', '8', '.', '3', '.', '.', '1'], ['7', '.', '.', '.', '2', '.', '.', '.', '6'], ['.', '6', '.', '.', '.', '.', '2', '8', '.'], ['.', '.', '.', '4', '1', '9', '.', '.', '5'], ['.', '.', '.', '.', '8', '.', '.', '7', '9']]
+  const inputs: TreeNode[][] = [
+    [
+      newnode(1, newval(2), newval(3)),
+      newnode(1, newval(2), newval(3))
+    ],
+    [
+      newleft(1, newval(2)),
+      newright(1, newval(2))
+    ],
+    [
+      newnode(1, newval(2), newval(1)),
+      newnode(1, newval(1), newval(2))
+    ]
   ]
 
-  for (const board of inputs) {
-    solveSudoku(board)
-    console.log(board)
+  for (const [p, q] of inputs) {
+    const result = isSameTree(p, q)
+    console.log(result)
   }
 }
 

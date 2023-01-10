@@ -4,70 +4,62 @@ import (
 	"fmt"
 )
 
-func abs(a int) int {
-	if a < 0 {
-		return -a
-	}
-
-	return a
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func gcd(a, b int) int {
-	if b == 0 {
-		return a
-	}
-
-	return gcd(b, a%b)
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
 }
 
-func maxPoints(points [][]int) int {
-	plen := len(points)
-	if plen < 2 {
-		return 1
+func newleft(val int, left *TreeNode) *TreeNode {
+	return newnode(val, left, nil)
+}
+
+func newright(val int, right *TreeNode) *TreeNode {
+	return newnode(val, nil, right)
+}
+
+func newval(val int) *TreeNode {
+	return newnode(val, nil, nil)
+}
+
+func isSameTree(p *TreeNode, q *TreeNode) bool {
+	if (p == nil) && (q == nil) {
+		return true
 	}
 
-	result := 2
-
-	for i := 0; i < plen; i += 1 {
-		slopes := make(map[string]int)
-		for j := 0; j < plen; j += 1 {
-			if i == j {
-				continue
-			}
-
-			pointi := points[i]
-			pointj := points[j]
-			x := pointj[0] - pointi[0]
-			y := pointj[1] - pointi[1]
-			gcd := gcd(abs(x), abs(y))
-			if gcd != 0 {
-				x /= gcd
-				y /= gcd
-			}
-
-			key := fmt.Sprint(x, y)
-			slopes[key] += 1
-		}
-
-		for _, value := range slopes {
-			count := value + 1
-			if count > result {
-				result = count
-			}
-		}
+	if (p == nil) || (q == nil) {
+		return false
 	}
 
-	return result
+	if p.Val != q.Val {
+		return false
+	}
+
+	return isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
 }
 
 func main() {
-	inputs := [][][]int{
-		{{1, 1}, {2, 2}, {3, 3}},
-		{{1, 1}, {3, 2}, {5, 3}, {4, 1}, {2, 3}, {1, 4}},
+	inputs := [][]*TreeNode{
+		{
+			newnode(1, newval(2), newval(3)),
+			newnode(1, newval(2), newval(3)),
+		},
+		{
+			newleft(1, newval(2)),
+			newright(1, newval(2)),
+		},
+		{
+			newnode(1, newval(2), newval(1)),
+			newnode(1, newval(1), newval(2)),
+		},
 	}
 
-	for _, points := range inputs {
-		result := maxPoints(points)
+	for _, input := range inputs {
+		result := isSameTree(input[0], input[1])
 		fmt.Println(result)
 	}
 }

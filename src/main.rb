@@ -24,34 +24,36 @@ def newval(val)
   newnode(val, nil, nil)
 end
 
-# @param list [Array<Integer>]
-# @param root [TreeNode]
-def travel(list, root)
-  return unless root
+# @param p [TreeNode]
+# @param q [TreeNode]
+# @return [Boolean]
+def is_same_tree(p, q)
+  return true if p.nil? && q.nil?
+  return false if p.nil? || q.nil?
+  return false if p.val != q.val
 
-  list.push root.val
-  travel list, root.left
-  travel list, root.right
-end
-
-# @param root [TreeNode]
-# @return [Array<Integer>]
-def preorder_traversal(root)
-  result = []
-  travel(result, root)
-  result
+  is_same_tree(p.left, q.left) && is_same_tree(p.right, q.right)
 end
 
 def main
   inputs = [
-    newright(1, newleft(2, newval(3))),
-    nil,
-    newval(1)
+    [
+      newnode(1, newval(2), newval(3)),
+      newnode(1, newval(2), newval(3))
+    ],
+    [
+      newleft(1, newval(2)),
+      newright(1, newval(2))
+    ],
+    [
+      newnode(1, newval(2), newval(1)),
+      newnode(1, newval(1), newval(2))
+    ]
   ]
 
-  inputs.each do |root|
-    result = preorder_traversal root
-    puts result.join ', '
+  inputs.each do |input|
+    result = is_same_tree input[0], input[1]
+    puts result
   end
 end
 
