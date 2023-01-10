@@ -1,64 +1,49 @@
-class TreeNode {
-  constructor (val, left, right) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+/**
+ * @param {number} n
+ * @param {number[]} memo
+ * @returns {number}
+ */
+function solve (n, memo) {
+  if (n === 0) {
+    return 0
+  } else if (n === 1) {
+    return 1
   }
-}
 
-function newnode (val, left, right) {
-  return new TreeNode(val, left, right)
-}
+  if (memo[n] !== 0) {
+    return memo[n]
+  }
 
-function newleft (val, left) {
-  return newnode(val, left, null)
-}
+  if ((n % 2) === 0) {
+    memo[n] = solve(Math.trunc(n / 2), memo)
+  } else {
+    memo[n] = solve(Math.trunc(n / 2), memo) + 1
+  }
 
-function newright (val, right) {
-  return newnode(val, null, right)
-}
-
-function newval (val) {
-  return newnode(val, null, null)
+  return memo[n]
 }
 
 /**
- * @param {TreeNode | null} p
- * @param {TreeNode | null} q
- * @returns {boolean}
+ * @param {number} n
+ * @returns {number[]}
  */
-function isSameTree (p, q) {
-  if ((p == null) && (q == null)) {
-    return true
+function countBits (n) {
+  const result = new Array(n + 1).fill(0)
+
+  for (let i = 1; i <= n; i += 1) {
+    result[i] = solve(i, result)
   }
 
-  if ((p == null) || (q == null)) {
-    return false
-  }
-
-  return p.val === q.val
-    ? isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
-    : false
+  return result
 }
 
 async function main () {
   const inputs = [
-    [
-      newnode(1, newval(2), newval(3)),
-      newnode(1, newval(2), newval(3))
-    ],
-    [
-      newleft(1, newval(2)),
-      newright(1, newval(2))
-    ],
-    [
-      newnode(1, newval(2), newval(1)),
-      newnode(1, newval(1), newval(2))
-    ]
+    2, 5
   ]
 
-  for (const [p, q] of inputs) {
-    const result = isSameTree(p, q)
+  for (const n of inputs) {
+    const result = countBits(n)
     console.log(result)
   }
 }

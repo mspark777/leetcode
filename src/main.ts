@@ -1,62 +1,40 @@
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
-  return new TreeNode(val, left, right)
-}
-
-function newleft (val: number, left: TreeNode): TreeNode {
-  return newnode(val, left, null)
-}
-
-function newright (val: number, right: TreeNode): TreeNode {
-  return newnode(val, null, right)
-}
-
-function newval (val: number): TreeNode {
-  return newnode(val, null, null)
-}
-
-function isSameTree (p: TreeNode | null, q: TreeNode | null): boolean {
-  if ((p == null) && (q == null)) {
-    return true
+function solve (n: number, memo: number[]): number {
+  if (n === 0) {
+    return 0
+  } else if (n === 1) {
+    return 1
   }
 
-  if ((p == null) || (q == null)) {
-    return false
+  if (memo[n] !== 0) {
+    return memo[n]
   }
 
-  return p.val === q.val
-    ? isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
-    : false
+  if ((n % 2) === 0) {
+    memo[n] = solve(Math.trunc(n / 2), memo)
+  } else {
+    memo[n] = solve(Math.trunc(n / 2), memo) + 1
+  }
+
+  return memo[n]
+}
+
+function countBits (n: number): number[] {
+  const result = new Array<number>(n + 1).fill(0)
+
+  for (let i = 1; i <= n; i += 1) {
+    result[i] = solve(i, result)
+  }
+
+  return result
 }
 
 async function main (): Promise<void> {
-  const inputs: TreeNode[][] = [
-    [
-      newnode(1, newval(2), newval(3)),
-      newnode(1, newval(2), newval(3))
-    ],
-    [
-      newleft(1, newval(2)),
-      newright(1, newval(2))
-    ],
-    [
-      newnode(1, newval(2), newval(1)),
-      newnode(1, newval(1), newval(2))
-    ]
+  const inputs: number[] = [
+    2, 5
   ]
 
-  for (const [p, q] of inputs) {
-    const result = isSameTree(p, q)
+  for (const n of inputs) {
+    const result = countBits(n)
     console.log(result)
   }
 }

@@ -1,59 +1,40 @@
-class TreeNode
-  attr_accessor :val, :left, :right
+# @param n [Integer]
+# @param memo [Array<Integer>]
+# @return [Integer]
+def solve(n, memo)
+  return 0 if n == 0
+  return 1 if n == 1
+  return memo[n] if memo[n] != 0
 
-  def initialize(val = 0, left = nil, right = nil)
-    @val = val
-    @left = left
-    @right = right
+  memo[n] = if (n & 1) == 1
+              solve(n / 2, memo) + 1
+            else
+              solve(n / 2, memo)
+            end
+
+  memo[n]
+end
+
+# @param n [Integer]
+# @return [Array<Integer>]
+def count_bits(n)
+  result = Array.new(n + 1) { 0 }
+
+  for i in 1..n
+    result[i] = solve(i, result)
   end
-end
 
-def newnode(val, left, right)
-  TreeNode.new(val, left, right)
-end
-
-def newleft(val, left)
-  newnode(val, left, nil)
-end
-
-def newright(val, right)
-  newnode(val, nil, right)
-end
-
-def newval(val)
-  newnode(val, nil, nil)
-end
-
-# @param p [TreeNode]
-# @param q [TreeNode]
-# @return [Boolean]
-def is_same_tree(p, q)
-  return true if p.nil? && q.nil?
-  return false if p.nil? || q.nil?
-  return false if p.val != q.val
-
-  is_same_tree(p.left, q.left) && is_same_tree(p.right, q.right)
+  result
 end
 
 def main
   inputs = [
-    [
-      newnode(1, newval(2), newval(3)),
-      newnode(1, newval(2), newval(3))
-    ],
-    [
-      newleft(1, newval(2)),
-      newright(1, newval(2))
-    ],
-    [
-      newnode(1, newval(2), newval(1)),
-      newnode(1, newval(1), newval(2))
-    ]
+    2, 5
   ]
 
-  inputs.each do |input|
-    result = is_same_tree input[0], input[1]
-    puts result
+  inputs.each do |n|
+    result = count_bits n
+    puts result.join ', '
   end
 end
 

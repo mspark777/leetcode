@@ -4,62 +4,38 @@ import (
 	"fmt"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
-
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
-
-func newleft(val int, left *TreeNode) *TreeNode {
-	return newnode(val, left, nil)
-}
-
-func newright(val int, right *TreeNode) *TreeNode {
-	return newnode(val, nil, right)
-}
-
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
-
-func isSameTree(p *TreeNode, q *TreeNode) bool {
-	if (p == nil) && (q == nil) {
-		return true
+func solve(n int, memo []int) int {
+	if n <= 1 {
+		return n
+	} else if memo[n] != 0 {
+		return memo[n]
 	}
 
-	if (p == nil) || (q == nil) {
-		return false
+	memo[n] = solve(n/2, memo)
+	if (n & 1) == 1 {
+		memo[n] += 1
 	}
 
-	if p.Val != q.Val {
-		return false
+	return memo[n]
+}
+
+func countBits(n int) []int {
+	result := make([]int, n+1)
+
+	for i := 1; i <= n; i += 1 {
+		result[i] = solve(i, result)
 	}
 
-	return isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
+	return result
 }
 
 func main() {
-	inputs := [][]*TreeNode{
-		{
-			newnode(1, newval(2), newval(3)),
-			newnode(1, newval(2), newval(3)),
-		},
-		{
-			newleft(1, newval(2)),
-			newright(1, newval(2)),
-		},
-		{
-			newnode(1, newval(2), newval(1)),
-			newnode(1, newval(1), newval(2)),
-		},
+	inputs := []int{
+		2, 5,
 	}
 
-	for _, input := range inputs {
-		result := isSameTree(input[0], input[1])
+	for _, n := range inputs {
+		result := countBits(n)
 		fmt.Println(result)
 	}
 }

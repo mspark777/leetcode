@@ -1,58 +1,38 @@
 from __future__ import annotations
-from typing import Optional
-
-
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
-
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
-def newnode(val: int, left: TreeNode, right: TreeNode) -> TreeNode:
-    return TreeNode(val, left, right)
-
-
-def newleft(val: int, left: TreeNode) -> TreeNode:
-    return TreeNode(val, left, None)
-
-
-def newright(val: int, right: TreeNode) -> TreeNode:
-    return TreeNode(val, None, right)
-
-
-def newval(val: int) -> TreeNode:
-    return TreeNode(val, None, None)
+from typing import Optional, List
 
 
 class Solution:
-    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
-        if (p is None) and (q is None):
-            return True
+    def countBits(self, n: int) -> List[int]:
+        result = [0 for i in range(n + 1)]
+        
+        for i in range(1, n + 1):
+            result[i] = self.solve(i, result)
 
-        if (p is None) or (q is None):
-            return False
+        return result
 
-        if p.val != q.val:
-            return False
+    def solve(self, n: int, memo: list[int]) -> int:
+        if n == 0:
+            return 0
+        elif n == 1:
+            return 1
+        elif memo[n] != 0:
+            return memo[n]
 
-        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+        if (n & 1) == 1:
+            memo[n] = self.solve(n // 2, memo) + 1
+        else:
+            memo[n] = self.solve(n // 2, memo)
+
+        return memo[n]
 
 
 def main():
-    inputs: list[tuple[TreeNode, TreeNode]] = [
-        (newnode(1, newval(2), newval(3)), newnode(1, newval(2), newval(3))),
-        (newleft(1, newval(2)), newright(1, newval(2))),
-        (newnode(1, newval(2), newval(1)), newnode(1, newval(1), newval(2))),
-    ]
+    inputs: list[int] = [2, 5]
 
     solution = Solution()
-    for p, q in inputs:
-        result = solution.isSameTree(p, q)
+    for n in inputs:
+        result = solution.countBits(n)
         print(result)
 
 
