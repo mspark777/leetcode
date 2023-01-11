@@ -1,37 +1,88 @@
 struct Solution {}
 impl Solution {
-    pub fn count_bits(n: i32) -> Vec<i32> {
-        let n = n as usize;
-        let mut result = vec![0; n + 1];
+    pub fn min_time(n: i32, edges: Vec<Vec<i32>>, has_apple: Vec<bool>) -> i32 {
+        let mut adj_mat = vec![Vec::<usize>::new(); n as usize];
+        for edge in edges.iter() {
+            let l = edge[0] as usize;
+            let r = edge[1] as usize;
 
-        for i in 1..=n {
-            result[i] = Self::solve(i, &mut result);
+            adj_mat[l].push(r);
+            adj_mat[r].push(l);
         }
 
-        return result;
+        return Self::dfs(0, edges.len() + 1, &adj_mat, &has_apple);
     }
 
-    fn solve(n: usize, memo: &mut Vec<i32>) -> i32 {
-        if n <= 1 {
-            return n as i32;
-        } else if memo[n] != 0 {
-            return memo[n];
+    fn dfs(node: usize, prev: usize, adj_mat: &Vec<Vec<usize>>, has_apple: &Vec<bool>) -> i32 {
+        let mut total_time = 0;
+        for &child in adj_mat[node].iter() {
+            if child == prev {
+                continue;
+            }
+
+            let child_time = Self::dfs(child, node, adj_mat, has_apple);
+            if (child_time > 0) || has_apple[child] {
+                total_time += child_time + 2;
+            }
         }
 
-        memo[n] = Self::solve(n / 2, memo);
-        if (n & 1) == 1 {
-            memo[n] += 1;
-        }
-
-        return memo[n];
+        return total_time;
     }
 }
 
-fn main() {
-    let inputs = [2, 5];
+struct Input {
+    n: i32,
+    edges: Vec<Vec<i32>>,
+    has_apple: Vec<bool>,
+}
 
-    for n in inputs {
-        let result = Solution::count_bits(n);
-        println!("{result:?}");
+fn main() {
+    let inputs = [
+        Input {
+            n: 7,
+            edges: vec![
+                vec![0, 1],
+                vec![0, 2],
+                vec![1, 4],
+                vec![1, 5],
+                vec![2, 3],
+                vec![2, 6],
+            ],
+            has_apple: vec![false, false, true, false, true, true, false],
+        },
+        Input {
+            n: 7,
+            edges: vec![
+                vec![0, 1],
+                vec![0, 2],
+                vec![1, 4],
+                vec![1, 5],
+                vec![2, 3],
+                vec![2, 6],
+            ],
+            has_apple: vec![false, false, true, false, false, true, false],
+        },
+        Input {
+            n: 7,
+            edges: vec![
+                vec![0, 1],
+                vec![0, 2],
+                vec![1, 4],
+                vec![1, 5],
+                vec![2, 3],
+                vec![2, 6],
+            ],
+            has_apple: vec![false, false, false, false, false, false, false],
+        },
+    ];
+
+    for Input {
+        n,
+        edges,
+        has_apple,
+    } in inputs
+    {
+        let result = Solution::min_time(n, edges, has_apple);
+        println!("{result}");
     }
 }

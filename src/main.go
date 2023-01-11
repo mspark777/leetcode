@@ -4,38 +4,56 @@ import (
 	"fmt"
 )
 
-func solve(n int, memo []int) int {
-	if n <= 1 {
-		return n
-	} else if memo[n] != 0 {
-		return memo[n]
+func dfs(node, prev int, adjMat [][]int, hasApple []bool) int {
+	totalTime := 0
+	childTime := 0
+
+	for _, child := range adjMat[node] {
+		if child == prev {
+			continue
+		}
+
+		childTime = dfs(child, node, adjMat, hasApple)
+		if (childTime > 0) || hasApple[child] {
+			totalTime += childTime + 2
+		}
 	}
 
-	memo[n] = solve(n/2, memo)
-	if (n & 1) == 1 {
-		memo[n] += 1
-	}
-
-	return memo[n]
+	return totalTime
 }
 
-func countBits(n int) []int {
-	result := make([]int, n+1)
-
-	for i := 1; i <= n; i += 1 {
-		result[i] = solve(i, result)
+func minTime(n int, edges [][]int, hasApple []bool) int {
+	adjMat := make([][]int, n)
+	for i := 0; i < n; i += 1 {
+		adjMat[i] = []int{}
 	}
 
-	return result
+	for _, edge := range edges {
+		l := edge[0]
+		r := edge[1]
+
+		adjMat[l] = append(adjMat[l], r)
+		adjMat[r] = append(adjMat[r], l)
+	}
+
+	return dfs(0, -1, adjMat, hasApple)
+}
+
+type input struct {
+	n        int
+	edges    [][]int
+	hasApple []bool
 }
 
 func main() {
-	inputs := []int{
-		2, 5,
+	inputs := []input{
+		{n: 7, edges: [][]int{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, hasApple: []bool{false, false, true, false, true, true, false}},
+		{n: 7, edges: [][]int{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, hasApple: []bool{false, false, true, false, false, true, false}},
+		{n: 7, edges: [][]int{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, hasApple: []bool{false, false, false, false, false, false, false}},
 	}
 
-	for _, n := range inputs {
-		result := countBits(n)
+	for _, input := range inputs {
+		result := minTime(input.n, input.edges, input.hasApple)
 		fmt.Println(result)
 	}
 }

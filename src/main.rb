@@ -1,40 +1,52 @@
-# @param n [Integer]
-# @param memo [Array<Integer>]
+# @param node [Integer]
+# @param prev [Integer]
+# @param adj_mat [Array<Array<Integer>>]
+# @param has_apple [Array<Boolean>]
 # @return [Integer]
-def solve(n, memo)
-  return 0 if n == 0
-  return 1 if n == 1
-  return memo[n] if memo[n] != 0
+def dfs(node, prev, adj_mat, has_apple)
+  total_time = 0
+  child_time = 0
 
-  memo[n] = if (n & 1) == 1
-              solve(n / 2, memo) + 1
-            else
-              solve(n / 2, memo)
-            end
+  for child in adj_mat[node]
+    next if child == prev
 
-  memo[n]
+    child_time = dfs(child, node, adj_mat, has_apple)
+    total_time += child_time + 2 if (child_time > 0) or has_apple[child]
+  end
+
+  total_time
 end
 
 # @param n [Integer]
-# @return [Array<Integer>]
-def count_bits(n)
-  result = Array.new(n + 1) { 0 }
+# @param edges [Array<Array<Integer>>]
+# @param has_apple [Array<Boolean>]
+# @return [Integer]
+def min_time(n, edges, has_apple)
+  adj_mat = Array.new(n) { [] }
 
-  for i in 1..n
-    result[i] = solve(i, result)
+  for edge in edges
+    l = edge[0]
+    r = edge[1]
+    adj_mat[l].push(r)
+    adj_mat[r].push(l)
   end
 
-  result
+  dfs(0, -1, adj_mat, has_apple)
 end
 
 def main
   inputs = [
-    2, 5
+    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
+      hasApple: [false, false, true, false, true, true, false] },
+    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
+      hasApple: [false, false, true, false, false, true, false] },
+    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
+      hasApple: [false, false, false, false, false, false, false] }
   ]
 
-  inputs.each do |n|
-    result = count_bits n
-    puts result.join ', '
+  inputs.each do |input|
+    result = min_time input[:n], input[:edges], input[:hasApple]
+    puts result
   end
 end
 
