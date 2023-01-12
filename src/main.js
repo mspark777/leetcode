@@ -2,46 +2,65 @@
  * @param {number} node
  * @param {number} prevNode
  * @param {number[][]} adjMat
- * @param {boolean[]} hasApple
- * @returns {number}
+ * @param {string} labels
+ * @param {Map<number, number[]>} seens
+ * @param {number[]} result
+ * @returns {number[]}
  */
-function dfs (node, prevNode, adjMat, hasApple) {
-  let totalTime = 0
-  let childTime = 0
+function dfs (node, prevNode, adjMat, labels, seens, result) {
+  if (seens.has(node)) {
+    return seens.get(node)
+  }
+
+  const LEN = 26
+  const ACODE = 'a'.charCodeAt(0)
+  const counts = new Array(LEN).fill(0)
+  counts[labels.charCodeAt(node) - ACODE] = 1
 
   for (const child of adjMat[node]) {
     if (child === prevNode) {
       continue
     }
 
-    childTime = dfs(child, node, adjMat, hasApple)
-    if ((childTime > 0) || hasApple[child]) {
-      totalTime += childTime + 2
+    const childCounts = dfs(child, node, adjMat, labels, seens, result)
+    for (let i = 0; i < LEN; i += 1) {
+      counts[i] += childCounts[i]
     }
   }
 
-  return totalTime
+  result[node] = counts[labels.charCodeAt(node) - ACODE]
+  seens.set(node, counts)
+  return counts
 }
 
-function minTime (n, edges, hasApple) {
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {string} labels
+ * @returns {number[]}
+ */
+function countSubTrees (n, edges, labels) {
   const adjMat = Array.from(new Array(n), () => [])
   for (const [l, r] of edges) {
     adjMat[l].push(r)
     adjMat[r].push(l)
   }
 
-  return dfs(0, -1, adjMat, hasApple)
+  const result = new Array(n).fill(0)
+  dfs(0, -1, adjMat, labels, new Map(), result)
+
+  return result
 }
 
 async function main () {
   const inputs = [
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]], hasApple: [false, false, true, false, true, true, false] },
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]], hasApple: [false, false, true, false, false, true, false] },
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]], hasApple: [false, false, false, false, false, false, false] }
+    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]], labels: 'abaedcd' },
+    { n: 4, edges: [[0, 1], [1, 2], [0, 3]], labels: 'bbbb' },
+    { n: 5, edges: [[0, 1], [0, 2], [1, 3], [0, 4]], labels: 'aabab' }
   ]
 
-  for (const { n, edges, hasApple } of inputs) {
-    const result = minTime(n, edges, hasApple)
+  for (const { n, edges, labels } of inputs) {
+    const result = countSubTrees(n, edges, labels)
     console.log(result)
   }
 }
