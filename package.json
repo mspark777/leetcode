@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "16.13.2"
+    "node": "16.13.2",
+    "npm": "use pnpm",
+    "pnpm": "7.24.3"
   },
   "scripts": {
     "start:ts": "ts-node --files src/main.ts",
