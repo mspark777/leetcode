@@ -1,66 +1,66 @@
-/**
- * @param {number} node
- * @param {number} prevNode
- * @param {number[][]} adjMat
- * @param {string} labels
- * @param {Map<number, number[]>} seens
- * @param {number[]} result
- * @returns {number[]}
- */
-function dfs (node, prevNode, adjMat, labels, seens, result) {
-  if (seens.has(node)) {
-    return seens.get(node)
+class LongestPath {
+  constructor () {
+    this.longestPath = 1
   }
 
-  const LEN = 26
-  const ACODE = 'a'.charCodeAt(0)
-  const counts = new Array(LEN).fill(0)
-  counts[labels.charCodeAt(node) - ACODE] = 1
+  /**
+   * @param {number} currentNode
+   * @param {number[][]} children
+   * @param {string} s
+   * @returns {number}
+   */
+  dfs (currentNode, children, s) {
+    let longestChain = 0
+    let secondLongestChain = 0
+    for (const child of children[currentNode]) {
+      const longestChainStartingFromChild = this.dfs(child, children, s)
+      if (s.charAt(currentNode) === s.charAt(child)) {
+        continue
+      }
 
-  for (const child of adjMat[node]) {
-    if (child === prevNode) {
-      continue
+      if (longestChainStartingFromChild > longestChain) {
+        secondLongestChain = longestChain
+        longestChain = longestChainStartingFromChild
+      } else if (longestChainStartingFromChild > secondLongestChain) {
+        secondLongestChain = longestChainStartingFromChild
+      }
     }
-
-    const childCounts = dfs(child, node, adjMat, labels, seens, result)
-    for (let i = 0; i < LEN; i += 1) {
-      counts[i] += childCounts[i]
-    }
+    this.longestPath = Math.max(this.longestPath, longestChain + secondLongestChain + 1)
+    return longestChain + 1
   }
 
-  result[node] = counts[labels.charCodeAt(node) - ACODE]
-  seens.set(node, counts)
-  return counts
+  /**
+   * @returns {number}
+   */
+  getResult () {
+    return this.longestPath
+  }
 }
 
 /**
- * @param {number} n
- * @param {number[][]} edges
- * @param {string} labels
- * @returns {number[]}
+ * @param {number[]} parent
+ * @param {string} s
+ * @returns {number}
  */
-function countSubTrees (n, edges, labels) {
-  const adjMat = Array.from(new Array(n), () => [])
-  for (const [l, r] of edges) {
-    adjMat[l].push(r)
-    adjMat[r].push(l)
+function longestPath (parent, s) {
+  const children = Array.from(new Array(parent.length), () => [])
+  for (let i = 1; i < parent.length; i += 1) {
+    children[parent[i]].push(i)
   }
 
-  const result = new Array(n).fill(0)
-  dfs(0, -1, adjMat, labels, new Map(), result)
-
-  return result
+  const solution = new LongestPath()
+  solution.dfs(0, children, s)
+  return solution.getResult()
 }
 
 async function main () {
   const inputs = [
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]], labels: 'abaedcd' },
-    { n: 4, edges: [[0, 1], [1, 2], [0, 3]], labels: 'bbbb' },
-    { n: 5, edges: [[0, 1], [0, 2], [1, 3], [0, 4]], labels: 'aabab' }
+    { parent: [-1, 0, 0, 1, 1, 2], s: 'abacbe' },
+    { parent: [-1, 0, 0, 0], s: 'aabc' }
   ]
 
-  for (const { n, edges, labels } of inputs) {
-    const result = countSubTrees(n, edges, labels)
+  for (const { parent, s } of inputs) {
+    const result = longestPath(parent, s)
     console.log(result)
   }
 }

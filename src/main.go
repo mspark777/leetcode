@@ -4,56 +4,64 @@ import (
 	"fmt"
 )
 
-func dfs(node, prev int, adjMat [][]int, hasApple []bool) int {
-	totalTime := 0
-	childTime := 0
+type solution struct {
+	result int
+}
 
-	for _, child := range adjMat[node] {
-		if child == prev {
+func (solution *solution) dfs(current int, children [][]int, s string) int {
+	longestChain := 0
+	secondLongestChain := 0
+
+	for _, child := range children[current] {
+		childLongestChain := solution.dfs(child, children, s)
+		if s[current] == s[child] {
 			continue
 		}
 
-		childTime = dfs(child, node, adjMat, hasApple)
-		if (childTime > 0) || hasApple[child] {
-			totalTime += childTime + 2
+		if childLongestChain > longestChain {
+			secondLongestChain = longestChain
+			longestChain = childLongestChain
+		} else if childLongestChain > secondLongestChain {
+			secondLongestChain = childLongestChain
 		}
 	}
 
-	return totalTime
+	result := longestChain + secondLongestChain + 1
+	if result > solution.result {
+		solution.result = result
+	}
+
+	return longestChain + 1
 }
 
-func minTime(n int, edges [][]int, hasApple []bool) int {
-	adjMat := make([][]int, n)
-	for i := 0; i < n; i += 1 {
-		adjMat[i] = []int{}
+func longestPath(parent []int, s string) int {
+	children := make([][]int, len(parent))
+	for i := 0; i < len(parent); i += 1 {
+		children[i] = []int{}
 	}
 
-	for _, edge := range edges {
-		l := edge[0]
-		r := edge[1]
-
-		adjMat[l] = append(adjMat[l], r)
-		adjMat[r] = append(adjMat[r], l)
+	for i := 1; i < len(parent); i += 1 {
+		children[parent[i]] = append(children[parent[i]], i)
 	}
 
-	return dfs(0, -1, adjMat, hasApple)
+	solution := solution{result: 1}
+	solution.dfs(0, children, s)
+	return solution.result
 }
 
 type input struct {
-	n        int
-	edges    [][]int
-	hasApple []bool
+	parent []int
+	s      string
 }
 
 func main() {
 	inputs := []input{
-		{n: 7, edges: [][]int{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, hasApple: []bool{false, false, true, false, true, true, false}},
-		{n: 7, edges: [][]int{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, hasApple: []bool{false, false, true, false, false, true, false}},
-		{n: 7, edges: [][]int{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, hasApple: []bool{false, false, false, false, false, false, false}},
+		{parent: []int{-1, 0, 0, 1, 1, 2}, s: "abacbe"},
+		{parent: []int{-1, 0, 0, 0}, s: "aabc"},
 	}
 
 	for _, input := range inputs {
-		result := minTime(input.n, input.edges, input.hasApple)
+		result := longestPath(input.parent, input.s)
 		fmt.Println(result)
 	}
 }

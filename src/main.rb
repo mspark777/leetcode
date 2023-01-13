@@ -1,51 +1,59 @@
-# @param node [Integer]
-# @param prev [Integer]
-# @param adj_mat [Array<Array<Integer>>]
-# @param has_apple [Array<Boolean>]
-# @return [Integer]
-def dfs(node, prev, adj_mat, has_apple)
-  total_time = 0
-  child_time = 0
-
-  for child in adj_mat[node]
-    next if child == prev
-
-    child_time = dfs(child, node, adj_mat, has_apple)
-    total_time += child_time + 2 if (child_time > 0) or has_apple[child]
+class LongestPath
+  def initialize
+    @result = 0
   end
 
-  total_time
+  # @param current [Integer]
+  # @param children [Array<Array<Integer>>]
+  # @param s [String]
+  # @return [Integer]
+  def dfs(current, children, s)
+    longest_chain = 0
+    second_longest_chain = 0
+
+    children[current].each do |child|
+      child_longest_chain = dfs(child, children, s)
+      next if s[current] == s[child]
+
+      if child_longest_chain > longest_chain
+        second_longest_chain = longest_chain
+        longest_chain = child_longest_chain
+      elsif child_longest_chain > second_longest_chain
+        second_longest_chain = child_longest_chain
+      end
+    end
+
+    @result = [@result, longest_chain + second_longest_chain + 1].max
+    longest_chain + 1
+  end
+
+  def get_result
+    @result
+  end
 end
 
-# @param n [Integer]
-# @param edges [Array<Array<Integer>>]
-# @param has_apple [Array<Boolean>]
+# @param parent [Array<Integer>]
+# @param s [String]
 # @return [Integer]
-def min_time(n, edges, has_apple)
-  adj_mat = Array.new(n) { [] }
-
-  for edge in edges
-    l = edge[0]
-    r = edge[1]
-    adj_mat[l].push(r)
-    adj_mat[r].push(l)
+def longest_path(parent, s)
+  children = Array.new(parent.length) { [] }
+  for i in 1..(parent.length - 1)
+    children[parent[i]].push(i)
   end
 
-  dfs(0, -1, adj_mat, has_apple)
+  solution = LongestPath.new
+  solution.dfs(0, children, s)
+  solution.get_result
 end
 
 def main
   inputs = [
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
-      hasApple: [false, false, true, false, true, true, false] },
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
-      hasApple: [false, false, true, false, false, true, false] },
-    { n: 7, edges: [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
-      hasApple: [false, false, false, false, false, false, false] }
+    { parent: [-1, 0, 0, 1, 1, 2], s: 'abacbe' },
+    { parent: [-1, 0, 0, 0], s: 'aabc' }
   ]
 
   inputs.each do |input|
-    result = min_time input[:n], input[:edges], input[:hasApple]
+    result = longest_path input[:parent], input[:s]
     puts result
   end
 end

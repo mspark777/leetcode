@@ -3,64 +3,55 @@ from typing import List
 
 
 class Solution:
-    def minTime(self, n: int, edges: List[List[int]], hasApple: List[bool]) -> int:
-        adj_mat = [[] for i in range(n)]
-        for [l, r] in edges:
-            adj_mat[l].append(r)
-            adj_mat[r].append(l)
+    result: int
 
-        return self.dfs(0, -1, adj_mat, hasApple)
+    def __init__(self):
+        self.result = 1
 
-    def dfs(
-        self, node: int, prev: int, adj_mat: list[list[int]], has_apple: list[bool]
-    ) -> int:
-        total_time = 0
-        child_time = 0
+    def longestPath(self, parent: List[int], s: str) -> int:
+        children = [[] for i in range(len(parent))]
+        for i in range(1, len(parent)):
+            children[parent[i]].append(i)
 
-        for child in adj_mat[node]:
-            if child == prev:
+        self.dfs(0, children, s)
+        return self.result
+
+    def dfs(self, current: int, children: list[list[int]], s: str) -> int:
+        longest_chain = 0
+        second_longest_chain = 0
+        for child in children[current]:
+            longest_chain_from_child = self.dfs(child, children, s)
+            if s[current] == s[child]:
                 continue
 
-            child_time = self.dfs(child, node, adj_mat, has_apple)
-            if (child_time > 0) or has_apple[child]:
-                total_time += child_time + 2
+            if longest_chain_from_child > longest_chain:
+                second_longest_chain = longest_chain
+                longest_chain = longest_chain_from_child
+            elif longest_chain_from_child > second_longest_chain:
+                second_longest_chain = longest_chain_from_child
 
-        return total_time
+        self.result = max(self.result, longest_chain + second_longest_chain + 1)
+        return longest_chain + 1
 
 
 class Input:
-    n: int
-    edges: list[list[int]]
-    has_apple: list[bool]
+    parent: list[int]
+    s: str
 
-    def __init__(self, n: int, edges: list[list[int]], has_apple: list[bool]):
-        self.n = n
-        self.edges = edges
-        self.has_apple = has_apple
+    def __init__(self, parent: list[int], s: str):
+        self.parent = parent
+        self.s = s
 
 
 def main():
     inputs: list[Input] = [
-        Input(
-            7,
-            [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
-            [False, False, True, False, True, True, False],
-        ),
-        Input(
-            7,
-            [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
-            [False, False, True, False, False, True, False],
-        ),
-        Input(
-            7,
-            [[0, 1], [0, 2], [1, 4], [1, 5], [2, 3], [2, 6]],
-            [False, False, False, False, False, False, False],
-        ),
+        Input([-1, 0, 0, 1, 1, 2], "abacbe"),
+        Input([-1, 0, 0, 0], "aabc"),
     ]
 
-    solution = Solution()
     for input in inputs:
-        result = solution.minTime(input.n, input.edges, input.has_apple)
+        solution = Solution()
+        result = solution.longestPath(input.parent, input.s)
         print(result)
 
 
