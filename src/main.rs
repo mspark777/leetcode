@@ -2,22 +2,21 @@ use std::collections::HashMap;
 
 struct Solution {}
 impl Solution {
-    pub fn intersection(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
-        let mut filter1 = HashMap::<i32, bool>::new();
+    pub fn intersect(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+        let mut counts = HashMap::<i32, i32>::new();
         for &num in nums1.iter() {
-            filter1.insert(num, true);
+            *counts.entry(num).or_insert(0) += 1;
         }
 
         let mut result = Vec::<i32>::new();
         for num in nums2.iter() {
-            if let Some(ok) = filter1.get_mut(num) {
-                if *ok {
-                    *ok = false;
+            if let Some(count) = counts.get_mut(num) {
+                if *count > 0 {
+                    *count -= 1;
                     result.push(*num);
                 }
             }
         }
-
         return result;
     }
 }
@@ -29,7 +28,7 @@ fn main() {
     ];
 
     for input in inputs {
-        let result = Solution::intersection(input[0].clone(), input[1].clone());
+        let result = Solution::intersect(input[0].clone(), input[1].clone());
         println!("{result:?}");
     }
 }

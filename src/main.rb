@@ -1,10 +1,24 @@
-require 'set'
-
 # @param nums1 [Array<Integer>]
 # @param nums2 [Array<Integer>]
 # @return [Array<Integer>]
-def intersection(nums1, nums2)
-  nums1 & nums2
+def intersect(nums1, nums2)
+  counts = Hash.new(0)
+  nums1.each do |num|
+    counts[num] += 1
+  end
+
+  result = []
+  nums2.each do |num|
+    next unless counts.include? num
+
+    count = counts[num]
+    if count > 0
+      result.push(num)
+      counts[num] = count - 1
+    end
+  end
+
+  result
 end
 
 def main
@@ -14,7 +28,7 @@ def main
   ]
 
   inputs.each do |input|
-    result = intersection input[0], input[1]
+    result = intersect input[0], input[1]
     puts result
   end
 end

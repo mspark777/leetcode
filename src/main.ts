@@ -1,10 +1,15 @@
-function intersection (nums1: number[], nums2: number[]): number[] {
-  const filter1 = new Set(nums1)
-  const filter2 = new Set(nums2)
-  const result: number[] = []
+function intersect (nums1: number[], nums2: number[]): number[] {
+  const counts = new Map<number, number>()
+  for (const num of nums1) {
+    const count = counts.get(num) ?? 0
+    counts.set(num, count + 1)
+  }
 
-  for (const num of filter1) {
-    if (filter2.has(num)) {
+  const result: number[] = []
+  for (const num of nums2) {
+    const count = counts.get(num) ?? 0
+    if (count > 0) {
+      counts.set(num, count - 1)
       result.push(num)
     }
   }
@@ -19,7 +24,7 @@ async function main (): Promise<void> {
   ]
 
   for (const [nums1, nums2] of inputs) {
-    const result = intersection(nums1, nums2)
+    const result = intersect(nums1, nums2)
     console.log(result)
   }
 }

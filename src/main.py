@@ -1,13 +1,21 @@
 from __future__ import annotations
-from typing import List
+from typing import Counter, List
+from collections import Counter
 
 
 class Solution:
-    def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
-        filter1 = set(nums1)
-        filter2 = set(nums2)
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        counts = Counter(nums1)
 
-        return [i for i in filter1 if i in filter2]
+        result: list[int] = []
+        for num in nums2:
+            if num in counts:
+                count = counts[num]
+                if count > 0:
+                    result.append(num)
+                    counts[num] = count - 1
+
+        return result
 
 
 def main():
@@ -18,7 +26,7 @@ def main():
 
     for [nums1, nums2] in inputs:
         solution = Solution()
-        result = solution.intersection(nums1, nums2)
+        result = solution.intersect(nums1, nums2)
         print(result)
 
 

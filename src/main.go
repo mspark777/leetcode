@@ -4,22 +4,19 @@ import (
 	"fmt"
 )
 
-func intersection(nums1 []int, nums2 []int) []int {
-	filter1 := map[int]bool{}
-	filter2 := map[int]bool{}
-
+func intersect(nums1 []int, nums2 []int) []int {
+	counts := map[int]int{}
 	for _, num := range nums1 {
-		filter1[num] = true
-	}
-
-	for _, num := range nums2 {
-		filter2[num] = true
+		counts[num] += 1
 	}
 
 	result := []int{}
-	for num := range filter1 {
-		if _, ok := filter2[num]; ok {
+
+	for _, num := range nums2 {
+		count, ok := counts[num]
+		if ok && (count > 0) {
 			result = append(result, num)
+			counts[num] = count - 1
 		}
 	}
 
@@ -33,7 +30,7 @@ func main() {
 	}
 
 	for _, input := range inputs {
-		result := intersection(input[0], input[1])
+		result := intersect(input[0], input[1])
 		fmt.Println(result)
 	}
 }

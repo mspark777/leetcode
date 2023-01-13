@@ -1,11 +1,19 @@
 defmodule Solution do
-  @spec intersection(nums1 :: [integer], nums2 :: [integer]) :: [integer]
-  def intersection(nums1, nums2) do
-    MapSet.intersection(
-      MapSet.new(nums1),
-      MapSet.new(nums2)
-    )
-    |> MapSet.to_list()
+  @spec intersect(nums1 :: [integer], nums2 :: [integer]) :: [integer]
+  def intersect(nums1, nums2) do
+    loop(nums1, Enum.frequencies(nums2), [])
+  end
+
+  def loop([], _, result), do: result
+
+  def loop([num | nums], counts, result) do
+    count = Map.get(counts, num, 0)
+
+    if count > 0 do
+      loop(nums, Map.put(counts, num, count - 1), [num | result])
+    else
+      loop(nums, counts, result)
+    end
   end
 end
 
@@ -15,7 +23,7 @@ defmodule Main do
   """
 
   def main([[nums1, nums2] | remains]) do
-    result = Solution.intersection(nums1, nums2)
+    result = Solution.intersect(nums1, nums2)
 
     IO.puts(result |> Enum.join(", "))
     main(remains)
