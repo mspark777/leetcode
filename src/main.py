@@ -3,55 +3,22 @@ from typing import List
 
 
 class Solution:
-    result: int
+    def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        filter1 = set(nums1)
+        filter2 = set(nums2)
 
-    def __init__(self):
-        self.result = 1
-
-    def longestPath(self, parent: List[int], s: str) -> int:
-        children = [[] for i in range(len(parent))]
-        for i in range(1, len(parent)):
-            children[parent[i]].append(i)
-
-        self.dfs(0, children, s)
-        return self.result
-
-    def dfs(self, current: int, children: list[list[int]], s: str) -> int:
-        longest_chain = 0
-        second_longest_chain = 0
-        for child in children[current]:
-            longest_chain_from_child = self.dfs(child, children, s)
-            if s[current] == s[child]:
-                continue
-
-            if longest_chain_from_child > longest_chain:
-                second_longest_chain = longest_chain
-                longest_chain = longest_chain_from_child
-            elif longest_chain_from_child > second_longest_chain:
-                second_longest_chain = longest_chain_from_child
-
-        self.result = max(self.result, longest_chain + second_longest_chain + 1)
-        return longest_chain + 1
-
-
-class Input:
-    parent: list[int]
-    s: str
-
-    def __init__(self, parent: list[int], s: str):
-        self.parent = parent
-        self.s = s
+        return [i for i in filter1 if i in filter2]
 
 
 def main():
-    inputs: list[Input] = [
-        Input([-1, 0, 0, 1, 1, 2], "abacbe"),
-        Input([-1, 0, 0, 0], "aabc"),
+    inputs: list[list[list[int]]] = [
+        [[1, 2, 2, 1], [2, 2]],
+        [[4, 9, 5], [9, 4, 9, 8, 4]],
     ]
 
-    for input in inputs:
+    for [nums1, nums2] in inputs:
         solution = Solution()
-        result = solution.longestPath(input.parent, input.s)
+        result = solution.intersection(nums1, nums2)
         print(result)
 
 

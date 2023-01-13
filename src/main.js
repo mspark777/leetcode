@@ -1,66 +1,30 @@
-class LongestPath {
-  constructor () {
-    this.longestPath = 1
-  }
-
-  /**
-   * @param {number} currentNode
-   * @param {number[][]} children
-   * @param {string} s
-   * @returns {number}
-   */
-  dfs (currentNode, children, s) {
-    let longestChain = 0
-    let secondLongestChain = 0
-    for (const child of children[currentNode]) {
-      const longestChainStartingFromChild = this.dfs(child, children, s)
-      if (s.charAt(currentNode) === s.charAt(child)) {
-        continue
-      }
-
-      if (longestChainStartingFromChild > longestChain) {
-        secondLongestChain = longestChain
-        longestChain = longestChainStartingFromChild
-      } else if (longestChainStartingFromChild > secondLongestChain) {
-        secondLongestChain = longestChainStartingFromChild
-      }
-    }
-    this.longestPath = Math.max(this.longestPath, longestChain + secondLongestChain + 1)
-    return longestChain + 1
-  }
-
-  /**
-   * @returns {number}
-   */
-  getResult () {
-    return this.longestPath
-  }
-}
-
 /**
- * @param {number[]} parent
- * @param {string} s
- * @returns {number}
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @returns {number[]}
  */
-function longestPath (parent, s) {
-  const children = Array.from(new Array(parent.length), () => [])
-  for (let i = 1; i < parent.length; i += 1) {
-    children[parent[i]].push(i)
+function intersection (nums1, nums2) {
+  const filter1 = new Set(nums1)
+  const filter2 = new Set(nums2)
+  const result = []
+
+  for (const num of filter1) {
+    if (filter2.has(num)) {
+      result.push(num)
+    }
   }
 
-  const solution = new LongestPath()
-  solution.dfs(0, children, s)
-  return solution.getResult()
+  return result
 }
 
 async function main () {
   const inputs = [
-    { parent: [-1, 0, 0, 1, 1, 2], s: 'abacbe' },
-    { parent: [-1, 0, 0, 0], s: 'aabc' }
+    [[1, 2, 2, 1], [2, 2]],
+    [[4, 9, 5], [9, 4, 9, 8, 4]]
   ]
 
-  for (const { parent, s } of inputs) {
-    const result = longestPath(parent, s)
+  for (const [nums1, nums2] of inputs) {
+    const result = intersection(nums1, nums2)
     console.log(result)
   }
 }

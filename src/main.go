@@ -4,64 +4,36 @@ import (
 	"fmt"
 )
 
-type solution struct {
-	result int
-}
+func intersection(nums1 []int, nums2 []int) []int {
+	filter1 := map[int]bool{}
+	filter2 := map[int]bool{}
 
-func (solution *solution) dfs(current int, children [][]int, s string) int {
-	longestChain := 0
-	secondLongestChain := 0
+	for _, num := range nums1 {
+		filter1[num] = true
+	}
 
-	for _, child := range children[current] {
-		childLongestChain := solution.dfs(child, children, s)
-		if s[current] == s[child] {
-			continue
-		}
+	for _, num := range nums2 {
+		filter2[num] = true
+	}
 
-		if childLongestChain > longestChain {
-			secondLongestChain = longestChain
-			longestChain = childLongestChain
-		} else if childLongestChain > secondLongestChain {
-			secondLongestChain = childLongestChain
+	result := []int{}
+	for num := range filter1 {
+		if _, ok := filter2[num]; ok {
+			result = append(result, num)
 		}
 	}
 
-	result := longestChain + secondLongestChain + 1
-	if result > solution.result {
-		solution.result = result
-	}
-
-	return longestChain + 1
-}
-
-func longestPath(parent []int, s string) int {
-	children := make([][]int, len(parent))
-	for i := 0; i < len(parent); i += 1 {
-		children[i] = []int{}
-	}
-
-	for i := 1; i < len(parent); i += 1 {
-		children[parent[i]] = append(children[parent[i]], i)
-	}
-
-	solution := solution{result: 1}
-	solution.dfs(0, children, s)
-	return solution.result
-}
-
-type input struct {
-	parent []int
-	s      string
+	return result
 }
 
 func main() {
-	inputs := []input{
-		{parent: []int{-1, 0, 0, 1, 1, 2}, s: "abacbe"},
-		{parent: []int{-1, 0, 0, 0}, s: "aabc"},
+	inputs := [][][]int{
+		{{1, 2, 2, 1}, {2, 2}},
+		{{4, 9, 5}, {9, 4, 9, 8, 4}},
 	}
 
 	for _, input := range inputs {
-		result := longestPath(input.parent, input.s)
+		result := intersection(input[0], input[1])
 		fmt.Println(result)
 	}
 }
