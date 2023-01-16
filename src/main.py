@@ -1,30 +1,24 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def isPerfectSquare(self, num: int) -> bool:
-        left = 1
-        right = num // 2
-        while left <= right:
-            mid = (left + right) // 2
-            square = mid * mid
-            if num < square:
-                right = mid - 1
-            elif num > square:
-                left = mid + 1
-            else:
-                return True
+    def findTheDifference(self, s: str, t: str) -> str:
+        sum = 0
 
-        return num == 1
+        for c in t:
+            sum ^= ord(c)
+        for c in s:
+            sum ^= ord(c)
+
+        return chr(sum)
 
 
 def main():
-    inputs: list[int] = [16, 14, 1]
+    inputs: list[list[str]] = [["abcd", "abcde"], ["", "y"]]
 
-    for num in inputs:
+    for [s, t] in inputs:
         solution = Solution()
-        result = solution.isPerfectSquare(num)
+        result = solution.findTheDifference(s, t)
         print(result)
 
 

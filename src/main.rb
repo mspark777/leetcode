@@ -1,30 +1,27 @@
-# @param num [Integer]
-# @return [Boolean]
-def is_perfect_square(num)
-  left = 1
-  right = num / 2
-  while left <= right
-    mid = (left + right) / 2
-    square = mid * mid
-    if num < square
-      right = mid - 1
-    elsif num > square
-      left = mid + 1
-    else
-      return true
-    end
+# @param s [String]
+# @param t [String]
+# @return [Character]
+def find_the_difference(s, t)
+  sum = 0
+  s.each_codepoint do |p|
+    sum ^= p
   end
 
-  num == 1
+  t.each_codepoint do |p|
+    sum ^= p
+  end
+
+  sum.chr
 end
 
 def main
   inputs = [
-    16, 14, 1
+    ['abcd', 'abcde'],
+    ['', 'y']
   ]
 
-  inputs.each do |num|
-    result = is_perfect_square num
+  inputs.each do |input|
+    result = find_the_difference input[0], input[1]
     puts result
   end
 end

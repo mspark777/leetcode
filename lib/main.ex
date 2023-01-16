@@ -1,22 +1,19 @@
 defmodule Solution do
-  @spec is_perfect_square(num :: integer) :: boolean
-  def is_perfect_square(num), do: loop(1, div(num, 2), num)
+  use Bitwise
 
-  @spec loop(left :: integer, right :: integer, num :: integer) :: boolean
-  defp loop(left, right, num)
-
-  defp loop(left, right, num) when left <= right do
-    mid = div(left + right, 2)
-    square = mid * mid
-
-    cond do
-      num < square -> loop(left, mid - 1, num)
-      num > square -> loop(mid + 1, right, num)
-      true -> true
-    end
+  @spec find_the_difference(s :: String.t(), t :: String.t()) :: char
+  def find_the_difference(s, t) do
+    t
+    |> String.to_charlist()
+    |> Enum.reduce(sreduce(s), fn acc, cur -> Bitwise.bxor(acc, cur) end)
   end
 
-  defp loop(_, _, num), do: num == 1
+  @spec sreduce(s :: String.t()) :: char
+  defp sreduce(s) do
+    s
+    |> String.to_charlist()
+    |> Enum.reduce(0, fn acc, cur -> Bitwise.bxor(acc, cur) end)
+  end
 end
 
 defmodule Main do
@@ -24,10 +21,10 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([num | remains]) do
-    result = Solution.is_perfect_square(num)
+  def main([[s, t] | remains]) do
+    result = Solution.find_the_difference(s, t)
 
-    IO.puts(result)
+    IO.puts([result] |> to_string())
     main(remains)
   end
 
@@ -36,9 +33,8 @@ defmodule Main do
 
   def main do
     main([
-      16,
-      14,
-      1
+      ["abcd", "abcde"],
+      ["", "y"]
     ])
   end
 end

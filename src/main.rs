@@ -1,30 +1,25 @@
 struct Solution {}
 impl Solution {
-    pub fn is_perfect_square(num: i32) -> bool {
-        let num = num as u64;
-        let mut left = 1u64;
-        let mut right = num / 2;
-        while left <= right {
-            let mid = (left + right) / 2;
-            let square = mid * mid;
-            if num < square {
-                right = mid - 1;
-            } else if num > square {
-                left = mid + 1;
-            } else {
-                return true;
-            }
+    pub fn find_the_difference(s: String, t: String) -> char {
+        let mut sum = 0u8;
+
+        for &i in s.as_bytes() {
+            sum ^= i;
         }
 
-        return num == 1;
+        for &i in t.as_bytes() {
+            sum ^= i;
+        }
+
+        return sum as char;
     }
 }
 
 fn main() {
-    let inputs = [16, 14, 1, 808201];
+    let inputs = [["abcd", "abcde"], ["", "y"]];
 
-    for num in inputs {
-        let result = Solution::is_perfect_square(num);
+    for input in inputs {
+        let result = Solution::find_the_difference(input[0].to_string(), input[1].to_string());
         println!("{result}");
     }
 }

@@ -1,28 +1,25 @@
-function isPerfectSquare (num: number): boolean {
-  let left = 1
-  let right = Math.trunc(num / 2)
-  while (left <= right) {
-    const mid = Math.trunc((left + right) / 2)
-    const square = mid * mid
-    if (num < square) {
-      right = mid - 1
-    } else if (num > square) {
-      left = mid + 1
-    } else {
-      return true
-    }
+function findTheDifference (s: string, t: string): string {
+  let sum = 0
+  for (let i = 0; i < t.length; i += 1) {
+    sum += t.charCodeAt(i)
   }
 
-  return num === 1
+  for (let i = 0; i < s.length; i += 1) {
+    sum += t.charCodeAt(i)
+    sum -= s.charCodeAt(i)
+  }
+
+  return String.fromCharCode(sum)
 }
 
 async function main (): Promise<void> {
-  const inputs: number[] = [
-    16, 14, 1
+  const inputs: string[][] = [
+    ['abcd', 'abcde'],
+    ['', 'y']
   ]
 
-  for (const num of inputs) {
-    const result = isPerfectSquare(num)
+  for (const [s, t] of inputs) {
+    const result = findTheDifference(s, t)
     console.log(result)
   }
 }

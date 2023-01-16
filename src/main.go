@@ -4,31 +4,28 @@ import (
 	"fmt"
 )
 
-func isPerfectSquare(num int) bool {
-	left := 1
-	right := num / 2
-	for left <= right {
-		mid := (left + right) / 2
-		square := mid * mid
-		if num < square {
-			right = mid - 1
-		} else if num > square {
-			left = mid + 1
-		} else {
-			return true
-		}
+func findTheDifference(s string, t string) byte {
+	sum := rune(0)
+
+	for _, c := range s {
+		sum ^= c
 	}
 
-	return num == 1
+	for _, c := range t {
+		sum ^= c
+	}
+
+	return byte(sum)
 }
 
 func main() {
-	inputs := []int{
-		16, 14, 1,
+	inputs := [][]string{
+		{"abcd", "abcde"},
+		{"", "y"},
 	}
 
 	for _, input := range inputs {
-		result := isPerfectSquare(input)
-		fmt.Println(result)
+		result := findTheDifference(input[0], input[1])
+		fmt.Println(string(result))
 	}
 }
