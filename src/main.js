@@ -1,21 +1,38 @@
 /**
- * @param {number[]} nums1
- * @param {number[]} nums2
- * @returns {number[]}
+ * @param {number[][]} intervals
+ * @param {number[]} newInterval
+ * @returns {undefined}
  */
-function intersect (nums1, nums2) {
-  const counts = new Map()
-  for (const num of nums1) {
-    const count = counts.get(num) ?? 0
-    counts.set(num, count + 1)
+function mergeIntervals (intervals, newInterval) {
+  for (let i = 0; i < intervals.length; i += 1) {
+    if (intervals[i][0] < newInterval[0]) {
+      continue
+    }
+
+    intervals.splice(i, 0, newInterval)
+    return
   }
 
-  const result = []
-  for (const num of nums2) {
-    const count = counts.get(num) ?? 0
-    if (count > 0) {
-      counts.set(num, count - 1)
-      result.push(num)
+  intervals.push(newInterval)
+}
+
+/**
+ * @param {number[][]} intervals
+ * @param {number[]} newInterval
+ * @returns {number[][]}
+ */
+function insert (intervals, newInterval) {
+  mergeIntervals(intervals, newInterval)
+
+  const result = [intervals[0]]
+
+  for (let i = 1; i < intervals.length; i += 1) {
+    const last = result.at(-1)
+    const interval = intervals[i]
+    if (interval[0] > last[1]) {
+      result.push(interval)
+    } else {
+      last[1] = Math.max(last[1], interval[1])
     }
   }
 
@@ -24,12 +41,12 @@ function intersect (nums1, nums2) {
 
 async function main () {
   const inputs = [
-    [[1, 2, 2, 1], [2, 2]],
-    [[4, 9, 5], [9, 4, 9, 8, 4]]
+    { intervals: [[1, 3], [6, 9]], newInterval: [2, 5] },
+    { intervals: [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], newInterval: [4, 8] }
   ]
 
-  for (const [nums1, nums2] of inputs) {
-    const result = intersect(nums1, nums2)
+  for (const { intervals, newInterval } of inputs) {
+    const result = insert(intervals, newInterval)
     console.log(result)
   }
 }

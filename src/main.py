@@ -1,32 +1,34 @@
 from __future__ import annotations
-from typing import Counter, List
-from collections import Counter
+from typing import List
+import bisect
 
 
 class Solution:
-    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
-        counts = Counter(nums1)
+    def insert(
+        self, intervals: List[List[int]], new_interval: List[int]
+    ) -> List[List[int]]:
+        position = bisect.bisect(intervals, new_interval)
+        intervals.insert(position, new_interval)
 
-        result: list[int] = []
-        for num in nums2:
-            if num in counts:
-                count = counts[num]
-                if count > 0:
-                    result.append(num)
-                    counts[num] = count - 1
+        result = []
+        for i in range(len(intervals)):
+            if not result or (intervals[i][0] > result[-1][1]):
+                result.append(intervals[i])
+            else:
+                result[-1][1] = max(result[-1][1], intervals[i][1])
 
         return result
 
 
 def main():
-    inputs: list[list[list[int]]] = [
-        [[1, 2, 2, 1], [2, 2]],
-        [[4, 9, 5], [9, 4, 9, 8, 4]],
+    inputs: list[tuple[list[list[int]], list[int]]] = [
+        ([[1, 3], [6, 9]], [2, 5]),
+        ([[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], [4, 8]),
     ]
 
-    for [nums1, nums2] in inputs:
+    for intervals, newInterval in inputs:
         solution = Solution()
-        result = solution.intersect(nums1, nums2)
+        result = solution.insert(intervals, newInterval)
         print(result)
 
 
