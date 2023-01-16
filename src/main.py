@@ -1,34 +1,30 @@
 from __future__ import annotations
 from typing import List
-import bisect
 
 
 class Solution:
-    def insert(
-        self, intervals: List[List[int]], new_interval: List[int]
-    ) -> List[List[int]]:
-        position = bisect.bisect(intervals, new_interval)
-        intervals.insert(position, new_interval)
-
-        result = []
-        for i in range(len(intervals)):
-            if not result or (intervals[i][0] > result[-1][1]):
-                result.append(intervals[i])
+    def isPerfectSquare(self, num: int) -> bool:
+        left = 1
+        right = num // 2
+        while left <= right:
+            mid = (left + right) // 2
+            square = mid * mid
+            if num < square:
+                right = mid - 1
+            elif num > square:
+                left = mid + 1
             else:
-                result[-1][1] = max(result[-1][1], intervals[i][1])
+                return True
 
-        return result
+        return num == 1
 
 
 def main():
-    inputs: list[tuple[list[list[int]], list[int]]] = [
-        ([[1, 3], [6, 9]], [2, 5]),
-        ([[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], [4, 8]),
-    ]
+    inputs: list[int] = [16, 14, 1]
 
-    for intervals, newInterval in inputs:
+    for num in inputs:
         solution = Solution()
-        result = solution.insert(intervals, newInterval)
+        result = solution.isPerfectSquare(num)
         print(result)
 
 

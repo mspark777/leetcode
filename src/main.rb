@@ -1,39 +1,31 @@
-# @param intervals [Array<Array<Integer>>]
-# @param new_interval [Array<Integer>]
-# @return [Array<Array<Integer>>]
-def insert(intervals, new_interval)
-  pos = [*intervals.each_index].bsearch { |i| intervals[i][0] > new_interval[0] }
-  if pos.nil?
-    intervals.push new_interval
-  else
-    intervals.insert pos, new_interval
-  end
-
-  result = [intervals[0]]
-
-  (1..(intervals.length - 1)).each do |i|
-    last = result.last
-    interval = intervals[i]
-    if interval[0] > last[1]
-      result.push interval
+# @param num [Integer]
+# @return [Boolean]
+def is_perfect_square(num)
+  left = 1
+  right = num / 2
+  while left <= right
+    mid = (left + right) / 2
+    square = mid * mid
+    if num < square
+      right = mid - 1
+    elsif num > square
+      left = mid + 1
     else
-      last[1] = [last[1], interval[1]].max
+      return true
     end
   end
 
-  result
+  num == 1
 end
 
 def main
   inputs = [
-    { intervals: [[1, 3], [6, 9]], newInterval: [2, 5] },
-    { intervals: [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]], newInterval: [4, 8] },
-    { intervals: [], newInterval: [5, 7] }
+    16, 14, 1
   ]
 
-  inputs.each do |input|
-    result = insert input[:intervals], input[:newInterval]
-    puts result.join ', '
+  inputs.each do |num|
+    result = is_perfect_square num
+    puts result
   end
 end
 

@@ -1,20 +1,22 @@
 defmodule Solution do
-  @spec intersect(nums1 :: [integer], nums2 :: [integer]) :: [integer]
-  def intersect(nums1, nums2) do
-    loop(nums1, Enum.frequencies(nums2), [])
-  end
+  @spec is_perfect_square(num :: integer) :: boolean
+  def is_perfect_square(num), do: loop(1, div(num, 2), num)
 
-  def loop([], _, result), do: result
+  @spec loop(left :: integer, right :: integer, num :: integer) :: boolean
+  defp loop(left, right, num)
 
-  def loop([num | nums], counts, result) do
-    count = Map.get(counts, num, 0)
+  defp loop(left, right, num) when left <= right do
+    mid = div(left + right, 2)
+    square = mid * mid
 
-    if count > 0 do
-      loop(nums, Map.put(counts, num, count - 1), [num | result])
-    else
-      loop(nums, counts, result)
+    cond do
+      num < square -> loop(left, mid - 1, num)
+      num > square -> loop(mid + 1, right, num)
+      true -> true
     end
   end
+
+  defp loop(_, _, num), do: num == 1
 end
 
 defmodule Main do
@@ -22,10 +24,10 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([[nums1, nums2] | remains]) do
-    result = Solution.intersect(nums1, nums2)
+  def main([num | remains]) do
+    result = Solution.is_perfect_square(num)
 
-    IO.puts(result |> Enum.join(", "))
+    IO.puts(result)
     main(remains)
   end
 
@@ -34,8 +36,9 @@ defmodule Main do
 
   def main do
     main([
-      [[1, 2, 2, 1], [2, 2]],
-      [[4, 9, 5], [9, 4, 9, 8, 4]]
+      16,
+      14,
+      1
     ])
   end
 end
