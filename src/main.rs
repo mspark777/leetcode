@@ -1,21 +1,40 @@
 struct Solution {}
 impl Solution {
-    pub fn min_flips_mono_incr(s: String) -> i32 {
-        return s
-            .chars()
-            .fold((0, 0), |(result, num), c| match c {
-                '0' => (num.min(result + 1), num),
-                _ => (result, num + 1),
-            })
-            .0;
+    pub fn is_subsequence(s: String, t: String) -> bool {
+        let s = s.as_bytes();
+        if s.is_empty() {
+            return true;
+        }
+
+        let t = t.as_bytes();
+        let mut si = 0usize;
+
+        for &c in t.iter() {
+            if s[si] == c {
+                si += 1;
+            }
+
+            if si == s.len() {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
 fn main() {
-    let inputs = ["00110", "010110", "00011000"];
+    let inputs = [
+        ["abc", "ahbgdc"],
+        ["axc", "ahbgdc"],
+        ["", ""],
+        ["", "ahbgdc"],
+    ];
 
     for input in inputs {
-        let result = Solution::min_flips_mono_incr(input.to_string());
+        let s = input[0].to_string();
+        let t = input[1].to_string();
+        let result = Solution::is_subsequence(s, t);
         println!("{result}");
     }
 }

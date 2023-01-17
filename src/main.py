@@ -2,25 +2,27 @@ from __future__ import annotations
 
 
 class Solution:
-    def minFlipsMonoIncr(self, s: str) -> int:
-        result = 0
-        num = 0
+    def isSubsequence(self, s: str, t: str) -> bool:
+        if s == "":
+            return True
 
-        for c in s:
-            if c == "0":
-                result = min(num, result + 1)
-            else:
-                num += 1
+        si = 0
 
-        return result
+        for c in t:
+            if s[si] == c:
+                si += 1
+
+            if len(s) == si:
+                return True
+
+        return False
 
 
 def main():
-    inputs: list[str] = ["00110", "010110", "00011000"]
-
-    for s in inputs:
+    inputs: list[list[str]] = [["abc", "ahbgdc"], ["axc", "ahbgdc"]]
+    for [s, t] in inputs:
         solution = Solution()
-        result = solution.minFlipsMonoIncr(s)
+        result = solution.isSubsequence(s, t)
         print(result)
 
 

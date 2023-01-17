@@ -1,31 +1,32 @@
 /**
  * @param {string} s
- * @returns {number}
+ * @param {string} t
+ * @returns {boolean}
  */
-function minFlipsMonoIncr (s) {
-  let result = 0
-  let num = 0
+function isSubsequence (s, t) {
+  let si = 0
 
-  for (const c of s) {
-    if (c === '0') {
-      result = Math.min(num, result + 1)
-    } else {
-      num += 1
+  for (let i = 0; i < t.length; i += 1) {
+    if (s.charCodeAt(si) === t.charCodeAt(i)) {
+      si += 1
+    }
+
+    if (s.length === si) {
+      return true
     }
   }
 
-  return result
+  return s.length < 1
 }
 
 async function main () {
   const inputs = [
-    '00110',
-    '010110',
-    '00011000'
+    ['abc', 'ahbgdc'],
+    ['axc', 'ahbgdc']
   ]
 
-  for (const s of inputs) {
-    const result = minFlipsMonoIncr(s)
+  for (const [s, t] of inputs) {
+    const result = isSubsequence(s, t)
     console.log(result)
   }
 }

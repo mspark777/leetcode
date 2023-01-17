@@ -1,18 +1,11 @@
 defmodule Solution do
-  @spec min_flips_mono_incr(s :: String.t()) :: integer
-  def min_flips_mono_incr(s) do
-    s
-    |> String.to_charlist()
-    |> Enum.reduce({0, 0}, &reducefunc/2)
-    |> elem(0)
-  end
+  @spec is_subsequence(s :: String.t(), t :: String.t()) :: boolean
+  def is_subsequence(s, t), do: loop(String.to_charlist(s), String.to_charlist(t))
 
-  defp reducefunc(c, {result, num}) do
-    case c do
-      ?0 -> {min(result + 1, num), num}
-      _ -> {result, num + 1}
-    end
-  end
+  defp loop([s | schars], [t | tchars]) when s == t, do: loop(schars, tchars)
+  defp loop(schars, [_ | tchars]), do: loop(schars, tchars)
+  defp loop([], _), do: true
+  defp loop(_, []), do: false
 end
 
 defmodule Main do
@@ -20,8 +13,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([s | remains]) do
-    result = Solution.min_flips_mono_incr(s)
+  def main([[s, t] | remains]) do
+    result = Solution.is_subsequence(s, t)
 
     IO.puts(result)
     main(remains)
@@ -32,9 +25,10 @@ defmodule Main do
 
   def main do
     main([
-      "00110",
-      "010110",
-      "00011000"
+      ["abc", "ahbgdc"],
+      ["axc", "ahbgdc"],
+      ["", ""],
+      ["", "ahbgdc"]
     ])
   end
 end

@@ -4,33 +4,34 @@ import (
 	"fmt"
 )
 
-func minFlipsMonoIncr(s string) int {
-	result := 0
-	num := 0
+func isSubsequence(s string, t string) bool {
+	if s == "" {
+		return true
+	}
 
-	for _, c := range s {
-		if c == rune('0') {
-			result += 1
-			if result > num {
-				result = num
-			}
-		} else {
-			num += 1
+	si := 0
+
+	for _, c := range t {
+		if rune(s[si]) == c {
+			si += 1
+		}
+
+		if len(s) == si {
+			return true
 		}
 	}
 
-	return result
+	return false
 }
 
 func main() {
-	inputs := []string{
-		"00110",
-		"010110",
-		"00011000",
+	inputs := [][]string{
+		{"abc", "ahbgdc"}, {"axc", "ahbgdc"},
+		{"", ""}, {"", "ahbgdc"},
 	}
 
 	for _, input := range inputs {
-		result := minFlipsMonoIncr(input)
+		result := isSubsequence(input[0], input[1])
 		fmt.Println(result)
 	}
 }

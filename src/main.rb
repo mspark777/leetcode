@@ -1,29 +1,27 @@
 # @param s [String]
-# @return [Integer]
-def min_flips_mono_incr(s)
-  result = 0
-  num = 0
+# @param t [String]
+# @return [Boolean]
+def is_subsequence(s, t)
+  return true if s.length < 1
 
-  s.each_char do |c|
-    if c == '0'
-      result = [num, result + 1].min
-    else
-      num += 1
-    end
+  si = 0
+
+  t.each_char do |c|
+    si += 1 if s[si] == c
+    return true if s.length == si
   end
 
-  result
+  false
 end
 
 def main
-  inputs = %w[
-    00110
-    010110
-    00011000
+  inputs = [
+    %w[abc ahbgdc], %w[axc ahbgdc],
+    ['', ''], ['', 'ahbgdc']
   ]
 
-  inputs.each do |s|
-    result = min_flips_mono_incr s
+  inputs.each do |input|
+    result = is_subsequence input[0], input[1]
     puts result
   end
 end
