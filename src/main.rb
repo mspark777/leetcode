@@ -1,27 +1,29 @@
 # @param s [String]
-# @param t [String]
-# @return [Character]
-def find_the_difference(s, t)
-  sum = 0
-  s.each_codepoint do |p|
-    sum ^= p
+# @return [Integer]
+def min_flips_mono_incr(s)
+  result = 0
+  num = 0
+
+  s.each_char do |c|
+    if c == '0'
+      result = [num, result + 1].min
+    else
+      num += 1
+    end
   end
 
-  t.each_codepoint do |p|
-    sum ^= p
-  end
-
-  sum.chr
+  result
 end
 
 def main
-  inputs = [
-    ['abcd', 'abcde'],
-    ['', 'y']
+  inputs = %w[
+    00110
+    010110
+    00011000
   ]
 
-  inputs.each do |input|
-    result = find_the_difference input[0], input[1]
+  inputs.each do |s|
+    result = min_flips_mono_incr s
     puts result
   end
 end

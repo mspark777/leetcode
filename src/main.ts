@@ -1,25 +1,27 @@
-function findTheDifference (s: string, t: string): string {
-  let sum = 0
-  for (let i = 0; i < t.length; i += 1) {
-    sum += t.charCodeAt(i)
+function minFlipsMonoIncr (s: string): number {
+  let result = 0
+  let num = 0
+
+  for (const c of s) {
+    if (c === '0') {
+      result = Math.min(num, result + 1)
+    } else {
+      num += 1
+    }
   }
 
-  for (let i = 0; i < s.length; i += 1) {
-    sum += t.charCodeAt(i)
-    sum -= s.charCodeAt(i)
-  }
-
-  return String.fromCharCode(sum)
+  return result
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][] = [
-    ['abcd', 'abcde'],
-    ['', 'y']
+  const inputs: string[] = [
+    '00110',
+    '010110',
+    '00011000'
   ]
 
-  for (const [s, t] of inputs) {
-    const result = findTheDifference(s, t)
+  for (const s of inputs) {
+    const result = minFlipsMonoIncr(s)
     console.log(result)
   }
 }

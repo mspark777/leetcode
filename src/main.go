@@ -4,28 +4,33 @@ import (
 	"fmt"
 )
 
-func findTheDifference(s string, t string) byte {
-	sum := rune(0)
+func minFlipsMonoIncr(s string) int {
+	result := 0
+	num := 0
 
 	for _, c := range s {
-		sum ^= c
+		if c == rune('0') {
+			result += 1
+			if result > num {
+				result = num
+			}
+		} else {
+			num += 1
+		}
 	}
 
-	for _, c := range t {
-		sum ^= c
-	}
-
-	return byte(sum)
+	return result
 }
 
 func main() {
-	inputs := [][]string{
-		{"abcd", "abcde"},
-		{"", "y"},
+	inputs := []string{
+		"00110",
+		"010110",
+		"00011000",
 	}
 
 	for _, input := range inputs {
-		result := findTheDifference(input[0], input[1])
-		fmt.Println(string(result))
+		result := minFlipsMonoIncr(input)
+		fmt.Println(result)
 	}
 }

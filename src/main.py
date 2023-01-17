@@ -2,23 +2,25 @@ from __future__ import annotations
 
 
 class Solution:
-    def findTheDifference(self, s: str, t: str) -> str:
-        sum = 0
+    def minFlipsMonoIncr(self, s: str) -> int:
+        result = 0
+        num = 0
 
-        for c in t:
-            sum ^= ord(c)
         for c in s:
-            sum ^= ord(c)
+            if c == "0":
+                result = min(num, result + 1)
+            else:
+                num += 1
 
-        return chr(sum)
+        return result
 
 
 def main():
-    inputs: list[list[str]] = [["abcd", "abcde"], ["", "y"]]
+    inputs: list[str] = ["00110", "010110", "00011000"]
 
-    for [s, t] in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.findTheDifference(s, t)
+        result = solution.minFlipsMonoIncr(s)
         print(result)
 
 

@@ -1,18 +1,17 @@
 defmodule Solution do
-  use Bitwise
-
-  @spec find_the_difference(s :: String.t(), t :: String.t()) :: char
-  def find_the_difference(s, t) do
-    t
-    |> String.to_charlist()
-    |> Enum.reduce(sreduce(s), fn acc, cur -> Bitwise.bxor(acc, cur) end)
-  end
-
-  @spec sreduce(s :: String.t()) :: char
-  defp sreduce(s) do
+  @spec min_flips_mono_incr(s :: String.t()) :: integer
+  def min_flips_mono_incr(s) do
     s
     |> String.to_charlist()
-    |> Enum.reduce(0, fn acc, cur -> Bitwise.bxor(acc, cur) end)
+    |> Enum.reduce({0, 0}, &reducefunc/2)
+    |> elem(0)
+  end
+
+  defp reducefunc(c, {result, num}) do
+    case c do
+      ?0 -> {min(result + 1, num), num}
+      _ -> {result, num + 1}
+    end
   end
 end
 
@@ -21,10 +20,10 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([[s, t] | remains]) do
-    result = Solution.find_the_difference(s, t)
+  def main([s | remains]) do
+    result = Solution.min_flips_mono_incr(s)
 
-    IO.puts([result] |> to_string())
+    IO.puts(result)
     main(remains)
   end
 
@@ -33,8 +32,9 @@ defmodule Main do
 
   def main do
     main([
-      ["abcd", "abcde"],
-      ["", "y"]
+      "00110",
+      "010110",
+      "00011000"
     ])
   end
 end

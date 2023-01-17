@@ -1,25 +1,21 @@
 struct Solution {}
 impl Solution {
-    pub fn find_the_difference(s: String, t: String) -> char {
-        let mut sum = 0u8;
-
-        for &i in s.as_bytes() {
-            sum ^= i;
-        }
-
-        for &i in t.as_bytes() {
-            sum ^= i;
-        }
-
-        return sum as char;
+    pub fn min_flips_mono_incr(s: String) -> i32 {
+        return s
+            .chars()
+            .fold((0, 0), |(result, num), c| match c {
+                '0' => (num.min(result + 1), num),
+                _ => (result, num + 1),
+            })
+            .0;
     }
 }
 
 fn main() {
-    let inputs = [["abcd", "abcde"], ["", "y"]];
+    let inputs = ["00110", "010110", "00011000"];
 
     for input in inputs {
-        let result = Solution::find_the_difference(input[0].to_string(), input[1].to_string());
+        let result = Solution::min_flips_mono_incr(input.to_string());
         println!("{result}");
     }
 }
