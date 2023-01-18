@@ -1,32 +1,34 @@
 /**
- * @param {string} s
- * @param {string} t
- * @returns {boolean}
+ * @param {number[]} nums
+ * @returns {number}
  */
-function isSubsequence (s, t) {
-  let si = 0
+function maxSubarraySumCircular (nums) {
+  let curMax = 0
+  let curMin = 0
+  let sum = 0
+  let maxSum = nums[0]
+  let minSum = nums[0]
 
-  for (let i = 0; i < t.length; i += 1) {
-    if (s.charCodeAt(si) === t.charCodeAt(i)) {
-      si += 1
-    }
-
-    if (s.length === si) {
-      return true
-    }
+  for (const num of nums) {
+    curMax = Math.max(curMax, 0) + num
+    maxSum = Math.max(maxSum, curMax)
+    curMin = Math.min(curMin, 0) + num
+    minSum = Math.min(minSum, curMin)
+    sum += num
   }
 
-  return s.length < 1
+  return sum === minSum ? maxSum : Math.max(maxSum, sum - minSum)
 }
 
 async function main () {
   const inputs = [
-    ['abc', 'ahbgdc'],
-    ['axc', 'ahbgdc']
+    [1, -2, 3, -2],
+    [5, -3, 5],
+    [-3, -2, -3]
   ]
 
-  for (const [s, t] of inputs) {
-    const result = isSubsequence(s, t)
+  for (const nums of inputs) {
+    const result = maxSubarraySumCircular(nums)
     console.log(result)
   }
 }

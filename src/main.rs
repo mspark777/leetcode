@@ -1,40 +1,33 @@
 struct Solution {}
 impl Solution {
-    pub fn is_subsequence(s: String, t: String) -> bool {
-        let s = s.as_bytes();
-        if s.is_empty() {
-            return true;
+    pub fn max_subarray_sum_circular(nums: Vec<i32>) -> i32 {
+        let mut curmax = 0;
+        let mut curmin = 0;
+        let mut sum = 0;
+        let mut maxsum = nums[0];
+        let mut minsum = nums[0];
+
+        for &num in nums.iter() {
+            curmax = curmax.max(0) + num;
+            curmin = curmin.min(0) + num;
+            maxsum = maxsum.max(curmax);
+            minsum = minsum.min(curmin);
+            sum += num;
         }
 
-        let t = t.as_bytes();
-        let mut si = 0usize;
-
-        for &c in t.iter() {
-            if s[si] == c {
-                si += 1;
-            }
-
-            if si == s.len() {
-                return true;
-            }
+        if sum == minsum {
+            return maxsum;
         }
 
-        return false;
+        return maxsum.max(sum - minsum);
     }
 }
 
 fn main() {
-    let inputs = [
-        ["abc", "ahbgdc"],
-        ["axc", "ahbgdc"],
-        ["", ""],
-        ["", "ahbgdc"],
-    ];
+    let inputs = [vec![1, -2, 3, -2], vec![5, -3, 5], vec![-3, -2, -3]];
 
-    for input in inputs {
-        let s = input[0].to_string();
-        let t = input[1].to_string();
-        let result = Solution::is_subsequence(s, t);
+    for nums in inputs {
+        let result = Solution::max_subarray_sum_circular(nums);
         println!("{result}");
     }
 }

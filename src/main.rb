@@ -1,27 +1,34 @@
-# @param s [String]
-# @param t [String]
-# @return [Boolean]
-def is_subsequence(s, t)
-  return true if s.length < 1
+# @param nums [Array<Integer>]
+# @return [Integer]
+def max_subarray_sum_circular(nums)
+  curmax = 0
+  curmin = 0
+  maxsum = nums[0]
+  minsum = nums[0]
+  sum = 0
 
-  si = 0
-
-  t.each_char do |c|
-    si += 1 if s[si] == c
-    return true if s.length == si
+  nums.each do |num|
+    curmax = [curmax, 0].max + num
+    maxsum = [curmax, maxsum].max
+    curmin = [curmin, 0].min + num
+    minsum = [curmin, minsum].min
+    sum += num
   end
 
-  false
+  return maxsum if sum == minsum
+
+  [maxsum, sum - minsum].max
 end
 
 def main
   inputs = [
-    %w[abc ahbgdc], %w[axc ahbgdc],
-    ['', ''], ['', 'ahbgdc']
+    [1, -2, 3, -2],
+    [5, -3, 5],
+    [-3, -2, -3]
   ]
 
-  inputs.each do |input|
-    result = is_subsequence input[0], input[1]
+  inputs.each do |nums|
+    result = max_subarray_sum_circular nums
     puts result
   end
 end

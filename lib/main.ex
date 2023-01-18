@@ -1,11 +1,17 @@
 defmodule Solution do
-  @spec is_subsequence(s :: String.t(), t :: String.t()) :: boolean
-  def is_subsequence(s, t), do: loop(String.to_charlist(s), String.to_charlist(t))
+  @spec max_subarray_sum_circular(nums :: [integer]) :: integer
+  def max_subarray_sum_circular(nums), do: loop(nums, 0, 0, 0, hd(nums), hd(nums))
 
-  defp loop([s | schars], [t | tchars]) when s == t, do: loop(schars, tchars)
-  defp loop(schars, [_ | tchars]), do: loop(schars, tchars)
-  defp loop([], _), do: true
-  defp loop(_, []), do: false
+  defp loop([], _, _, sum, minsum, maxsum) when sum == minsum, do: maxsum
+  defp loop([], _, _, sum, minsum, maxsum), do: max(maxsum, sum - minsum)
+
+  defp loop([num | nums], curmax, curmin, sum, minsum, maxsum) do
+    curmax = max(curmax, 0) + num
+    curmin = min(curmin, 0) + num
+    maxsum = max(maxsum, curmax)
+    minsum = min(minsum, curmin)
+    loop(nums, curmax, curmin, sum + num, minsum, maxsum)
+  end
 end
 
 defmodule Main do
@@ -13,8 +19,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([[s, t] | remains]) do
-    result = Solution.is_subsequence(s, t)
+  def main([nums | remains]) do
+    result = Solution.max_subarray_sum_circular(nums)
 
     IO.puts(result)
     main(remains)
@@ -25,10 +31,9 @@ defmodule Main do
 
   def main do
     main([
-      ["abc", "ahbgdc"],
-      ["axc", "ahbgdc"],
-      ["", ""],
-      ["", "ahbgdc"]
+      [1, -2, 3, -2],
+      [5, -3, 5],
+      [-3, -2, -3]
     ])
   end
 end
