@@ -1,34 +1,32 @@
 /**
  * @param {number[]} nums
+ * @param {number} k
  * @returns {number}
  */
-function maxSubarraySumCircular (nums) {
-  let curMax = 0
-  let curMin = 0
-  let sum = 0
-  let maxSum = nums[0]
-  let minSum = nums[0]
+function subarraysDivByK (nums, k) {
+  let prefixMod = 0
+  let result = 0
+
+  const modGroups = new Array(k).fill(0)
+  modGroups[0] = 1
 
   for (const num of nums) {
-    curMax = Math.max(curMax, 0) + num
-    maxSum = Math.max(maxSum, curMax)
-    curMin = Math.min(curMin, 0) + num
-    minSum = Math.min(minSum, curMin)
-    sum += num
+    prefixMod = (prefixMod + (num % k) + k) % k
+    result += modGroups[prefixMod]
+    modGroups[prefixMod] += 1
   }
 
-  return sum === minSum ? maxSum : Math.max(maxSum, sum - minSum)
+  return result
 }
 
 async function main () {
   const inputs = [
-    [1, -2, 3, -2],
-    [5, -3, 5],
-    [-3, -2, -3]
+    { nums: [4, 5, 0, -2, -3, 1], k: 5 },
+    { nums: [5], k: 9 }
   ]
 
-  for (const nums of inputs) {
-    const result = maxSubarraySumCircular(nums)
+  for (const { nums, k } of inputs) {
+    const result = subarraysDivByK(nums, k)
     console.log(result)
   }
 }

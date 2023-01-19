@@ -1,16 +1,16 @@
 defmodule Solution do
-  @spec max_subarray_sum_circular(nums :: [integer]) :: integer
-  def max_subarray_sum_circular(nums), do: loop(nums, 0, 0, 0, hd(nums), hd(nums))
+  @spec subarrays_div_by_k(nums :: [integer], k :: integer) :: integer
+  def subarrays_div_by_k(nums, k) do
+    loop(nums, k, %{0 => 1}, 0, 0)
+  end
 
-  defp loop([], _, _, sum, minsum, maxsum) when sum == minsum, do: maxsum
-  defp loop([], _, _, sum, minsum, maxsum), do: max(maxsum, sum - minsum)
+  defp loop([], _, _, _, result), do: result
 
-  defp loop([num | nums], curmax, curmin, sum, minsum, maxsum) do
-    curmax = max(curmax, 0) + num
-    curmin = min(curmin, 0) + num
-    maxsum = max(maxsum, curmax)
-    minsum = min(minsum, curmin)
-    loop(nums, curmax, curmin, sum + num, minsum, maxsum)
+  defp loop([num | nums], k, mod_groups, prefix, result) do
+    prefix = (prefix + k + rem(num, k)) |> rem(k)
+    count = Map.get(mod_groups, prefix, 0)
+
+    loop(nums, k, Map.put(mod_groups, prefix, count + 1), prefix, result + count)
   end
 end
 
@@ -19,8 +19,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([nums | remains]) do
-    result = Solution.max_subarray_sum_circular(nums)
+  def main([%{nums: nums, k: k} | remains]) do
+    result = Solution.subarrays_div_by_k(nums, k)
 
     IO.puts(result)
     main(remains)
@@ -31,9 +31,8 @@ defmodule Main do
 
   def main do
     main([
-      [1, -2, 3, -2],
-      [5, -3, 5],
-      [-3, -2, -3]
+      %{nums: [4, 5, 0, -2, -3, 1], k: 5},
+      %{nums: [5], k: 9}
     ])
   end
 end

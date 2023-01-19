@@ -3,28 +3,26 @@ from typing import List
 
 
 class Solution:
-    def maxSubarraySumCircular(self, nums: List[int]) -> int:
-        curmax = 0
-        curmin = 0
-        maxsum = nums[0]
-        minsum = nums[0]
-        sum = 0
+    def subarraysDivByK(self, nums: List[int], k: int) -> int:
+        prefix = 0
+        result = 0
+
+        modGroups = [0 for i in range(k)]
+        modGroups[0] = 1
 
         for num in nums:
-            curmax = max(curmax, 0) + num
-            maxsum = max(curmax, maxsum)
-            curmin = min(curmin, 0) + num
-            minsum = min(curmin, minsum)
-            sum += num
+            prefix = (prefix + k + (num % k)) % k
+            result += modGroups[prefix]
+            modGroups[prefix] += 1
 
-        return maxsum if sum == minsum else max(maxsum, sum - minsum)
+        return result
 
 
 def main():
-    inputs: list[list[int]] = [[1, -2, 3, -2], [5, -3, 5], [-3, -2, -3]]
-    for nums in inputs:
+    inputs: list[tuple[list[int], int]] = [([4, 5, 0, -2, -3, 1], 5), ([5], 9)]
+    for nums, k in inputs:
         solution = Solution()
-        result = solution.maxSubarraySumCircular(nums)
+        result = solution.subarraysDivByK(nums, k)
         print(result)
 
 

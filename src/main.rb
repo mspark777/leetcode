@@ -1,34 +1,30 @@
 # @param nums [Array<Integer>]
+# @param k [Integer]
 # @return [Integer]
-def max_subarray_sum_circular(nums)
-  curmax = 0
-  curmin = 0
-  maxsum = nums[0]
-  minsum = nums[0]
-  sum = 0
+def subarrays_div_by_k(nums, k)
+  prefix = 0
+  result = 0
+
+  modGroups = Array.new(k) { 0 }
+  modGroups[0] = 1
 
   nums.each do |num|
-    curmax = [curmax, 0].max + num
-    maxsum = [curmax, maxsum].max
-    curmin = [curmin, 0].min + num
-    minsum = [curmin, minsum].min
-    sum += num
+    prefix = (prefix + k + (num % k)) % k
+    result += modGroups[prefix]
+    modGroups[prefix] += 1
   end
 
-  return maxsum if sum == minsum
-
-  [maxsum, sum - minsum].max
+  result
 end
 
 def main
   inputs = [
-    [1, -2, 3, -2],
-    [5, -3, 5],
-    [-3, -2, -3]
+    { nums: [4, 5, 0, -2, -3, 1], k: 5 },
+    { nums: [5], k: 9 }
   ]
 
-  inputs.each do |nums|
-    result = max_subarray_sum_circular nums
+  inputs.each do |input|
+    result = subarrays_div_by_k input[:nums], input[:k]
     puts result
   end
 end

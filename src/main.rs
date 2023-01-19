@@ -1,33 +1,43 @@
 struct Solution {}
 impl Solution {
-    pub fn max_subarray_sum_circular(nums: Vec<i32>) -> i32 {
-        let mut curmax = 0;
-        let mut curmin = 0;
-        let mut sum = 0;
-        let mut maxsum = nums[0];
-        let mut minsum = nums[0];
+    pub fn subarrays_div_by_k(nums: Vec<i32>, k: i32) -> i32 {
+        let mut prefix = 0;
+        let mut result = 0;
+
+        let mut mod_groups = vec![0; k as usize];
+        mod_groups[0] = 1;
 
         for &num in nums.iter() {
-            curmax = curmax.max(0) + num;
-            curmin = curmin.min(0) + num;
-            maxsum = maxsum.max(curmax);
-            minsum = minsum.min(curmin);
-            sum += num;
+            prefix = (prefix + k + (num % k)) % k;
+
+            let i = prefix as usize;
+            result += mod_groups[i];
+            mod_groups[i] += 1;
         }
 
-        if sum == minsum {
-            return maxsum;
-        }
-
-        return maxsum.max(sum - minsum);
+        return result;
     }
 }
 
-fn main() {
-    let inputs = [vec![1, -2, 3, -2], vec![5, -3, 5], vec![-3, -2, -3]];
+struct Input {
+    nums: Vec<i32>,
+    k: i32,
+}
 
-    for nums in inputs {
-        let result = Solution::max_subarray_sum_circular(nums);
+fn main() {
+    let inputs = [
+        Input {
+            nums: vec![4, 5, 0, -2, -3, 1],
+            k: 5,
+        },
+        Input {
+            nums: vec![5],
+            k: 9,
+        },
+    ];
+
+    for Input { nums, k } in inputs {
+        let result = Solution::subarrays_div_by_k(nums, k);
         println!("{result}");
     }
 }
