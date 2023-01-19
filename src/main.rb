@@ -1,30 +1,41 @@
-# @param nums [Array<Integer>]
-# @param k [Integer]
+# @param i [Integer]
 # @return [Integer]
-def subarrays_div_by_k(nums, k)
-  prefix = 0
-  result = 0
+def popcount(i)
+  b = 0
+  while i > 0
+    i &= i - 1
+    b += 1
+  end
+  b
+end
 
-  modGroups = Array.new(k) { 0 }
-  modGroups[0] = 1
+# @param turned_on [Integer]
+# @return [Array<String>]
+def read_binary_watch(turned_on)
+  result = []
 
-  nums.each do |num|
-    prefix = (prefix + k + (num % k)) % k
-    result += modGroups[prefix]
-    modGroups[prefix] += 1
+  0.upto(11) do |h|
+    0.upto(59) do |m|
+      num = (h << 6) | m
+      ones = popcount num
+      if ones == turned_on
+        if m < 10
+          result.push("#{h}:0#{m}")
+        else
+          result.push("#{h}:#{m}")
+        end
+      end
+    end
   end
 
   result
 end
 
 def main
-  inputs = [
-    { nums: [4, 5, 0, -2, -3, 1], k: 5 },
-    { nums: [5], k: 9 }
-  ]
+  inputs = [1, 9]
 
-  inputs.each do |input|
-    result = subarrays_div_by_k input[:nums], input[:k]
+  inputs.each do |turned_on|
+    result = read_binary_watch turned_on
     puts result
   end
 end

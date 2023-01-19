@@ -3,26 +3,24 @@ from typing import List
 
 
 class Solution:
-    def subarraysDivByK(self, nums: List[int], k: int) -> int:
-        prefix = 0
-        result = 0
-
-        modGroups = [0 for i in range(k)]
-        modGroups[0] = 1
-
-        for num in nums:
-            prefix = (prefix + k + (num % k)) % k
-            result += modGroups[prefix]
-            modGroups[prefix] += 1
+    def readBinaryWatch(self, turned_on: int) -> List[str]:
+        result: list[str] = []
+        for h in range(12):
+            for m in range(60):
+                num = (h << 6) | m
+                ones = num.bit_count()
+                if ones == turned_on:
+                    time = "{}:{}{}".format(h, "0" if m < 10 else "", m)
+                    result.append(time)
 
         return result
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [([4, 5, 0, -2, -3, 1], 5), ([5], 9)]
-    for nums, k in inputs:
+    inputs: list[int] = [1, 9]
+    for turned_on in inputs:
         solution = Solution()
-        result = solution.subarraysDivByK(nums, k)
+        result = solution.readBinaryWatch(turned_on)
         print(result)
 
 

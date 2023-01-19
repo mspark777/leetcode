@@ -2,37 +2,34 @@ package main
 
 import (
 	"fmt"
+	"math/bits"
 )
 
-func subarraysDivByK(nums []int, k int) int {
-	prefix := 0
-	result := 0
+func readBinaryWatch(turnedOn int) []string {
+	result := []string{}
 
-	modGroups := make([]int, k)
-	modGroups[0] = 1
-
-	for _, num := range nums {
-		prefix = (prefix + k + (num % k)) % k
-		result += modGroups[prefix]
-		modGroups[prefix] += 1
+	for h := 0; h < 12; h += 1 {
+		for m := 0; m < 60; m += 1 {
+			num := (h << 6) | m
+			ones := bits.OnesCount(uint(num))
+			if ones == turnedOn {
+				if m >= 10 {
+					result = append(result, fmt.Sprintf("%v:%v", h, m))
+				} else {
+					result = append(result, fmt.Sprintf("%v:0%v", h, m))
+				}
+			}
+		}
 	}
 
 	return result
 }
 
-type input struct {
-	nums []int
-	k    int
-}
-
 func main() {
-	inputs := []input{
-		{nums: []int{4, 5, 0, -2, -3, 1}, k: 5},
-		{nums: []int{5}, k: 9},
-	}
+	inputs := []int{1, 9}
 
 	for _, input := range inputs {
-		result := subarraysDivByK(input.nums, input.k)
+		result := readBinaryWatch(input)
 		fmt.Println(result)
 	}
 }

@@ -1,32 +1,25 @@
-function subarraysDivByK (nums: number[], k: number): number {
-  let prefixMod = 0
-  let result = 0
+function readBinaryWatch (turnedOn: number): string[] {
+  const result: string[] = []
 
-  const modGroups = new Array<number>(k).fill(0)
-  modGroups[0] = 1
-
-  for (const num of nums) {
-    prefixMod = (prefixMod + (num % k) + k) % k
-    result += modGroups[prefixMod]
-    modGroups[prefixMod] += 1
+  for (let h = 0; h < 12; h += 1) {
+    for (let m = 0; m < 60; m += 1) {
+      const num = (h << 6) | m
+      const ones = num.toString(2).split('').filter(s => s === '1').length
+      if (ones === turnedOn) {
+        const time = `${h}${m < 10 ? ':0' : ':'}${m}`
+        result.push(time)
+      }
+    }
   }
 
   return result
 }
 
-interface Input {
-  readonly nums: number[]
-  readonly k: number
-}
-
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { nums: [4, 5, 0, -2, -3, 1], k: 5 },
-    { nums: [5], k: 9 }
-  ]
+  const inputs: number[] = [1, 9]
 
-  for (const { nums, k } of inputs) {
-    const result = subarraysDivByK(nums, k)
+  for (const turnedOn of inputs) {
+    const result = readBinaryWatch(turnedOn)
     console.log(result)
   }
 }

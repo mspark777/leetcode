@@ -1,17 +1,33 @@
 defmodule Solution do
-  @spec subarrays_div_by_k(nums :: [integer], k :: integer) :: integer
-  def subarrays_div_by_k(nums, k) do
-    loop(nums, k, %{0 => 1}, 0, 0)
+  use Bitwise
+
+  @spec read_binary_watch(turned_on :: integer) :: [String.t()]
+  def read_binary_watch(turned_on) do
+    loop1(turned_on, 0, []) |> Enum.reverse()
   end
 
-  defp loop([], _, _, _, result), do: result
-
-  defp loop([num | nums], k, mod_groups, prefix, result) do
-    prefix = (prefix + k + rem(num, k)) |> rem(k)
-    count = Map.get(mod_groups, prefix, 0)
-
-    loop(nums, k, Map.put(mod_groups, prefix, count + 1), prefix, result + count)
+  defp loop1(turned_on, h, result) when h < 12 do
+    loop1(turned_on, h + 1, loop2(turned_on, h, 0, result))
   end
+
+  defp loop1(_, _, result), do: result
+
+  defp loop2(turned_on, h, m, result) when m < 60 do
+    num = h <<< 6 ||| m
+    ones = Enum.sum(for <<bit::1 <- :binary.encode_unsigned(num)>>, do: bit)
+
+    if ones == turned_on do
+      if m >= 10 do
+        loop2(turned_on, h, m + 1, ["#{h}:#{m}" | result])
+      else
+        loop2(turned_on, h, m + 1, ["#{h}:0#{m}" | result])
+      end
+    else
+      loop2(turned_on, h, m + 1, result)
+    end
+  end
+
+  defp loop2(_, _, _, result), do: result
 end
 
 defmodule Main do
@@ -19,10 +35,10 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([%{nums: nums, k: k} | remains]) do
-    result = Solution.subarrays_div_by_k(nums, k)
+  def main([turned_on | remains]) do
+    result = Solution.read_binary_watch(turned_on)
 
-    IO.puts(result)
+    IO.puts(result |> Enum.join(", "))
     main(remains)
   end
 
@@ -31,8 +47,8 @@ defmodule Main do
 
   def main do
     main([
-      %{nums: [4, 5, 0, -2, -3, 1], k: 5},
-      %{nums: [5], k: 9}
+      1,
+      9
     ])
   end
 end

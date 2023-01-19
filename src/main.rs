@@ -1,43 +1,34 @@
 struct Solution {}
 impl Solution {
-    pub fn subarrays_div_by_k(nums: Vec<i32>, k: i32) -> i32 {
-        let mut prefix = 0;
-        let mut result = 0;
+    pub fn read_binary_watch(turned_on: i32) -> Vec<String> {
+        let turned_on = turned_on as u32;
+        let mut result = Vec::<String>::new();
 
-        let mut mod_groups = vec![0; k as usize];
-        mod_groups[0] = 1;
-
-        for &num in nums.iter() {
-            prefix = (prefix + k + (num % k)) % k;
-
-            let i = prefix as usize;
-            result += mod_groups[i];
-            mod_groups[i] += 1;
+        for h in 0..12 {
+            for m in 0..60 {
+                let num: i32 = (h << 6) | m;
+                let ones = num.count_ones();
+                if ones == turned_on {
+                    if m >= 10 {
+                        let time = format!("{h}:{m}");
+                        result.push(time);
+                    } else {
+                        let time = format!("{h}:0{m}");
+                        result.push(time);
+                    }
+                }
+            }
         }
 
         return result;
     }
 }
 
-struct Input {
-    nums: Vec<i32>,
-    k: i32,
-}
-
 fn main() {
-    let inputs = [
-        Input {
-            nums: vec![4, 5, 0, -2, -3, 1],
-            k: 5,
-        },
-        Input {
-            nums: vec![5],
-            k: 9,
-        },
-    ];
+    let inputs = [1, 9];
 
-    for Input { nums, k } in inputs {
-        let result = Solution::subarrays_div_by_k(nums, k);
-        println!("{result}");
+    for turned_on in inputs {
+        let result = Solution::read_binary_watch(turned_on);
+        println!("{result:?}");
     }
 }
