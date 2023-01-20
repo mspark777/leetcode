@@ -1,34 +1,45 @@
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn read_binary_watch(turned_on: i32) -> Vec<String> {
-        let turned_on = turned_on as u32;
-        let mut result = Vec::<String>::new();
+    pub fn find_subsequences(nums: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut result = HashMap::<String, Vec<i32>>::new();
+        let mut sequence = Vec::<i32>::new();
+        Self::backtrack(&nums, 0, &mut sequence, &mut result);
 
-        for h in 0..12 {
-            for m in 0..60 {
-                let num: i32 = (h << 6) | m;
-                let ones = num.count_ones();
-                if ones == turned_on {
-                    if m >= 10 {
-                        let time = format!("{h}:{m}");
-                        result.push(time);
-                    } else {
-                        let time = format!("{h}:0{m}");
-                        result.push(time);
-                    }
-                }
+        return result.into_values().collect();
+    }
+
+    fn backtrack(
+        nums: &Vec<i32>,
+        index: usize,
+        sequence: &mut Vec<i32>,
+        result: &mut HashMap<String, Vec<i32>>,
+    ) {
+        if index == nums.len() {
+            if sequence.len() >= 2 {
+                let key: String = sequence.iter().map(|i| format!("{i},")).collect();
+                result.entry(key).or_insert(sequence.clone());
             }
-        }
+        } else {
+            let num = nums[index];
+            let lastseq = *sequence.last().unwrap_or(&num);
 
-        return result;
+            if lastseq <= num {
+                sequence.push(num);
+                Self::backtrack(nums, index + 1, sequence, result);
+                sequence.pop();
+            }
+            Self::backtrack(nums, index + 1, sequence, result);
+        }
     }
 }
 
 fn main() {
-    let inputs = [1, 9];
+    let inputs = [vec![4, 6, 7, 7], vec![4, 4, 3, 2, 1]];
 
-    for turned_on in inputs {
-        let result = Solution::read_binary_watch(turned_on);
+    for nums in inputs {
+        let result = Solution::find_subsequences(nums);
         println!("{result:?}");
     }
 }

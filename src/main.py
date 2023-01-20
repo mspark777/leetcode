@@ -3,24 +3,38 @@ from typing import List
 
 
 class Solution:
-    def readBinaryWatch(self, turned_on: int) -> List[str]:
-        result: list[str] = []
-        for h in range(12):
-            for m in range(60):
-                num = (h << 6) | m
-                ones = num.bit_count()
-                if ones == turned_on:
-                    time = "{}:{}{}".format(h, "0" if m < 10 else "", m)
-                    result.append(time)
+    def findSubsequences(self, nums: List[int]) -> List[List[int]]:
+        result: dict[str, list[int]] = {}
+        sequence: list[int] = []
+        self.backtrack(nums, 0, sequence, result)
+        return list(result.values())
 
-        return result
+    def backtrack(
+        self,
+        nums: list[int],
+        index: int,
+        sequence: list[int],
+        result: dict[str, list[int]],
+    ):
+        if index == len(nums):
+            if len(sequence) >= 2:
+                key = ",".join(map(str, sequence))
+                result[key] = sequence.copy()
+        else:
+            num = nums[index]
+            lastseq = sequence[-1] if len(sequence) > 0 else num
+            if lastseq <= num:
+                sequence.append(num)
+                self.backtrack(nums, index + 1, sequence, result)
+                sequence.pop()
+            self.backtrack(nums, index + 1, sequence, result)
 
 
 def main():
-    inputs: list[int] = [1, 9]
-    for turned_on in inputs:
+    inputs: list[list[int]] = [[4, 6, 7, 7], [4, 4, 3, 2, 1]]
+    for nums in inputs:
         solution = Solution()
-        result = solution.readBinaryWatch(turned_on)
+        result = solution.findSubsequences(nums)
         print(result)
 
 

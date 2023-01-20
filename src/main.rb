@@ -1,42 +1,44 @@
-# @param i [Integer]
-# @return [Integer]
-def popcount(i)
-  b = 0
-  while i > 0
-    i &= i - 1
-    b += 1
+# @param nums [Array<Integer>]
+# @param index [Integer]
+# @param sequence [Array<Integer>]
+# @param result [Hash<String, Array<Integer>>]
+def backtrack(nums, index, sequence, result)
+  if index == nums.length
+    if sequence.length >= 2
+      key = sequence.join(', ')
+      result[key] = sequence.clone
+    end
+  else
+    num = nums[index]
+    lastseq = num
+    lastseq = sequence[-1] unless sequence.empty?
+
+    if lastseq <= num
+      sequence.push(num)
+      backtrack(nums, index + 1, sequence, result)
+      sequence.pop
+    end
+    backtrack(nums, index + 1, sequence, result)
   end
-  b
 end
 
-# @param turned_on [Integer]
-# @return [Array<String>]
-def read_binary_watch(turned_on)
-  result = []
-
-  0.upto(11) do |h|
-    0.upto(59) do |m|
-      num = (h << 6) | m
-      ones = popcount num
-      if ones == turned_on
-        if m < 10
-          result.push("#{h}:0#{m}")
-        else
-          result.push("#{h}:#{m}")
-        end
-      end
-    end
-  end
-
-  result
+# @param nums [Array<Integer>]
+# @return [Array<Array<Integer>>]
+def find_subsequences(nums)
+  result = {}
+  backtrack(nums, 0, [], result)
+  result.values
 end
 
 def main
-  inputs = [1, 9]
+  inputs = [
+    [4, 6, 7, 7],
+    [4, 4, 3, 2, 1]
+  ]
 
-  inputs.each do |turned_on|
-    result = read_binary_watch turned_on
-    puts result
+  inputs.each do |nums|
+    result = find_subsequences(nums)
+    puts result.join(', ')
   end
 end
 

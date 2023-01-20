@@ -1,25 +1,37 @@
-function readBinaryWatch (turnedOn: number): string[] {
-  const result: string[] = []
-
-  for (let h = 0; h < 12; h += 1) {
-    for (let m = 0; m < 60; m += 1) {
-      const num = (h << 6) | m
-      const ones = num.toString(2).split('').filter(s => s === '1').length
-      if (ones === turnedOn) {
-        const time = `${h}${m < 10 ? ':0' : ':'}${m}`
-        result.push(time)
-      }
+function backtrack (nums: number[], index: number, sequence: number[], result: Map<string, number[]>): void {
+  if (index === nums.length) {
+    if (sequence.length >= 2) {
+      const key = sequence.join()
+      result.set(key, sequence.slice())
     }
-  }
+  } else {
+    const num = nums[index]
+    const lastseq = sequence.at(-1) ?? num
 
-  return result
+    if (lastseq <= num) {
+      sequence.push(num)
+      backtrack(nums, index + 1, sequence, result)
+      sequence.pop()
+    }
+    backtrack(nums, index + 1, sequence, result)
+  }
+}
+
+function findSubsequences (nums: number[]): number[][] {
+  const result = new Map<string, number[]>()
+  const sequence = new Array<number>()
+  backtrack(nums, 0, sequence, result)
+  return [...result.values()]
 }
 
 async function main (): Promise<void> {
-  const inputs: number[] = [1, 9]
+  const inputs: number[][] = [
+    [4, 6, 7, 7],
+    [4, 4, 3, 2, 1]
+  ]
 
-  for (const turnedOn of inputs) {
-    const result = readBinaryWatch(turnedOn)
+  for (const nums of inputs) {
+    const result = findSubsequences(nums)
     console.log(result)
   }
 }
