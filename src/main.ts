@@ -1,37 +1,37 @@
-function backtrack (nums: number[], index: number, sequence: number[], result: Map<string, number[]>): void {
-  if (index === nums.length) {
-    if (sequence.length >= 2) {
-      const key = sequence.join()
-      result.set(key, sequence.slice())
-    }
-  } else {
-    const num = nums[index]
-    const lastseq = sequence.at(-1) ?? num
+function dfs (result: string[][], s: string, start: number, current: string[], dp: boolean[][]): void {
+  if (start >= s.length) {
+    result.push(current.slice())
+  }
 
-    if (lastseq <= num) {
-      sequence.push(num)
-      backtrack(nums, index + 1, sequence, result)
-      sequence.pop()
+  for (let end = start; end < s.length; end += 1) {
+    const check = (s[start] === s[end]) &&
+      (((end - start) <= 2) || dp[start + 1][end - 1])
+    if (check) {
+      dp[start][end] = true
+      current.push(s.substring(start, end + 1))
+      dfs(result, s, end + 1, current, dp)
+      current.pop()
     }
-    backtrack(nums, index + 1, sequence, result)
   }
 }
 
-function findSubsequences (nums: number[]): number[][] {
-  const result = new Map<string, number[]>()
-  const sequence = new Array<number>()
-  backtrack(nums, 0, sequence, result)
-  return [...result.values()]
+function partition (s: string): string[][] {
+  const len = s.length
+  const dp = Array.from(new Array<boolean[]>(len), () => new Array<boolean>(len).fill(false))
+  const result = new Array<string[]>()
+  const current = new Array<string>()
+  dfs(result, s, 0, current, dp)
+  return result
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [
-    [4, 6, 7, 7],
-    [4, 4, 3, 2, 1]
+  const inputs: string[] = [
+    'aab',
+    'a'
   ]
 
-  for (const nums of inputs) {
-    const result = findSubsequences(nums)
+  for (const s of inputs) {
+    const result = partition(s)
     console.log(result)
   }
 }

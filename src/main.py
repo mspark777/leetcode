@@ -3,38 +3,40 @@ from typing import List
 
 
 class Solution:
-    def findSubsequences(self, nums: List[int]) -> List[List[int]]:
-        result: dict[str, list[int]] = {}
-        sequence: list[int] = []
-        self.backtrack(nums, 0, sequence, result)
-        return list(result.values())
+    def partition(self, s: str) -> List[List[str]]:
+        l = len(s)
+        dp = [[False for j in range(l)] for i in range(l)]
+        result: list[list[str]] = []
+        self.dfs(result, s, 0, [], dp)
+        return result
 
-    def backtrack(
+    def dfs(
         self,
-        nums: list[int],
-        index: int,
-        sequence: list[int],
-        result: dict[str, list[int]],
+        result: list[list[str]],
+        s: str,
+        start: int,
+        current: list[str],
+        dp: list[list[bool]],
     ):
-        if index == len(nums):
-            if len(sequence) >= 2:
-                key = ",".join(map(str, sequence))
-                result[key] = sequence.copy()
-        else:
-            num = nums[index]
-            lastseq = sequence[-1] if len(sequence) > 0 else num
-            if lastseq <= num:
-                sequence.append(num)
-                self.backtrack(nums, index + 1, sequence, result)
-                sequence.pop()
-            self.backtrack(nums, index + 1, sequence, result)
+        if start >= len(s):
+            result.append(current.copy())
+
+        for end in range(start, len(s)):
+            check = (s[start] == s[end]) and (
+                ((end - start) <= 2) or dp[start + 1][end - 1]
+            )
+            if check:
+                dp[start][end] = True
+                current.append(s[start : end + 1])
+                self.dfs(result, s, end + 1, current, dp)
+                current.pop()
 
 
 def main():
-    inputs: list[list[int]] = [[4, 6, 7, 7], [4, 4, 3, 2, 1]]
-    for nums in inputs:
+    inputs: list[str] = ["aab", "a"]
+    for s in inputs:
         solution = Solution()
-        result = solution.findSubsequences(nums)
+        result = solution.partition(s)
         print(result)
 
 
