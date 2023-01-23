@@ -3,40 +3,30 @@ from typing import List
 
 
 class Solution:
-    def partition(self, s: str) -> List[List[str]]:
-        l = len(s)
-        dp = [[False for j in range(l)] for i in range(l)]
-        result: list[list[str]] = []
-        self.dfs(result, s, 0, [], dp)
-        return result
+    def findJudge(self, n: int, trust: List[List[int]]) -> int:
+        counts = [0] * n
+        for [f, t] in trust:
+            counts[f - 1] -= 1
+            counts[t - 1] += 1
 
-    def dfs(
-        self,
-        result: list[list[str]],
-        s: str,
-        start: int,
-        current: list[str],
-        dp: list[list[bool]],
-    ):
-        if start >= len(s):
-            result.append(current.copy())
+        judge = n - 1
+        for person, count in enumerate(counts):
+            if count == judge:
+                return person + 1
 
-        for end in range(start, len(s)):
-            check = (s[start] == s[end]) and (
-                ((end - start) <= 2) or dp[start + 1][end - 1]
-            )
-            if check:
-                dp[start][end] = True
-                current.append(s[start : end + 1])
-                self.dfs(result, s, end + 1, current, dp)
-                current.pop()
+        return -1
 
 
 def main():
-    inputs: list[str] = ["aab", "a"]
-    for s in inputs:
+    inputs: list[tuple[int, list[list[int]]]] = [
+        (2, [[1, 2]]),
+        (3, [[1, 3], [2, 3]]),
+        (3, [[1, 3], [2, 3], [3, 1]]),
+        (1, []),
+    ]
+    for n, trust in inputs:
         solution = Solution()
-        result = solution.partition(s)
+        result = solution.findJudge(n, trust)
         print(result)
 
 

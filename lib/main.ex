@@ -1,33 +1,25 @@
 defmodule Solution do
-  use Bitwise
+  @spec find_judge(n :: integer, trust :: [[integer]]) :: integer
+  def find_judge(n, trust)
 
-  @spec read_binary_watch(turned_on :: integer) :: [String.t()]
-  def read_binary_watch(turned_on) do
-    loop1(turned_on, 0, []) |> Enum.reverse()
+  def find_judge(1, []), do: 1
+
+  def find_judge(n, trust) do
+    trust |> count_trust(%{}) |> Map.to_list() |> check(n - 1)
   end
 
-  defp loop1(turned_on, h, result) when h < 12 do
-    loop1(turned_on, h + 1, loop2(turned_on, h, 0, result))
+  defp count_trust([[from, to] | trust], counts) do
+    f = Map.get(counts, from, 0) - 1
+    t = Map.get(counts, to, 0) + 1
+    count_trust(trust, counts |> Map.put(from, f) |> Map.put(to, t))
   end
 
-  defp loop1(_, _, result), do: result
+  defp count_trust([], counts), do: counts
 
-  defp loop2(turned_on, h, m, result) when m < 60 do
-    num = h <<< 6 ||| m
-    ones = Enum.sum(for <<bit::1 <- :binary.encode_unsigned(num)>>, do: bit)
-
-    if ones == turned_on do
-      if m >= 10 do
-        loop2(turned_on, h, m + 1, ["#{h}:#{m}" | result])
-      else
-        loop2(turned_on, h, m + 1, ["#{h}:0#{m}" | result])
-      end
-    else
-      loop2(turned_on, h, m + 1, result)
-    end
-  end
-
-  defp loop2(_, _, _, result), do: result
+  defp check(counts, judge)
+  defp check([{person, count} | _], judge) when count == judge, do: person
+  defp check([_ | counts], judge), do: check(counts, judge)
+  defp check([], _), do: -1
 end
 
 defmodule Main do
@@ -35,10 +27,10 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([turned_on | remains]) do
-    result = Solution.read_binary_watch(turned_on)
+  def main([%{n: n, trust: trust} | remains]) do
+    result = Solution.find_judge(n, trust)
 
-    IO.puts(result |> Enum.join(", "))
+    IO.puts(result)
     main(remains)
   end
 
@@ -47,8 +39,10 @@ defmodule Main do
 
   def main do
     main([
-      1,
-      9
+      %{n: 2, trust: [[1, 2]]},
+      %{n: 3, trust: [[1, 3], [2, 3]]},
+      %{n: 3, trust: [[1, 3], [2, 3], [3, 1]]},
+      %{n: 1, trust: []}
     ])
   end
 end

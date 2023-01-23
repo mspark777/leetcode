@@ -4,51 +4,41 @@ import (
 	"fmt"
 )
 
-func backtrack(nums []int, index int, sequence []int, result map[string][]int) {
-	seqs := len(sequence)
-	if index == len(nums) {
-		if seqs >= 2 {
-			key := fmt.Sprint(sequence)
-			temp := make([]int, seqs)
-			copy(temp, sequence)
-			result[key] = temp
-		}
-	} else {
-		num := nums[index]
-		lastseq := num
-		if seqs > 0 {
-			lastseq = sequence[seqs-1]
-		}
+func findJudge(n int, trust [][]int) int {
+	counts := make([]int, n)
+	for _, info := range trust {
+		from := info[0] - 1
+		to := info[1] - 1
 
-		if lastseq <= num {
-			sequence = append(sequence, num)
-			backtrack(nums, index+1, sequence, result)
-			sequence = sequence[:seqs]
-		}
-		backtrack(nums, index+1, sequence, result)
+		counts[from] -= 1
+		counts[to] += 1
 	}
+
+	judge := n - 1
+	for person, count := range counts {
+		if count == judge {
+			return person + 1
+		}
+	}
+
+	return -1
 }
 
-func findSubsequences(nums []int) [][]int {
-	memo := map[string][]int{}
-	backtrack(nums, 0, []int{}, memo)
-
-	result := make([][]int, 0, len(memo))
-	for _, v := range memo {
-		result = append(result, v)
-	}
-
-	return result
+type input struct {
+	n     int
+	trust [][]int
 }
 
 func main() {
-	inputs := [][]int{
-		{4, 6, 7, 7},
-		{4, 4, 3, 2, 1},
+	inputs := []input{
+		{n: 2, trust: [][]int{{1, 2}}},
+		{n: 3, trust: [][]int{{1, 3}, {2, 3}}},
+		{n: 3, trust: [][]int{{1, 3}, {2, 3}, {3, 1}}},
+		{n: 1, trust: [][]int{}},
 	}
 
 	for _, input := range inputs {
-		result := findSubsequences(input)
+		result := findJudge(input.n, input.trust)
 		fmt.Println(result)
 	}
 }

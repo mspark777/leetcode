@@ -1,44 +1,32 @@
-# @param nums [Array<Integer>]
-# @param index [Integer]
-# @param sequence [Array<Integer>]
-# @param result [Hash<String, Array<Integer>>]
-def backtrack(nums, index, sequence, result)
-  if index == nums.length
-    if sequence.length >= 2
-      key = sequence.join(', ')
-      result[key] = sequence.clone
-    end
-  else
-    num = nums[index]
-    lastseq = num
-    lastseq = sequence[-1] unless sequence.empty?
-
-    if lastseq <= num
-      sequence.push(num)
-      backtrack(nums, index + 1, sequence, result)
-      sequence.pop
-    end
-    backtrack(nums, index + 1, sequence, result)
+# @param n [Integer] n
+# @param trust [Array<Array<Integer>>]
+# @return [Integer]
+def find_judge(n, trust)
+  counts = Array.new(n) { 0 }
+  trust.each do |info|
+    counts[info[0] - 1] -= 1
+    counts[info[1] - 1] += 1
   end
-end
 
-# @param nums [Array<Integer>]
-# @return [Array<Array<Integer>>]
-def find_subsequences(nums)
-  result = {}
-  backtrack(nums, 0, [], result)
-  result.values
+  judge = n - 1
+  counts.each_with_index do |count, person|
+    return person + 1 if count == judge
+  end
+
+  -1
 end
 
 def main
   inputs = [
-    [4, 6, 7, 7],
-    [4, 4, 3, 2, 1]
+    { n: 2, trust: [[1, 2]] },
+    { n: 3, trust: [[1, 3], [2, 3]] },
+    { n: 3, trust: [[1, 3], [2, 3], [3, 1]] },
+    { n: 1, trust: [] }
   ]
 
-  inputs.each do |nums|
-    result = find_subsequences(nums)
-    puts result.join(', ')
+  inputs.each do |input|
+    result = find_judge(input[:n], input[:trust])
+    puts(result)
   end
 end
 

@@ -1,49 +1,35 @@
 /**
- * @param {string[][]} result
- * @param {string} s
- * @param {number} start
- * @param {string[]} current
- * @param {boolean[][]} dp
- * @returns {undefined}
+ * @param {number} n
+ * @param {number[][]} trust
+ * @returns {number}
  */
-function dfs (result, s, start, current, dp) {
-  if (start >= s.length) {
-    result.push(current.slice())
+function findJudge (n, trust) {
+  const counts = new Array(n).fill(0)
+  for (const [from, to] of trust) {
+    counts[from - 1] -= 1
+    counts[to - 1] += 1
   }
 
-  for (let end = start; end < s.length; end += 1) {
-    const check = (s[start] === s[end]) &&
-      (((end - start) <= 2) || dp[start + 1][end - 1])
-    if (check) {
-      dp[start][end] = true
-      current.push(s.substring(start, end + 1))
-      dfs(result, s, end + 1, current, dp)
-      current.pop()
+  const JUDGE = n - 1
+  for (const [person, count] of counts.entries()) {
+    if (count === JUDGE) {
+      return person + 1
     }
   }
-}
 
-/**
- * @param {string} s
- * @returns {string[][]}
- */
-function partition (s) {
-  const len = s.length
-  const dp = Array.from(new Array(len), () => new Array(len).fill(false))
-  const result = []
-  const current = []
-  dfs(result, s, 0, current, dp)
-  return result
+  return -1
 }
 
 async function main () {
   const inputs = [
-    'aab',
-    'a'
+    { n: 2, trust: [[1, 2]] },
+    { n: 3, trust: [[1, 3], [2, 3]] },
+    { n: 3, trust: [[1, 3], [2, 3], [3, 1]] },
+    { n: 1, trust: [] }
   ]
 
-  for (const s of inputs) {
-    const result = partition(s)
+  for (const { n, trust } of inputs) {
+    const result = findJudge(n, trust)
     console.log(result)
   }
 }
