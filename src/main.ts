@@ -1,37 +1,35 @@
-function dfs (result: string[][], s: string, start: number, current: string[], dp: boolean[][]): void {
-  if (start >= s.length) {
-    result.push(current.slice())
+function findJudge (n: number, trust: number[][]): number {
+  const counts = new Array<number>(n).fill(0)
+  for (const [from, to] of trust) {
+    counts[from - 1] -= 1
+    counts[to - 1] += 1
   }
 
-  for (let end = start; end < s.length; end += 1) {
-    const check = (s[start] === s[end]) &&
-      (((end - start) <= 2) || dp[start + 1][end - 1])
-    if (check) {
-      dp[start][end] = true
-      current.push(s.substring(start, end + 1))
-      dfs(result, s, end + 1, current, dp)
-      current.pop()
+  const JUDGE = n - 1
+  for (const [person, count] of counts.entries()) {
+    if (count === JUDGE) {
+      return person + 1
     }
   }
+
+  return -1
 }
 
-function partition (s: string): string[][] {
-  const len = s.length
-  const dp = Array.from(new Array<boolean[]>(len), () => new Array<boolean>(len).fill(false))
-  const result = new Array<string[]>()
-  const current = new Array<string>()
-  dfs(result, s, 0, current, dp)
-  return result
+interface Input {
+  readonly n: number
+  readonly trust: number[][]
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    'aab',
-    'a'
+  const inputs: Input[] = [
+    { n: 2, trust: [[1, 2]] },
+    { n: 3, trust: [[1, 3], [2, 3]] },
+    { n: 3, trust: [[1, 3], [2, 3], [3, 1]] },
+    { n: 1, trust: [] }
   ]
 
-  for (const s of inputs) {
-    const result = partition(s)
+  for (const { n, trust } of inputs) {
+    const result = findJudge(n, trust)
     console.log(result)
   }
 }
