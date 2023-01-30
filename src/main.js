@@ -1,37 +1,35 @@
 /**
- * @param {string[]} words
- * @returns {string[]}
+ * @param {number} n
+ * @param {number} t0
+ * @param {number} t1
+ * @param {number} t2
+ * @returns {number}
  */
-function findAllConcatenatedWordsInADict (words) {
-  const dictionary = new Set(words)
-  const result = []
-  for (const word of words) {
-    const wlen = word.length
-    const dp = new Array(wlen + 1).fill(false)
-    dp[0] = true
+function recursive (n, t0, t1, t2) {
+  return n > 2 ? recursive(n - 1, t1, t2, t0 + t1 + t2) : t2
+}
 
-    for (let i = 1; i <= wlen; i += 1) {
-      for (let j = i === wlen ? 1 : 0; !dp[i] && (j < i); j += 1) {
-        dp[i] = dp[j] && dictionary.has(word.substring(j, i))
-      }
-    }
-
-    if (dp[wlen]) {
-      result.push(word)
-    }
+/**
+ * @param {number} n
+ * @returns {number}
+ */
+function tribonacci (n) {
+  if (n === 0) {
+    return 0
+  } else if (n < 3) {
+    return 1
   }
 
-  return result
+  return recursive(n, 0, 1, 1)
 }
 
 async function main () {
   const inputs = [
-    ['cat', 'cats', 'catsdogcats', 'dog', 'dogcatsdog', 'hippopotamuses', 'rat', 'ratcatdogcat'],
-    ['cat', 'dog', 'catdog']
+    4, 25
   ]
 
-  for (const words of inputs) {
-    const result = findAllConcatenatedWordsInADict(words)
+  for (const n of inputs) {
+    const result = tribonacci(n)
     console.log(result)
   }
 }

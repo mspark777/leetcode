@@ -1,25 +1,14 @@
 defmodule Solution do
-  @spec find_judge(n :: integer, trust :: [[integer]]) :: integer
-  def find_judge(n, trust)
+  @spec tribonacci(n :: integer) :: integer
+  def tribonacci(n) when n < 3, do: if(n < 1, do: 0, else: 1)
 
-  def find_judge(1, []), do: 1
+  def tribonacci(n), do: recursive(n, 0, 1, 1)
 
-  def find_judge(n, trust) do
-    trust |> count_trust(%{}) |> Map.to_list() |> check(n - 1)
+  def recursive(n, t0, t1, t2) when n > 2 do
+    recursive(n - 1, t1, t2, t0 + t1 + t2)
   end
 
-  defp count_trust([[from, to] | trust], counts) do
-    f = Map.get(counts, from, 0) - 1
-    t = Map.get(counts, to, 0) + 1
-    count_trust(trust, counts |> Map.put(from, f) |> Map.put(to, t))
-  end
-
-  defp count_trust([], counts), do: counts
-
-  defp check(counts, judge)
-  defp check([{person, count} | _], judge) when count == judge, do: person
-  defp check([_ | counts], judge), do: check(counts, judge)
-  defp check([], _), do: -1
+  def recursive(_, _, _, t2), do: t2
 end
 
 defmodule Main do
@@ -27,8 +16,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([%{n: n, trust: trust} | remains]) do
-    result = Solution.find_judge(n, trust)
+  def main([n | remains]) do
+    result = Solution.tribonacci(n)
 
     IO.puts(result)
     main(remains)
@@ -39,10 +28,8 @@ defmodule Main do
 
   def main do
     main([
-      %{n: 2, trust: [[1, 2]]},
-      %{n: 3, trust: [[1, 3], [2, 3]]},
-      %{n: 3, trust: [[1, 3], [2, 3], [3, 1]]},
-      %{n: 1, trust: []}
+      4,
+      25
     ])
   end
 end

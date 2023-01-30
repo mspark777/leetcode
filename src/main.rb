@@ -1,31 +1,30 @@
-# @param n [Integer] n
-# @param trust [Array<Array<Integer>>]
+# @param n [Integer]
+# @param t0 [Integer]
+# @param t1 [Integer]
+# @param t2 [Integer]
 # @return [Integer]
-def find_judge(n, trust)
-  counts = Array.new(n) { 0 }
-  trust.each do |info|
-    counts[info[0] - 1] -= 1
-    counts[info[1] - 1] += 1
-  end
+def recursive(n, t0, t1, t2)
+  return t2 if n < 3
 
-  judge = n - 1
-  counts.each_with_index do |count, person|
-    return person + 1 if count == judge
-  end
+  recursive(n - 1, t1, t2, t0 + t1 + t2)
+end
 
-  -1
+# @param n [Integer]
+# @return [Integer]
+def tribonacci(n)
+  return 0 if n < 1
+  return 1 if n < 3
+
+  recursive(n, 0, 1, 1)
 end
 
 def main
   inputs = [
-    { n: 2, trust: [[1, 2]] },
-    { n: 3, trust: [[1, 3], [2, 3]] },
-    { n: 3, trust: [[1, 3], [2, 3], [3, 1]] },
-    { n: 1, trust: [] }
+    4, 25
   ]
 
   inputs.each do |input|
-    result = find_judge(input[:n], input[:trust])
+    result = tribonacci(input)
     puts(result)
   end
 end

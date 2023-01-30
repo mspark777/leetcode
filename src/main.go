@@ -4,41 +4,31 @@ import (
 	"fmt"
 )
 
-func findJudge(n int, trust [][]int) int {
-	counts := make([]int, n)
-	for _, info := range trust {
-		from := info[0] - 1
-		to := info[1] - 1
-
-		counts[from] -= 1
-		counts[to] += 1
+func recursive(n, t0, t1, t2 int) int {
+	if n <= 2 {
+		return t2
 	}
 
-	judge := n - 1
-	for person, count := range counts {
-		if count == judge {
-			return person + 1
-		}
-	}
-
-	return -1
+	return recursive(n-1, t1, t2, t2+t1+t0)
 }
 
-type input struct {
-	n     int
-	trust [][]int
+func tribonacci(n int) int {
+	if n < 1 {
+		return 0
+	} else if n < 3 {
+		return 1
+	}
+
+	return recursive(n, 0, 1, 1)
 }
 
 func main() {
-	inputs := []input{
-		{n: 2, trust: [][]int{{1, 2}}},
-		{n: 3, trust: [][]int{{1, 3}, {2, 3}}},
-		{n: 3, trust: [][]int{{1, 3}, {2, 3}, {3, 1}}},
-		{n: 1, trust: [][]int{}},
+	inputs := []int{
+		4, 25,
 	}
 
 	for _, input := range inputs {
-		result := findJudge(input.n, input.trust)
+		result := tribonacci(input)
 		fmt.Println(result)
 	}
 }
