@@ -1,30 +1,65 @@
-# @param n [Integer]
-# @param t0 [Integer]
-# @param t1 [Integer]
-# @param t2 [Integer]
+# @param bits [Array<Integer>]
+# @param age [Integer]
 # @return [Integer]
-def recursive(n, t0, t1, t2)
-  return t2 if n < 3
+def query(bits, age)
+  max_score = -(2**31)
+  i = age
+  while i > 0
+    max_score = [max_score, bits[i]].max
+    i -= i & (-i)
+  end
 
-  recursive(n - 1, t1, t2, t0 + t1 + t2)
+  max_score
 end
 
-# @param n [Integer]
-# @return [Integer]
-def tribonacci(n)
-  return 0 if n < 1
-  return 1 if n < 3
+# @param bits [Array<Integer>]
+# @param age [Integer]
+# @param best [Integer]
+# @return [Void]
+def update(bits, age, best)
+  i = age
+  while i < bits.length
+    bits[i] = [bits[i], best].max
+    i += i & (-i)
+  end
+end
 
-  recursive(n, 0, 1, 1)
+# @param scores [Array<Integer>]
+# @param ages [Array<Integer>]
+# @return [Integer]
+def best_team_score(scores, ages)
+  pairs = scores.zip(ages).sort
+
+  highest_age = 0
+  ages.each do |age|
+    highest_age = [highest_age, age].max
+  end
+
+  bits = Array.new(highest_age + 1) { 0 }
+  result = -(2**31)
+
+  pairs.each do |pair|
+    score = pair[0]
+    age = pair[1]
+
+    best = score + query(bits, age)
+    update(bits, age, best)
+
+    result = [result, best].max
+  end
+
+  result
 end
 
 def main
   inputs = [
-    4, 25
+    [[1, 3, 5, 10, 15], [1, 2, 3, 4, 5]],
+    [[4, 5, 6, 5], [2, 1, 2, 1]],
+    [[1, 2, 3, 5], [8, 9, 10, 1]]
   ]
 
   inputs.each do |input|
-    result = tribonacci(input)
+    result = best_team_score(input[0], input[1])
     puts(result)
   end
 end

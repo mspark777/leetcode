@@ -1,35 +1,70 @@
 /**
- * @param {number} n
- * @param {number} t0
- * @param {number} t1
- * @param {number} t2
+ * @param {number[]} bits
+ * @param {number} age
  * @returns {number}
  */
-function recursive (n, t0, t1, t2) {
-  return n > 2 ? recursive(n - 1, t1, t2, t0 + t1 + t2) : t2
+function query (bits, age) {
+  let maxScore = Number.MIN_SAFE_INTEGER
+  for (let i = age; i > 0; i -= i & (-i)) {
+    maxScore = Math.max(maxScore, bits[i])
+  }
+
+  return maxScore
 }
 
 /**
- * @param {number} n
+ * @param {number[]} bits
+ * @param {number} age
+ * @param {number} best
+ * @returns {undefined}
+ */
+function update (bits, age, best) {
+  for (let i = age; i < bits.length; i += i & (-i)) {
+    bits[i] = Math.max(bits[i], best)
+  }
+}
+
+/**
+ * @param {number[]} scores
+ * @param {number[]} ages
  * @returns {number}
  */
-function tribonacci (n) {
-  if (n === 0) {
-    return 0
-  } else if (n < 3) {
-    return 1
+function bestTeamScore (scores, ages) {
+  const pairs = new Array(ages.length)
+  for (let i = 0; i < ages.length; i += 1) {
+    pairs[i] = [scores[i], ages[i]]
   }
 
-  return recursive(n, 0, 1, 1)
+  pairs.sort((a, b) => {
+    return a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]
+  })
+
+  let highestAge = 0
+  for (const age of ages) {
+    highestAge = Math.max(age, highestAge)
+  }
+
+  const bits = new Array(highestAge + 1).fill(0)
+  let result = Number.MIN_SAFE_INTEGER
+  for (const [score, age] of pairs) {
+    const best = score + query(bits, age)
+    update(bits, age, best)
+
+    result = Math.max(result, best)
+  }
+
+  return result
 }
 
 async function main () {
   const inputs = [
-    4, 25
+    [[1, 3, 5, 10, 15], [1, 2, 3, 4, 5]],
+    [[4, 5, 6, 5], [2, 1, 2, 1]],
+    [[1, 2, 3, 5], [8, 9, 10, 1]]
   ]
 
-  for (const n of inputs) {
-    const result = tribonacci(n)
+  for (const [scores, ages] of inputs) {
+    const result = bestTeamScore(scores, ages)
     console.log(result)
   }
 }
