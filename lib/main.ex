@@ -1,14 +1,19 @@
 defmodule Solution do
-  @spec tribonacci(n :: integer) :: integer
-  def tribonacci(n) when n < 3, do: if(n < 1, do: 0, else: 1)
+  @spec gcd_of_strings(str1 :: String.t(), str2 :: String.t()) :: String.t()
+  def gcd_of_strings(str1, str2)
 
-  def tribonacci(n), do: recursive(n, 0, 1, 1)
+  def gcd_of_strings(str1, str2) when str1 <> str2 != str2 <> str1, do: ""
 
-  def recursive(n, t0, t1, t2) when n > 2 do
-    recursive(n - 1, t1, t2, t0 + t1 + t2)
+  def gcd_of_strings(str1, str2) do
+    gcdlen = gcd(String.length(str1), String.length(str2))
+
+    String.slice(str1, 0, gcdlen)
   end
 
-  def recursive(_, _, _, t2), do: t2
+  @spec gcd(x :: integer, y :: integer) :: integer
+  def gcd(x, y)
+  def gcd(x, 0), do: x
+  def gcd(x, y), do: gcd(y, rem(x, y))
 end
 
 defmodule Main do
@@ -16,8 +21,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([n | remains]) do
-    result = Solution.tribonacci(n)
+  def main([[str1, str2] | remains]) do
+    result = Solution.gcd_of_strings(str1, str2)
 
     IO.puts(result)
     main(remains)
@@ -28,8 +33,9 @@ defmodule Main do
 
   def main do
     main([
-      4,
-      25
+      ["ABCABC", "ABC"],
+      ["ABABAB", "ABAB"],
+      ["LEET", "CODE"]
     ])
   end
 end

@@ -1,63 +1,34 @@
 struct Solution {}
 impl Solution {
-    pub fn best_team_score(scores: Vec<i32>, ages: Vec<i32>) -> i32 {
-        let mut pairs: Vec<(i32, i32)> = scores.iter().cloned().zip(ages.iter().cloned()).collect();
-        pairs.sort_unstable();
-
-        let mut highest_age = 0usize;
-        for &age in ages.iter() {
-            let a = age as usize;
-            highest_age = highest_age.max(a);
+    pub fn gcd_of_strings(str1: String, str2: String) -> String {
+        if format!("{str1}{str2}") != format!("{str2}{str1}") {
+            return String::new();
         }
 
-        let mut bits = vec![0; highest_age + 1];
-        let mut result = i32::min_value();
-
-        for pair in pairs.iter() {
-            let score = pair.0;
-            let age = pair.1;
-
-            let best = score + Self::query(&bits, age);
-            Self::update(&mut bits, age, best);
-
-            result = result.max(best);
-        }
-
-        return result;
+        let gcd = Self::gcd(str1.len(), str2.len());
+        return str1.chars().take(gcd).collect();
     }
 
-    fn query(bits: &Vec<i32>, age: i32) -> i32 {
-        let mut max_score = i32::min_value();
-
-        let mut i = age;
-        while i > 0 {
-            max_score = max_score.max(bits[i as usize]);
-            i -= i & (-i);
+    fn gcd(x: usize, y: usize) -> usize {
+        if y == 0 {
+            return x;
         }
 
-        return max_score;
-    }
-
-    fn update(bits: &mut Vec<i32>, age: i32, best: i32) {
-        let mut i = age;
-        let mut j = i as usize;
-        while j < bits.len() {
-            bits[j] = bits[j].max(best);
-            i += i & (-i);
-            j = i as usize;
-        }
+        return Self::gcd(y, x % y);
     }
 }
 
 fn main() {
     let inputs = [
-        vec![vec![1, 3, 5, 10, 15], vec![1, 2, 3, 4, 5]],
-        vec![vec![4, 5, 6, 5], vec![2, 1, 2, 1]],
-        vec![vec![1, 2, 3, 5], vec![8, 9, 10, 1]],
+        vec!["ABCABC", "ABC"],
+        vec!["ABABAB", "ABAB"],
+        vec!["LEET", "CODE"],
     ];
 
     for input in inputs {
-        let result = Solution::best_team_score(input[0].clone(), input[1].clone());
+        let str1 = input[0].to_string();
+        let str2 = input[1].to_string();
+        let result = Solution::gcd_of_strings(str1, str2);
         println!("{result}");
     }
 }

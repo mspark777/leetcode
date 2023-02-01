@@ -1,70 +1,35 @@
 /**
- * @param {number[]} bits
- * @param {number} age
+ * @param {number} x
+ * @param {number} y
  * @returns {number}
  */
-function query (bits, age) {
-  let maxScore = Number.MIN_SAFE_INTEGER
-  for (let i = age; i > 0; i -= i & (-i)) {
-    maxScore = Math.max(maxScore, bits[i])
-  }
-
-  return maxScore
+function gcd (x, y) {
+  return y !== 0 ? gcd(y, x % y) : x
 }
 
 /**
- * @param {number[]} bits
- * @param {number} age
- * @param {number} best
- * @returns {undefined}
+ * @param {string} str1
+ * @param {string} str2
+ * @returns {string}
  */
-function update (bits, age, best) {
-  for (let i = age; i < bits.length; i += i & (-i)) {
-    bits[i] = Math.max(bits[i], best)
-  }
-}
-
-/**
- * @param {number[]} scores
- * @param {number[]} ages
- * @returns {number}
- */
-function bestTeamScore (scores, ages) {
-  const pairs = new Array(ages.length)
-  for (let i = 0; i < ages.length; i += 1) {
-    pairs[i] = [scores[i], ages[i]]
+function gcdOfStrings (str1, str2) {
+  if (`${str1}${str2}` !== `${str2}${str1}`) {
+    return ''
   }
 
-  pairs.sort((a, b) => {
-    return a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]
-  })
-
-  let highestAge = 0
-  for (const age of ages) {
-    highestAge = Math.max(age, highestAge)
-  }
-
-  const bits = new Array(highestAge + 1).fill(0)
-  let result = Number.MIN_SAFE_INTEGER
-  for (const [score, age] of pairs) {
-    const best = score + query(bits, age)
-    update(bits, age, best)
-
-    result = Math.max(result, best)
-  }
-
-  return result
+  const gcdLen = gcd(str1.length, str2.length)
+  return str1.substring(0, gcdLen)
 }
 
 async function main () {
   const inputs = [
-    [[1, 3, 5, 10, 15], [1, 2, 3, 4, 5]],
-    [[4, 5, 6, 5], [2, 1, 2, 1]],
-    [[1, 2, 3, 5], [8, 9, 10, 1]]
+    ['ABCABC', 'ABC'],
+    ['ABABAB', 'ABAB'],
+    ['LEET', 'CODE']
   ]
 
-  for (const [scores, ages] of inputs) {
-    const result = bestTeamScore(scores, ages)
+  for (const [str1, str2] of inputs) {
+    const result = gcdOfStrings(str1, str2)
     console.log(result)
   }
 }
