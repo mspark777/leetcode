@@ -12,7 +12,6 @@ dap.configurations.javascript = {
     console = 'integratedTerminal',
   },
   {
-    -- For this to work you need to make sure the node process is started with the `--inspect` flag.
     name = 'Attach to process',
     type = 'node2',
     request = 'attach',
@@ -33,7 +32,6 @@ dap.configurations.typescript = {
     outFiles = { '${workspaceFolder}/dist/**/*.js' }
   },
   {
-    -- For this to work you need to make sure the node process is started with the `--inspect` flag.
     name = 'Attach to process',
     type = 'node2',
     request = 'attach',
