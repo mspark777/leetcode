@@ -1,35 +1,52 @@
 /**
- * @param {number} x
- * @param {number} y
- * @returns {number}
- */
-function gcd (x, y) {
-  return y !== 0 ? gcd(y, x % y) : x
-}
-
-/**
- * @param {string} str1
- * @param {string} str2
- * @returns {string}
- */
-function gcdOfStrings (str1, str2) {
-  if (`${str1}${str2}` !== `${str2}${str1}`) {
-    return ''
+  * @param {string[]} words
+  * @param {string} order
+  * @returns {boolean}
+  */
+function isAlienSorted (words, order) {
+  const ACODE = 'a'.charCodeAt(0)
+  const orders = new Array(26)
+  for (let i = 0; i < order.length; i += 1) {
+    const code = order.charCodeAt(i) - ACODE
+    orders[code] = i
   }
 
-  const gcdLen = gcd(str1.length, str2.length)
-  return str1.substring(0, gcdLen)
+  for (let i = 0; i < words.length - 1; i += 1) {
+    const current = words[i]
+    const next = words[i + 1]
+
+    for (let j = 0; j < current.length; j += 1) {
+      if (j >= next.length) {
+        return false
+      }
+
+      const curCh = current.charCodeAt(j) - ACODE
+      const nxtCh = next.charCodeAt(j) - ACODE
+      const curOrd = orders[curCh]
+      const nxtOrd = orders[nxtCh]
+      if (curOrd !== nxtOrd) {
+        if (curOrd > nxtOrd) {
+          return false
+        } else {
+          break
+        }
+      }
+    }
+  }
+
+  return true
 }
 
 async function main () {
   const inputs = [
-    ['ABCABC', 'ABC'],
-    ['ABABAB', 'ABAB'],
-    ['LEET', 'CODE']
+    { words: ['hello', 'leetcode'], order: 'hlabcdefgijkmnopqrstuvwxyz' },
+    { words: ['word', 'world', 'row'], order: 'worldabcefghijkmnpqstuvxyz' },
+    { words: ['apple', 'app'], order: 'abcdefghijklmnopqrstuvwxyz' },
+    { words: ['kuvp', 'q'], order: 'ngxlkthsjuoqcpavbfdermiywz' }
   ]
 
-  for (const [str1, str2] of inputs) {
-    const result = gcdOfStrings(str1, str2)
+  for (const { words, order } of inputs) {
+    const result = isAlienSorted(words, order)
     console.log(result)
   }
 }
