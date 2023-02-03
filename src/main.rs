@@ -1,34 +1,52 @@
 struct Solution {}
+
 impl Solution {
-    pub fn gcd_of_strings(str1: String, str2: String) -> String {
-        if format!("{str1}{str2}") != format!("{str2}{str1}") {
-            return String::new();
+    pub fn convert(s: String, num_rows: i32) -> String {
+        if num_rows <= 1 {
+            return s;
         }
 
-        let gcd = Self::gcd(str1.len(), str2.len());
-        return str1.chars().take(gcd).collect();
-    }
+        let num_rows = num_rows as usize;
+        let last_row = num_rows - 1;
+        let mut row = 0usize;
+        let mut down = true;
+        let mut result = vec![Vec::<char>::new(); num_rows];
 
-    fn gcd(x: usize, y: usize) -> usize {
-        if y == 0 {
-            return x;
+        for ch in s.chars() {
+            result[row].push(ch);
+            if row == last_row {
+                down = false;
+            } else if row == 0 {
+                down = true;
+            }
+
+            if down {
+                row += 1
+            } else {
+                row -= 1
+            }
         }
 
-        return Self::gcd(y, x % y);
+        return result
+            .iter()
+            .map(|r| {
+                let s: String = r.iter().collect();
+                return s;
+            })
+            .collect();
     }
 }
 
 fn main() {
     let inputs = [
-        vec!["ABCABC", "ABC"],
-        vec!["ABABAB", "ABAB"],
-        vec!["LEET", "CODE"],
+        ("PAYPALISHIRING", 3),
+        ("PAYPALISHIRING", 4),
+        ("A", 1),
+        ("AB", 1),
     ];
 
-    for input in inputs {
-        let str1 = input[0].to_string();
-        let str2 = input[1].to_string();
-        let result = Solution::gcd_of_strings(str1, str2);
+    for (s, num_rows) in inputs {
+        let result = Solution::convert(s.to_string(), num_rows);
         println!("{result}");
     }
 }

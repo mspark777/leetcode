@@ -1,31 +1,43 @@
-# @param x [Integer]
-# @param y [Integer]
-# @return [Integer]
-def gcd(x, y)
-  return x if y == 0
-
-  gcd(y, x % y)
-end
-
-# @param str1 [String]
-# @param str2 [String]
+# @param s [String]
+# @param num_rows [Integer]
 # @return [String]
-def gcd_of_strings(str1, str2)
-  return '' if (str1 + str2) != (str2 + str1)
+def convert(s, num_rows)
+  return s if num_rows <= 1
 
-  last = gcd(str1.size, str2.size) - 1
-  str1[0..last]
+  last_row = num_rows - 1
+  row = 0
+  down = true
+
+  # @type [Array<Array<String>>]
+  result = Array.new(num_rows) { [] }
+  s.each_char do |ch|
+    result[row].push(ch)
+    if row == last_row
+      down = false
+    elsif row == 0
+      down = true
+    end
+
+    if down
+      row += 1
+    else
+      row -= 1
+    end
+  end
+
+  result.map { |arr| arr.join('') }.join('')
 end
 
 def main
   inputs = [
-    %w[ABCABC ABC],
-    %w[ABABAB ABAB],
-    %w[LEET CODE]
+    { s: 'PAYPALISHIRING', num_rows: 3 },
+    { s: 'PAYPALISHIRING', num_rows: 4 },
+    { s: 'A', num_rows: 1 },
+    { s: 'AB', num_rows: 1 }
   ]
 
   inputs.each do |input|
-    result = gcd_of_strings(input[0], input[1])
+    result = convert(input[:s], input[:num_rows])
     puts(result)
   end
 end

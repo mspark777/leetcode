@@ -4,32 +4,58 @@ import (
 	"fmt"
 )
 
-func gcd(x, y int) int {
-	if y != 0 {
-		return gcd(y, x%y)
+func convert(s string, numRows int) string {
+	if numRows <= 1 {
+		return s
 	}
 
-	return x
+	lastRow := numRows - 1
+	row := 0
+	down := true
+
+	result := make([][]rune, numRows)
+	for i := 0; i < numRows; i += 1 {
+		result[i] = []rune{}
+	}
+
+	for _, ch := range s {
+		result[row] = append(result[row], ch)
+		if row == lastRow {
+			down = false
+		} else if row == 0 {
+			down = true
+		}
+
+		if down {
+			row += 1
+		} else {
+			row -= 1
+		}
+	}
+
+	converted := []rune{}
+	for _, chars := range result {
+		converted = append(converted, chars...)
+	}
+
+	return string(converted)
 }
 
-func gcdOfStrings(str1 string, str2 string) string {
-	if (str1 + str2) != (str2 + str1) {
-		return ""
-	}
-
-	gcdlen := gcd(len(str1), len(str2))
-	return str1[0:gcdlen]
+type input struct {
+	s       string
+	numRows int
 }
 
 func main() {
-	inputs := [][]string{
-		{"ABCABC", "ABC"},
-		{"ABABAB", "ABAB"},
-		{"LEET", "CODE"},
+	inputs := []input{
+		{s: "PAYPALISHIRING", numRows: 3},
+		{s: "PAYPALISHIRING", numRows: 4},
+		{s: "A", numRows: 1},
+		{s: "AB", numRows: 1},
 	}
 
 	for _, input := range inputs {
-		result := gcdOfStrings(input[0], input[1])
+		result := convert(input.s, input.numRows)
 		fmt.Println(result)
 	}
 }

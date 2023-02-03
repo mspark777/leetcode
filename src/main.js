@@ -1,52 +1,47 @@
 /**
-  * @param {string[]} words
-  * @param {string} order
-  * @returns {boolean}
-  */
-function isAlienSorted (words, order) {
-  const ACODE = 'a'.charCodeAt(0)
-  const orders = new Array(26)
-  for (let i = 0; i < order.length; i += 1) {
-    const code = order.charCodeAt(i) - ACODE
-    orders[code] = i
+ * @param {string} s
+ * @param {number} numRows
+ * @returns {string}
+ */
+function convert (s, numRows) {
+  if (numRows <= 1) {
+    return s
   }
 
-  for (let i = 0; i < words.length - 1; i += 1) {
-    const current = words[i]
-    const next = words[i + 1]
+  const lastRow = numRows - 1
+  let row = 0
+  let down = true
 
-    for (let j = 0; j < current.length; j += 1) {
-      if (j >= next.length) {
-        return false
-      }
+  /** @type string[][] */
+  const result = Array.from(new Array(numRows), () => [])
+  for (const ch of s) {
+    result[row].push(ch)
+    if (row === lastRow) {
+      down = false
+    } else if (row === 0) {
+      down = true
+    }
 
-      const curCh = current.charCodeAt(j) - ACODE
-      const nxtCh = next.charCodeAt(j) - ACODE
-      const curOrd = orders[curCh]
-      const nxtOrd = orders[nxtCh]
-      if (curOrd !== nxtOrd) {
-        if (curOrd > nxtOrd) {
-          return false
-        } else {
-          break
-        }
-      }
+    if (down) {
+      row += 1
+    } else {
+      row -= 1
     }
   }
 
-  return true
+  return result.map(r => r.join('')).join('')
 }
 
 async function main () {
   const inputs = [
-    { words: ['hello', 'leetcode'], order: 'hlabcdefgijkmnopqrstuvwxyz' },
-    { words: ['word', 'world', 'row'], order: 'worldabcefghijkmnpqstuvxyz' },
-    { words: ['apple', 'app'], order: 'abcdefghijklmnopqrstuvwxyz' },
-    { words: ['kuvp', 'q'], order: 'ngxlkthsjuoqcpavbfdermiywz' }
+    { s: 'PAYPALISHIRING', numRows: 3 },
+    { s: 'PAYPALISHIRING', numRows: 4 },
+    { s: 'A', numRows: 1 },
+    { s: 'AB', numRows: 1 }
   ]
 
-  for (const { words, order } of inputs) {
-    const result = isAlienSorted(words, order)
+  for (const { s, numRows } of inputs) {
+    const result = convert(s, numRows)
     console.log(result)
   }
 }
