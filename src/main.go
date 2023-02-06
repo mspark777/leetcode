@@ -4,58 +4,31 @@ import (
 	"fmt"
 )
 
-func convert(s string, numRows int) string {
-	if numRows <= 1 {
-		return s
+func shuffle(nums []int, n int) []int {
+	result := make([]int, len(nums))
+
+	for i := 0; i < n; i += 1 {
+		j := i * 2
+		result[j] = nums[i]
+		result[j+1] = nums[n+i]
 	}
 
-	lastRow := numRows - 1
-	row := 0
-	down := true
-
-	result := make([][]rune, numRows)
-	for i := 0; i < numRows; i += 1 {
-		result[i] = []rune{}
-	}
-
-	for _, ch := range s {
-		result[row] = append(result[row], ch)
-		if row == lastRow {
-			down = false
-		} else if row == 0 {
-			down = true
-		}
-
-		if down {
-			row += 1
-		} else {
-			row -= 1
-		}
-	}
-
-	converted := []rune{}
-	for _, chars := range result {
-		converted = append(converted, chars...)
-	}
-
-	return string(converted)
+	return result
 }
 
 type input struct {
-	s       string
-	numRows int
+	nums []int
+	n    int
 }
 
 func main() {
 	inputs := []input{
-		{s: "PAYPALISHIRING", numRows: 3},
-		{s: "PAYPALISHIRING", numRows: 4},
-		{s: "A", numRows: 1},
-		{s: "AB", numRows: 1},
+		{nums: []int{2, 5, 1, 3, 4, 7}, n: 3},
+		{nums: []int{1, 2, 3, 4, 4, 3, 2, 1}, n: 4},
 	}
 
 	for _, input := range inputs {
-		result := convert(input.s, input.numRows)
+		result := shuffle(input.nums, input.n)
 		fmt.Println(result)
 	}
 }

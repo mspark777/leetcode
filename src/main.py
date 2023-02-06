@@ -1,42 +1,28 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def convert(self, s: str, num_rows: int) -> str:
-        if num_rows <= 1:
-            return s
+    def shuffle(self, nums: List[int], n: int) -> List[int]:
+        result = [0] * len(nums)
 
-        last_row = num_rows - 1
-        row = 0
-        down = True
-        result: list[list[str]] = [[] for i in range(num_rows)]
+        for i in range(n):
+            j = i * 2
+            result[j] = nums[i]
+            result[j + 1] = nums[n + i]
 
-        for ch in s:
-            result[row].append(ch)
-            if row == last_row:
-                down = False
-            elif row == 0:
-                down = True
-
-            if down:
-                row += 1
-            else:
-                row -= 1
-
-        return "".join(["".join(arr) for arr in result])
+        return result
 
 
 def main():
-    inputs: list[tuple[str, int]] = [
-        ("PAYPALISHIRING", 3),
-        ("PAYPALISHIRING", 4),
-        ("A", 1),
-        ("AB", 1),
+    inputs: list[tuple[list[int], int]] = [
+        ([2, 5, 1, 3, 4, 7], 3),
+        ([1, 2, 3, 4, 4, 3, 2, 1], 4),
     ]
 
-    for s, num_rows in inputs:
+    for nums, n in inputs:
         solution = Solution()
-        result = solution.convert(s, num_rows)
+        result = solution.shuffle(nums, n)
         print(result)
 
 

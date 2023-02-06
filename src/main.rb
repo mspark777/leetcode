@@ -1,43 +1,27 @@
-# @param s [String]
-# @param num_rows [Integer]
-# @return [String]
-def convert(s, num_rows)
-  return s if num_rows <= 1
+# @param nums [Array<Integer>]
+# @param n [Integer] n
+# @return [Array<Integer>]
+def shuffle(nums, n)
+  result = Array.new(nums.length) { 0 }
 
-  last_row = num_rows - 1
-  row = 0
-  down = true
-
-  # @type [Array<Array<String>>]
-  result = Array.new(num_rows) { [] }
-  s.each_char do |ch|
-    result[row].push(ch)
-    if row == last_row
-      down = false
-    elsif row == 0
-      down = true
-    end
-
-    if down
-      row += 1
-    else
-      row -= 1
-    end
+  for i in 1..n
+    j = i - 1
+    k = j * 2
+    result[k] = nums[j]
+    result[k + 1] = nums[j + n]
   end
 
-  result.map { |arr| arr.join('') }.join('')
+  result
 end
 
 def main
   inputs = [
-    { s: 'PAYPALISHIRING', num_rows: 3 },
-    { s: 'PAYPALISHIRING', num_rows: 4 },
-    { s: 'A', num_rows: 1 },
-    { s: 'AB', num_rows: 1 }
+    { nums: [2, 5, 1, 3, 4, 7], n: 3 },
+    { nums: [1, 2, 3, 4, 4, 3, 2, 1], n: 4 }
   ]
 
   inputs.each do |input|
-    result = convert(input[:s], input[:num_rows])
+    result = shuffle(input[:nums], input[:n])
     puts(result)
   end
 end

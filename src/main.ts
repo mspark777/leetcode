@@ -1,61 +1,23 @@
-function checkInclusion (s1: string, s2: string): boolean {
-  if (s1.length > s2.length) {
-    return false
+function shuffle (nums: number[], n: number): number[] {
+  const result = new Array<number>(nums.length)
+
+  for (let i = 0; i < n; i += 1) {
+    const j = i * 2
+    result[j] = nums[i]
+    result[j + 1] = nums[n + i]
   }
 
-  const LETTERS = 26
-  const s1map = new Array<number>(LETTERS).fill(0)
-  const s2map = new Array<number>(LETTERS).fill(0)
-
-  const ACODE = 'a'.charCodeAt(0)
-  for (let i = 0; i < s1.length; i += 1) {
-    const code1 = s1.charCodeAt(i) - ACODE
-    const code2 = s2.charCodeAt(i) - ACODE
-
-    s1map[code1] += 1
-    s2map[code2] += 1
-  }
-
-  let count = 0
-  for (let i = 0; i < LETTERS; i += 1) {
-    if (s1map[i] === s2map[i]) {
-      count += 1
-    }
-  }
-
-  for (let i = 0; i < s2.length - s1.length; i += 1) {
-    if (count === LETTERS) {
-      break
-    }
-
-    const left = s2.charCodeAt(i) - ACODE
-    s2map[left] -= 1
-    if (s1map[left] === s2map[left]) {
-      count += 1
-    } else if ((s1map[left] - 1) === s2map[left]) {
-      count -= 1
-    }
-
-    const right = s2.charCodeAt(i + s1.length) - ACODE
-    s2map[right] += 1
-    if (s1map[right] === s2map[right]) {
-      count += 1
-    } else if ((s1map[right] + 1) === s2map[right]) {
-      count -= 1
-    }
-  }
-
-  return count === LETTERS
+  return result
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][] = [
-    ['ab', 'eidbaooo'],
-    ['ab', 'eidboaoo']
+  const inputs = [
+    { nums: [2, 5, 1, 3, 4, 7], n: 3 },
+    { nums: [1, 2, 3, 4, 4, 3, 2, 1], n: 4 }
   ]
 
-  for (const [s1, s2] of inputs) {
-    const result = checkInclusion(s1, s2)
+  for (const { nums, n } of inputs) {
+    const result = shuffle(nums, n)
     console.log(result)
   }
 }

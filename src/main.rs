@@ -1,52 +1,42 @@
+/*
+leetcode
+ */
+
 struct Solution {}
-
 impl Solution {
-    pub fn convert(s: String, num_rows: i32) -> String {
-        if num_rows <= 1 {
-            return s;
+    pub fn shuffle(nums: Vec<i32>, n: i32) -> Vec<i32> {
+        let mut result = vec![0; nums.len()];
+
+        let n = n as usize;
+        for i in 0..n {
+            let j = i * 2;
+            result[j] = nums[i];
+            result[j + 1] = nums[n + i];
         }
 
-        let num_rows = num_rows as usize;
-        let last_row = num_rows - 1;
-        let mut row = 0usize;
-        let mut down = true;
-        let mut result = vec![Vec::<char>::new(); num_rows];
-
-        for ch in s.chars() {
-            result[row].push(ch);
-            if row == last_row {
-                down = false;
-            } else if row == 0 {
-                down = true;
-            }
-
-            if down {
-                row += 1
-            } else {
-                row -= 1
-            }
-        }
-
-        return result
-            .iter()
-            .map(|r| {
-                let s: String = r.iter().collect();
-                return s;
-            })
-            .collect();
+        return result;
     }
 }
 
+struct Input {
+    nums: Vec<i32>,
+    n: i32,
+}
+
 fn main() {
-    let inputs = [
-        ("PAYPALISHIRING", 3),
-        ("PAYPALISHIRING", 4),
-        ("A", 1),
-        ("AB", 1),
+    let inputs: Vec<Input> = vec![
+        Input {
+            nums: vec![2, 5, 1, 3, 4, 7],
+            n: 3,
+        },
+        Input {
+            nums: vec![1, 2, 3, 4, 4, 3, 2, 1],
+            n: 4,
+        },
     ];
 
-    for (s, num_rows) in inputs {
-        let result = Solution::convert(s.to_string(), num_rows);
-        println!("{result}");
+    for Input { nums, n } in inputs {
+        let result = Solution::shuffle(nums, n);
+        println!("{result:?}");
     }
 }
