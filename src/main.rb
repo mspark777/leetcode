@@ -1,14 +1,24 @@
-# @param nums [Array<Integer>]
-# @param n [Integer] n
-# @return [Array<Integer>]
-def shuffle(nums, n)
-  result = Array.new(nums.length) { 0 }
+# @param fruits [Array<Integer>]
+# @return [Integer]
+def total_fruit(fruits)
+  # @type [Hash<Integer, Integer>]
+  baskets = Hash.new(0)
 
-  for i in 1..n
-    j = i - 1
-    k = j * 2
-    result[k] = nums[j]
-    result[k + 1] = nums[j + n]
+  left = 0
+  result = 0
+
+  fruits.each_with_index do |rfruit, right|
+    baskets[rfruit] += 1
+
+    while baskets.length > 2
+      lfruit = fruits[left]
+      baskets[lfruit] -= 1
+      baskets.delete(lfruit) if baskets[lfruit] == 0
+
+      left += 1
+    end
+
+    result = [result, right - left + 1].max
   end
 
   result
@@ -16,12 +26,14 @@ end
 
 def main
   inputs = [
-    { nums: [2, 5, 1, 3, 4, 7], n: 3 },
-    { nums: [1, 2, 3, 4, 4, 3, 2, 1], n: 4 }
+    [1, 2, 1],
+    [0, 1, 2, 2],
+    [1, 2, 3, 2, 2],
+    [3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4]
   ]
 
   inputs.each do |input|
-    result = shuffle(input[:nums], input[:n])
+    result = total_fruit(input)
     puts(result)
   end
 end

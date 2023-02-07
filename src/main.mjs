@@ -1,35 +1,63 @@
 class Baskets {
-  private readonly map: Map<number, number>
-  public constructor () {
+  constructor () {
+    /** @type {Map<number, number} */
     this.map = new Map()
   }
 
-  public get (key: number): number {
+  /**
+    * @param {number} key
+    * @returns {number}
+    */
+  get (key) {
     return this.map.get(key) ?? 0
   }
 
-  public set (key: number, value: number): void {
+  /**
+    * @param {number} key
+    * @param {number} value
+    * @returns {undefined}
+    */
+  set (key, value) {
     this.map.set(key, value)
   }
 
-  public delete (key: number): void {
+  /**
+    * @param {number} key
+    * @returns {undefined}
+    */
+  delete (key) {
     this.map.delete(key)
   }
 
-  public increase (key: number): void {
+  /**
+    * @param {number} key
+    * @returns {undefined}
+    */
+  increase (key) {
     this.set(key, this.get(key) + 1)
   }
 
-  public decrease (key: number): void {
+  /**
+    * @param {number} key
+    * @returns {undefined}
+    */
+  decrease (key) {
     this.set(key, this.get(key) - 1)
   }
 
-  public size (): number {
+  /**
+    * @returns {number}
+    */
+  size () {
     return this.map.size
   }
 }
 
-function totalFruit (fruits: number[]): number {
+/**
+  * @param {number[]} fruits
+  * @returns {number}
+  */
+function totalFruit (fruits) {
   const baskets = new Baskets()
   let left = 0
   let result = 0
@@ -53,7 +81,7 @@ function totalFruit (fruits: number[]): number {
   return result
 }
 
-async function main (): Promise<void> {
+async function main () {
   const inputs = [
     [1, 2, 1],
     [0, 1, 2, 2],

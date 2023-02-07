@@ -3,26 +3,37 @@ from typing import List
 
 
 class Solution:
-    def shuffle(self, nums: List[int], n: int) -> List[int]:
-        result = [0] * len(nums)
+    def totalFruit(self, fruits: List[int]) -> int:
+        baskets: dict[int, int] = {}
+        left = 0
+        result = 0
 
-        for i in range(n):
-            j = i * 2
-            result[j] = nums[i]
-            result[j + 1] = nums[n + i]
+        for right, rfruit in enumerate(fruits):
+            baskets[rfruit] = baskets.get(rfruit, 0) + 1
+
+            while len(baskets) > 2:
+                lfruit = fruits[left]
+                baskets[lfruit] -= 1
+                if baskets[lfruit] == 0:
+                    del baskets[lfruit]
+                left += 1
+
+            result = max(result, right - left + 1)
 
         return result
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([2, 5, 1, 3, 4, 7], 3),
-        ([1, 2, 3, 4, 4, 3, 2, 1], 4),
+    inputs: list[list[int]] = [
+        [1, 2, 1],
+        [0, 1, 2, 2],
+        [1, 2, 3, 2, 2],
+        [3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4],
     ]
 
-    for nums, n in inputs:
+    for fruits in inputs:
         solution = Solution()
-        result = solution.shuffle(nums, n)
+        result = solution.totalFruit(fruits)
         print(result)
 
 

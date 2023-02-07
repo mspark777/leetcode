@@ -2,41 +2,47 @@
 leetcode
  */
 
+use std::collections::HashMap;
+
 struct Solution {}
 impl Solution {
-    pub fn shuffle(nums: Vec<i32>, n: i32) -> Vec<i32> {
-        let mut result = vec![0; nums.len()];
+    pub fn total_fruit(fruits: Vec<i32>) -> i32 {
+        let mut baskets = HashMap::<i32, i32>::new();
+        let mut left = 0usize;
+        let mut result = 0usize;
 
-        let n = n as usize;
-        for i in 0..n {
-            let j = i * 2;
-            result[j] = nums[i];
-            result[j + 1] = nums[n + i];
+        for (right, &rfruit) in fruits.iter().enumerate() {
+            *baskets.entry(rfruit).or_insert(0) += 1;
+
+            while baskets.len() > 2 {
+                let lfruit = fruits[left];
+                let lcnt = baskets.get_mut(&lfruit).unwrap();
+                if *lcnt > 1 {
+                    *lcnt -= 1;
+                } else {
+                    baskets.remove(&lfruit);
+                }
+
+                left += 1;
+            }
+
+            result = result.max(right - left + 1);
         }
 
-        return result;
+        return result as i32;
     }
 }
 
-struct Input {
-    nums: Vec<i32>,
-    n: i32,
-}
-
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input {
-            nums: vec![2, 5, 1, 3, 4, 7],
-            n: 3,
-        },
-        Input {
-            nums: vec![1, 2, 3, 4, 4, 3, 2, 1],
-            n: 4,
-        },
+    let inputs: Vec<Vec<i32>> = vec![
+        vec![1, 2, 1],
+        vec![0, 1, 2, 2],
+        vec![1, 2, 3, 2, 2],
+        vec![3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4],
     ];
 
-    for Input { nums, n } in inputs {
-        let result = Solution::shuffle(nums, n);
-        println!("{result:?}");
+    for input in inputs {
+        let result = Solution::total_fruit(input);
+        println!("{result}");
     }
 }

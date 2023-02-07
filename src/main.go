@@ -4,31 +4,43 @@ import (
 	"fmt"
 )
 
-func shuffle(nums []int, n int) []int {
-	result := make([]int, len(nums))
+func totalFruit(fruits []int) int {
+	baskets := map[int]int{}
+	left := 0
+	result := 0
 
-	for i := 0; i < n; i += 1 {
-		j := i * 2
-		result[j] = nums[i]
-		result[j+1] = nums[n+i]
+	for right, rfruit := range fruits {
+		baskets[rfruit] += 1
+
+		for len(baskets) > 2 {
+			lfruit := fruits[left]
+			baskets[lfruit] -= 1
+			if cnt := baskets[lfruit]; cnt == 0 {
+				delete(baskets, lfruit)
+			}
+
+			left += 1
+		}
+
+		cnt := right - left + 1
+		if cnt > result {
+			result = cnt
+		}
 	}
 
 	return result
 }
 
-type input struct {
-	nums []int
-	n    int
-}
-
 func main() {
-	inputs := []input{
-		{nums: []int{2, 5, 1, 3, 4, 7}, n: 3},
-		{nums: []int{1, 2, 3, 4, 4, 3, 2, 1}, n: 4},
+	inputs := [][]int{
+		{1, 2, 1},
+		{0, 1, 2, 2},
+		{1, 2, 3, 2, 2},
+		{3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4},
 	}
 
 	for _, input := range inputs {
-		result := shuffle(input.nums, input.n)
+		result := totalFruit(input)
 		fmt.Println(result)
 	}
 }
