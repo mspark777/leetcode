@@ -4,27 +4,20 @@ import (
 	"fmt"
 )
 
-func totalFruit(fruits []int) int {
-	baskets := map[int]int{}
-	left := 0
+func jump(nums []int) int {
 	result := 0
+	curend := 0
+	curfar := 0
 
-	for right, rfruit := range fruits {
-		baskets[rfruit] += 1
-
-		for len(baskets) > 2 {
-			lfruit := fruits[left]
-			baskets[lfruit] -= 1
-			if cnt := baskets[lfruit]; cnt == 0 {
-				delete(baskets, lfruit)
-			}
-
-			left += 1
+	for i := 0; i < len(nums)-1; i += 1 {
+		next := i + nums[i]
+		if next > curfar {
+			curfar = next
 		}
 
-		cnt := right - left + 1
-		if cnt > result {
-			result = cnt
+		if i == curend {
+			result += 1
+			curend = curfar
 		}
 	}
 
@@ -33,14 +26,12 @@ func totalFruit(fruits []int) int {
 
 func main() {
 	inputs := [][]int{
-		{1, 2, 1},
-		{0, 1, 2, 2},
-		{1, 2, 3, 2, 2},
-		{3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4},
+		{2, 3, 1, 1, 4},
+		{2, 3, 0, 1, 4},
 	}
 
 	for _, input := range inputs {
-		result := totalFruit(input)
+		result := jump(input)
 		fmt.Println(result)
 	}
 }

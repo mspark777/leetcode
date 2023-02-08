@@ -3,37 +3,27 @@ from typing import List
 
 
 class Solution:
-    def totalFruit(self, fruits: List[int]) -> int:
-        baskets: dict[int, int] = {}
-        left = 0
+    def jump(self, nums: List[int]) -> int:
         result = 0
+        curend = 0
+        curfar = 0
 
-        for right, rfruit in enumerate(fruits):
-            baskets[rfruit] = baskets.get(rfruit, 0) + 1
+        for i in range(len(nums) - 1):
+            curfar = max(curfar, i + nums[i])
 
-            while len(baskets) > 2:
-                lfruit = fruits[left]
-                baskets[lfruit] -= 1
-                if baskets[lfruit] == 0:
-                    del baskets[lfruit]
-                left += 1
-
-            result = max(result, right - left + 1)
+            if i == curend:
+                result += 1
+                curend = curfar
 
         return result
 
 
 def main():
-    inputs: list[list[int]] = [
-        [1, 2, 1],
-        [0, 1, 2, 2],
-        [1, 2, 3, 2, 2],
-        [3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4],
-    ]
+    inputs: list[list[int]] = [[2, 3, 1, 1, 4], [2, 3, 0, 1, 4]]
 
-    for fruits in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.totalFruit(fruits)
+        result = solution.jump(nums)
         print(result)
 
 

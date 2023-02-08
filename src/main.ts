@@ -1,53 +1,15 @@
-class Baskets {
-  private readonly map: Map<number, number>
-  public constructor () {
-    this.map = new Map()
-  }
-
-  public get (key: number): number {
-    return this.map.get(key) ?? 0
-  }
-
-  public set (key: number, value: number): void {
-    this.map.set(key, value)
-  }
-
-  public delete (key: number): void {
-    this.map.delete(key)
-  }
-
-  public increase (key: number): void {
-    this.set(key, this.get(key) + 1)
-  }
-
-  public decrease (key: number): void {
-    this.set(key, this.get(key) - 1)
-  }
-
-  public size (): number {
-    return this.map.size
-  }
-}
-
-function totalFruit (fruits: number[]): number {
-  const baskets = new Baskets()
-  let left = 0
+function jump (nums: number[]): number {
   let result = 0
+  let curend = 0
+  let curfar = 0
 
-  for (let right = 0; right < fruits.length; right += 1) {
-    const rfruit = fruits[right]
-    baskets.increase(rfruit)
+  for (let i = 0; i < nums.length - 1; i += 1) {
+    curfar = Math.max(curfar, i + nums[i])
 
-    while (baskets.size() > 2) {
-      const lfruit = fruits[left]
-      baskets.decrease(lfruit)
-      if (baskets.get(lfruit) === 0) {
-        baskets.delete(lfruit)
-      }
-      left += 1
+    if (i === curend) {
+      result += 1
+      curend = curfar
     }
-
-    result = Math.max(result, right - left + 1)
   }
 
   return result
@@ -55,14 +17,12 @@ function totalFruit (fruits: number[]): number {
 
 async function main (): Promise<void> {
   const inputs = [
-    [1, 2, 1],
-    [0, 1, 2, 2],
-    [1, 2, 3, 2, 2],
-    [3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4]
+    [2, 3, 1, 1, 4],
+    [2, 3, 0, 1, 4]
   ]
 
-  for (const fruits of inputs) {
-    const result = totalFruit(fruits)
+  for (const nums of inputs) {
+    const result = jump(nums)
     console.log(result)
   }
 }

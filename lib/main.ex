@@ -1,19 +1,27 @@
 defmodule Solution do
-  @spec gcd_of_strings(str1 :: String.t(), str2 :: String.t()) :: String.t()
-  def gcd_of_strings(str1, str2)
+  @spec jump(nums :: [integer]) :: integer
+  def jump(nums), do: loop(nums, 0, 0, 0, 0)
 
-  def gcd_of_strings(str1, str2) when str1 <> str2 != str2 <> str1, do: ""
+  @spec loop(
+          nums :: [integer],
+          i :: integer,
+          cufar :: integer,
+          curend :: integer,
+          result :: integer
+        ) :: integer
+  defp loop(nums, i, curfar, curend, result)
 
-  def gcd_of_strings(str1, str2) do
-    gcdlen = gcd(String.length(str1), String.length(str2))
+  defp loop([_ | []], _, _, _, result), do: result
 
-    String.slice(str1, 0, gcdlen)
+  defp loop([num | nums], i, curfar, curend, result) do
+    newfar = max(curfar, i + num)
+
+    if i == curend do
+      loop(nums, i + 1, newfar, newfar, result + 1)
+    else
+      loop(nums, i + 1, newfar, curend, result)
+    end
   end
-
-  @spec gcd(x :: integer, y :: integer) :: integer
-  def gcd(x, y)
-  def gcd(x, 0), do: x
-  def gcd(x, y), do: gcd(y, rem(x, y))
 end
 
 defmodule Main do
@@ -21,8 +29,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([[str1, str2] | remains]) do
-    result = Solution.gcd_of_strings(str1, str2)
+  def main([nums | remains]) do
+    result = Solution.jump(nums)
 
     IO.puts(result)
     main(remains)
@@ -33,9 +41,8 @@ defmodule Main do
 
   def main do
     main([
-      ["ABCABC", "ABC"],
-      ["ABABAB", "ABAB"],
-      ["LEET", "CODE"]
+      [2, 3, 1, 1, 4],
+      [2, 3, 0, 1, 4]
     ])
   end
 end
