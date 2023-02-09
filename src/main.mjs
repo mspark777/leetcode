@@ -1,18 +1,34 @@
 /**
-  * @param {number[]} nums
+  * @param {string[]} ideas
   * @returns {number}
   */
-function jump (nums) {
+function distinctNames (ideas) {
+  /** @type {Map<string, Set<string>>} */
+  const groupMap = new Map()
+
+  for (const idea of ideas) {
+    const first = idea.charAt(0)
+    const remains = idea.substring(1)
+    const group = groupMap.get(first) ?? new Set()
+    group.add(remains)
+    groupMap.set(first, group)
+  }
+
   let result = 0
-  let curend = 0
-  let curfar = 0
+  const groups = [...groupMap.values()]
+  for (let i = 0; i < groups.length - 1; i += 1) {
+    const curgroup = groups[i]
+    for (let j = i + 1; j < groups.length; j += 1) {
+      const group = groups[j]
+      let num = 0
 
-  for (let i = 0; i < nums.length - 1; i += 1) {
-    curfar = Math.max(curfar, i + nums[i])
+      for (const idea of curgroup) {
+        if (group.has(idea)) {
+          num += 1
+        }
+      }
 
-    if (i === curend) {
-      result += 1
-      curend = curfar
+      result += 2 * (curgroup.size - num) * (group.size - num)
     }
   }
 
@@ -21,12 +37,12 @@ function jump (nums) {
 
 async function main () {
   const inputs = [
-    [2, 3, 1, 1, 4],
-    [2, 3, 0, 1, 4]
+    ['coffee', 'donuts', 'time', 'toffee'],
+    ['lack', 'back']
   ]
 
-  for (const nums of inputs) {
-    const result = jump(nums)
+  for (const ideas of inputs) {
+    const result = distinctNames(ideas)
     console.log(result)
   }
 }

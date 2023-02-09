@@ -2,20 +2,42 @@
 leetcode
  */
 
+use std::collections::{HashMap, HashSet};
+
 struct Solution {}
 impl Solution {
-    pub fn jump(nums: Vec<i32>) -> i32 {
-        let mut result = 0;
-        let mut curend = 0usize;
-        let mut curfar = 0usize;
+    pub fn distinct_names(ideas: Vec<String>) -> i64 {
+        let mut group_map = HashMap::<u8, HashSet<&str>>::new();
 
-        for i in 0..(nums.len() - 1) {
-            let n = nums[i] as usize;
-            curfar = curfar.max(i + n);
+        for idea in ideas.iter() {
+            let s = idea.as_str();
+            let first = s.bytes().nth(0).unwrap();
+            let remains = &s[1..];
 
-            if i == curend {
-                result += 1;
-                curend = curfar;
+            group_map
+                .entry(first)
+                .or_insert(HashSet::new())
+                .insert(remains);
+        }
+
+        let mut result = 0i64;
+        let groups = Vec::from_iter(group_map.values());
+
+        for i in 0..(groups.len() - 1) {
+            let cur = groups[i];
+            for j in (i + 1)..groups.len() {
+                let group = groups[j];
+                let mut num = 0i64;
+
+                for &idea in cur.iter() {
+                    if group.contains(idea) {
+                        num += 1;
+                    }
+                }
+
+                let clen = cur.len() as i64;
+                let glen = group.len() as i64;
+                result += 2 * (clen - num) * (glen - num)
             }
         }
 
@@ -24,10 +46,13 @@ impl Solution {
 }
 
 fn main() {
-    let inputs: Vec<Vec<i32>> = vec![vec![2, 3, 1, 1, 4], vec![2, 3, 0, 1, 4]];
+    let inputs: Vec<Vec<&'static str>> = vec![
+        vec!["coffee", "donuts", "time", "toffee"],
+        vec!["lack", "back"],
+    ];
 
     for input in inputs {
-        let result = Solution::jump(input);
+        let result = Solution::distinct_names(input.iter().map(|s| s.to_string()).collect());
         println!("{result}");
     }
 }

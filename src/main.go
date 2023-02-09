@@ -4,20 +4,40 @@ import (
 	"fmt"
 )
 
-func jump(nums []int) int {
-	result := 0
-	curend := 0
-	curfar := 0
+func distinctNames(ideas []string) int64 {
+	groupMap := map[byte]map[string]bool{}
 
-	for i := 0; i < len(nums)-1; i += 1 {
-		next := i + nums[i]
-		if next > curfar {
-			curfar = next
+	for _, idea := range ideas {
+		first := idea[0]
+		remains := idea[1:]
+		if group, ok := groupMap[first]; ok {
+			group[remains] = true
+		} else {
+			groupMap[first] = map[string]bool{
+				remains: true,
+			}
 		}
+	}
 
-		if i == curend {
-			result += 1
-			curend = curfar
+	result := int64(0)
+	groups := make([]map[string]bool, 0, len(groupMap))
+	for _, group := range groupMap {
+		groups = append(groups, group)
+	}
+
+	for i := 0; i < len(groups)-1; i += 1 {
+		cur := groups[i]
+		for j := i + 1; j < len(groups); j += 1 {
+			group := groups[j]
+			num := int64(0)
+
+			for idea := range cur {
+				if _, ok := group[idea]; ok {
+					num += 1
+				}
+			}
+
+			result += 2 * (int64(len(cur)) - num) * (int64(len(group)) - num)
 		}
 	}
 
@@ -25,13 +45,13 @@ func jump(nums []int) int {
 }
 
 func main() {
-	inputs := [][]int{
-		{2, 3, 1, 1, 4},
-		{2, 3, 0, 1, 4},
+	inputs := [][]string{
+		{"coffee", "donuts", "time", "toffee"},
+		{"lack", "back"},
 	}
 
 	for _, input := range inputs {
-		result := jump(input)
+		result := distinctNames(input)
 		fmt.Println(result)
 	}
 }

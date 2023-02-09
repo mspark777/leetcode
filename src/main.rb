@@ -1,17 +1,31 @@
-# @param nums [Array<Integer>]
+# @param ideas [Array<String>]
 # @return [Integer]
-def jump(nums)
+def distinct_names(ideas)
+  # @type [Hash<String, Hash<String, Boolean>>]
+  group_map = Hash.new do |hash, key|
+    hash[key] = {}
+  end
+
+  ideas.each do |idea|
+    first = idea[0]
+    remains = idea[1..]
+    group_map[first][remains] = true
+  end
+
   result = 0
-  curend = 0
-  curfar = 0
 
-  for i in (2..nums.length)
-    j = i - 2
-    curfar = [curfar, j + nums[j]].max
+  groups = group_map.values
+  for i in (0..(groups.length - 2))
+    cur = groups[i]
+    for j in ((i + 1)..(group_map.length - 1))
+      group = groups[j]
+      num = 0
 
-    if j == curend
-      result += 1
-      curend = curfar
+      cur.keys.each do |idea|
+        num += 1 if group.has_key?(idea)
+      end
+
+      result += 2 * (cur.size - num) * (group.size - num)
     end
   end
 
@@ -19,13 +33,10 @@ def jump(nums)
 end
 
 def main
-  inputs = [
-    [2, 3, 1, 1, 4],
-    [2, 3, 0, 1, 4]
-  ]
+  inputs = [%w[coffee donuts time toffee], %w[lack back]]
 
   inputs.each do |input|
-    result = jump(input)
+    result = distinct_names(input)
     puts(result)
   end
 end
