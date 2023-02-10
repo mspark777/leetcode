@@ -1,43 +1,68 @@
-function distinctNames (ideas: string[]): number {
-  const groupMap = new Map<string, Set<string>>()
+function maxDistance (grid: number[][]): number {
+  const LAND = 1
+  const ROW_LEN = grid.length
+  const COL_LEN = grid[0].length
+  const MAX_DISTANCE = ROW_LEN + COL_LEN + 1
 
-  for (const idea of ideas) {
-    const first = idea.charAt(0)
-    const remains = idea.substring(1)
-    const group = groupMap.get(first) ?? new Set()
-    group.add(remains)
-    groupMap.set(first, group)
-  }
+  const distances = Array.from(
+    new Array(ROW_LEN),
+    () => new Array<number>(COL_LEN).fill(MAX_DISTANCE)
+  )
 
-  let result = 0
-  const groups = [...groupMap.values()]
-  for (let i = 0; i < groups.length - 1; i += 1) {
-    const curgroup = groups[i]
-    for (let j = i + 1; j < groups.length; j += 1) {
-      const group = groups[j]
-      let num = 0
-
-      for (const idea of curgroup) {
-        if (group.has(idea)) {
-          num += 1
-        }
+  for (let i = 0; i < ROW_LEN; i += 1) {
+    for (let j = 0; j < COL_LEN; j += 1) {
+      const cell = grid[i][j]
+      if (cell === LAND) {
+        distances[i][j] = 0
+      } else {
+        const distance = distances[i][j]
+        distances[i][j] = Math.min(
+          distance,
+          Math.min(
+            i > 0
+              ? distances[i - 1][j] + 1
+              : MAX_DISTANCE,
+            j > 0
+              ? distances[i][j - 1] + 1
+              : MAX_DISTANCE
+          )
+        )
       }
-
-      result += 2 * (curgroup.size - num) * (group.size - num)
     }
   }
 
-  return result
+  let result = Number.MIN_SAFE_INTEGER
+  for (let i = ROW_LEN - 1; i >= 0; i--) {
+    for (let j = COL_LEN - 1; j >= 0; j--) {
+      let distance = distances[i][j]
+      distance = Math.min(
+        distance,
+        Math.min(
+          i < ROW_LEN - 1
+            ? distances[i + 1][j] + 1
+            : MAX_DISTANCE,
+          j < ROW_LEN - 1
+            ? distances[i][j + 1] + 1
+            : MAX_DISTANCE
+        )
+      )
+
+      distances[i][j] = distance
+      result = Math.max(result, distance)
+    }
+  }
+
+  return (result === 0) || (result === MAX_DISTANCE) ? -1 : result
 }
 
 async function main (): Promise<void> {
   const inputs = [
-    ['coffee', 'donuts', 'time', 'toffee'],
-    ['lack', 'back']
+    [[1, 0, 1], [0, 0, 0], [1, 0, 1]],
+    [[1, 0, 0], [0, 0, 0], [0, 0, 0]]
   ]
 
-  for (const ideas of inputs) {
-    const result = distinctNames(ideas)
+  for (const grid of inputs) {
+    const result = maxDistance(grid)
     console.log(result)
   }
 }
