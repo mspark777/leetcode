@@ -1,42 +1,22 @@
-# @param ideas [Array<String>]
-# @return [Integer]
-def distinct_names(ideas)
-  # @type [Hash<String, Hash<String, Boolean>>]
-  group_map = Hash.new do |hash, key|
-    hash[key] = {}
-  end
+# @param {Integer} low
+# @param {Integer} high
+# @return {Integer}
+def count_odds(low, high)
+  low += 1 if (low & 1) == 0
 
-  ideas.each do |idea|
-    first = idea[0]
-    remains = idea[1..]
-    group_map[first][remains] = true
-  end
+  return 0 if low > high
 
-  result = 0
-
-  groups = group_map.values
-  for i in (0..(groups.length - 2))
-    cur = groups[i]
-    for j in ((i + 1)..(group_map.length - 1))
-      group = groups[j]
-      num = 0
-
-      cur.keys.each do |idea|
-        num += 1 if group.has_key?(idea)
-      end
-
-      result += 2 * (cur.size - num) * (group.size - num)
-    end
-  end
-
-  result
+  ((high - low) / 2) + 1
 end
 
 def main
-  inputs = [%w[coffee donuts time toffee], %w[lack back]]
+  inputs = [
+    [3, 7],
+    [8, 10]
+  ]
 
   inputs.each do |input|
-    result = distinct_names(input)
+    result = count_odds(input[0], input[1])
     puts(result)
   end
 end

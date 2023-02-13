@@ -1,27 +1,9 @@
 defmodule Solution do
-  @spec jump(nums :: [integer]) :: integer
-  def jump(nums), do: loop(nums, 0, 0, 0, 0)
-
-  @spec loop(
-          nums :: [integer],
-          i :: integer,
-          cufar :: integer,
-          curend :: integer,
-          result :: integer
-        ) :: integer
-  defp loop(nums, i, curfar, curend, result)
-
-  defp loop([_ | []], _, _, _, result), do: result
-
-  defp loop([num | nums], i, curfar, curend, result) do
-    newfar = max(curfar, i + num)
-
-    if i == curend do
-      loop(nums, i + 1, newfar, newfar, result + 1)
-    else
-      loop(nums, i + 1, newfar, curend, result)
-    end
-  end
+  @spec count_odds(low :: integer, high :: integer) :: integer
+  def count_odds(low, high)
+  def count_odds(low, high) when rem(low, 2) == 0, do: count_odds(low + 1, high)
+  def count_odds(low, high) when low > high, do: 0
+  def count_odds(low, high), do: div(high - low, 2) + 1
 end
 
 defmodule Main do
@@ -29,8 +11,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([nums | remains]) do
-    result = Solution.jump(nums)
+  def main([[low, high] | remains]) do
+    result = Solution.count_odds(low, high)
 
     IO.puts(result)
     main(remains)
@@ -41,8 +23,8 @@ defmodule Main do
 
   def main do
     main([
-      [2, 3, 1, 1, 4],
-      [2, 3, 0, 1, 4]
+      [3, 7],
+      [8, 10]
     ])
   end
 end
