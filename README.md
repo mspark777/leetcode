@@ -7,4 +7,3 @@
 * rust 1.58.1
 * elixir 1.13.0
 * erlang 24.2
-* ruby 3.1.3
