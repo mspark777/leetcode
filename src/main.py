@@ -2,19 +2,17 @@ from __future__ import annotations
 
 
 class Solution:
-    def countOdds(self, low: int, high: int) -> int:
-        if (low & 1) == 0:
-            low += 1
-
-        return ((high - low) // 2) + 1 if low <= high else 0
+    def addBinary(self, a: str, b: str) -> str:
+        result = int(a, 2) + int(b, 2)
+        return bin(result)[2:]
 
 
 def main():
-    inputs: list[tuple[int, int]] = [(3, 7), (8, 10)]
+    inputs: list[tuple[str, str]] = [("11", "1"), ("1010", "1011")]
 
-    for low, high in inputs:
+    for a, b in inputs:
         solution = Solution()
-        result = solution.countOdds(low, high)
+        result = solution.addBinary(a, b)
         print(result)
 
 

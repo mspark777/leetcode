@@ -1,26 +1,21 @@
 /**
-  * @param {number} low
-  * @param {number} high
-  * @returns {number}
+  * @param {string} a
+  * @param {string} b
+  * @returns {string}
   */
-function countOdds (low, high) {
-  let l = BigInt(low)
-  const h = BigInt(high)
-  if ((l & 1n) === 0n) {
-    l += 1n
-  }
-
-  return l > h ? 0 : Number(((h - l) / 2n) + 1n)
+function addBinary (a, b) {
+  const result = BigInt(`0b${a}`) + BigInt(`0b${b}`)
+  return result.toString(2)
 }
 
 async function main () {
   const inputs = [
-    [3, 7],
-    [8, 10]
+    ['11', '1'],
+    ['1010', '1011']
   ]
 
-  for (const [low, high] of inputs) {
-    const result = countOdds(low, high)
+  for (const [a, b] of inputs) {
+    const result = addBinary(a, b)
     console.log(result)
   }
 }

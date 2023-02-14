@@ -1,19 +1,16 @@
-function countOdds (low: number, high: number): number {
-  if ((low % 2) === 0) {
-    low += 1
-  }
-
-  return low > high ? 0 : Math.trunc((high - low) / 2) + 1
+function addBinary (a: string, b: string): string {
+  const result = BigInt(`0b${a}`) + BigInt(`0b${b}`)
+  return result.toString(2)
 }
 
 async function main (): Promise<void> {
   const inputs = [
-    [3, 7],
-    [8, 10]
+    ['11', '1'],
+    ['1010', '1011']
   ]
 
-  for (const [low, high] of inputs) {
-    const result = countOdds(low, high)
+  for (const [a, b] of inputs) {
+    const result = addBinary(a, b)
     console.log(result)
   }
 }

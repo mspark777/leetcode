@@ -22,6 +22,3 @@ sh:
 ex:
 	mix clean
 	mix run
-
-rb:
-	ruby src/main.rb
