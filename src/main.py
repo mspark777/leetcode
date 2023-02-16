@@ -1,37 +1,60 @@
 from __future__ import annotations
-from typing import List
+from typing import Optional
+
+
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+
+    def __init__(
+        self,
+        val: int = 0,
+        left: Optional[TreeNode] = None,
+        right: Optional[TreeNode] = None,
+    ):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+def newnode(val: int, left: TreeNode, right: TreeNode) -> TreeNode:
+    return TreeNode(val, left, right)
+
+
+def newright(val: int, right: TreeNode) -> TreeNode:
+    return TreeNode(val, None, right)
+
+
+def newval(val: int) -> TreeNode:
+    return TreeNode(val)
 
 
 class Solution:
-    def addToArrayForm(self, num: List[int], k: int) -> List[int]:
-        result: list[int] = []
-        cur = k
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        result = [0]
+        self.travel(root, 0, result)
 
-        for i in range(len(num) - 1, -1, -1):
-            cur += num[i]
-            result.append(cur % 10)
-            cur //= 10
+        return result[0]
 
-        while cur > 0:
-            result.append(cur % 10)
-            cur //= 10
-
-        result.reverse()
-        return result
+    def travel(self, node: Optional[TreeNode], depth: int, ref: list[int]):
+        if node:
+            d = depth + 1
+            self.travel(node.left, d, ref)
+            self.travel(node.right, d, ref)
+        else:
+            ref[0] = max(ref[0], depth)
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([1, 2, 0, 0], 34),
-        ([2, 7, 4], 181),
-        ([2, 1, 5], 806),
-        ([1, 2, 6, 3, 0, 7, 1, 7, 1, 9, 7, 5, 6, 6, 4, 4, 0, 0, 6, 3], 516),
-        ([0], 10000),
+    inputs: list[Optional[TreeNode]] = [
+        newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+        newright(1, newval(2)),
     ]
 
-    for num, k in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.addToArrayForm(num, k)
+        result = solution.maxDepth(root)
         print(result)
 
 

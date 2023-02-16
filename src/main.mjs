@@ -1,36 +1,78 @@
+class TreeNode {
+  /**
+    * @param {number|undefined|null} val
+    * @param {TreeNode|undefined|null} left
+    * @param {TreeNode|undefined|null} right
+    */
+  constructor (val, left, right) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
+
 /**
-  * @param {number[]} num
-  * @param {number} k
-  * @returns {number[]}
+  * @param {number} val
+  * @param {TreeNode} left
+  * @param {TreeNode} right
+  * @returns {TreeNode}
   */
-function addToArrayForm (num, k) {
-  const result = []
-  let cur = BigInt(k)
-  for (let i = num.length - 1; i >= 0; i -= 1) {
-    cur += BigInt(num[i])
-    result.push(cur % 10n)
-    cur /= 10n
-  }
+function newnode (val, left, right) {
+  return new TreeNode(val, left, right)
+}
 
-  while (cur > 0n) {
-    result.push(cur % 10n)
-    cur /= 10n
-  }
+/**
+  * @param {number} val
+  * @param {TreeNode} right
+  * @returns {TreeNode}
+  */
+function newright (val, right) {
+  return new TreeNode(val, undefined, right)
+}
 
-  return result.reverse().map(b => Number(b))
+/**
+  * @param {number} val
+  * @returns {TreeNode}
+  */
+function newval (val) {
+  return new TreeNode(val)
+}
+
+/**
+  * @param {TreeNode|null} node
+  * @param {number} depth
+  * @param {number[]} ref
+  * @returns {undefined}
+  */
+function travel (node, depth, ref) {
+  if (node != null) {
+    const d = depth + 1
+    travel(node.left, d, ref)
+    travel(node.right, d, ref)
+  } else {
+    ref[0] = Math.max(ref[0], depth)
+  }
+}
+
+/**
+  * @param {TreeNode|null} node
+  * @returns {number}
+  */
+function maxDepth (root) {
+  const result = [0]
+  travel(root, 0, result)
+
+  return result[0]
 }
 
 async function main () {
   const inputs = [
-    { num: [1, 2, 0, 0], k: 34 },
-    { num: [2, 7, 4], k: 181 },
-    { num: [2, 1, 5], k: 806 },
-    { num: [1, 2, 6, 3, 0, 7, 1, 7, 1, 9, 7, 5, 6, 6, 4, 4, 0, 0, 6, 3], k: 516 },
-    { num: [0], k: 10000 }
+    newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+    newright(1, newval(2))
   ]
 
-  for (const { num, k } of inputs) {
-    const result = addToArrayForm(num, k)
+  for (const root of inputs) {
+    const result = maxDepth(root)
     console.log(result)
   }
 }

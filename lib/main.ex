@@ -1,19 +1,22 @@
+defmodule TreeNode do
+  @type t :: %__MODULE__{
+          val: integer,
+          left: TreeNode.t() | nil,
+          right: TreeNode.t() | nil
+        }
+  defstruct val: 0, left: nil, right: nil
+end
+
 defmodule Solution do
-  @spec add_to_array_form(num :: [integer], k :: integer) :: [integer]
-  def add_to_array_form(num, k) do
-    num |> Enum.reverse() |> loop(k, [])
-  end
+  @spec max_depth(root :: TreeNode.t() | nil) :: integer
+  def max_depth(root), do: travel(root, 0)
 
-  defp loop([num | nums], cur, result) do
-    sum = cur + num
-    loop(nums, div(sum, 10), [rem(sum, 10) | result])
-  end
+  def travel(nil, depth), do: depth
 
-  defp loop([] = nums, cur, result) when cur > 0 do
-    loop(nums, div(cur, 10), [rem(cur, 10) | result])
+  def travel(node, depth) do
+    d = depth + 1
+    max(travel(node.left, d), travel(node.right, d))
   end
-
-  defp loop([], _, result), do: result
 end
 
 defmodule Main do
@@ -21,10 +24,10 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([input | remains]) do
-    result = Solution.add_to_array_form(input.num, input.k)
+  def main([root | remains]) do
+    result = Solution.max_depth(root)
 
-    IO.puts(result |> Enum.join(", "))
+    IO.puts(result)
     main(remains)
   end
 
@@ -33,12 +36,21 @@ defmodule Main do
 
   def main do
     main([
-      %{num: [1, 2, 0, 0], k: 34},
-      %{num: [2, 7, 4], k: 181},
-      %{num: [2, 1, 5], k: 806},
-      %{num: [1, 2, 6, 3, 0, 7, 1, 7, 1, 9, 7, 5, 6, 6, 4, 4, 0, 0, 6, 3], k: 516},
-      %{num: [0], k: 10000}
+      newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+      newright(1, newval(2))
     ])
+  end
+
+  def newnode(val, left, right) do
+    %TreeNode{val: val, left: left, right: right}
+  end
+
+  def newright(val, right) do
+    %TreeNode{val: val, left: nil, right: right}
+  end
+
+  def newval(val) do
+    %TreeNode{val: val, left: nil, right: nil}
   end
 end
 

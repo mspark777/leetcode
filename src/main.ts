@@ -1,36 +1,51 @@
-function addToArrayForm (num: number[], k: number): number[] {
-  const result: bigint[] = []
-  let cur = BigInt(k)
-  for (let i = num.length - 1; i >= 0; i -= 1) {
-    cur += BigInt(num[i])
-    result.push(cur % 10n)
-    cur /= 10n
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
   }
-
-  while (cur > 0n) {
-    result.push(cur % 10n)
-    cur /= 10n
-  }
-
-  return result.reverse().map(b => Number(b))
 }
 
-interface Input {
-  readonly num: number[]
-  readonly k: number
+function newnode (val: number, left: TreeNode, right: TreeNode): TreeNode {
+  return new TreeNode(val, left, right)
+}
+
+function newright (val: number, right: TreeNode): TreeNode {
+  return new TreeNode(val, undefined, right)
+}
+
+function newval (val: number): TreeNode {
+  return new TreeNode(val)
+}
+
+function travel (node: TreeNode | null, depth: number, ref: number[]): void {
+  if (node != null) {
+    const d = depth + 1
+    travel(node.left, d, ref)
+    travel(node.right, d, ref)
+  } else {
+    ref[0] = Math.max(ref[0], depth)
+  }
+}
+
+function maxDepth (root: TreeNode | null): number {
+  const result = [0]
+  travel(root, 0, result)
+
+  return result[0]
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { num: [1, 2, 0, 0], k: 34 },
-    { num: [2, 7, 4], k: 181 },
-    { num: [2, 1, 5], k: 806 },
-    { num: [1, 2, 6, 3, 0, 7, 1, 7, 1, 9, 7, 5, 6, 6, 4, 4, 0, 0, 6, 3], k: 516 },
-    { num: [0], k: 10000 }
+  const inputs: TreeNode[] = [
+    newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+    newright(1, newval(2))
   ]
 
-  for (const { num, k } of inputs) {
-    const result = addToArrayForm(num, k)
+  for (const root of inputs) {
+    const result = maxDepth(root)
     console.log(result)
   }
 }

@@ -4,44 +4,51 @@ import (
 	"fmt"
 )
 
-func addToArrayForm(num []int, k int) []int {
-	result := []int{}
-	cur := k
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
 
-	for i := len(num) - 1; i >= 0; i -= 1 {
-		cur += num[i]
-		result = append(result, cur%10)
-		cur /= 10
-	}
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
+}
 
-	for cur > 0 {
-		result = append(result, cur%10)
-		cur /= 10
-	}
+func newright(val int, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Right: right}
+}
 
-	for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
-		result[i], result[j] = result[j], result[i]
+func newval(val int) *TreeNode {
+	return &TreeNode{Val: val}
+}
+
+func travel(node *TreeNode, depth int, maxDepth *int) {
+	if node != nil {
+		d := depth + 1
+		travel(node.Left, d, maxDepth)
+		travel(node.Right, d, maxDepth)
+	} else {
+		if depth > *maxDepth {
+			*maxDepth = depth
+		}
 	}
+}
+
+func maxDepth(root *TreeNode) int {
+	result := 0
+	travel(root, 0, &result)
 
 	return result
 }
 
-type input struct {
-	num []int
-	k   int
-}
-
 func main() {
-	inputs := []input{
-		{num: []int{1, 2, 0, 0}, k: 34},
-		{num: []int{2, 7, 4}, k: 181},
-		{num: []int{2, 1, 5}, k: 806},
-		{num: []int{1, 2, 6, 3, 0, 7, 1, 7, 1, 9, 7, 5, 6, 6, 4, 4, 0, 0, 6, 3}, k: 516},
-		{num: []int{0}, k: 10000},
+	inputs := []*TreeNode{
+		newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+		newright(1, newval(2)),
 	}
 
 	for _, input := range inputs {
-		result := addToArrayForm(input.num, input.k)
+		result := maxDepth(input)
 		fmt.Println(result)
 	}
 }

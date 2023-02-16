@@ -2,42 +2,65 @@
 leetcode
  */
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+type TreeType = Option<Rc<RefCell<TreeNode>>>;
+
+fn newnode(val: i32, left: TreeType, right: TreeType) -> TreeType {
+    return Some(Rc::new(RefCell::new(TreeNode { val, left, right })));
+}
+
+fn newright(val: i32, right: TreeType) -> TreeType {
+    return Some(Rc::new(RefCell::new(TreeNode {
+        val,
+        left: None,
+        right,
+    })));
+}
+
+fn newval(val: i32) -> TreeType {
+    return Some(Rc::new(RefCell::new(TreeNode {
+        val,
+        left: None,
+        right: None,
+    })));
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
 struct Solution {}
 impl Solution {
-    pub fn add_to_array_form(num: Vec<i32>, k: i32) -> Vec<i32> {
-        let mut result = Vec::<i32>::new();
-        let mut cur = k;
+    pub fn max_depth(root: TreeType) -> i32 {
+        let mut result = 0;
+        Self::travel(&root, 0, &mut result);
 
-        for &i in num.iter().rev() {
-            cur += i;
-            result.push(cur % 10);
-            cur /= 10;
-        }
-
-        while cur > 0 {
-            result.push(cur % 10);
-            cur /= 10;
-        }
-
-        result.reverse();
         return result;
+    }
+
+    fn travel(node: &TreeType, depth: i32, max_depth: &mut i32) {
+        if let Some(n) = node {
+            let d = depth + 1;
+            Self::travel(&n.borrow().left, d, max_depth);
+            Self::travel(&n.borrow().right, d, max_depth);
+        } else {
+            *max_depth = depth.max(*max_depth);
+        }
     }
 }
 
 fn main() {
-    let inputs: Vec<(Vec<i32>, i32)> = vec![
-        (vec![1, 2, 0, 0], 34),
-        (vec![2, 7, 4], 181),
-        (vec![2, 1, 5], 806),
-        (
-            vec![1, 2, 6, 3, 0, 7, 1, 7, 1, 9, 7, 5, 6, 6, 4, 4, 0, 0, 6, 3],
-            516,
-        ),
-        (vec![0], 10000),
+    let inputs: Vec<TreeType> = vec![
+        newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+        newright(1, newval(2)),
     ];
 
-    for (num, k) in inputs {
-        let result = Solution::add_to_array_form(num, k);
-        println!("{result:?}");
+    for root in inputs {
+        let result = Solution::max_depth(root);
+        println!("{result}");
     }
 }
