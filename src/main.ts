@@ -13,6 +13,10 @@ function newnode (val: number, left: TreeNode, right: TreeNode): TreeNode {
   return new TreeNode(val, left, right)
 }
 
+function newleft (val: number, left: TreeNode): TreeNode {
+  return new TreeNode(val, left)
+}
+
 function newright (val: number, right: TreeNode): TreeNode {
   return new TreeNode(val, undefined, right)
 }
@@ -21,31 +25,39 @@ function newval (val: number): TreeNode {
   return new TreeNode(val)
 }
 
-function travel (node: TreeNode | null, depth: number, ref: number[]): void {
-  if (node != null) {
-    const d = depth + 1
-    travel(node.left, d, ref)
-    travel(node.right, d, ref)
-  } else {
-    ref[0] = Math.max(ref[0], depth)
-  }
+interface Data {
+  prevNode?: TreeNode
+  minDistance: number
 }
 
-function maxDepth (root: TreeNode | null): number {
-  const result = [0]
-  travel(root, 0, result)
+function travel (root: TreeNode | null, data: Data): number {
+  if (root == null) {
+    return data.minDistance
+  }
 
-  return result[0]
+  travel(root.left, data)
+
+  if (data.prevNode != null) {
+    data.minDistance = Math.min(data.minDistance, root.val - data.prevNode.val)
+  }
+  data.prevNode = root
+  travel(root.right, data)
+  return data.minDistance
+}
+
+function minDiffInBST (root: TreeNode | null): number {
+  return travel(root, { minDistance: Number.MAX_SAFE_INTEGER })
 }
 
 async function main (): Promise<void> {
   const inputs: TreeNode[] = [
-    newnode(3, newval(9), newnode(20, newval(15), newval(7))),
-    newright(1, newval(2))
+    newnode(4, newnode(2, newval(1), newval(3)), newval(6)),
+    newnode(1, newval(0), newnode(48, newval(12), newval(49))),
+    newright(27, newright(34, newleft(58, newleft(50, newval(44)))))
   ]
 
   for (const root of inputs) {
-    const result = maxDepth(root)
+    const result = minDiffInBST(root)
     console.log(result)
   }
 }

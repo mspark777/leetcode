@@ -14,6 +14,10 @@ func newnode(val int, left, right *TreeNode) *TreeNode {
 	return &TreeNode{Val: val, Left: left, Right: right}
 }
 
+func newleft(val int, left *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left}
+}
+
 func newright(val int, right *TreeNode) *TreeNode {
 	return &TreeNode{Val: val, Right: right}
 }
@@ -22,33 +26,44 @@ func newval(val int) *TreeNode {
 	return &TreeNode{Val: val}
 }
 
-func travel(node *TreeNode, depth int, maxDepth *int) {
-	if node != nil {
-		d := depth + 1
-		travel(node.Left, d, maxDepth)
-		travel(node.Right, d, maxDepth)
-	} else {
-		if depth > *maxDepth {
-			*maxDepth = depth
-		}
-	}
+type data struct {
+	prev        *TreeNode
+	minDistance int
 }
 
-func maxDepth(root *TreeNode) int {
-	result := 0
-	travel(root, 0, &result)
+func travel(root *TreeNode, data *data) {
+	if root == nil {
+		return
+	}
 
-	return result
+	travel(root.Left, data)
+
+	if data.prev != nil {
+		distance := root.Val - data.prev.Val
+		if distance < data.minDistance {
+			data.minDistance = distance
+		}
+	}
+	data.prev = root
+	travel(root.Right, data)
+}
+
+func minDiffInBST(root *TreeNode) int {
+	data := &data{minDistance: 2147483647}
+	travel(root, data)
+
+	return data.minDistance
 }
 
 func main() {
 	inputs := []*TreeNode{
-		newnode(3, newval(9), newnode(20, newval(15), newval(7))),
-		newright(1, newval(2)),
+		newnode(4, newnode(2, newval(1), newval(3)), newval(6)),
+		newnode(1, newval(0), newnode(48, newval(12), newval(49))),
+		newright(27, newright(34, newleft(58, newleft(50, newval(44))))),
 	}
 
 	for _, input := range inputs {
-		result := maxDepth(input)
+		result := minDiffInBST(input)
 		fmt.Println(result)
 	}
 }
