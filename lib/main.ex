@@ -1,22 +1,30 @@
-defmodule TreeNode do
-  @type t :: %__MODULE__{
-          val: integer,
-          left: TreeNode.t() | nil,
-          right: TreeNode.t() | nil
-        }
-  defstruct val: 0, left: nil, right: nil
-end
-
 defmodule Solution do
-  @spec max_depth(root :: TreeNode.t() | nil) :: integer
-  def max_depth(root), do: travel(root, 0)
+  @spec search_insert(nums :: [integer], target :: integer) :: integer
+  def search_insert(nums, target) do
+    tnums = List.to_tuple(nums)
+    right = tuple_size(tnums)
 
-  def travel(nil, depth), do: depth
-
-  def travel(node, depth) do
-    d = depth + 1
-    max(travel(node.left, d), travel(node.right, d))
+    cond do
+      target < elem(tnums, 0) -> 0
+      target > elem(tnums, right - 1) -> right
+      true -> bsearch(tnums, target, 0, right)
+    end
   end
+
+  @spec bsearch(nums :: {integer}, target :: integer, left :: integer, right :: integer) ::
+          integer
+  defp bsearch(nums, target, left, right) when left < right do
+    middle = div(left + right, 2)
+    num = elem(nums, middle)
+
+    cond do
+      num < target -> bsearch(nums, target, middle + 1, right)
+      num > target -> bsearch(nums, target, left, middle)
+      true -> middle
+    end
+  end
+
+  defp bsearch(_, _, left, _), do: left
 end
 
 defmodule Main do
@@ -24,8 +32,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([root | remains]) do
-    result = Solution.max_depth(root)
+  def main([input | remains]) do
+    result = Solution.search_insert(input.nums, input.target)
 
     IO.puts(result)
     main(remains)
@@ -36,21 +44,10 @@ defmodule Main do
 
   def main do
     main([
-      newnode(3, newval(9), newnode(20, newval(15), newval(7))),
-      newright(1, newval(2))
+      %{nums: [1, 3, 5, 6], target: 5},
+      %{nums: [1, 3, 5, 6], target: 2},
+      %{nums: [1, 3, 5, 6], target: 7}
     ])
-  end
-
-  def newnode(val, left, right) do
-    %TreeNode{val: val, left: left, right: right}
-  end
-
-  def newright(val, right) do
-    %TreeNode{val: val, left: nil, right: right}
-  end
-
-  def newval(val) do
-    %TreeNode{val: val, left: nil, right: nil}
   end
 end
 

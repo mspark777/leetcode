@@ -1,63 +1,42 @@
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
-  }
-}
-
-function newnode (val: number, left: TreeNode, right: TreeNode): TreeNode {
-  return new TreeNode(val, left, right)
-}
-
-function newleft (val: number, left: TreeNode): TreeNode {
-  return new TreeNode(val, left)
-}
-
-function newright (val: number, right: TreeNode): TreeNode {
-  return new TreeNode(val, undefined, right)
-}
-
-function newval (val: number): TreeNode {
-  return new TreeNode(val)
-}
-
-interface Data {
-  prevNode?: TreeNode
-  minDistance: number
-}
-
-function travel (root: TreeNode | null, data: Data): number {
-  if (root == null) {
-    return data.minDistance
+function searchInsert (nums: number[], target: number): number {
+  if (target < (nums.at(0) as number)) {
+    return 0
+  } else if (target > (nums.at(-1) as number)) {
+    return nums.length
   }
 
-  travel(root.left, data)
-
-  if (data.prevNode != null) {
-    data.minDistance = Math.min(data.minDistance, root.val - data.prevNode.val)
+  let begin = 0n
+  let end = BigInt(nums.length)
+  while (begin < end) {
+    const middle = (begin + end) / 2n
+    const pos = Number(middle)
+    const num = nums[pos]
+    if (num < target) {
+      begin = middle + 1n
+    } else if (num > target) {
+      end = middle
+    } else {
+      return pos
+    }
   }
-  data.prevNode = root
-  travel(root.right, data)
-  return data.minDistance
+
+  return Number(begin)
 }
 
-function minDiffInBST (root: TreeNode | null): number {
-  return travel(root, { minDistance: Number.MAX_SAFE_INTEGER })
+interface Input {
+  readonly nums: number[]
+  readonly target: number
 }
 
 async function main (): Promise<void> {
-  const inputs: TreeNode[] = [
-    newnode(4, newnode(2, newval(1), newval(3)), newval(6)),
-    newnode(1, newval(0), newnode(48, newval(12), newval(49))),
-    newright(27, newright(34, newleft(58, newleft(50, newval(44)))))
+  const inputs: Input[] = [
+    { nums: [1, 3, 5, 6], target: 5 },
+    { nums: [1, 3, 5, 6], target: 2 },
+    { nums: [1, 3, 5, 6], target: 7 }
   ]
 
-  for (const root of inputs) {
-    const result = minDiffInBST(root)
+  for (const { nums, target } of inputs) {
+    const result = searchInsert(nums, target)
     console.log(result)
   }
 }

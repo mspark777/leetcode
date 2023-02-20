@@ -4,66 +4,46 @@ import (
 	"fmt"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
-
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
-
-func newleft(val int, left *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left}
-}
-
-func newright(val int, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Right: right}
-}
-
-func newval(val int) *TreeNode {
-	return &TreeNode{Val: val}
-}
-
-type data struct {
-	prev        *TreeNode
-	minDistance int
-}
-
-func travel(root *TreeNode, data *data) {
-	if root == nil {
-		return
+func searchInsert(nums []int, target int) int {
+	begin := 0
+	if target < nums[begin] {
+		return 0
 	}
 
-	travel(root.Left, data)
+	end := len(nums)
+	if target > nums[end-1] {
+		return end
+	}
 
-	if data.prev != nil {
-		distance := root.Val - data.prev.Val
-		if distance < data.minDistance {
-			data.minDistance = distance
+	for begin < end {
+		middle := (begin + end) / 2
+		num := nums[middle]
+		if num < target {
+			begin = middle + 1
+		} else if num > target {
+			end = middle
+		} else {
+			return middle
 		}
 	}
-	data.prev = root
-	travel(root.Right, data)
+
+	return begin
 }
 
-func minDiffInBST(root *TreeNode) int {
-	data := &data{minDistance: 2147483647}
-	travel(root, data)
-
-	return data.minDistance
+type input struct {
+	nums   []int
+	target int
 }
 
 func main() {
-	inputs := []*TreeNode{
-		newnode(4, newnode(2, newval(1), newval(3)), newval(6)),
-		newnode(1, newval(0), newnode(48, newval(12), newval(49))),
-		newright(27, newright(34, newleft(58, newleft(50, newval(44))))),
+	inputs := []input{
+		{nums: []int{1, 3, 5, 6}, target: 5},
+		{nums: []int{1, 3, 5, 6}, target: 2},
+		{nums: []int{1, 3, 5, 6}, target: 7},
 	}
 
 	for _, input := range inputs {
-		result := minDiffInBST(input)
+		result := searchInsert(input.nums, input.target)
 		fmt.Println(result)
 	}
 }
