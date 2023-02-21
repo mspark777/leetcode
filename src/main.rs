@@ -1,56 +1,38 @@
 struct Solution {}
 impl Solution {
-    pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
-        let mut begin = 0usize;
-        if target < nums[begin] {
-            return 0;
-        }
+    pub fn single_non_duplicate(nums: Vec<i32>) -> i32 {
+        let mut left = 0usize;
+        let mut right = nums.len() - 1;
 
-        let mut end = nums.len();
-        if target > nums[end - 1] {
-            return end as i32;
-        }
-
-        while begin < end {
-            let middle = (begin + end) / 2;
-            let num = nums[middle];
-
-            if num < target {
-                begin = middle + 1;
-            } else if num > target {
-                end = middle;
+        while left < right {
+            let middle = (left + right) / 2;
+            if (middle & 1) == 1 {
+                if nums[middle] != nums[middle + 1] {
+                    left = middle + 1;
+                } else {
+                    right = middle;
+                }
             } else {
-                return middle as i32;
+                if nums[middle] == nums[middle + 1] {
+                    left = middle + 1;
+                } else {
+                    right = middle;
+                }
             }
         }
 
-        return begin as i32;
+        return nums[left];
     }
 }
 
-struct Input {
-    nums: Vec<i32>,
-    target: i32,
-}
-
 fn main() {
-    let inputs: Vec<Input> = vec![
-        Input {
-            nums: vec![1, 3, 5, 6],
-            target: 5,
-        },
-        Input {
-            nums: vec![1, 3, 5, 6],
-            target: 2,
-        },
-        Input {
-            nums: vec![1, 3, 5, 6],
-            target: 7,
-        },
+    let inputs: Vec<Vec<i32>> = vec![
+        vec![1, 1, 2, 3, 3, 4, 4, 8, 8],
+        vec![3, 3, 7, 7, 10, 11, 11],
     ];
 
-    for Input { nums, target } in inputs {
-        let result = Solution::search_insert(nums, target);
+    for nums in inputs {
+        let result = Solution::single_non_duplicate(nums);
         println!("{result}");
     }
 }

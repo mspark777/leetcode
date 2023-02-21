@@ -1,30 +1,30 @@
 defmodule Solution do
-  @spec search_insert(nums :: [integer], target :: integer) :: integer
-  def search_insert(nums, target) do
+  @spec single_non_duplicate(nums :: [integer]) :: integer
+  def single_non_duplicate(nums) do
     tnums = List.to_tuple(nums)
-    right = tuple_size(tnums)
-
-    cond do
-      target < elem(tnums, 0) -> 0
-      target > elem(tnums, right - 1) -> right
-      true -> bsearch(tnums, target, 0, right)
-    end
+    bsearch(tnums, 0, tuple_size(tnums) - 1)
   end
 
-  @spec bsearch(nums :: {integer}, target :: integer, left :: integer, right :: integer) ::
-          integer
-  defp bsearch(nums, target, left, right) when left < right do
+  @spec bsearch(nums :: {integer}, left :: integer, right :: integer) :: integer
+  defp bsearch(nums, left, right) when left < right do
     middle = div(left + right, 2)
-    num = elem(nums, middle)
 
-    cond do
-      num < target -> bsearch(nums, target, middle + 1, right)
-      num > target -> bsearch(nums, target, left, middle)
-      true -> middle
+    if rem(middle, 2) == 1 do
+      if elem(nums, middle) != elem(nums, middle + 1) do
+        bsearch(nums, middle + 1, right)
+      else
+        bsearch(nums, left, middle)
+      end
+    else
+      if elem(nums, middle) == elem(nums, middle + 1) do
+        bsearch(nums, middle + 1, right)
+      else
+        bsearch(nums, left, middle)
+      end
     end
   end
 
-  defp bsearch(_, _, left, _), do: left
+  defp bsearch(nums, left, _), do: elem(nums, left)
 end
 
 defmodule Main do
@@ -32,8 +32,8 @@ defmodule Main do
   Documentation for `Leetcode`.
   """
 
-  def main([input | remains]) do
-    result = Solution.search_insert(input.nums, input.target)
+  def main([nums | remains]) do
+    result = Solution.single_non_duplicate(nums)
 
     IO.puts(result)
     main(remains)
@@ -44,9 +44,8 @@ defmodule Main do
 
   def main do
     main([
-      %{nums: [1, 3, 5, 6], target: 5},
-      %{nums: [1, 3, 5, 6], target: 2},
-      %{nums: [1, 3, 5, 6], target: 7}
+      [1, 1, 2, 3, 3, 4, 4, 8, 8],
+      [3, 3, 7, 7, 10, 11, 11]
     ])
   end
 end

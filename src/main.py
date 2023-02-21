@@ -3,37 +3,33 @@ from typing import List
 
 
 class Solution:
-    def searchInsert(self, nums: List[int], target: int) -> int:
-        if target < nums[0]:
-            return 0
-        elif target > nums[-1]:
-            return len(nums)
+    def singleNonDuplicate(self, nums: List[int]) -> int:
+        left = 0
+        right = len(nums) - 1
 
-        begin = 0
-        end = len(nums)
-        while begin < end:
-            middle = (begin + end) // 2
-            num = nums[middle]
-            if num < target:
-                begin = middle + 1
-            elif num > target:
-                end = middle
+        while left < right:
+            middle = (left + right) // 2
+
+            if (middle & 1) == 1:
+                if nums[middle] != nums[middle + 1]:
+                    left = middle + 1
+                else:
+                    right = middle
             else:
-                return middle
+                if nums[middle] == nums[middle + 1]:
+                    left = middle + 1
+                else:
+                    right = middle
 
-        return begin
+        return nums[left]
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([1, 3, 5, 6], 5),
-        ([1, 3, 5, 6], 2),
-        ([1, 3, 5, 6], 7),
-    ]
+    inputs: list[list[int]] = [[1, 1, 2, 3, 3, 4, 4, 8, 8], [3, 3, 7, 7, 10, 11, 11]]
 
-    for nums, target in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.searchInsert(nums, target)
+        result = solution.singleNonDuplicate(nums)
         print(result)
 
 

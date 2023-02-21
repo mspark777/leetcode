@@ -1,42 +1,39 @@
 /**
   * @param {number[]} nums
-  * @param {number} target
   * @returns {number}
   */
-function searchInsert (nums, target) {
-  if (target < nums.at(0)) {
-    return 0
-  } else if (target > nums.at(-1)) {
-    return nums.length
-  }
-
-  let begin = 0n
-  let end = BigInt(nums.length)
-  while (begin < end) {
-    const middle = (begin + end) / 2n
+function singleNonDuplicate (nums) {
+  let left = 0n
+  let right = BigInt(nums.length - 1)
+  while (left < right) {
+    const middle = (left + right) / 2n
     const pos = Number(middle)
-    const num = nums[pos]
-    if (num < target) {
-      begin = middle + 1n
-    } else if (num > target) {
-      end = middle
+    if ((middle & 1n) === 1n) {
+      if (nums[pos] !== nums[pos + 1]) {
+        left = middle + 1n
+      } else {
+        right = middle
+      }
     } else {
-      return pos
+      if (nums[pos] === nums[pos + 1]) {
+        left = middle + 1n
+      } else {
+        right = middle
+      }
     }
   }
 
-  return Number(begin)
+  return nums[Number(left)]
 }
 
 async function main () {
   const inputs = [
-    { nums: [1, 3, 5, 6], target: 5 },
-    { nums: [1, 3, 5, 6], target: 2 },
-    { nums: [1, 3, 5, 6], target: 7 }
+    [1, 1, 2, 3, 3, 4, 4, 8, 8],
+    [3, 3, 7, 7, 10, 11, 11]
   ]
 
-  for (const { nums, target } of inputs) {
-    const result = searchInsert(nums, target)
+  for (const nums of inputs) {
+    const result = singleNonDuplicate(nums)
     console.log(result)
   }
 }

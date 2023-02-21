@@ -4,46 +4,38 @@ import (
 	"fmt"
 )
 
-func searchInsert(nums []int, target int) int {
-	begin := 0
-	if target < nums[begin] {
-		return 0
-	}
+func singleNonDuplicate(nums []int) int {
+	left := 0
+	right := len(nums) - 1
 
-	end := len(nums)
-	if target > nums[end-1] {
-		return end
-	}
-
-	for begin < end {
-		middle := (begin + end) / 2
-		num := nums[middle]
-		if num < target {
-			begin = middle + 1
-		} else if num > target {
-			end = middle
+	for left < right {
+		middle := (left + right) / 2
+		if (middle & 1) == 1 {
+			if nums[middle] != nums[middle+1] {
+				left = middle + 1
+			} else {
+				right = middle
+			}
 		} else {
-			return middle
+			if nums[middle] == nums[middle+1] {
+				left = middle + 1
+			} else {
+				right = middle
+			}
 		}
 	}
 
-	return begin
-}
-
-type input struct {
-	nums   []int
-	target int
+	return nums[left]
 }
 
 func main() {
-	inputs := []input{
-		{nums: []int{1, 3, 5, 6}, target: 5},
-		{nums: []int{1, 3, 5, 6}, target: 2},
-		{nums: []int{1, 3, 5, 6}, target: 7},
+	inputs := [][]int{
+		{1, 1, 2, 3, 3, 4, 4, 8, 8},
+		{3, 3, 7, 7, 10, 11, 11},
 	}
 
 	for _, input := range inputs {
-		result := searchInsert(input.nums, input.target)
+		result := singleNonDuplicate(input)
 		fmt.Println(result)
 	}
 }
