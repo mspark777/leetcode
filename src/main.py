@@ -3,33 +3,52 @@ from typing import List
 
 
 class Solution:
-    def singleNonDuplicate(self, nums: List[int]) -> int:
-        left = 0
-        right = len(nums) - 1
+    def shipWithinDays(self, weights: List[int], days: int) -> int:
+        total_load = 0
+        max_load = 0
+
+        for weight in weights:
+            total_load += weight
+            max_load = max(max_load, weight)
+
+        left = max_load
+        right = total_load
 
         while left < right:
             middle = (left + right) // 2
-
-            if (middle & 1) == 1:
-                if nums[middle] != nums[middle + 1]:
-                    left = middle + 1
-                else:
-                    right = middle
+            if self.feasible(weights, middle, days):
+                right = middle
             else:
-                if nums[middle] == nums[middle + 1]:
-                    left = middle + 1
-                else:
-                    right = middle
+                left = middle + 1
 
-        return nums[left]
+        return left
+
+    def feasible(self, weights: list[int], capacity: int, days: int) -> bool:
+        days_needed = 1
+        current_load = 0
+
+        for weight in weights:
+            current_load += weight
+            if current_load > capacity:
+                days_needed += 1
+                current_load = weight
+
+            if days_needed > days:
+                return False
+
+        return True
 
 
 def main():
-    inputs: list[list[int]] = [[1, 1, 2, 3, 3, 4, 4, 8, 8], [3, 3, 7, 7, 10, 11, 11]]
+    inputs: list[tuple[list[int], int]] = [
+        ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5),
+        ([3, 2, 2, 4, 1, 4], 3),
+        ([1, 2, 3, 1, 1], 4),
+    ]
 
-    for nums in inputs:
+    for weights, days in inputs:
         solution = Solution()
-        result = solution.singleNonDuplicate(nums)
+        result = solution.shipWithinDays(weights, days)
         print(result)
 
 

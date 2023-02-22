@@ -1,38 +1,72 @@
 struct Solution {}
 impl Solution {
-    pub fn single_non_duplicate(nums: Vec<i32>) -> i32 {
-        let mut left = 0usize;
-        let mut right = nums.len() - 1;
+    pub fn ship_within_days(weights: Vec<i32>, days: i32) -> i32 {
+        let mut total_load = 0;
+        let mut max_load = 0;
+
+        for &weight in weights.iter() {
+            total_load += weight;
+            max_load = max_load.max(weight);
+        }
+
+        let mut left = max_load;
+        let mut right = total_load;
 
         while left < right {
             let middle = (left + right) / 2;
-            if (middle & 1) == 1 {
-                if nums[middle] != nums[middle + 1] {
-                    left = middle + 1;
-                } else {
-                    right = middle;
-                }
+            if Self::feasible(&weights, middle, days) {
+                right = middle;
             } else {
-                if nums[middle] == nums[middle + 1] {
-                    left = middle + 1;
-                } else {
-                    right = middle;
-                }
+                left = middle + 1;
             }
         }
 
-        return nums[left];
+        return left;
+    }
+
+    fn feasible(weights: &Vec<i32>, capacity: i32, days: i32) -> bool {
+        let mut days_needed = 1;
+        let mut current_load = 0;
+
+        for &weight in weights.iter() {
+            current_load += weight;
+            if current_load > capacity {
+                days_needed += 1;
+                current_load = weight;
+            }
+
+            if days_needed > days {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
+struct Input {
+    weights: Vec<i32>,
+    days: i32,
+}
+
 fn main() {
-    let inputs: Vec<Vec<i32>> = vec![
-        vec![1, 1, 2, 3, 3, 4, 4, 8, 8],
-        vec![3, 3, 7, 7, 10, 11, 11],
+    let inputs: Vec<Input> = vec![
+        Input {
+            weights: vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            days: 5,
+        },
+        Input {
+            weights: vec![3, 2, 2, 4, 1, 4],
+            days: 3,
+        },
+        Input {
+            weights: vec![1, 2, 3, 1, 1],
+            days: 4,
+        },
     ];
 
-    for nums in inputs {
-        let result = Solution::single_non_duplicate(nums);
+    for Input { weights, days } in inputs {
+        let result = Solution::ship_within_days(weights, days);
         println!("{result}");
     }
 }
