@@ -1,54 +1,56 @@
 from __future__ import annotations
 from typing import List
+import heapq
 
 
 class Solution:
-    def shipWithinDays(self, weights: List[int], days: int) -> int:
-        total_load = 0
-        max_load = 0
+    def findMaximizedCapital(
+        self, k: int, w: int, profits: List[int], capital: List[int]
+    ) -> int:
+        n = len(profits)
+        projects = list(zip(capital, profits))
+        projects.sort()
 
-        for weight in weights:
-            total_load += weight
-            max_load = max(max_load, weight)
+        queue: list[int] = []
+        proj = 0
 
-        left = max_load
-        right = total_load
+        for i in range(k):
+            while (proj < n) and (projects[proj][0] <= w):
+                heapq.heappush(queue, -projects[proj][1])
+                proj += 1
 
-        while left < right:
-            middle = (left + right) // 2
-            if self.feasible(weights, middle, days):
-                right = middle
-            else:
-                left = middle + 1
+            if not queue:
+                break
 
-        return left
+            w -= heapq.heappop(queue)
 
-    def feasible(self, weights: list[int], capacity: int, days: int) -> bool:
-        days_needed = 1
-        current_load = 0
+        return w
 
-        for weight in weights:
-            current_load += weight
-            if current_load > capacity:
-                days_needed += 1
-                current_load = weight
 
-            if days_needed > days:
-                return False
+class Input:
+    k: int
+    w: int
+    profits: list[int]
+    capital: list[int]
 
-        return True
+    def __init__(self, k: int, w: int, profits: list[int], capital: list[int]):
+        self.k = k
+        self.w = w
+        self.profits = profits
+        self.capital = capital
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5),
-        ([3, 2, 2, 4, 1, 4], 3),
-        ([1, 2, 3, 1, 1], 4),
+    inputs: list[Input] = [
+        Input(k=2, w=0, profits=[1, 2, 3], capital=[0, 1, 1]),
+        Input(k=3, w=0, profits=[1, 2, 3], capital=[0, 1, 2]),
     ]
 
-    for weights, days in inputs:
+    for input in inputs:
         solution = Solution()
-        result = solution.shipWithinDays(weights, days)
+        result = solution.findMaximizedCapital(
+            input.k, input.w, input.profits, input.capital
+        )
         print(result)
 
 

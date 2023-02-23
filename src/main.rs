@@ -1,72 +1,72 @@
+use std::collections::BinaryHeap;
+
 struct Solution {}
 impl Solution {
-    pub fn ship_within_days(weights: Vec<i32>, days: i32) -> i32 {
-        let mut total_load = 0;
-        let mut max_load = 0;
+    pub fn find_maximized_capital(k: i32, w: i32, profits: Vec<i32>, capital: Vec<i32>) -> i32 {
+        let mut projects: Vec<(i32, i32)> = capital
+            .iter()
+            .cloned()
+            .zip(profits.iter().cloned())
+            .collect();
 
-        for &weight in weights.iter() {
-            total_load += weight;
-            max_load = max_load.max(weight);
-        }
+        projects.sort_unstable();
 
-        let mut left = max_load;
-        let mut right = total_load;
+        let mut result = w;
+        let mut queue = BinaryHeap::<i32>::with_capacity(projects.len());
+        let mut pro = 0usize;
 
-        while left < right {
-            let middle = (left + right) / 2;
-            if Self::feasible(&weights, middle, days) {
-                right = middle;
+        for _ in 0..k {
+            while let Some(project) = projects.get(pro) {
+                if project.0 <= result {
+                    queue.push(project.1);
+                    pro += 1;
+                } else {
+                    break;
+                }
+            }
+
+            if let Some(p) = queue.pop() {
+                result += p;
             } else {
-                left = middle + 1;
+                break;
             }
         }
 
-        return left;
-    }
-
-    fn feasible(weights: &Vec<i32>, capacity: i32, days: i32) -> bool {
-        let mut days_needed = 1;
-        let mut current_load = 0;
-
-        for &weight in weights.iter() {
-            current_load += weight;
-            if current_load > capacity {
-                days_needed += 1;
-                current_load = weight;
-            }
-
-            if days_needed > days {
-                return false;
-            }
-        }
-
-        return true;
+        return result;
     }
 }
 
 struct Input {
-    weights: Vec<i32>,
-    days: i32,
+    k: i32,
+    w: i32,
+    profits: Vec<i32>,
+    capital: Vec<i32>,
 }
 
 fn main() {
     let inputs: Vec<Input> = vec![
         Input {
-            weights: vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            days: 5,
+            k: 2,
+            w: 0,
+            profits: vec![1, 2, 3],
+            capital: vec![0, 1, 1],
         },
         Input {
-            weights: vec![3, 2, 2, 4, 1, 4],
-            days: 3,
-        },
-        Input {
-            weights: vec![1, 2, 3, 1, 1],
-            days: 4,
+            k: 3,
+            w: 0,
+            profits: vec![1, 2, 3],
+            capital: vec![0, 1, 2],
         },
     ];
 
-    for Input { weights, days } in inputs {
-        let result = Solution::ship_within_days(weights, days);
+    for Input {
+        k,
+        w,
+        profits,
+        capital,
+    } in inputs
+    {
+        let result = Solution::find_maximized_capital(k, w, profits, capital);
         println!("{result}");
     }
 }
