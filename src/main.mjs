@@ -1,63 +1,82 @@
-/**
-  * @param {number[]} weights
-  * @param {number} capacity
-  * @param {number} days
-  * @returns {boolean}
-  */
-function feasible (weights, capacity, days) {
-  let daysNeeded = 1
-  let currentLoad = 0
-  for (const weight of weights) {
-    currentLoad += weight
-    if (currentLoad > capacity) {
-      daysNeeded += 1
-      currentLoad = weight
-    }
+class Node {
+  /** @type {boolean} */
+  val
+  /** @type {boolean} */
+  isLeaf
+  /** @type {Node | null} */
+  topLeft
+  /** @type {Node | null} */
+  topRight
+  /** @type {Node | null} */
+  bottomLeft
+  /** @type {Node | null} */
+  bottomRight
 
-    if (daysNeeded > days) {
-      return false
-    }
+  /**
+    * @param {boolean|undefined} val
+    * @param {boolean|undefined} isLeaf
+    * @param {Node|undefined} topLeft
+    * @param {Node|undefined} topRight
+    * @param {Node|undefined} bottomLeft
+    * @param {Node|undefined} bottomRight
+    */
+  constructor (val, isLeaf, topLeft, topRight, bottomLeft, bottomRight) {
+    this.val = (val === undefined ? false : val)
+    this.isLeaf = (isLeaf === undefined ? false : isLeaf)
+    this.topLeft = (topLeft === undefined ? null : topLeft)
+    this.topRight = (topRight === undefined ? null : topRight)
+    this.bottomLeft = (bottomLeft === undefined ? null : bottomLeft)
+    this.bottomRight = (bottomRight === undefined ? null : bottomRight)
   }
-
-  return true
 }
 
 /**
-  * @param {number[]} weights
-  * @param {number} days
-  * @returns {number}
+  * @param {number[][]} grid
+  * @param {bigint} row
+  * @param {bigint} col
+  * @param {bigint} l
+  * @returns {Node}
   */
-function shipWithinDays (weights, days) {
-  let totalLoad = 0
-  let maxLoad = 0
-  for (const weight of weights) {
-    totalLoad += weight
-    maxLoad = Math.max(maxLoad, weight)
+function solve (grid, row, col, l) {
+  if (l <= 1n) {
+    return new Node(grid[Number(row)][Number(col)] === 1, true)
   }
 
-  let left = BigInt(maxLoad)
-  let right = BigInt(totalLoad)
-  while (left < right) {
-    const middle = (left + right) / 2n
-    if (feasible(weights, Number(middle), days)) {
-      right = middle
-    } else {
-      left = middle + 1n
-    }
-  }
+  const next = l / 2n
+  const topLeft = solve(grid, row, col, next)
+  const topRight = solve(grid, row, col + next, next)
+  const bottomLeft = solve(grid, row + next, col, next)
+  const bottomRight = solve(grid, row + next, col + next, next)
 
-  return Number(left)
+  return (
+    topLeft.isLeaf &&
+    topRight.isLeaf &&
+    bottomLeft.isLeaf &&
+    bottomRight.isLeaf &&
+    (topLeft.val === topRight.val) &&
+    (topRight.val === bottomLeft.val) &&
+    (bottomLeft.val === bottomRight.val)
+  )
+    ? new Node(topLeft.val, true)
+    : new Node(false, false, topLeft, topRight, bottomLeft, bottomRight)
+}
+
+/**
+  * @param {number[][]} grid
+  * @returns {Node | null}
+  */
+function construct (grid) {
+  return solve(grid, 0n, 0n, BigInt(grid.length))
 }
 
 async function main () {
   const inputs = [
-    { weights: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], days: 5 },
-    { weights: [3, 2, 2, 4, 1, 4], days: 3 },
-    { weights: [1, 2, 3, 1, 1], days: 4 }
+    [[0, 1], [1, 0]],
+    [[1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0]]
   ]
 
-  for (const { weights, days } of inputs) {
-    const result = shipWithinDays(weights, days)
+  for (const grid of inputs) {
+    const result = construct(grid)
     console.log(result)
   }
 }
