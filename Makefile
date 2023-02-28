@@ -7,11 +7,8 @@ ts:
 js:
 	npm run start:js
 
-rs:
-	cargo +1.58.1 run
-
 go:
-	go run src/main.go
+	go run src/main.go src/lib.go
 
 py:
 	python src/main.py

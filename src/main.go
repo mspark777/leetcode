@@ -4,65 +4,48 @@ import (
 	"fmt"
 )
 
-func feasible(weights []int, capacity, days int) bool {
-	daysNeeded := 1
-	currentLoad := 0
-
-	for _, weight := range weights {
-		currentLoad += weight
-		if currentLoad > capacity {
-			daysNeeded += 1
-			currentLoad = weight
-		}
-
-		if daysNeeded > days {
-			return false
-		}
+func traverse(node *TreeNode, triplets map[string]int, counts map[int]int, result *[]*TreeNode) int {
+	if node == nil {
+		return 0
 	}
 
-	return true
+	triplet := fmt.Sprint(
+		traverse(node.Left, triplets, counts, result),
+		node.Val,
+		traverse(node.Right, triplets, counts, result),
+	)
+
+	if _, ok := triplets[triplet]; !ok {
+		triplets[triplet] = len(triplets) + 1
+	}
+
+	id := triplets[triplet]
+	counts[id] += 1
+	if counts[id] == 2 {
+		*result = append(*result, node)
+	}
+
+	return id
 }
 
-func shipWithinDays(weights []int, days int) int {
-	totalLoad := 0
-	maxLoad := 0
-
-	for _, weight := range weights {
-		totalLoad += weight
-		if weight > maxLoad {
-			maxLoad = weight
-		}
-	}
-
-	left := maxLoad
-	right := totalLoad
-
-	for left < right {
-		middle := (left + right) / 2
-		if feasible(weights, middle, days) {
-			right = middle
-		} else {
-			left = middle + 1
-		}
-	}
-
-	return left
-}
-
-type input struct {
-	weights []int
-	days    int
+func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
+	result := []*TreeNode{}
+	traverse(root, map[string]int{}, map[int]int{}, &result)
+	return result
 }
 
 func main() {
-	inputs := []input{
-		{weights: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, days: 5},
-		{weights: []int{3, 2, 2, 4, 1, 4}, days: 3},
-		{weights: []int{1, 2, 3, 1, 1}, days: 4},
+	inputs := []*TreeNode{
+		newTreeNode(1,
+			newTreeLeft(2, newTreeVal(4)),
+			newTreeNode(3, newTreeLeft(2, newTreeVal(4)), newTreeVal(4)),
+		),
+		newTreeNode(2, newTreeVal(1), newTreeVal(1)),
+		newTreeNode(2, newTreeLeft(2, newTreeVal(3)), newTreeLeft(2, newTreeVal(3))),
 	}
 
-	for _, input := range inputs {
-		result := shipWithinDays(input.weights, input.days)
+	for _, root := range inputs {
+		result := findDuplicateSubtrees(root)
 		fmt.Println(result)
 	}
 }

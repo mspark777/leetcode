@@ -1,56 +1,59 @@
-from __future__ import annotations
-from typing import List
-import heapq
+from typing import Optional, List
+
+from lib import TreeNode, new_tree_left, new_tree_node, new_tree_val
 
 
 class Solution:
-    def findMaximizedCapital(
-        self, k: int, w: int, profits: List[int], capital: List[int]
+    def findDuplicateSubtrees(self, root: Optional[TreeNode]) -> List[TreeNode]:
+        result: list[TreeNode] = []
+        self.traverse(root, {}, {}, result)
+        return result
+
+    def traverse(
+        self,
+        node: Optional[TreeNode],
+        triplets: dict[str, int],
+        counts: dict[int, int],
+        result: list[TreeNode],
     ) -> int:
-        n = len(profits)
-        projects = list(zip(capital, profits))
-        projects.sort()
+        if node is None:
+            return 0
 
-        queue: list[int] = []
-        proj = 0
+        triplet = ",".join(
+            [
+                str(self.traverse(node.left, triplets, counts, result)),
+                str(node.val),
+                str(self.traverse(node.right, triplets, counts, result)),
+            ]
+        )
 
-        for i in range(k):
-            while (proj < n) and (projects[proj][0] <= w):
-                heapq.heappush(queue, -projects[proj][1])
-                proj += 1
+        if triplet not in triplets:
+            triplets[triplet] = len(triplets) + 1
 
-            if not queue:
-                break
+        id = triplets[triplet]
+        counts[id] = counts.get(id, 0) + 1
+        if counts.get(id) == 2:
+            result.append(node)
 
-            w -= heapq.heappop(queue)
-
-        return w
-
-
-class Input:
-    k: int
-    w: int
-    profits: list[int]
-    capital: list[int]
-
-    def __init__(self, k: int, w: int, profits: list[int], capital: list[int]):
-        self.k = k
-        self.w = w
-        self.profits = profits
-        self.capital = capital
+        return id
 
 
 def main():
-    inputs: list[Input] = [
-        Input(k=2, w=0, profits=[1, 2, 3], capital=[0, 1, 1]),
-        Input(k=3, w=0, profits=[1, 2, 3], capital=[0, 1, 2]),
+    inputs: list[Optional[TreeNode]] = [
+        new_tree_node(
+            1,
+            new_tree_left(2, new_tree_val(4)),
+            new_tree_node(3, new_tree_left(2, new_tree_val(4)), new_tree_val(4)),
+        ),
+        new_tree_node(2, new_tree_val(1), new_tree_val(1)),
+        new_tree_node(
+            2, new_tree_left(2, new_tree_val(3)), new_tree_left(2, new_tree_val(3))
+        ),
     ]
 
-    for input in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.findMaximizedCapital(
-            input.k, input.w, input.profits, input.capital
-        )
+        result = solution.findDuplicateSubtrees(root)
         print(result)
 
 

@@ -1,56 +1,47 @@
-class Node {
-  val: boolean
-  isLeaf: boolean
-  topLeft: Node | null
-  topRight: Node | null
-  bottomLeft: Node | null
-  bottomRight: Node | null
-  constructor (val?: boolean, isLeaf?: boolean, topLeft?: Node, topRight?: Node, bottomLeft?: Node, bottomRight?: Node) {
-    this.val = (val === undefined ? false : val)
-    this.isLeaf = (isLeaf === undefined ? false : isLeaf)
-    this.topLeft = (topLeft === undefined ? null : topLeft)
-    this.topRight = (topRight === undefined ? null : topRight)
-    this.bottomLeft = (bottomLeft === undefined ? null : bottomLeft)
-    this.bottomRight = (bottomRight === undefined ? null : bottomRight)
-  }
-}
+import { newTreeLeft, newTreeNode, newTreeVal, type TreeNode } from './lib'
 
-function solve (grid: number[][], row: bigint, col: bigint, l: bigint): Node {
-  if (l <= 1n) {
-    return new Node(grid[Number(row)][Number(col)] === 1, true)
+function traverse (node: TreeNode | null, tripletToIDs: Map<string, number>, counts: Map<number, number>, result: TreeNode[]): number {
+  if (node == null) {
+    return 0
   }
 
-  const next = l / 2n
-  const topLeft = solve(grid, row, col, next)
-  const topRight = solve(grid, row, col + next, next)
-  const bottomLeft = solve(grid, row + next, col, next)
-  const bottomRight = solve(grid, row + next, col + next, next)
+  const triplet = [
+    traverse(node.left, tripletToIDs, counts, result),
+    node.val,
+    traverse(node.right, tripletToIDs, counts, result)
+  ].join(',')
 
-  return (
-    topLeft.isLeaf &&
-    topRight.isLeaf &&
-    bottomLeft.isLeaf &&
-    bottomRight.isLeaf &&
-    (topLeft.val === topRight.val) &&
-    (topRight.val === bottomLeft.val) &&
-    (bottomLeft.val === bottomRight.val)
-  )
-    ? new Node(topLeft.val, true)
-    : new Node(false, false, topLeft, topRight, bottomLeft, bottomRight)
+  if (!tripletToIDs.has(triplet)) {
+    tripletToIDs.set(triplet, tripletToIDs.size + 1)
+  }
+  const id = tripletToIDs.get(triplet) as number
+  counts.set(id, (counts.get(id) ?? 0) + 1)
+  if (counts.get(id) === 2) {
+    result.push(node)
+  }
+
+  return id
 }
 
-function construct (grid: number[][]): Node | null {
-  return solve(grid, 0n, 0n, BigInt(grid.length))
+function findDuplicateSubtrees (root: TreeNode | null): Array<TreeNode | null> {
+  const result: TreeNode[] = []
+  traverse(root, new Map(), new Map(), result)
+
+  return result
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][][] = [
-    [[0, 1], [1, 0]],
-    [[1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 0, 0, 0, 0]]
+  const inputs: Array<TreeNode | null> = [
+    newTreeNode(1,
+      newTreeLeft(2, newTreeVal(4)),
+      newTreeNode(3, newTreeLeft(2, newTreeVal(4)), newTreeVal(4))
+    ),
+    newTreeNode(2, newTreeVal(1), newTreeVal(1)),
+    newTreeNode(2, newTreeLeft(2, newTreeVal(3)), newTreeLeft(2, newTreeVal(3)))
   ]
 
-  for (const grid of inputs) {
-    const result = construct(grid)
+  for (const root of inputs) {
+    const result = findDuplicateSubtrees(root)
     console.log(result)
   }
 }
