@@ -15,7 +15,3 @@ py:
 
 sh:
 	${SHELL} src/main.sh
-
-ex:
-	mix clean
-	mix run
