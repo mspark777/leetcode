@@ -2,6 +2,6 @@
 /target
 /node_modules
 /src/__pycache__
-/bin
+/bin/*
 
 !.keep
