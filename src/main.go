@@ -4,48 +4,44 @@ import (
 	"fmt"
 )
 
-func traverse(node *TreeNode, triplets map[string]int, counts map[int]int, result *[]*TreeNode) int {
-	if node == nil {
-		return 0
+func compress(chars []byte) int {
+	newlen := 0
+	for i := 0; i < len(chars); i += 0 {
+		groupLen := 0
+
+		for j := i + groupLen; j < len(chars); j += 1 {
+			if chars[i] == chars[j] {
+				groupLen += 1
+			} else {
+				break
+			}
+		}
+
+		chars[newlen] = chars[i]
+		newlen += 1
+
+		if groupLen > 1 {
+			for _, ch := range []byte(fmt.Sprint(groupLen)) {
+				chars[newlen] = ch
+				newlen += 1
+			}
+		}
+
+		i += groupLen
 	}
 
-	triplet := fmt.Sprint(
-		traverse(node.Left, triplets, counts, result),
-		node.Val,
-		traverse(node.Right, triplets, counts, result),
-	)
-
-	if _, ok := triplets[triplet]; !ok {
-		triplets[triplet] = len(triplets) + 1
-	}
-
-	id := triplets[triplet]
-	counts[id] += 1
-	if counts[id] == 2 {
-		*result = append(*result, node)
-	}
-
-	return id
-}
-
-func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
-	result := []*TreeNode{}
-	traverse(root, map[string]int{}, map[int]int{}, &result)
-	return result
+	return newlen
 }
 
 func main() {
-	inputs := []*TreeNode{
-		newTreeNode(1,
-			newTreeLeft(2, newTreeVal(4)),
-			newTreeNode(3, newTreeLeft(2, newTreeVal(4)), newTreeVal(4)),
-		),
-		newTreeNode(2, newTreeVal(1), newTreeVal(1)),
-		newTreeNode(2, newTreeLeft(2, newTreeVal(3)), newTreeLeft(2, newTreeVal(3))),
+	inputs := [][]byte{
+		[]byte{'a', 'a', 'b', 'b', 'c', 'c', 'c'},
+		[]byte{'a'},
+		[]byte{'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'},
 	}
 
-	for _, root := range inputs {
-		result := findDuplicateSubtrees(root)
+	for _, chars := range inputs {
+		result := compress(chars)
 		fmt.Println(result)
 	}
 }

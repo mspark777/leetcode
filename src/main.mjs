@@ -1,60 +1,44 @@
-import { newTreeLeft, newTreeNode, newTreeVal } from './lib.mjs'
-
 /**
-  * @param {TreeNode|null} node
-  * @param {Map<string, number>} tripletToIDs
-  * @param {Map<number, number>} counts
-  * @param {TreeNode[]} result
+  * @param {string[]} chars
   * @returns {number}
   */
-function traverse (node, tripletToIDs, counts, result) {
-  if (node == null) {
-    return 0
+function compress (chars) {
+  let newlen = 0
+  for (let i = 0; i < chars.length; i += 0) {
+    let groupLen = 1
+    for (let j = i + groupLen; j < chars.length; j += 1) {
+      if (chars[i] === chars[j]) {
+        groupLen += 1
+      } else {
+        break
+      }
+    }
+
+    chars[newlen] = chars[i]
+    newlen += 1
+    if (groupLen > 1) {
+      for (const ch of groupLen.toString()) {
+        chars[newlen] = ch
+        newlen += 1
+      }
+    }
+
+    i += groupLen
   }
 
-  const triplet = [
-    traverse(node.left, tripletToIDs, counts, result),
-    node.val,
-    traverse(node.right, tripletToIDs, counts, result)
-  ].join(',')
-
-  if (!tripletToIDs.has(triplet)) {
-    tripletToIDs.set(triplet, tripletToIDs.size + 1)
-  }
-  const id = tripletToIDs.get(triplet)
-  counts.set(id, (counts.get(id) ?? 0) + 1)
-  if (counts.get(id) === 2) {
-    result.push(node)
-  }
-
-  return id
-}
-
-/**
-  * @param {TreeNode|null} root
-  * @returns {Array<TreeNode | null>}
-  */
-function findDuplicateSubtrees (root) {
-  /** @type {TreeNode[]} */
-  const result = []
-  traverse(root, new Map(), new Map(), result)
-
-  return result
+  return newlen
 }
 
 async function main () {
   const inputs = [
-    newTreeNode(1,
-      newTreeLeft(2, newTreeVal(4)),
-      newTreeNode(3, newTreeLeft(2, newTreeVal(4)), newTreeVal(4))
-    ),
-    newTreeNode(2, newTreeVal(1), newTreeVal(1)),
-    newTreeNode(2, newTreeLeft(2, newTreeVal(3)), newTreeLeft(2, newTreeVal(3)))
+    ['a', 'a', 'b', 'b', 'c', 'c', 'c'],
+    ['a'],
+    ['a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b']
   ]
 
-  for (const root of inputs) {
-    const result = findDuplicateSubtrees(root)
-    console.log(result)
+  for (const chars of inputs) {
+    const result = compress(chars)
+    console.log(result, chars)
   }
 }
 

@@ -1,60 +1,46 @@
-from typing import Optional, List
-
-from lib import TreeNode, new_tree_left, new_tree_node, new_tree_val
+from typing import List
 
 
 class Solution:
-    def findDuplicateSubtrees(self, root: Optional[TreeNode]) -> List[TreeNode]:
-        result: list[TreeNode] = []
-        self.traverse(root, {}, {}, result)
-        return result
+    def compress(self, chars: List[str]) -> int:
+        newlen = 0
+        charslen = len(chars)
+        i = 0
+        while i < charslen:
+            group_len = 1
 
-    def traverse(
-        self,
-        node: Optional[TreeNode],
-        triplets: dict[str, int],
-        counts: dict[int, int],
-        result: list[TreeNode],
-    ) -> int:
-        if node is None:
-            return 0
+            j = i + group_len
+            while j < charslen:
+                if chars[i] == chars[j]:
+                    group_len += 1
+                    j += 1
+                else:
+                    break
 
-        triplet = ",".join(
-            [
-                str(self.traverse(node.left, triplets, counts, result)),
-                str(node.val),
-                str(self.traverse(node.right, triplets, counts, result)),
-            ]
-        )
+            chars[newlen] = chars[i]
+            newlen += 1
 
-        if triplet not in triplets:
-            triplets[triplet] = len(triplets) + 1
+            if group_len > 1:
+                for ch in str(group_len):
+                    chars[newlen] = ch
+                    newlen += 1
 
-        id = triplets[triplet]
-        counts[id] = counts.get(id, 0) + 1
-        if counts.get(id) == 2:
-            result.append(node)
+            i += group_len
 
-        return id
+        return newlen
 
 
 def main():
-    inputs: list[Optional[TreeNode]] = [
-        new_tree_node(
-            1,
-            new_tree_left(2, new_tree_val(4)),
-            new_tree_node(3, new_tree_left(2, new_tree_val(4)), new_tree_val(4)),
-        ),
-        new_tree_node(2, new_tree_val(1), new_tree_val(1)),
-        new_tree_node(
-            2, new_tree_left(2, new_tree_val(3)), new_tree_left(2, new_tree_val(3))
-        ),
+    inputs: list[list[str]] = [
+        ["a", "a", "b", "b", "c", "c", "c"],
+        ["a"],
+        ["a", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"],
     ]
 
-    for root in inputs:
+    for chars in inputs:
         solution = Solution()
-        result = solution.findDuplicateSubtrees(root)
-        print(result)
+        result = solution.compress(chars)
+        print(result, chars)
 
 
 if __name__ == "__main__":

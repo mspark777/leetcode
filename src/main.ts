@@ -1,48 +1,40 @@
-import { newTreeLeft, newTreeNode, newTreeVal, type TreeNode } from './lib'
+function compress (chars: string[]): number {
+  let newlen = 0
+  for (let i = 0; i < chars.length; i += 0) {
+    let groupLen = 1
+    for (let j = i + groupLen; j < chars.length; j += 1) {
+      if (chars[i] === chars[j]) {
+        groupLen += 1
+      } else {
+        break
+      }
+    }
 
-function traverse (node: TreeNode | null, tripletToIDs: Map<string, number>, counts: Map<number, number>, result: TreeNode[]): number {
-  if (node == null) {
-    return 0
+    chars[newlen] = chars[i]
+    newlen += 1
+    if (groupLen > 1) {
+      for (const ch of groupLen.toString()) {
+        chars[newlen] = ch
+        newlen += 1
+      }
+    }
+
+    i += groupLen
   }
 
-  const triplet = [
-    traverse(node.left, tripletToIDs, counts, result),
-    node.val,
-    traverse(node.right, tripletToIDs, counts, result)
-  ].join(',')
-
-  if (!tripletToIDs.has(triplet)) {
-    tripletToIDs.set(triplet, tripletToIDs.size + 1)
-  }
-  const id = tripletToIDs.get(triplet) as number
-  counts.set(id, (counts.get(id) ?? 0) + 1)
-  if (counts.get(id) === 2) {
-    result.push(node)
-  }
-
-  return id
-}
-
-function findDuplicateSubtrees (root: TreeNode | null): Array<TreeNode | null> {
-  const result: TreeNode[] = []
-  traverse(root, new Map(), new Map(), result)
-
-  return result
+  return newlen
 }
 
 async function main (): Promise<void> {
-  const inputs: Array<TreeNode | null> = [
-    newTreeNode(1,
-      newTreeLeft(2, newTreeVal(4)),
-      newTreeNode(3, newTreeLeft(2, newTreeVal(4)), newTreeVal(4))
-    ),
-    newTreeNode(2, newTreeVal(1), newTreeVal(1)),
-    newTreeNode(2, newTreeLeft(2, newTreeVal(3)), newTreeLeft(2, newTreeVal(3)))
+  const inputs: string[][] = [
+    ['a', 'a', 'b', 'b', 'c', 'c', 'c'],
+    ['a'],
+    ['a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b']
   ]
 
-  for (const root of inputs) {
-    const result = findDuplicateSubtrees(root)
-    console.log(result)
+  for (const chars of inputs) {
+    const result = compress(chars)
+    console.log(result, chars)
   }
 }
 
