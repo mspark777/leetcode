@@ -8,8 +8,8 @@
     "npm": "9.4.2"
   },
   "scripts": {
-    "start:ts": "ts-node --files src/main.ts",
-    "start:js": "node src/main.mjs"
+    "start:ts": "ts-node --files src/ts/main.ts",
+    "start:js": "node src/js/main.js"
   },
   "keywords": [],
   "author": "",
