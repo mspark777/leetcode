@@ -1,25 +1,27 @@
+from typing import List
+
+
 class Solution:
-    def strStr(self, haystack: str, needle: str) -> int:
-        m = len(needle)
-        n = len(haystack)
+    def findKthPositive(self, arr: List[int], k: int) -> int:
+        left = 0
+        right = len(arr)
+        while left < right:
+            middle = (left + right) // 2
+            n = arr[middle] - (middle + 1)
+            if n < k:
+                left = middle + 1
+            else:
+                right = middle
 
-        for start in range(n - m + 1):
-            for i in range(m):
-                if needle[i] != haystack[start + i]:
-                    break
-
-                if i == (m - 1):
-                    return start
-
-        return -1
+        return left + k
 
 
 def main():
-    inputs: list[list[str]] = [["sadbutsad", "sad"], ["leetcode", "leeto"]]
+    inputs: list[tuple[list[int], int]] = [([2, 3, 4, 7, 11], 5), ([1, 2, 3, 4], 2)]
 
-    for [haystack, needle] in inputs:
+    for arr, k in inputs:
         solution = Solution()
-        result = solution.strStr(haystack, needle)
+        result = solution.findKthPositive(arr, k)
         print(result)
 
 

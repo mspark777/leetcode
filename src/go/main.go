@@ -4,33 +4,35 @@ import (
 	"fmt"
 )
 
-func strStr(haystack string, needle string) int {
-	m := len(needle)
-	n := len(haystack)
-
-	for start := 0; start <= n-m; start += 1 {
-		for i := 0; i < m; i += 1 {
-			if needle[i] != haystack[start+i] {
-				break
-			}
-
-			if i == (m - 1) {
-				return start
-			}
+func findKthPositive(arr []int, k int) int {
+	left := 0
+	right := len(arr)
+	for left < right {
+		middle := (left + right) / 2
+		n := arr[middle] - (middle + 1)
+		if n < k {
+			left = middle + 1
+		} else {
+			right = middle
 		}
 	}
 
-	return -1
+	return left + k
+}
+
+type input struct {
+	arr []int
+	k   int
 }
 
 func main() {
-	inputs := [][]string{
-		{"sadbutsad", "sad"},
-		{"leetcode", "leeto"},
+	inputs := []input{
+		{arr: []int{2, 3, 4, 7, 11}, k: 5},
+		{arr: []int{1, 2, 3, 4}, k: 2},
 	}
 
 	for _, input := range inputs {
-		result := strStr(input[0], input[1])
+		result := findKthPositive(input.arr, input.k)
 		fmt.Println(result)
 	}
 }

@@ -1,30 +1,44 @@
 #include <stdio.h>
-#include <string.h>
 
-int strStr(char *haystack, char *needle) {
-  const int m = (int)strlen(needle);
-  const int n = (int)strlen(haystack);
+int findKthPositive(int *arr, int arr_size, int k) {
+  int left = 0;
+  int right = arr_size;
 
-  for (int start = 0; start <= n - m; start += 1) {
-    for (int i = 0; i < m; i += 1) {
-      if (needle[i] != haystack[start + i]) {
-        break;
-      }
-
-      if (i == (m - 1)) {
-        return start;
-      }
+  while (left < right) {
+    const int middle = (left + right) / 2;
+    const int n = arr[middle] - (middle + 1);
+    if (n < k) {
+      left = middle + 1;
+    } else {
+      right = middle;
     }
   }
-
-  return -1;
+  return left + k;
 }
 
-int main() {
-  char *inputs[][2] = {{"sadbutsad", "sad"}, {"leetcode", "leeto"}};
+int problem0(void) {
+  int arr[] = {2, 3, 4, 7, 11};
+  const int arr_size = sizeof(arr) / sizeof(arr[0]);
+  const int k = 5;
+  const int result = findKthPositive(arr, arr_size, k);
+  return result;
+}
 
-  for (int i = 0; i < (int)(sizeof(inputs) / sizeof(inputs[0])); i += 1) {
-    const int result = strStr(inputs[i][0], inputs[i][1]);
+int problem1(void) {
+  int arr[] = {1, 2, 3, 4};
+  const int arr_size = sizeof(arr) / sizeof(arr[0]);
+  const int k = 2;
+  const int result = findKthPositive(arr, arr_size, k);
+  return result;
+}
+
+typedef int (*problem_t)(void);
+int main() {
+  const problem_t problems[] = {problem0, problem1};
+
+  for (unsigned long i = 0; i < sizeof(problems) / sizeof(problems[0]);
+       i += 1) {
+    const int result = problems[i]();
     printf("%d\n", result);
   }
   return 0;

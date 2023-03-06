@@ -1,35 +1,33 @@
 /**
-  * @param {string} haystack
-  * @param {string} needle
+  * @param {number[]} arr
+  * @param {number} k
   * @returns {number}
   */
-function strStr (haystack, needle) {
-  const m = needle.length
-  const n = haystack.length
-
-  for (let start = 0; start <= n - m; start += 1) {
-    for (let i = 0; i < m; i += 1) {
-      if (needle[i] !== haystack[start + i]) {
-        break
-      }
-
-      if (i === (m - 1)) {
-        return start
-      }
+function findKthPositive (arr, k) {
+  let left = 0n
+  let right = BigInt(arr.length)
+  while (left < right) {
+    const middle = (left + right) / 2n
+    const pos = Number(middle)
+    const n = arr[pos] - (pos + 1)
+    if (n < k) {
+      left = middle + 1n
+    } else {
+      right = middle
     }
   }
 
-  return -1
+  return Number(left) + k
 }
 
 async function main () {
   const inputs = [
-    ['sadbutsad', 'sad'],
-    ['leetcode', 'leeto']
+    { arr: [2, 3, 4, 7, 11], k: 5 },
+    { arr: [1, 2, 3, 4], k: 2 }
   ]
 
-  for (const [haystack, needle] of inputs) {
-    const result = strStr(haystack, needle)
+  for (const { arr, k } of inputs) {
+    const result = findKthPositive(arr, k)
     console.log(result)
   }
 }
