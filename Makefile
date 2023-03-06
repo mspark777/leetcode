@@ -17,6 +17,6 @@ sh:
 	@${SHELL} src/main.sh
 
 c:
-	@gcc -std=c11 -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -o bin/main src/c/main.c
+	@rm -f ./bin/main
+	@gcc -std=c11 -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g -o bin/main src/c/main.c
 	@./bin/main
-	@rm ./bin/main
