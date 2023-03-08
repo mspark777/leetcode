@@ -1,33 +1,64 @@
-function findKthPositive (arr: number[], k: number): number {
-  let left = 0n
-  let right = BigInt(arr.length)
+function hoursRequired (piles: bigint[], k: bigint): bigint {
+  if (k === 0n) {
+    return BigInt(Number.MAX_SAFE_INTEGER)
+  }
+
+  let hours = 0n
+  for (const pile of piles) {
+    if ((pile % k) !== 0n) {
+      hours += 1n
+    }
+
+    hours += (pile / k)
+  }
+
+  return hours
+}
+
+function minEatingSpeed0 (piles: bigint[], h: bigint): bigint {
+  let sum = 0n
+  let maxPile = 0n
+  for (const pile of piles) {
+    sum += pile
+    if (pile > maxPile) {
+      maxPile = pile
+    }
+  }
+
+  let left = sum / h
+  let right = maxPile
   while (left < right) {
     const middle = (left + right) / 2n
-    const pos = Number(middle)
-    const n = arr[pos] - (pos + 1)
-    if (n < k) {
+    const required = hoursRequired(piles, middle)
+    if (required > h) {
       left = middle + 1n
     } else {
       right = middle
     }
   }
 
-  return Number(left) + k
+  return left
+}
+
+function minEatingSpeed (piles: number[], h: number): number {
+  const result = minEatingSpeed0(piles.map(p => BigInt(p)), BigInt(h))
+  return Number(result)
 }
 
 interface Input {
-  readonly arr: number[]
-  readonly k: number
+  readonly piles: number[]
+  readonly h: number
 }
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
-    { arr: [2, 3, 4, 7, 11], k: 5 },
-    { arr: [1, 2, 3, 4], k: 2 }
+    { piles: [3, 6, 7, 11], h: 8 },
+    { piles: [30, 11, 23, 4, 20], h: 5 },
+    { piles: [30, 11, 23, 4, 20], h: 6 }
   ]
 
-  for (const { arr, k } of inputs) {
-    const result = findKthPositive(arr, k)
+  for (const { piles, h } of inputs) {
+    const result = minEatingSpeed(piles, h)
     console.log(result)
   }
 }

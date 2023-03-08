@@ -2,26 +2,49 @@ from typing import List
 
 
 class Solution:
-    def findKthPositive(self, arr: List[int], k: int) -> int:
-        left = 0
-        right = len(arr)
+    def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        sum = 0
+        max_pile = 0
+        for pile in piles:
+            sum += pile
+            max_pile = max(max_pile, pile)
+
+        left = sum // h
+        right = max_pile
         while left < right:
             middle = (left + right) // 2
-            n = arr[middle] - (middle + 1)
-            if n < k:
+            required = self.hours_required(piles, middle)
+            if required > h:
                 left = middle + 1
             else:
                 right = middle
 
-        return left + k
+        return left
+
+    def hours_required(self, piles: list[int], k: int) -> int:
+        if k == 0:
+            return 2**31
+
+        hours = 0
+        for pile in piles:
+            if (pile % k) != 0:
+                hours += 1
+
+            hours += pile // k
+
+        return hours
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [([2, 3, 4, 7, 11], 5), ([1, 2, 3, 4], 2)]
+    inputs: list[tuple[list[int], int]] = [
+        ([3, 6, 7, 11], 8),
+        ([30, 11, 23, 4, 20], 5),
+        ([30, 11, 23, 4, 20], 6),
+    ]
 
-    for arr, k in inputs:
+    for piles, h in inputs:
         solution = Solution()
-        result = solution.findKthPositive(arr, k)
+        result = solution.minEatingSpeed(piles, h)
         print(result)
 
 
