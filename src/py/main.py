@@ -1,51 +1,43 @@
-from typing import List
+from typing import List, Optional
+
+from lib import ListNode, new_cycle_list
 
 
 class Solution:
-    def minEatingSpeed(self, piles: List[int], h: int) -> int:
-        sum = 0
-        max_pile = 0
-        for pile in piles:
-            sum += pile
-            max_pile = max(max_pile, pile)
+    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        fast = head
+        slow = head
 
-        left = sum // h
-        right = max_pile
-        while left < right:
-            middle = (left + right) // 2
-            required = self.hours_required(piles, middle)
-            if required > h:
-                left = middle + 1
-            else:
-                right = middle
+        while (fast is not None) and (fast.next is not None):
+            fast = fast.next.next
+            slow = slow.next if slow is not None else None
 
-        return left
+            if fast == slow:
+                break
 
-    def hours_required(self, piles: list[int], k: int) -> int:
-        if k == 0:
-            return 2**31
+        if (fast is None) or (fast.next is None):
+            return None
 
-        hours = 0
-        for pile in piles:
-            if (pile % k) != 0:
-                hours += 1
+        fast = head
 
-            hours += pile // k
+        while fast != slow:
+            fast = fast.next if fast is not None else None
+            slow = slow.next if slow is not None else None
 
-        return hours
+        return fast
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([3, 6, 7, 11], 8),
-        ([30, 11, 23, 4, 20], 5),
-        ([30, 11, 23, 4, 20], 6),
+    inputs: list[ListNode] = [
+        new_cycle_list([3, 2, 0, -4], 1),
+        new_cycle_list([1, 2], 0),
+        new_cycle_list([1], -1),
     ]
 
-    for piles, h in inputs:
+    for head in inputs:
         solution = Solution()
-        result = solution.minEatingSpeed(piles, h)
-        print(result)
+        result = solution.detectCycle(head)
+        print(result.val if result is not None else None)
 
 
 if __name__ == "__main__":

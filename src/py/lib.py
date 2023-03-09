@@ -32,3 +32,35 @@ def new_tree_right(val: int, right: TreeNode) -> TreeNode:
 
 def new_tree_val(val: int) -> TreeNode:
     return TreeNode(val)
+
+
+class ListNode:
+    x: int
+    next: Optional[ListNode]
+
+    def __init__(self, x: int, next: Optional[ListNode]):
+        self.val = x
+        self.next = next
+
+
+def new_list_node(val: int, next: Optional[ListNode]) -> ListNode:
+    return ListNode(val, next)
+
+
+def new_cycle_list(vals: list[int], pos: int) -> ListNode:
+    head = new_list_node(0, None)
+    tail = head
+    target: Optional[ListNode] = None
+
+    for i in range(len(vals)):
+        node = new_list_node(vals[i], None)
+        if i == pos:
+            target = node
+
+        tail.next = node
+        tail = tail.next
+
+    tail.next = target
+    next = head.next
+    assert next is not None
+    return next

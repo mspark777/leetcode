@@ -1,4 +1,4 @@
-export class TreeNode {
+class TreeNode {
   /** @type {number} */
   val
   /** @type {TreeNode | null} */
@@ -24,7 +24,7 @@ export class TreeNode {
   * @param {TreeNode} right
   * @returns {TreeNode}
   */
-export function newTreeNode (val, left, right) {
+function newTreeNode (val, left, right) {
   return new TreeNode(val, left, right)
 }
 
@@ -33,7 +33,7 @@ export function newTreeNode (val, left, right) {
   * @param {TreeNode} left
   * @returns {TreeNode}
   */
-export function newTreeLeft (val, left) {
+function newTreeLeft (val, left) {
   return new TreeNode(val, left)
 }
 
@@ -42,7 +42,7 @@ export function newTreeLeft (val, left) {
   * @param {TreeNode} right
   * @returns {TreeNode}
   */
-export function newTreeRight (val, right) {
+function newTreeRight (val, right) {
   return new TreeNode(val, undefined, right)
 }
 
@@ -50,6 +50,65 @@ export function newTreeRight (val, right) {
   * @param {number} val
   * @returns {TreeNode}
   */
-export function newTreeVal (val) {
+function newTreeVal (val) {
   return new TreeNode(val)
+}
+
+class ListNode {
+  /** @type {number} */
+  val
+  /** @type {ListNode|null} */
+  next
+
+  /**
+    * @param {number|undefined} val
+    * @param {ListNode|undefined|null} next
+    */
+  constructor (val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+  }
+}
+
+/**
+  * @param {number} val
+  * @param {ListNode|undefined} next
+  * @returns {ListNode}
+  */
+function newListNode (val, next) {
+  return new ListNode(val, next)
+}
+
+/**
+  * @param {number[]} vals
+  * @param {number} pos
+  * @returns {ListNode}
+  */
+function newCycleList (vals, pos) {
+  const head = new ListNode()
+  let tail = head
+  let target = null
+  for (let i = 0; i < vals.length; i += 1) {
+    const node = newListNode(vals[i])
+    if (i === pos) {
+      target = node
+    }
+
+    tail.next = node
+    tail = node
+  }
+  tail.next = target
+
+  return head.next
+}
+
+module.exports = {
+  TreeNode,
+  newTreeNode,
+  newTreeLeft,
+  newTreeRight,
+  newTreeVal,
+  ListNode,
+  newListNode,
+  newCycleList
 }

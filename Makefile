@@ -18,5 +18,5 @@ sh:
 
 c:
 	@rm -f ./bin/main
-	@gcc -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g -o bin/main src/c/main.c
+	@gcc -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g -o bin/main src/c/main.c src/c/lib.c
 	@./bin/main

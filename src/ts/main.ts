@@ -1,65 +1,41 @@
-function hoursRequired (piles: bigint[], k: bigint): bigint {
-  if (k === 0n) {
-    return BigInt(Number.MAX_SAFE_INTEGER)
-  }
+import { newCycleList, type ListNode } from './lib'
 
-  let hours = 0n
-  for (const pile of piles) {
-    if ((pile % k) !== 0n) {
-      hours += 1n
-    }
+function detectCycle (head: ListNode | null): ListNode | null {
+  let fast = head
+  let slow = head
+  while (fast?.next != null) {
+    fast = fast.next.next
+    slow = (slow as ListNode).next
 
-    hours += (pile / k)
-  }
-
-  return hours
-}
-
-function minEatingSpeed0 (piles: bigint[], h: bigint): bigint {
-  let sum = 0n
-  let maxPile = 0n
-  for (const pile of piles) {
-    sum += pile
-    if (pile > maxPile) {
-      maxPile = pile
+    if (fast === slow) {
+      break
     }
   }
 
-  let left = sum / h
-  let right = maxPile
-  while (left < right) {
-    const middle = (left + right) / 2n
-    const required = hoursRequired(piles, middle)
-    if (required > h) {
-      left = middle + 1n
-    } else {
-      right = middle
-    }
+  if (fast?.next == null) {
+    return null
   }
 
-  return left
-}
+  fast = head
 
-function minEatingSpeed (piles: number[], h: number): number {
-  const result = minEatingSpeed0(piles.map(p => BigInt(p)), BigInt(h))
-  return Number(result)
-}
+  while (fast !== slow) {
+    fast = fast?.next ?? null
+    slow = slow?.next ?? null
+  }
 
-interface Input {
-  readonly piles: number[]
-  readonly h: number
+  return fast
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { piles: [3, 6, 7, 11], h: 8 },
-    { piles: [30, 11, 23, 4, 20], h: 5 },
-    { piles: [30, 11, 23, 4, 20], h: 6 }
+  const inputs: ListNode[] = [
+    newCycleList([3, 2, 0, -4], 1),
+    newCycleList([1, 2], 0),
+    newCycleList([1], -1)
   ]
 
-  for (const { piles, h } of inputs) {
-    const result = minEatingSpeed(piles, h)
-    console.log(result)
+  for (const head of inputs) {
+    const result = detectCycle(head)
+    console.log(result?.val)
   }
 }
 
