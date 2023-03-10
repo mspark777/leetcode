@@ -2,47 +2,37 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 )
 
-func detectCycle(head *ListNode) *ListNode {
-	fast := head
-	slow := head
+type Solution struct {
+	head *ListNode
+}
 
-	for (fast != nil) && (fast.Next != nil) {
-		fast = fast.Next.Next
-		slow = slow.Next
+func Constructor(head *ListNode) Solution {
+	return Solution{head}
+}
 
-		if fast == slow {
-			break
+func (this *Solution) GetRandom() int {
+	scope := float32(1.0)
+	result := 0
+
+	for curr := this.head; curr != nil; curr = curr.Next {
+		if (rand.Float32() * scope) < 1.0 {
+			result = curr.Val
 		}
+
+		scope += 1.0
 	}
 
-	if (fast == nil) || (fast.Next == nil) {
-		return nil
-	}
-
-	fast = head
-	for fast != slow {
-		fast = fast.Next
-		slow = slow.Next
-	}
-
-	return fast
+	return result
 }
 
 func main() {
-	inputs := []*ListNode{
-		newCycleList([]int{3, 2, 0, -4}, 1),
-		newCycleList([]int{1, 2}, 0),
-		newCycleList([]int{1}, -1),
-	}
-
-	for _, head := range inputs {
-		result := detectCycle(head)
-		if result != nil {
-			fmt.Println(result.Val)
-		} else {
-			fmt.Println(nil)
-		}
-	}
+	solution := Constructor(newList([]int{1, 2, 3}))
+	fmt.Println(solution.GetRandom())
+	fmt.Println(solution.GetRandom())
+	fmt.Println(solution.GetRandom())
+	fmt.Println(solution.GetRandom())
+	fmt.Println(solution.GetRandom())
 }

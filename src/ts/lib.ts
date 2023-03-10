@@ -38,7 +38,19 @@ export function newListNode (val: number, next?: ListNode): ListNode {
   return new ListNode(val, next)
 }
 
-export function newCycleList (vals: number[], pos: number): ListNode {
+export function newList (vals: number[]): ListNode | null {
+  const head = new ListNode()
+  let tail = head
+  for (const val of vals) {
+    const node = newListNode(val)
+    tail.next = node
+    tail = node
+  }
+
+  return head.next
+}
+
+export function newCycleList (vals: number[], pos: number): ListNode | null {
   const head = new ListNode()
   let tail = head
   let target: ListNode | null = null
@@ -53,5 +65,5 @@ export function newCycleList (vals: number[], pos: number): ListNode {
   }
   tail.next = target
 
-  return head.next as ListNode
+  return head.next
 }

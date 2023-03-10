@@ -1,84 +1,58 @@
 #include "./lib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define ListNode list_node
 
-struct ListNode *detectCycle(struct ListNode *head) {
-  struct ListNode *fast = head;
-  struct ListNode *slow = head;
+typedef struct {
+  struct ListNode *head;
+} Solution;
 
-  while ((fast != NULL) && (fast->next != NULL)) {
-    fast = fast->next->next;
-    slow = slow->next;
+Solution *solutionCreate(struct ListNode *head) {
+  Solution *solution = malloc(sizeof(Solution));
+  solution->head = head;
 
-    if (fast == slow) {
-      break;
+  return solution;
+}
+
+int solutionGetRandom(Solution *obj) {
+  int scope = 1;
+  int result = 0;
+
+  for (struct ListNode *curr = obj->head; curr != NULL; curr = curr->next) {
+    if ((rand() % scope) == 0) {
+      result = curr->val;
     }
+    scope += 1;
   }
 
-  if ((fast == NULL) || (fast->next == NULL)) {
-    return NULL;
-  }
-
-  fast = head;
-  while (fast != slow) {
-    fast = fast->next;
-    slow = slow->next;
-  }
-
-  return fast;
+  return result;
 }
 
-int problem0(void) {
-  int vals[] = {3, 2, 0, -4};
+void solutionFree(Solution *obj) { free(obj); }
+
+void problem0(void) {
+  const int vals[] = {1, 2, 3};
   int val_count = sizeof(vals) / sizeof(vals[0]);
-  int pos = 1;
 
-  struct list_node *head = new_cycle_list(vals, val_count, pos);
-  struct list_node *result = detectCycle(head);
+  Solution *solution = solutionCreate(new_list(vals, val_count));
+  printf("%d\n", solutionGetRandom(solution));
+  printf("%d\n", solutionGetRandom(solution));
+  printf("%d\n", solutionGetRandom(solution));
+  printf("%d\n", solutionGetRandom(solution));
+  printf("%d\n", solutionGetRandom(solution));
 
-  int val = result != NULL ? result->val : -1;
-  free_list_node(head, result);
-
-  return val;
+  free_list_node(solution->head, NULL);
+  solutionFree(solution);
 }
 
-int problem1(void) {
-  int vals[] = {1, 2};
-  int val_count = sizeof(vals) / sizeof(vals[0]);
-  int pos = 0;
-
-  struct list_node *head = new_cycle_list(vals, val_count, pos);
-  struct list_node *result = detectCycle(head);
-
-  int val = result != NULL ? result->val : -1;
-  free_list_node(head, result);
-
-  return val;
-}
-
-int problem2(void) {
-  int vals[] = {1};
-  int val_count = sizeof(vals) / sizeof(vals[0]);
-  int pos = -1;
-
-  struct list_node *head = new_cycle_list(vals, val_count, pos);
-  struct list_node *result = detectCycle(head);
-
-  int val = result != NULL ? result->val : -1;
-  free_list_node(head, result);
-
-  return val;
-}
-
-typedef int (*problem_t)(void);
+typedef void (*problem_t)(void);
 int main() {
-  const problem_t problems[] = {problem0, problem1, problem2};
+  const problem_t problems[] = {problem0};
 
   for (unsigned long i = 0; i < sizeof(problems) / sizeof(problems[0]);
        i += 1) {
-    const int result = problems[i]();
-    printf("%d\n", result);
+    problems[i]();
   }
   return 0;
 }

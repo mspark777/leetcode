@@ -47,7 +47,19 @@ def new_list_node(val: int, next: Optional[ListNode]) -> ListNode:
     return ListNode(val, next)
 
 
-def new_cycle_list(vals: list[int], pos: int) -> ListNode:
+def new_list(vals: list[int]) -> Optional[ListNode]:
+    head = new_list_node(0, None)
+    tail = head
+
+    for val in vals:
+        node = new_list_node(val, None)
+        tail.next = node
+        tail = node
+
+    return head.next
+
+
+def new_cycle_list(vals: list[int], pos: int) -> Optional[ListNode]:
     head = new_list_node(0, None)
     tail = head
     target: Optional[ListNode] = None
@@ -61,6 +73,4 @@ def new_cycle_list(vals: list[int], pos: int) -> ListNode:
         tail = tail.next
 
     tail.next = target
-    next = head.next
-    assert next is not None
-    return next
+    return head.next

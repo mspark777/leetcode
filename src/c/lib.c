@@ -10,6 +10,19 @@ struct list_node *new_list_node(int val, struct list_node *next) {
   return node;
 }
 
+struct list_node *new_list(const int *vals, const int val_count) {
+  struct list_node head = {};
+  struct list_node *tail = &head;
+
+  for (int i = 0; i < val_count; i += 1) {
+    struct list_node *node = new_list_node(vals[i], NULL);
+    tail->next = node;
+    tail = node;
+  }
+
+  return head.next;
+}
+
 struct list_node *new_cycle_list(const int *vals, int val_count, int pos) {
   struct list_node head = {};
   struct list_node *tail = &head;

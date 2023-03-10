@@ -81,8 +81,24 @@ function newListNode (val, next) {
 
 /**
   * @param {number[]} vals
+  * @returns {ListNode|null}
+  */
+function newList (vals) {
+  const head = new ListNode()
+  let tail = head
+  for (const val of vals) {
+    const node = newListNode(val)
+    tail.next = node
+    tail = node
+  }
+
+  return head.next
+}
+
+/**
+  * @param {number[]} vals
   * @param {number} pos
-  * @returns {ListNode}
+  * @returns {ListNode|null}
   */
 function newCycleList (vals, pos) {
   const head = new ListNode()
@@ -110,5 +126,6 @@ module.exports = {
   newTreeVal,
   ListNode,
   newListNode,
+  newList,
   newCycleList
 }

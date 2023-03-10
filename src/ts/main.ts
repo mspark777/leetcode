@@ -1,42 +1,33 @@
-import { newCycleList, type ListNode } from './lib'
+import { newList, type ListNode } from './lib'
 
-function detectCycle (head: ListNode | null): ListNode | null {
-  let fast = head
-  let slow = head
-  while (fast?.next != null) {
-    fast = fast.next.next
-    slow = (slow as ListNode).next
+class Solution {
+  private readonly head: ListNode | null
+  public constructor (head: ListNode | null) {
+    this.head = head
+  }
 
-    if (fast === slow) {
-      break
+  public getRandom (): number {
+    let scope = 1
+    let result = 0
+    for (let curr = this.head; curr != null; curr = curr?.next) {
+      if ((Math.random() * scope) < 1.0) {
+        result = curr.val
+      }
+
+      scope += 1
     }
+
+    return result
   }
-
-  if (fast?.next == null) {
-    return null
-  }
-
-  fast = head
-
-  while (fast !== slow) {
-    fast = fast?.next ?? null
-    slow = slow?.next ?? null
-  }
-
-  return fast
 }
 
 async function main (): Promise<void> {
-  const inputs: ListNode[] = [
-    newCycleList([3, 2, 0, -4], 1),
-    newCycleList([1, 2], 0),
-    newCycleList([1], -1)
-  ]
-
-  for (const head of inputs) {
-    const result = detectCycle(head)
-    console.log(result?.val)
-  }
+  const solution = new Solution(newList([1, 2, 3]))
+  console.log(solution.getRandom())
+  console.log(solution.getRandom())
+  console.log(solution.getRandom())
+  console.log(solution.getRandom())
+  console.log(solution.getRandom())
 }
 
 main()

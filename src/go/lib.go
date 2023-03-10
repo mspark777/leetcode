@@ -31,6 +31,18 @@ func newListNode(val int, next *ListNode) *ListNode {
 	return &ListNode{Val: val, Next: next}
 }
 
+func newList(vals []int) *ListNode {
+	head := newListNode(0, nil)
+	tail := head
+	for _, val := range vals {
+		node := newListNode(val, nil)
+		tail.Next = node
+		tail = node
+	}
+
+	return head.Next
+}
+
 func newCycleList(vals []int, pos int) *ListNode {
 	head := newListNode(0, nil)
 	tail := head
