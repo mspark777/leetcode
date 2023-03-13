@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start:ts": "ts-node --files src/ts/main.ts",
-    "start:js": "node src/js/main.js"
+    "start:js": "node src/js/main.mjs"
   },
   "keywords": [],
   "author": "",

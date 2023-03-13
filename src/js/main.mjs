@@ -1,6 +1,12 @@
-import { newTreeNode, newTreeRight, newTreeVal, type TreeNode } from './lib'
+import { newTreeNode, newTreeRight, newTreeVal, TreeNode, unused } from './lib.mjs'
+unused(TreeNode)
 
-function isMirror (left?: TreeNode | null, right?: TreeNode | null): boolean {
+/**
+  * @param {TreeNode|undefined|null} left
+  * @param {TreeNode|undefined|null} right
+  * @returns {boolean}
+  */
+function isMirror (left, right) {
   if ((left == null) && (right == null)) {
     return true
   } else if ((left == null) || (right == null)) {
@@ -12,12 +18,16 @@ function isMirror (left?: TreeNode | null, right?: TreeNode | null): boolean {
     isMirror(left.right, right.left)
 }
 
-function isSymmetric (root: TreeNode | null): boolean {
+/**
+  * @param {TreeNode|null} root
+  * @returns {boolean}
+  */
+function isSymmetric (root) {
   return isMirror(root?.left, root?.right)
 }
 
-async function main (): Promise<void> {
-  const inputs: Array<TreeNode | null> = [
+async function main () {
+  const inputs = [
     newTreeNode(1, newTreeNode(2, newTreeVal(3), newTreeVal(4)), newTreeNode(2, newTreeVal(4), newTreeVal(3))),
     newTreeNode(1, newTreeRight(2, newTreeVal(3)), newTreeRight(2, newTreeVal(3)))
   ]

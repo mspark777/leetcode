@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * struct list_node
+ */
+
 struct list_node *new_list_node(int val, struct list_node *next) {
   struct list_node *node = malloc(sizeof(struct list_node));
   node->val = val;
@@ -63,4 +67,38 @@ void free_list_node(struct list_node *head, struct list_node *cycle) {
   }
 
   free(cycle);
+}
+
+/**
+ * struct tree_node
+ */
+
+struct tree_node *new_tree_node(int val, struct tree_node *left,
+                                struct tree_node *right) {
+  struct tree_node *node = malloc(sizeof(struct tree_node));
+  node->val = val;
+  node->left = left;
+  node->right = right;
+
+  return node;
+}
+
+struct tree_node *new_tree_left(int val, struct tree_node *left) {
+  return new_tree_node(val, left, NULL);
+}
+
+struct tree_node *new_tree_right(int val, struct tree_node *right) {
+  return new_tree_node(val, NULL, right);
+}
+
+struct tree_node *new_tree_val(int val) {
+  return new_tree_node(val, NULL, NULL);
+}
+
+void free_tree_node(struct tree_node *node) {
+  if (node != NULL) {
+    free_tree_node(node->left);
+    free_tree_node(node->right);
+    free(node);
+  }
 }

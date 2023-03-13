@@ -2,37 +2,36 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 )
 
-type Solution struct {
-	head *ListNode
-}
-
-func Constructor(head *ListNode) Solution {
-	return Solution{head}
-}
-
-func (this *Solution) GetRandom() int {
-	scope := float32(1.0)
-	result := 0
-
-	for curr := this.head; curr != nil; curr = curr.Next {
-		if (rand.Float32() * scope) < 1.0 {
-			result = curr.Val
-		}
-
-		scope += 1.0
+func isMirror(left, right *TreeNode) bool {
+	if (left == nil) && (right == nil) {
+		return true
+	} else if (left == nil) || (right == nil) {
+		return false
 	}
 
-	return result
+	return (left.Val == right.Val) &&
+		isMirror(left.Left, right.Right) &&
+		isMirror(left.Right, right.Left)
+}
+
+func isSymmetric(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+
+	return isMirror(root.Left, root.Right)
 }
 
 func main() {
-	solution := Constructor(newList([]int{1, 2, 3}))
-	fmt.Println(solution.GetRandom())
-	fmt.Println(solution.GetRandom())
-	fmt.Println(solution.GetRandom())
-	fmt.Println(solution.GetRandom())
-	fmt.Println(solution.GetRandom())
+	inputs := []*TreeNode{
+		newTreeNode(1, newTreeNode(2, newTreeVal(3), newTreeVal(4)), newTreeNode(2, newTreeVal(4), newTreeVal(3))),
+		newTreeNode(1, newTreeRight(2, newTreeVal(3)), newTreeRight(2, newTreeVal(3))),
+	}
+
+	for _, root := range inputs {
+		result := isSymmetric(root)
+		fmt.Println(result)
+	}
 }

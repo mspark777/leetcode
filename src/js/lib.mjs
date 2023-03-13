@@ -1,4 +1,4 @@
-class TreeNode {
+export class TreeNode {
   /** @type {number} */
   val
   /** @type {TreeNode | null} */
@@ -24,7 +24,7 @@ class TreeNode {
   * @param {TreeNode} right
   * @returns {TreeNode}
   */
-function newTreeNode (val, left, right) {
+export function newTreeNode (val, left, right) {
   return new TreeNode(val, left, right)
 }
 
@@ -33,7 +33,7 @@ function newTreeNode (val, left, right) {
   * @param {TreeNode} left
   * @returns {TreeNode}
   */
-function newTreeLeft (val, left) {
+export function newTreeLeft (val, left) {
   return new TreeNode(val, left)
 }
 
@@ -42,7 +42,7 @@ function newTreeLeft (val, left) {
   * @param {TreeNode} right
   * @returns {TreeNode}
   */
-function newTreeRight (val, right) {
+export function newTreeRight (val, right) {
   return new TreeNode(val, undefined, right)
 }
 
@@ -50,11 +50,11 @@ function newTreeRight (val, right) {
   * @param {number} val
   * @returns {TreeNode}
   */
-function newTreeVal (val) {
+export function newTreeVal (val) {
   return new TreeNode(val)
 }
 
-class ListNode {
+export class ListNode {
   /** @type {number} */
   val
   /** @type {ListNode|null} */
@@ -75,7 +75,7 @@ class ListNode {
   * @param {ListNode|undefined} next
   * @returns {ListNode}
   */
-function newListNode (val, next) {
+export function newListNode (val, next) {
   return new ListNode(val, next)
 }
 
@@ -83,7 +83,7 @@ function newListNode (val, next) {
   * @param {number[]} vals
   * @returns {ListNode|null}
   */
-function newList (vals) {
+export function newList (vals) {
   const head = new ListNode()
   let tail = head
   for (const val of vals) {
@@ -100,7 +100,7 @@ function newList (vals) {
   * @param {number} pos
   * @returns {ListNode|null}
   */
-function newCycleList (vals, pos) {
+export function newCycleList (vals, pos) {
   const head = new ListNode()
   let tail = head
   let target = null
@@ -118,14 +118,4 @@ function newCycleList (vals, pos) {
   return head.next
 }
 
-module.exports = {
-  TreeNode,
-  newTreeNode,
-  newTreeLeft,
-  newTreeRight,
-  newTreeVal,
-  ListNode,
-  newListNode,
-  newList,
-  newCycleList
-}
+export function unused (..._args) {}

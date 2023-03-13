@@ -1,36 +1,41 @@
 from typing import Optional
 
-from random import random
-from lib import ListNode, new_list
+from lib import new_tree_node, new_tree_right, new_tree_val, TreeNode
 
 
 class Solution:
-    head: Optional[ListNode]
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        return self.is_mirror(root.left, root.right) if root is not None else True
 
-    def __init__(self, head: Optional[ListNode]):
-        self.head = head
+    def is_mirror(self, left: Optional[TreeNode], right: Optional[TreeNode]) -> bool:
+        if (left is None) and (right is None):
+            return True
+        elif (left is None) or (right is None):
+            return False
 
-    def getRandom(self) -> int:
-        scope = 1.0
-        result = 0
-        curr = self.head
-        while curr:
-            if (random() * scope) < 1.0:
-                result = curr.val
-
-            scope += 1.0
-            curr = curr.next
-
-        return result
+        return (
+            (left.val == right.val)
+            and self.is_mirror(left.left, right.right)
+            and self.is_mirror(left.right, right.left)
+        )
 
 
 def main():
-    solution = Solution(new_list([1, 2, 3]))
-    print(solution.getRandom())
-    print(solution.getRandom())
-    print(solution.getRandom())
-    print(solution.getRandom())
-    print(solution.getRandom())
+    inputs: list[Optional[TreeNode]] = [
+        new_tree_node(
+            1,
+            new_tree_node(2, new_tree_val(3), new_tree_val(4)),
+            new_tree_node(2, new_tree_val(4), new_tree_val(3)),
+        ),
+        new_tree_node(
+            1, new_tree_right(2, new_tree_val(3)), new_tree_right(2, new_tree_val(3))
+        ),
+    ]
+
+    for root in inputs:
+        solution = Solution()
+        result = solution.isSymmetric(root)
+        print(result)
 
 
 if __name__ == "__main__":
