@@ -4,53 +4,35 @@
 
 #define TreeNode tree_node
 
-int is_mirror(struct TreeNode *left, struct TreeNode *right) {
-  if ((left == NULL) && (right == NULL)) {
-    return 1;
-  } else if ((left == NULL) || (right == NULL)) {
+int travel(struct TreeNode *node, long long sum) {
+  if (node == NULL) {
     return 0;
   }
 
-  return (left->val == right->val) && is_mirror(left->left, right->right) &&
-         is_mirror(left->right, right->left);
-}
+  const int newsum = (sum * 10) + node->val;
+  struct TreeNode *left = node->left;
+  struct TreeNode *right = node->right;
 
-int isSymmetric(struct TreeNode *root) {
-  if (root == NULL) {
-    return 1;
+  if ((left == NULL) && (right == NULL)) {
+    return newsum;
   }
 
-  return is_mirror(root->left, root->right);
+  return travel(left, newsum) + travel(right, newsum);
 }
 
-void problem0(void) {
-  struct TreeNode *root =
-      new_tree_node(1, new_tree_node(2, new_tree_val(3), new_tree_val(4)),
-                    new_tree_node(2, new_tree_val(4), new_tree_val(3)));
+int sumNumbers(struct TreeNode *root) { return travel(root, 0); }
 
-  const int result = isSymmetric(root);
-  free_tree_node(root);
-
-  printf("%d\n", result);
-}
-
-void problem1(void) {
-  struct TreeNode *root = new_tree_node(1, new_tree_right(2, new_tree_val(3)),
-                                        new_tree_right(2, new_tree_val(3)));
-
-  const int result = isSymmetric(root);
-  free_tree_node(root);
-
-  printf("%d\n", result);
-}
-
-typedef void (*problem_t)(void);
 int main() {
-  const problem_t problems[] = {problem0, problem1};
+  struct tree_node *inputs[] = {
+      new_tree_node(1, new_tree_val(2), new_tree_val(3)),
+      new_tree_node(4, new_tree_node(9, new_tree_val(5), new_tree_val(1)),
+                    new_tree_val(0))};
 
-  for (unsigned long i = 0; i < sizeof(problems) / sizeof(problems[0]);
-       i += 1) {
-    problems[i]();
+  for (unsigned long i = 0; i < sizeof(inputs) / sizeof(inputs[0]); i += 1) {
+    struct tree_node *root = inputs[i];
+    const int result = sumNumbers(root);
+    free_tree_node(root);
+    printf("%d\n", result);
   }
   return 0;
 }

@@ -4,34 +4,34 @@ import (
 	"fmt"
 )
 
-func isMirror(left, right *TreeNode) bool {
-	if (left == nil) && (right == nil) {
-		return true
-	} else if (left == nil) || (right == nil) {
-		return false
+func travel(node *TreeNode, sum int) int {
+	if node == nil {
+		return 0
 	}
 
-	return (left.Val == right.Val) &&
-		isMirror(left.Left, right.Right) &&
-		isMirror(left.Right, right.Left)
+	newsum := (sum * 10) + node.Val
+	left := node.Left
+	right := node.Right
+
+	if (left == nil) && (right == nil) {
+		return newsum
+	}
+
+	return travel(left, newsum) + travel(right, newsum)
 }
 
-func isSymmetric(root *TreeNode) bool {
-	if root == nil {
-		return true
-	}
-
-	return isMirror(root.Left, root.Right)
+func sumNumbers(root *TreeNode) int {
+	return travel(root, 0)
 }
 
 func main() {
 	inputs := []*TreeNode{
-		newTreeNode(1, newTreeNode(2, newTreeVal(3), newTreeVal(4)), newTreeNode(2, newTreeVal(4), newTreeVal(3))),
-		newTreeNode(1, newTreeRight(2, newTreeVal(3)), newTreeRight(2, newTreeVal(3))),
+		newTreeNode(1, newTreeVal(2), newTreeVal(3)),
+		newTreeNode(4, newTreeNode(9, newTreeVal(5), newTreeVal(1)), newTreeVal(0)),
 	}
 
 	for _, root := range inputs {
-		result := isSymmetric(root)
+		result := sumNumbers(root)
 		fmt.Println(result)
 	}
 }

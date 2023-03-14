@@ -1,39 +1,42 @@
-import { newTreeNode, newTreeRight, newTreeVal, TreeNode, unused } from './lib.mjs'
+import { newTreeNode, newTreeVal, TreeNode, unused } from './lib.mjs'
 unused(TreeNode)
 
 /**
-  * @param {TreeNode|undefined|null} left
-  * @param {TreeNode|undefined|null} right
-  * @returns {boolean}
+  * @param {TreeNode|null} node
+  * @param {bigint} sum
+  * @returns {bigint}
   */
-function isMirror (left, right) {
-  if ((left == null) && (right == null)) {
-    return true
-  } else if ((left == null) || (right == null)) {
-    return false
+function travel (node, sum) {
+  if (node == null) {
+    return 0n
   }
 
-  return (left.val === right.val) &&
-    isMirror(left.left, right.right) &&
-    isMirror(left.right, right.left)
+  const newsum = (sum * 10n) + BigInt(node.val)
+  const { left, right } = node
+  if ((left == null) && (right == null)) {
+    return newsum
+  }
+
+  return travel(left, newsum) + travel(right, newsum)
 }
 
 /**
   * @param {TreeNode|null} root
-  * @returns {boolean}
+  * @returns {number}
   */
-function isSymmetric (root) {
-  return isMirror(root?.left, root?.right)
+function sumNumbers (root) {
+  const result = travel(root, 0n)
+  return Number(result)
 }
 
 async function main () {
   const inputs = [
-    newTreeNode(1, newTreeNode(2, newTreeVal(3), newTreeVal(4)), newTreeNode(2, newTreeVal(4), newTreeVal(3))),
-    newTreeNode(1, newTreeRight(2, newTreeVal(3)), newTreeRight(2, newTreeVal(3)))
+    newTreeNode(1, newTreeVal(2), newTreeVal(3)),
+    newTreeNode(4, newTreeNode(9, newTreeVal(5), newTreeVal(1)), newTreeVal(0))
   ]
 
   for (const root of inputs) {
-    const result = isSymmetric(root)
+    const result = sumNumbers(root)
     console.log(result)
   }
 }
