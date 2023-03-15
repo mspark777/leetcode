@@ -1,32 +1,39 @@
-import { newTreeNode, newTreeVal, type TreeNode } from './lib'
+import { newTreeLeft, newTreeNode, newTreeRight, newTreeVal, type TreeNode } from './lib'
 
-function travel (node: TreeNode | null, sum: bigint): bigint {
-  if (node == null) {
-    return 0n
+function isCompleteTree (root: TreeNode | null): boolean {
+  if (root == null) {
+    return true
   }
 
-  const newsum = (sum * 10n) + BigInt(node.val)
-  const { left, right } = node
-  if ((left == null) && (right == null)) {
-    return newsum
+  let nullFound = false
+  const queue: Array<TreeNode | null> = [root]
+
+  while (queue.length > 0) {
+    const node = queue.shift()
+
+    if (node == null) {
+      nullFound = true
+      continue
+    }
+
+    if (nullFound) {
+      return false
+    }
+
+    queue.push(node.left, node.right)
   }
 
-  return travel(left, newsum) + travel(right, newsum)
-}
-
-function sumNumbers (root: TreeNode | null): number {
-  const result = travel(root, 0n)
-  return Number(result)
+  return true
 }
 
 async function main (): Promise<void> {
   const inputs: Array<TreeNode | null> = [
-    newTreeNode(1, newTreeVal(2), newTreeVal(3)),
-    newTreeNode(4, newTreeNode(9, newTreeVal(5), newTreeVal(1)), newTreeVal(0))
+    newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeLeft(3, newTreeVal(6))),
+    newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeRight(3, newTreeVal(7)))
   ]
 
   for (const root of inputs) {
-    const result = sumNumbers(root)
+    const result = isCompleteTree(root)
     console.log(result)
   }
 }

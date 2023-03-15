@@ -4,34 +4,41 @@ import (
 	"fmt"
 )
 
-func travel(node *TreeNode, sum int) int {
-	if node == nil {
-		return 0
+func isCompleteTree(root *TreeNode) bool {
+	if root == nil {
+		return true
 	}
 
-	newsum := (sum * 10) + node.Val
-	left := node.Left
-	right := node.Right
+	nullFound := false
+	queue := []*TreeNode{root}
 
-	if (left == nil) && (right == nil) {
-		return newsum
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+
+		if node == nil {
+			nullFound = true
+			continue
+		}
+
+		if nullFound {
+			return false
+		}
+
+		queue = append(queue, node.Left, node.Right)
 	}
 
-	return travel(left, newsum) + travel(right, newsum)
-}
-
-func sumNumbers(root *TreeNode) int {
-	return travel(root, 0)
+	return true
 }
 
 func main() {
 	inputs := []*TreeNode{
-		newTreeNode(1, newTreeVal(2), newTreeVal(3)),
-		newTreeNode(4, newTreeNode(9, newTreeVal(5), newTreeVal(1)), newTreeVal(0)),
+		newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeLeft(3, newTreeVal(6))),
+		newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeRight(3, newTreeVal(7))),
 	}
 
 	for _, root := range inputs {
-		result := sumNumbers(root)
+		result := isCompleteTree(root)
 		fmt.Println(result)
 	}
 }

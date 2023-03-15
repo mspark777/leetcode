@@ -1,37 +1,49 @@
 from typing import Optional
 
-from lib import new_tree_node, new_tree_val, TreeNode
+from lib import new_tree_node, new_tree_right, new_tree_left, new_tree_val, TreeNode
 
 
 class Solution:
-    def sumNumbers(self, root: Optional[TreeNode]) -> int:
-        return self.travel(root, 0)
+    def isCompleteTree(self, root: Optional[TreeNode]) -> bool:
+        if root is None:
+            return True
 
-    def travel(self, node: Optional[TreeNode], sum: int) -> int:
-        if node is None:
-            return 0
+        null_found = False
+        queue: list[Optional[TreeNode]] = [root]
 
-        newsum = (sum * 10) + node.val
-        left = node.left
-        right = node.right
+        while queue:
+            node = queue.pop(0)
 
-        if (left is None) and (right is None):
-            return newsum
+            if node is None:
+                null_found = True
+                continue
 
-        return self.travel(left, newsum) + self.travel(right, newsum)
+            if null_found:
+                return False
+
+            queue.append(node.left)
+            queue.append(node.right)
+
+        return True
 
 
 def main():
     inputs: list[Optional[TreeNode]] = [
-        new_tree_node(1, new_tree_val(2), new_tree_val(3)),
         new_tree_node(
-            4, new_tree_node(9, new_tree_val(5), new_tree_val(1)), new_tree_val(0)
+            1,
+            new_tree_node(2, new_tree_val(4), new_tree_val(5)),
+            new_tree_left(3, new_tree_val(6)),
+        ),
+        new_tree_node(
+            1,
+            new_tree_node(2, new_tree_val(4), new_tree_val(5)),
+            new_tree_right(3, new_tree_val(7)),
         ),
     ]
 
     for root in inputs:
         solution = Solution()
-        result = solution.sumNumbers(root)
+        result = solution.isCompleteTree(root)
         print(result)
 
 
