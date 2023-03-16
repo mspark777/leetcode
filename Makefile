@@ -24,7 +24,7 @@ sh:
 
 c:
 	@rm -f ./bin/c
-	gcc $(CCFLAGS) -o bin/c src/c/main.c src/c/lib.c
+	@gcc $(CCFLAGS) -o bin/c src/c/main.c src/c/lib.c
 	@./bin/c
 
 rs:
