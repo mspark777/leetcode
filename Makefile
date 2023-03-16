@@ -17,6 +17,11 @@ sh:
 	@${SHELL} src/main.sh
 
 c:
-	@rm -f ./bin/main
-	@gcc -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g -o bin/main src/c/main.c src/c/lib.c
-	@./bin/main
+	@rm -f ./bin/c
+	@gcc -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g -o bin/c src/c/main.c src/c/lib.c
+	@./bin/c
+
+rs:
+	@rm -f ./bin/rs
+	@rustc -o bin/rs src/rs/main.rs
+	@./bin/rs
