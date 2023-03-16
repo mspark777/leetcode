@@ -1,39 +1,17 @@
-import { newTreeLeft, newTreeNode, newTreeRight, newTreeVal, type TreeNode } from './lib'
+import { type TreeNode } from './lib'
 
-function isCompleteTree (root: TreeNode | null): boolean {
-  if (root == null) {
-    return true
-  }
-
-  let nullFound = false
-  const queue: Array<TreeNode | null> = [root]
-
-  while (queue.length > 0) {
-    const node = queue.shift()
-
-    if (node == null) {
-      nullFound = true
-      continue
-    }
-
-    if (nullFound) {
-      return false
-    }
-
-    queue.push(node.left, node.right)
-  }
-
-  return true
+function buildTree (_inorder: number[], _postorder: number[]): TreeNode | null {
+  return null
 }
 
 async function main (): Promise<void> {
-  const inputs: Array<TreeNode | null> = [
-    newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeLeft(3, newTreeVal(6))),
-    newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeRight(3, newTreeVal(7)))
+  const inputs: number[][][] = [
+    [[9, 3, 15, 20, 7], [9, 15, 7, 20, 3]],
+    [[-1], [-1]]
   ]
 
-  for (const root of inputs) {
-    const result = isCompleteTree(root)
+  for (const [inorder, postorder] of inputs) {
+    const result = buildTree(inorder, postorder)
     console.log(result)
   }
 }

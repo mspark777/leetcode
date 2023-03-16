@@ -1,3 +1,9 @@
+ifeq ($(shell uname), Darwin)
+	CCFLAGS = -std=c11 -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g
+else
+	CCFLAGS= -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g
+endif
+
 help:
 	@cat Makefile
 
@@ -18,7 +24,7 @@ sh:
 
 c:
 	@rm -f ./bin/c
-	@gcc -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g -o bin/c src/c/main.c src/c/lib.c
+	gcc $(CCFLAGS) -o bin/c src/c/main.c src/c/lib.c
 	@./bin/c
 
 rs:

@@ -41,7 +41,7 @@ int main() {
   for (unsigned long i = 0; i < sizeof(inputs) / sizeof(inputs[0]); i += 1) {
     struct tree_node *root = inputs[i];
     const int result = isCompleteTree(root);
-    free_tree_node(root);
+    // free_tree_node(root);
     printf("%d\n", result);
   }
   return 0;
