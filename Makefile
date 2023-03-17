@@ -24,10 +24,10 @@ sh:
 
 c:
 	@rm -f ./bin/c
-	@gcc $(CCFLAGS) -o bin/c src/c/main.c src/c/lib.c
+	@gcc $(CCFLAGS) -o bin/c src/c/main.c src/c/utils.c
 	@./bin/c
 
 rs:
 	@rm -f ./bin/rs
-	@rustc -o bin/rs src/rs/main.rs
+	@rustc -o bin/rs src/main.rs
 	@./bin/rs

@@ -1,47 +1,132 @@
-import { newTreeNode, newTreeLeft, newTreeRight, newTreeVal, TreeNode, unused } from './lib.mjs'
-unused(TreeNode)
-
-/**
-  * @param {TreeNode|null} root
-  * @retrns {boolean]
-  */
-function isCompleteTree (root) {
-  if (root == null) {
-    return true
+class TrieNode {
+  /** @type {TrieNode} */
+  #links
+  /** @type {boolean} */
+  #ended
+  constructor () {
+    this.#links = new Array(26)
+    this.#ended = false
   }
 
-  let nullFound = false
-  /** @type {Array<TreeNode|null>} */
-  const queue = [root]
-
-  while (queue.length > 0) {
-    const node = queue.shift()
-
-    if (node == null) {
-      nullFound = true
-      continue
-    }
-
-    if (nullFound) {
-      return false
-    }
-
-    queue.push(node.left, node.right)
+  /**
+    * @param {string} ch
+    * @returns {boolean}
+    */
+  containsKey (ch) {
+    return this.get(ch) != null
   }
 
-  return true
+  /**
+    * @param {string} ch
+    * @returns {TrieNode|undefined}
+    */
+  get (ch) {
+    const i = this.#getIndex(ch)
+    return this.#links.at(i)
+  }
+
+  /**
+    * @param {string} ch
+    * @param {TrieNode} node
+    * @return {undefined}
+    */
+  put (ch, node) {
+    const i = this.#getIndex(ch)
+    this.#links[i] = node
+  }
+
+  /**
+    * @returns {undefined}
+    */
+  setEnd () {
+    this.#ended = true
+  }
+
+  /**
+    * @returns {boolean}
+    */
+  isEnd () {
+    return this.#ended
+  }
+
+  /**
+    * @param {string} ch
+    * @returns {number}
+    */
+  #getIndex (ch) {
+    const code = ch.charCodeAt(0)
+    const acode = 'a'.charCodeAt(0)
+    return code - acode
+  }
+}
+
+class Trie {
+  /** @type {TrieNode} */
+  #root
+  constructor () {
+    this.#root = new TrieNode()
+  }
+
+  /**
+    * @param {string} word
+    * @returns {undefined}
+    */
+  insert (word) {
+    let node = this.#root
+    for (const ch of word) {
+      if (!node.containsKey(ch)) {
+        node.put(ch, new TrieNode())
+      }
+
+      node = node.get(ch)
+    }
+
+    node.setEnd()
+  }
+
+  /**
+    * @param {string} word
+    * @returns {boolean}
+    */
+  search (word) {
+    const node = this.#searchPrefix(word)
+    return node?.isEnd() === true
+  }
+
+  /**
+    * @param {string} prefix
+    * @returns {boolean}
+    */
+  startsWith (prefix) {
+    const node = this.#searchPrefix(prefix)
+    return node != null
+  }
+
+  /**
+    * @param {string} prefix
+    * @returns {TrieNode|undefined}
+    */
+  #searchPrefix (word) {
+    let node = this.#root
+    for (const ch of word) {
+      node = node.get(ch)
+      if (node == null) {
+        return
+      }
+    }
+
+    return node
+  }
 }
 
 async function main () {
-  const inputs = [
-    newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeLeft(3, newTreeVal(6))),
-    newTreeNode(1, newTreeNode(2, newTreeVal(4), newTreeVal(5)), newTreeRight(3, newTreeVal(7)))
-  ]
-
-  for (const root of inputs) {
-    const result = isCompleteTree(root)
-    console.log(result)
-  }
+  const trie = new Trie()
+  trie.insert('apple')
+  console.log(trie.search('apple'))
+  console.log(trie.search('app'))
+  console.log(trie.startsWith('app'))
+  trie.insert('app')
+  console.log(trie.search('app'))
 }
 
 main()
