@@ -1,9 +1,3 @@
-ifeq ($(shell uname), Darwin)
-	CCFLAGS = -std=c11 -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g
-else
-	CCFLAGS= -std=c11 -fsanitize=undefined -fsanitize=leak -fsanitize=address -fno-omit-frame-pointer -Wall -Wextra -g
-endif
-
 help:
 	@cat Makefile
 
@@ -14,7 +8,7 @@ js:
 	@npm run start:js
 
 go:
-	@go run src/go/main.go src/go/lib.go
+	@go run src/go/main.go src/go/utils.go
 
 py:
 	@python src/py/main.py
@@ -22,12 +16,5 @@ py:
 sh:
 	@${SHELL} src/main.sh
 
-c:
-	@rm -f ./bin/c
-	@gcc $(CCFLAGS) -o bin/c src/c/main.c src/c/utils.c
-	@./bin/c
-
 rs:
-	@rm -f ./bin/rs
-	@rustc -o bin/rs src/main.rs
-	@./bin/rs
+	cargo run

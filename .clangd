@@ -1,3 +1,0 @@
-CompileFlags:
-  Add: [-Wall, -Wextra]
-  Compiler: gcc

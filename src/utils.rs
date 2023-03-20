@@ -109,3 +109,5 @@ impl Trie {
         return Some(node);
     }
 }
+
+pub struct Solution {}
