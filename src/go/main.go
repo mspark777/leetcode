@@ -4,41 +4,32 @@ import (
 	"fmt"
 )
 
-func canPlaceFlowers(flowerbed []int, n int) bool {
-	count := 0
-	last := len(flowerbed) - 1
-	for i, plot := range flowerbed {
-		if plot == 1 {
-			continue
+func zeroFilledSubarray(nums []int) int64 {
+	result := 0
+	sub := 0
+
+	for _, num := range nums {
+		if num == 0 {
+			sub += 1
+		} else {
+			sub = 0
 		}
 
-		emptyLeft := (i == 0) || (flowerbed[i-1] == 0)
-		emptyRight := (i == last) || (flowerbed[i+1] == 0)
-		if emptyLeft && emptyRight {
-			flowerbed[i] = 1
-			count += 1
-			if count >= n {
-				return true
-			}
-		}
+		result += sub
 	}
 
-	return count >= n
-}
-
-type input struct {
-	flowerbed []int
-	n         int
+	return int64(result)
 }
 
 func main() {
-	inputs := []input{
-		{flowerbed: []int{1, 0, 0, 0, 1}, n: 1},
-		{flowerbed: []int{1, 0, 0, 0, 1}, n: 2},
+	inputs := [][]int{
+		{1, 3, 0, 0, 2, 0, 0, 4},
+		{0, 0, 0, 2, 0, 0},
+		{2, 10, 2019},
 	}
 
-	for _, input := range inputs {
-		result := canPlaceFlowers(input.flowerbed, input.n)
+	for _, nums := range inputs {
+		result := zeroFilledSubarray(nums)
 		fmt.Println(result)
 	}
 }

@@ -1,39 +1,33 @@
 /**
-  * @param {number[]} flowerbed
-  * @param {number} n
-  * @returns {boolean}
+  * @param {number[]} nums
+  * @returns {number}
   */
-function canPlaceFlowers (flowerbed, n) {
-  let count = 0
-  const last = flowerbed.length - 1
-  for (let i = 0; i <= last; i += 1) {
-    const plot = flowerbed[i]
-    if (plot > 0) {
-      continue
+function zeroFilledSubarray (nums) {
+  let result = 0
+  let sub = 0
+
+  for (const num of nums) {
+    if (num === 0) {
+      sub += 1
+    } else {
+      sub = 0
     }
 
-    const emptyLeft = (i === 0) || (flowerbed[i - 1] === 0)
-    const emptyRight = (i === last) || (flowerbed[i + 1] === 0)
-    if (emptyLeft && emptyRight) {
-      flowerbed[i] = 1
-      count += 1
-      if (count >= n) {
-        return true
-      }
-    }
+    result += sub
   }
 
-  return count >= n
+  return result
 }
 
 async function main () {
   const inputs = [
-    { flowerbed: [1, 0, 0, 0, 1], n: 1 },
-    { flowerbed: [1, 0, 0, 0, 1], n: 2 }
+    [1, 3, 0, 0, 2, 0, 0, 4],
+    [0, 0, 0, 2, 0, 0],
+    [2, 10, 2019]
   ]
 
-  for (const { flowerbed, n } of inputs) {
-    const result = canPlaceFlowers(flowerbed, n)
+  for (const nums of inputs) {
+    const result = zeroFilledSubarray(nums)
     console.log(result)
   }
 }

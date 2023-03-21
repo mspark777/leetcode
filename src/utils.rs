@@ -1,9 +1,11 @@
+#[allow(dead_code)]
 #[derive(Clone)]
 struct TrieNode {
     links: Vec<Option<Box<TrieNode>>>,
     ended: bool,
 }
 
+#[allow(dead_code)]
 impl TrieNode {
     fn new() -> Box<Self> {
         return Box::new(Self {
@@ -60,10 +62,12 @@ impl TrieNode {
     }
 }
 
+#[allow(dead_code)]
 pub struct Trie {
     root: Box<TrieNode>,
 }
 
+#[allow(dead_code)]
 impl Trie {
     pub fn new() -> Self {
         return Self {

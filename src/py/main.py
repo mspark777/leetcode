@@ -1,32 +1,32 @@
-from typing import Optional, List
+from typing import  List
 
 
 class Solution:
-    def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
-        count = 0
-        last = len(flowerbed) - 1
-        for i in range(0, last + 1):
-            plot = flowerbed[i]
-            if plot == 1:
-                continue
+    def zeroFilledSubarray(self, nums: List[int]) -> int:
+        result = 0
+        sub = 0
 
-            empty_left = (i == 0) or (flowerbed[i - 1] == 0)
-            empty_right = (i == last) or (flowerbed[i + 1] == 0)
-            if empty_left and empty_right:
-                flowerbed[i] = 1
-                count += 1
-                if count >= n:
-                    return True
+        for num in nums:
+            if num == 0:
+                sub += 1
+            else:
+                sub = 0
 
-        return count >= n
+            result += sub
+
+        return result
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [([1, 0, 0, 0, 1], 1), ([1, 0, 0, 0, 1], 2)]
+    inputs: list[list[int]] = [
+        [1, 3, 0, 0, 2, 0, 0, 4],
+        [0, 0, 0, 2, 0, 0],
+        [2, 10, 2019]
+    ]
 
-    for flowerbed, n in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.canPlaceFlowers(flowerbed, n)
+        result = solution.zeroFilledSubarray(nums)
         print(result)
 
 

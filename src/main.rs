@@ -2,51 +2,33 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn can_place_flowers(flowerbed: Vec<i32>, n: i32) -> bool {
-        let mut count = 0;
-        let mut empty_left = true;
-        let last = flowerbed.len() - 1;
-        for (i, &plot) in flowerbed.iter().enumerate() {
-            if plot == 1 {
-                empty_left = false;
-                continue;
+    pub fn zero_filled_subarray(nums: Vec<i32>) -> i64 {
+        let mut result = 0i64;
+        let mut sub = 0i64;
+
+        for &num in nums.iter() {
+            if num == 0 {
+                sub += 1;
+            } else {
+                sub = 0;
             }
 
-            let empty_right = (i == last) || (flowerbed[i + 1] == 0);
-            if empty_left && empty_right {
-                empty_left = false;
-                count += 1;
-                if count >= n {
-                    return true;
-                }
-            } else {
-                empty_left = true;
-            }
+            result += sub;
         }
 
-        return count >= n;
+        return result;
     }
-}
-
-struct Input {
-    flowerbed: Vec<i32>,
-    n: i32,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            flowerbed: vec![1, 0, 0, 0, 1],
-            n: 1,
-        },
-        Input {
-            flowerbed: vec![1, 0, 0, 0, 1],
-            n: 2,
-        },
+        vec![1, 3, 0, 0, 2, 0, 0, 4],
+        vec![0, 0, 0, 2, 0, 0],
+        vec![2, 10, 2019],
     ];
 
-    for Input { flowerbed, n } in inputs {
-        let result = Solution::can_place_flowers(flowerbed, n);
+    for nums in inputs {
+        let result = Solution::zero_filled_subarray(nums);
         println!("{result}")
     }
 }
