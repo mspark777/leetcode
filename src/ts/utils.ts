@@ -146,3 +146,36 @@ export class Trie {
     return node
   }
 }
+
+export class UnionFind {
+  private readonly parents: number[]
+  private readonly ranks: number[]
+  public constructor (size: number) {
+    this.parents = Array.from(new Array(size), (_, i) => i)
+    this.ranks = new Array(size).fill(0)
+  }
+
+  public find (x: number): number {
+    if (this.parents[x] !== x) {
+      this.parents[x] = this.find(this.parents[x])
+    }
+    return this.parents[x]
+  }
+
+  public union (x: number, y: number): void {
+    const xset = this.find(x)
+    const yset = this.find(y)
+    if (xset === yset) {
+      return
+    }
+
+    if (this.ranks[xset] < this.ranks[yset]) {
+      this.parents[xset] = yset
+    } else if (this.ranks[xset] > this.ranks[yset]) {
+      this.parents[yset] = xset
+    } else {
+      this.parents[yset] = xset
+      this.ranks[xset] += 1
+    }
+  }
+}
