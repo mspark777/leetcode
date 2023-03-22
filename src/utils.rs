@@ -114,4 +114,48 @@ impl Trie {
     }
 }
 
+#[allow(dead_code)]
+pub struct UnionFind {
+    parents: Vec<i32>,
+    ranks: Vec<i32>,
+}
+
+#[allow(dead_code)]
+impl UnionFind {
+    pub fn new(size: i32) -> Self {
+        let parents: Vec<i32> = (0..size).collect();
+        let ranks = vec![0; size as usize];
+
+        return Self { parents, ranks };
+    }
+
+    pub fn find(&mut self, x: i32) -> i32 {
+        let i = x as usize;
+        if self.parents[i] != x {
+            self.parents[i] = self.find(self.parents[i])
+        }
+
+        return self.parents[i];
+    }
+
+    pub fn union(&mut self, x: i32, y: i32) {
+        let xset = self.find(x);
+        let yset = self.find(y);
+        if xset == yset {
+            return;
+        }
+
+        let xi = xset as usize;
+        let yi = yset as usize;
+        if self.ranks[xi] < self.ranks[yi] {
+            self.parents[xi] = yset;
+        } else if self.ranks[xi] > self.ranks[yi] {
+            self.parents[yi] = xset;
+        } else {
+            self.parents[yi] = xset;
+            self.ranks[xi] += 1;
+        }
+    }
+}
+
 pub struct Solution {}
