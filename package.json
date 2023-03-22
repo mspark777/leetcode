@@ -5,7 +5,7 @@
   "main": "index.js",
   "engines": {
     "node": "16.13.2",
-    "npm": "9.4.2"
+    "npm": "9.6.2"
   },
   "scripts": {
     "start:ts": "ts-node --files src/ts/main.ts",
