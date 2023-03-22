@@ -4,21 +4,8 @@ import (
 	"fmt"
 )
 
-func zeroFilledSubarray(nums []int) int64 {
-	result := 0
-	sub := 0
+func minScore(n int, roads [][]int) int {
 
-	for _, num := range nums {
-		if num == 0 {
-			sub += 1
-		} else {
-			sub = 0
-		}
-
-		result += sub
-	}
-
-	return int64(result)
 }
 
 func main() {

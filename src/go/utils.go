@@ -151,3 +151,44 @@ func (this *Trie) searchPrefix(prefix string) *TrieNode {
 
 	return node
 }
+
+type UnionFind struct {
+	parents []int
+	ranks   []int
+}
+
+func UnionFindConstructor(size int) *UnionFind {
+	parents := make([]int, size)
+	ranks := make([]int, size)
+
+	for i := 0; i < size; i++ {
+		parents[i] = i
+	}
+
+	return &UnionFind{parents, ranks}
+}
+
+func (this *UnionFind) Find(x int) int {
+	if this.parents[x] != x {
+		this.parents[x] = this.Find(this.parents[x])
+	}
+
+	return this.parents[x]
+}
+
+func (this *UnionFind) Union(x, y int) {
+	xset := this.Find(x)
+	yset := this.Find(y)
+	if xset == yset {
+		return
+	}
+
+	if this.ranks[xset] < this.ranks[yset] {
+		this.parents[xset] = yset
+	} else if this.ranks[xset] > this.ranks[yset] {
+		this.parents[yset] = xset
+	} else {
+		this.parents[yset] = xset
+		this.ranks[xset] += 1
+	}
+}

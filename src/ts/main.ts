@@ -43,26 +43,3 @@ main()
     console.error(e)
     process.exit(1)
   })
-
-/*
-  *
-  *
-class Solution {
-    public int minScore(int n, int[][] roads) {
-        UnionFind dsu = new UnionFind(n + 1);
-        int answer = Integer.MAX_VALUE;
-
-        for (int[] road : roads) {
-            dsu.union_set(road[0], road[1]);
-        }
-
-        for (int[] road : roads) {
-            if (dsu.find(1) == dsu.find(road[0])) {
-                answer = Math.min(answer, road[2]);
-            }
-        }
-
-        return answer;
-    }
-}
-  */

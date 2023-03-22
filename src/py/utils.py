@@ -142,3 +142,32 @@ class Trie:
                 return None
 
         return node
+
+
+class UnionFind:
+    parents: list[int]
+    ranks: list[int]
+
+    def __init__(self, size: int):
+        self.parents = [i for i in range(size)]
+        self.ranks = [0 for _ in range(size)]
+
+    def find(self, x: int) -> int:
+        if self.parents[x] != x:
+            self.parents[x] = self.find(self.parents[x])
+
+        return self.parents[x]
+
+    def union(self, x: int, y: int):
+        xset = self.find(x)
+        yset = self.find(y)
+        if xset == yset:
+            return
+
+        if self.ranks[xset] < self.ranks[yset]:
+            self.parents[xset] = yset
+        elif self.ranks[xset] > self.ranks[yset]:
+            self.parents[yset] = xset
+        else:
+            self.parents[yset] = xset
+            self.ranks[xset] += 1
