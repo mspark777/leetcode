@@ -4,40 +4,41 @@ import (
 	"fmt"
 )
 
-func minScore(n int, roads [][]int) int {
-	uf := UnionFindConstructor(n + 1)
-	result := 0xffffffff
-
-	for _, road := range roads {
-		uf.Union(road[0], road[1])
+func makeConnected(n int, connections [][]int) int {
+	if len(connections) < (n - 1) {
+		return -1
 	}
 
-	for _, road := range roads {
-		a := road[0]
-		d := road[2]
-		if uf.Find(1) == uf.Find(a) {
-			if d < result {
-				result = d
-			}
+	uf := UnionFindConstructor(n)
+	result := n
+
+	for _, conn := range connections {
+		a := conn[0]
+		b := conn[1]
+
+		if uf.Find(a) != uf.Find(b) {
+			result -= 1
+			uf.Union(a, b)
 		}
 	}
 
-	return result
+	return result - 1
 }
 
 type input struct {
-	n     int
-	roads [][]int
+	n           int
+	connections [][]int
 }
 
 func main() {
 	inputs := []input{
-		{n: 4, roads: [][]int{{1, 2, 9}, {2, 3, 6}, {2, 4, 5}, {1, 4, 7}}},
-		{n: 4, roads: [][]int{{1, 2, 2}, {1, 3, 4}, {3, 4, 7}}},
+		{n: 4, connections: [][]int{{0, 1}, {0, 2}, {1, 2}}},
+		{n: 6, connections: [][]int{{0, 1}, {0, 2}, {0, 3}, {1, 2}, {1, 3}}},
+		{n: 6, connections: [][]int{{0, 1}, {0, 2}, {0, 3}, {1, 2}}},
 	}
 
 	for _, input := range inputs {
-		result := minScore(input.n, input.roads)
+		result := makeConnected(input.n, input.connections)
 		fmt.Println(result)
 	}
 }

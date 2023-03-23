@@ -1,3 +1,5 @@
+pub struct Solution {}
+
 #[allow(dead_code)]
 #[derive(Clone)]
 struct TrieNode {
@@ -157,5 +159,3 @@ impl UnionFind {
         }
     }
 }
-
-pub struct Solution {}

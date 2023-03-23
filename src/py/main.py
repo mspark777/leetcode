@@ -4,29 +4,31 @@ from utils import UnionFind
 
 
 class Solution:
-    def minScore(self, n: int, roads: List[List[int]]) -> int:
-        uf = UnionFind(n + 1)
-        result = 0xFFFFFFFF
+    def makeConnected(self, n: int, connections: List[List[int]]) -> int:
+        if len(connections) < (n - 1):
+            return -1
 
-        for road in roads:
-            uf.union(road[0], road[1])
+        uf = UnionFind(n)
+        result = n
 
-        for road in roads:
-            if uf.find(1) == uf.find(road[0]):
-                result = min(result, road[2])
+        for [a, b] in connections:
+            if uf.find(a) != uf.find(b):
+                result -= 1
+                uf.union(a, b)
 
-        return result
+        return result - 1
 
 
 def main():
     inputs: list[tuple[int, list[list[int]]]] = [
-        (4, [[1, 2, 9], [2, 3, 6], [2, 4, 5], [1, 4, 7]]),
-        (4, [[1, 2, 2], [1, 3, 4], [3, 4, 7]]),
+        (4, [[0, 1], [0, 2], [1, 2]]),
+        (6, [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]]),
+        (6, [[0, 1], [0, 2], [0, 3], [1, 2]]),
     ]
 
-    for n, roads in inputs:
+    for n, connections in inputs:
         solution = Solution()
-        result = solution.minScore(n, roads)
+        result = solution.makeConnected(n, connections)
         print(result)
 
 

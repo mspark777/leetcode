@@ -2,45 +2,50 @@ mod utils;
 use utils::{Solution, UnionFind};
 
 impl Solution {
-    pub fn min_score(n: i32, roads: Vec<Vec<i32>>) -> i32 {
-        let mut uf = UnionFind::new(n + 1);
-        let mut result = i32::max_value();
-
-        for road in roads.iter() {
-            uf.union(road[0], road[1]);
+    pub fn make_connected(n: i32, connections: Vec<Vec<i32>>) -> i32 {
+        if (connections.len() as i32) < (n - 1) {
+            return -1;
         }
 
-        for road in roads.iter() {
-            let a = road[0];
-            let d = road[2];
-            if uf.find(1) == uf.find(a) {
-                result = result.min(d);
+        let mut uf = UnionFind::new(n);
+        let mut result = n;
+
+        for conn in connections.iter() {
+            let a = conn[0];
+            let b = conn[1];
+            if uf.find(a) != uf.find(b) {
+                result -= 1;
+                uf.union(a, b);
             }
         }
 
-        return result;
+        return result - 1;
     }
 }
 
 struct Input {
     n: i32,
-    roads: Vec<Vec<i32>>,
+    connections: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
             n: 4,
-            roads: vec![vec![1, 2, 9], vec![2, 3, 6], vec![2, 4, 5], vec![1, 4, 7]],
+            connections: vec![vec![0, 1], vec![0, 2], vec![1, 2]],
         },
         Input {
-            n: 4,
-            roads: vec![vec![1, 2, 2], vec![1, 3, 4], vec![3, 4, 7]],
+            n: 6,
+            connections: vec![vec![0, 1], vec![0, 2], vec![0, 3], vec![1, 2], vec![1, 3]],
+        },
+        Input {
+            n: 6,
+            connections: vec![vec![0, 1], vec![0, 2], vec![0, 3], vec![1, 2]],
         },
     ];
 
-    for Input { n, roads } in inputs {
-        let result = Solution::min_score(n, roads);
+    for Input { n, connections } in inputs {
+        let result = Solution::make_connected(n, connections);
         println!("{result}")
     }
 }
