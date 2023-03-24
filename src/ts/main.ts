@@ -1,21 +1,40 @@
-import { UnionFind } from './utils'
-
-function makeConnected (n: number, connections: number[][]): number {
-  if (connections.length < (n - 1)) {
-    return -1
+class DFS {
+  private count: number
+  public constructor () {
+    this.count = 0
   }
 
-  const uf = new UnionFind(n)
-  let result = n
-
-  for (const [a, b] of connections) {
-    if (uf.find(a) !== uf.find(b)) {
-      result -= 1
-      uf.union(a, b)
+  public dfs (node: number, parent: number, adjs: Map<number, number[][]>): number {
+    const edges = adjs.get(node)
+    if (edges == null) {
+      return this.count
     }
+
+    for (const [child, sign] of edges) {
+      if (child !== parent) {
+        this.count += sign
+        this.dfs(child, node, adjs)
+      }
+    }
+
+    return this.count
+  }
+}
+
+function minReorder (_n: number, connections: number[][]): number {
+  const adjs = new Map<number, number[][]>()
+  for (const [a, b] of connections) {
+    const aedges = adjs.get(a) ?? []
+    const bedges = adjs.get(b) ?? []
+    aedges.push([b, 1])
+    bedges.push([a, 0])
+
+    adjs.set(a, aedges)
+    adjs.set(b, bedges)
   }
 
-  return result - 1
+  const dfs = new DFS()
+  return dfs.dfs(0, -1, adjs)
 }
 
 interface Input {
@@ -25,13 +44,13 @@ interface Input {
 
 async function main (): Promise<void> {
   const inputs: Input[] = [
-    { n: 4, connections: [[0, 1], [0, 2], [1, 2]] },
-    { n: 6, connections: [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]] },
-    { n: 6, connections: [[0, 1], [0, 2], [0, 3], [1, 2]] }
+    { n: 6, connections: [[0, 1], [1, 3], [2, 3], [4, 0], [4, 5]] },
+    { n: 5, connections: [[1, 0], [1, 2], [3, 2], [3, 4]] },
+    { n: 0, connections: [[1, 0], [2, 0]] }
   ]
 
   for (const { n, connections } of inputs) {
-    const result = makeConnected(n, connections)
+    const result = minReorder(n, connections)
     console.log(result)
   }
 }

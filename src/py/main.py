@@ -1,34 +1,51 @@
 from typing import List
 
-from utils import UnionFind
-
 
 class Solution:
-    def makeConnected(self, n: int, connections: List[List[int]]) -> int:
-        if len(connections) < (n - 1):
-            return -1
+    count: int
 
-        uf = UnionFind(n)
-        result = n
+    def __init__(self):
+        self.count = 0
 
+    def minReorder(self, _n: int, connections: List[List[int]]) -> int:
+        adjs: dict[int, list[tuple[int, int]]] = {}
         for [a, b] in connections:
-            if uf.find(a) != uf.find(b):
-                result -= 1
-                uf.union(a, b)
+            aedges = adjs[a] if a in adjs else []
+            bedges = adjs[b] if b in adjs else []
 
-        return result - 1
+            aedges.append((b, 1))
+            bedges.append((a, 0))
+
+            adjs[a] = aedges
+            adjs[b] = bedges
+
+        return self.dfs(0, -1, adjs)
+
+    def dfs(
+        self, node: int, parent: int, adjs: dict[int, list[tuple[int, int]]]
+    ) -> int:
+        adj = adjs.get(node)
+        if adj is None:
+            return self.count
+
+        for child, sign in adj:
+            if child != parent:
+                self.count += sign
+                self.dfs(child, node, adjs)
+
+        return self.count
 
 
 def main():
     inputs: list[tuple[int, list[list[int]]]] = [
-        (4, [[0, 1], [0, 2], [1, 2]]),
-        (6, [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3]]),
-        (6, [[0, 1], [0, 2], [0, 3], [1, 2]]),
+        (6, [[0, 1], [1, 3], [2, 3], [4, 0], [4, 5]]),
+        (5, [[1, 0], [1, 2], [3, 2], [3, 4]]),
+        (0, [[1, 0], [2, 0]]),
     ]
 
     for n, connections in inputs:
         solution = Solution()
-        result = solution.makeConnected(n, connections)
+        result = solution.minReorder(n, connections)
         print(result)
 
 
