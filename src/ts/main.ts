@@ -1,56 +1,33 @@
-class DFS {
-  private count: number
-  public constructor () {
-    this.count = 0
-  }
+function minPathSum (grid: number[][]): number {
+  const row = grid.length
+  const col = grid[0].length
+  const lastRow = row - 1
+  const lastCol = col - 1
+  const MAX = Number.MAX_SAFE_INTEGER
 
-  public dfs (node: number, parent: number, adjs: Map<number, number[][]>): number {
-    const edges = adjs.get(node)
-    if (edges == null) {
-      return this.count
-    }
-
-    for (const [child, sign] of edges) {
-      if (child !== parent) {
-        this.count += sign
-        this.dfs(child, node, adjs)
+  for (let r = lastRow; r >= 0; r -= 1) {
+    for (let c = lastCol; c >= 0; c -= 1) {
+      if ((r === lastRow) && (c === lastCol)) {
+        continue
       }
+
+      const rightMin = c >= lastCol ? MAX : grid[r][c + 1]
+      const downMin = r >= lastRow ? MAX : grid[r + 1][c]
+      grid[r][c] += Math.min(rightMin, downMin)
     }
-
-    return this.count
-  }
-}
-
-function minReorder (_n: number, connections: number[][]): number {
-  const adjs = new Map<number, number[][]>()
-  for (const [a, b] of connections) {
-    const aedges = adjs.get(a) ?? []
-    const bedges = adjs.get(b) ?? []
-    aedges.push([b, 1])
-    bedges.push([a, 0])
-
-    adjs.set(a, aedges)
-    adjs.set(b, bedges)
   }
 
-  const dfs = new DFS()
-  return dfs.dfs(0, -1, adjs)
-}
-
-interface Input {
-  readonly n: number
-  readonly connections: number[][]
+  return grid[0][0]
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { n: 6, connections: [[0, 1], [1, 3], [2, 3], [4, 0], [4, 5]] },
-    { n: 5, connections: [[1, 0], [1, 2], [3, 2], [3, 4]] },
-    { n: 0, connections: [[1, 0], [2, 0]] }
+  const inputs: number[][][] = [
+    [[1, 3, 1], [1, 5, 1], [4, 2, 1]],
+    [[1, 2, 3], [4, 5, 6]]
   ]
 
-  for (const { n, connections } of inputs) {
-    const result = minReorder(n, connections)
+  for (const grid of inputs) {
+    const result = minPathSum(grid)
     console.log(result)
   }
 }

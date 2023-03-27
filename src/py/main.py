@@ -2,50 +2,34 @@ from typing import List
 
 
 class Solution:
-    count: int
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        row = len(grid)
+        col = len(grid[0])
+        last_row = row - 1
+        last_col = col - 1
+        MAX = 2**31
 
-    def __init__(self):
-        self.count = 0
+        for r in range(last_row, -1, -1):
+            for c in range(last_col, -1, -1):
+                if (r == last_row) and (c == last_col):
+                    continue
 
-    def minReorder(self, _n: int, connections: List[List[int]]) -> int:
-        adjs: dict[int, list[tuple[int, int]]] = {}
-        for [a, b] in connections:
-            aedges = adjs[a] if a in adjs else []
-            bedges = adjs[b] if b in adjs else []
+                right_min = grid[r][c + 1] if c < last_col else MAX
+                down_min = grid[r + 1][c] if r < last_row else MAX
+                grid[r][c] += min(right_min, down_min)
 
-            aedges.append((b, 1))
-            bedges.append((a, 0))
-
-            adjs[a] = aedges
-            adjs[b] = bedges
-
-        return self.dfs(0, -1, adjs)
-
-    def dfs(
-        self, node: int, parent: int, adjs: dict[int, list[tuple[int, int]]]
-    ) -> int:
-        adj = adjs.get(node)
-        if adj is None:
-            return self.count
-
-        for child, sign in adj:
-            if child != parent:
-                self.count += sign
-                self.dfs(child, node, adjs)
-
-        return self.count
+        return grid[0][0]
 
 
 def main():
-    inputs: list[tuple[int, list[list[int]]]] = [
-        (6, [[0, 1], [1, 3], [2, 3], [4, 0], [4, 5]]),
-        (5, [[1, 0], [1, 2], [3, 2], [3, 4]]),
-        (0, [[1, 0], [2, 0]]),
+    inputs: list[list[list[int]]] = [
+        [[1, 3, 1], [1, 5, 1], [4, 2, 1]],
+        [[1, 2, 3], [4, 5, 6]],
     ]
 
-    for n, connections in inputs:
+    for grid in inputs:
         solution = Solution()
-        result = solution.minReorder(n, connections)
+        result = solution.minPathSum(grid)
         print(result)
 
 

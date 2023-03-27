@@ -1,58 +1,40 @@
 mod utils;
-use std::collections::HashMap;
 
 use utils::Solution;
 
 impl Solution {
-    pub fn min_reorder(n: i32, connections: Vec<Vec<i32>>) -> i32 {
-        let mut adjs = HashMap::<i32, Vec<(i32, i32)>>::with_capacity(n as usize);
-        for conn in connections.iter() {
-            let a = conn[0];
-            let b = conn[1];
-            adjs.entry(a).or_insert(vec![]).push((b, 1));
-            adjs.entry(b).or_insert(vec![]).push((a, 0));
-        }
+    pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
+        let mut grid = grid;
+        let row = grid.len();
+        let col = grid[0].len();
+        let last_row = row - 1;
+        let last_col = col - 1;
+        const MAX: i32 = i32::max_value();
 
-        let mut result = 0;
-        Self::dfs(0, -1, &adjs, &mut result);
-        return result;
-    }
-
-    fn dfs(node: i32, parent: i32, adjs: &HashMap<i32, Vec<(i32, i32)>>, count: &mut i32) {
-        if let Some(edges) = adjs.get(&node) {
-            for &(child, sign) in edges.iter() {
-                if child != parent {
-                    *count += sign;
-                    Self::dfs(child, node, adjs, count);
+        for r in (0..=last_row).rev() {
+            for c in (0..=last_col).rev() {
+                if (r == last_row) && (c == last_col) {
+                    continue;
                 }
+
+                let right_min = if c < last_col { grid[r][c + 1] } else { MAX };
+                let down_min = if r < last_row { grid[r + 1][c] } else { MAX };
+                grid[r][c] += right_min.min(down_min);
             }
         }
-    }
-}
 
-struct Input {
-    n: i32,
-    connections: Vec<Vec<i32>>,
+        return grid[0][0];
+    }
 }
 
 fn main() {
     let inputs = [
-        Input {
-            n: 4,
-            connections: vec![vec![0, 1], vec![1, 3], vec![2, 3], vec![4, 0], vec![4, 5]],
-        },
-        Input {
-            n: 6,
-            connections: vec![vec![1, 0], vec![1, 2], vec![3, 2], vec![3, 4]],
-        },
-        Input {
-            n: 6,
-            connections: vec![vec![1, 0], vec![2, 0]],
-        },
+        vec![vec![1, 3, 1], vec![1, 5, 1], vec![4, 2, 1]],
+        vec![vec![1, 2, 3], vec![4, 5, 6]],
     ];
 
-    for Input { n, connections } in inputs {
-        let result = Solution::min_reorder(n, connections);
+    for grid in inputs {
+        let result = Solution::min_path_sum(grid);
         println!("{result}")
     }
 }

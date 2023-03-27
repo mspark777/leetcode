@@ -4,67 +4,48 @@ import (
 	"fmt"
 )
 
-func dfs(node, parent int, adjs map[int][][]int, count *int) {
-	edges, ok := adjs[node]
-	if !ok {
-		return
-	}
+func minPathSum(grid [][]int) int {
+	row := len(grid)
+	col := len(grid[0])
+	lastRow := row - 1
+	lastCol := col - 1
+	const MAX = 1024 * 1024 * 1024 * 2
 
-	for _, edge := range edges {
-		child := edge[0]
-		sign := edge[1]
+	for r := lastRow; r >= 0; r -= 1 {
+		for c := lastCol; c >= 0; c -= 1 {
+			if (r == lastRow) && (c == lastCol) {
+				continue
+			}
 
-		if child != parent {
-			*count += sign
-			dfs(child, node, adjs, count)
+			rightMin := MAX
+			downMin := MAX
+			if c < lastCol {
+				rightMin = grid[r][c+1]
+			}
+
+			if r < lastRow {
+				downMin = grid[r+1][c]
+			}
+
+			if rightMin < downMin {
+				grid[r][c] += rightMin
+			} else {
+				grid[r][c] += downMin
+			}
 		}
 	}
-}
 
-func minReorder(n int, connections [][]int) int {
-	adjs := make(map[int][][]int, n)
-	for _, conn := range connections {
-		a := conn[0]
-		b := conn[1]
-
-		aedges, aok := adjs[a]
-		bedges, bok := adjs[b]
-
-		if !aok {
-			aedges = [][]int{}
-		}
-
-		if !bok {
-			bedges = [][]int{}
-		}
-
-		aedges = append(aedges, []int{b, 1})
-		bedges = append(bedges, []int{a, 0})
-
-		adjs[a] = aedges
-		adjs[b] = bedges
-	}
-
-	result := 0
-	dfs(0, -1, adjs, &result)
-
-	return result
-}
-
-type input struct {
-	n           int
-	connections [][]int
+	return grid[0][0]
 }
 
 func main() {
-	inputs := []input{
-		{n: 6, connections: [][]int{{0, 1}, {1, 3}, {2, 3}, {4, 0}, {4, 5}}},
-		{n: 5, connections: [][]int{{1, 0}, {1, 2}, {3, 2}, {3, 4}}},
-		{n: 0, connections: [][]int{{1, 0}, {2, 0}}},
+	inputs := [][][]int{
+		{{1, 3, 1}, {1, 5, 1}, {4, 2, 1}},
+		{{1, 2, 3}, {4, 5, 6}},
 	}
 
 	for _, input := range inputs {
-		result := minReorder(input.n, input.connections)
+		result := minPathSum(input)
 		fmt.Println(result)
 	}
 }
