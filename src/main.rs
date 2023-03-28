@@ -3,38 +3,56 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn min_path_sum(grid: Vec<Vec<i32>>) -> i32 {
-        let mut grid = grid;
-        let row = grid.len();
-        let col = grid[0].len();
-        let last_row = row - 1;
-        let last_col = col - 1;
-        const MAX: i32 = i32::max_value();
+    pub fn mincost_tickets(days: Vec<i32>, costs: Vec<i32>) -> i32 {
+        let mut memos = vec![0; days.len()];
+        let durations = vec![1, 7, 30];
 
-        for r in (0..=last_row).rev() {
-            for c in (0..=last_col).rev() {
-                if (r == last_row) && (c == last_col) {
-                    continue;
-                }
+        return Self::dp(&days, &costs, &durations, &mut memos, 0);
+    }
 
-                let right_min = if c < last_col { grid[r][c + 1] } else { MAX };
-                let down_min = if r < last_row { grid[r + 1][c] } else { MAX };
-                grid[r][c] += right_min.min(down_min);
-            }
+    fn dp(
+        days: &Vec<i32>,
+        costs: &Vec<i32>,
+        durations: &Vec<i32>,
+        memos: &mut Vec<i32>,
+        i: usize,
+    ) -> i32 {
+        if i >= days.len() {
+            return 0;
+        } else if memos[i] != 0 {
+            return memos[i];
         }
 
-        return grid[0][0];
+        let mut result = i32::max_value();
+        let mut j = i;
+
+        for (&cost, &duration) in costs.iter().zip(durations.iter()) {
+            while j < days.len() {
+                let k = days[i] + duration;
+                if days[j] < k {
+                    j += 1;
+                } else {
+                    break;
+                }
+            }
+
+            let recv = Self::dp(days, costs, durations, memos, j) + cost;
+            result = result.min(recv);
+        }
+
+        memos[i] = result;
+        return result;
     }
 }
 
 fn main() {
     let inputs = [
-        vec![vec![1, 3, 1], vec![1, 5, 1], vec![4, 2, 1]],
-        vec![vec![1, 2, 3], vec![4, 5, 6]],
+        (vec![1, 4, 6, 7, 8, 20], vec![2, 7, 15]),
+        (vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], vec![2, 7, 15]),
     ];
 
-    for grid in inputs {
-        let result = Solution::min_path_sum(grid);
+    for (days, costs) in inputs {
+        let result = Solution::mincost_tickets(days, costs);
         println!("{result}")
     }
 }

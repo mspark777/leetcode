@@ -2,34 +2,50 @@ from typing import List
 
 
 class Solution:
-    def minPathSum(self, grid: List[List[int]]) -> int:
-        row = len(grid)
-        col = len(grid[0])
-        last_row = row - 1
-        last_col = col - 1
-        MAX = 2**31
+    def mincostTickets(self, days: List[int], costs: List[int]) -> int:
+        memos = [0] * len(days)
+        durations = [1, 7, 30]
 
-        for r in range(last_row, -1, -1):
-            for c in range(last_col, -1, -1):
-                if (r == last_row) and (c == last_col):
-                    continue
+        return self.dp(days, costs, memos, durations, 0)
 
-                right_min = grid[r][c + 1] if c < last_col else MAX
-                down_min = grid[r + 1][c] if r < last_row else MAX
-                grid[r][c] += min(right_min, down_min)
+    def dp(
+        self,
+        days: list[int],
+        costs: list[int],
+        memos: list[int],
+        durations: list[int],
+        i: int,
+    ) -> int:
+        if i >= len(days):
+            return 0
+        elif memos[i] != 0:
+            return memos[i]
 
-        return grid[0][0]
+        result = 2**31
+        j = i
+        for duration, cost in zip(durations, costs):
+            while j < len(days):
+                k = days[i] + duration
+                if days[j] < k:
+                    j += 1
+                else:
+                    break
+            recv = self.dp(days, costs, memos, durations, j)
+            result = min(result, recv + cost)
+
+        memos[i] = result
+        return result
 
 
 def main():
     inputs: list[list[list[int]]] = [
-        [[1, 3, 1], [1, 5, 1], [4, 2, 1]],
-        [[1, 2, 3], [4, 5, 6]],
+        [[1, 4, 6, 7, 8, 20], [2, 7, 15]],
+        [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], [2, 7, 15]],
     ]
 
-    for grid in inputs:
+    for [days, costs] in inputs:
         solution = Solution()
-        result = solution.minPathSum(grid)
+        result = solution.mincostTickets(days, costs)
         print(result)
 
 

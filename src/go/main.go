@@ -4,48 +4,51 @@ import (
 	"fmt"
 )
 
-func minPathSum(grid [][]int) int {
-	row := len(grid)
-	col := len(grid[0])
-	lastRow := row - 1
-	lastCol := col - 1
-	const MAX = 1024 * 1024 * 1024 * 2
+func dp(days, costs, memos, durations []int, i int) int {
+	if i >= len(days) {
+		return 0
+	} else if memos[i] != 0 {
+		return memos[i]
+	}
 
-	for r := lastRow; r >= 0; r -= 1 {
-		for c := lastCol; c >= 0; c -= 1 {
-			if (r == lastRow) && (c == lastCol) {
-				continue
-			}
+	result := int(^uint(0) >> 1)
+	j := i
 
-			rightMin := MAX
-			downMin := MAX
-			if c < lastCol {
-				rightMin = grid[r][c+1]
-			}
-
-			if r < lastRow {
-				downMin = grid[r+1][c]
-			}
-
-			if rightMin < downMin {
-				grid[r][c] += rightMin
+	for d, duration := range durations {
+		for j < len(days) {
+			k := days[i] + duration
+			if days[j] < k {
+				j += 1
 			} else {
-				grid[r][c] += downMin
+				break
 			}
+		}
+
+		recv := dp(days, costs, memos, durations, j) + costs[d]
+		if recv < result {
+			result = recv
 		}
 	}
 
-	return grid[0][0]
+	memos[i] = result
+	return result
+}
+
+func mincostTickets(days []int, costs []int) int {
+	memos := make([]int, len(days))
+	durations := []int{1, 7, 30}
+
+	return dp(days, costs, memos, durations, 0)
 }
 
 func main() {
 	inputs := [][][]int{
-		{{1, 3, 1}, {1, 5, 1}, {4, 2, 1}},
-		{{1, 2, 3}, {4, 5, 6}},
+		{{1, 4, 6, 7, 8, 20}, {2, 7, 15}},
+		{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31}, {2, 7, 15}},
 	}
 
 	for _, input := range inputs {
-		result := minPathSum(input)
+		result := mincostTickets(input[0], input[1])
 		fmt.Println(result)
 	}
 }
