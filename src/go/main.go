@@ -2,53 +2,38 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func dp(days, costs, memos, durations []int, i int) int {
-	if i >= len(days) {
-		return 0
-	} else if memos[i] != 0 {
-		return memos[i]
-	}
+func maxSatisfaction(satisfaction []int) int {
+	sort.Slice(satisfaction, func(i, j int) bool {
+		return satisfaction[j] < satisfaction[i]
+	})
 
-	result := int(^uint(0) >> 1)
-	j := i
+	result := 0
+	suffix := 0
 
-	for d, duration := range durations {
-		for j < len(days) {
-			k := days[i] + duration
-			if days[j] < k {
-				j += 1
-			} else {
-				break
-			}
+	for _, s := range satisfaction {
+		suffix += s
+		if suffix <= 0 {
+			break
 		}
 
-		recv := dp(days, costs, memos, durations, j) + costs[d]
-		if recv < result {
-			result = recv
-		}
+		result += suffix
 	}
 
-	memos[i] = result
 	return result
 }
 
-func mincostTickets(days []int, costs []int) int {
-	memos := make([]int, len(days))
-	durations := []int{1, 7, 30}
-
-	return dp(days, costs, memos, durations, 0)
-}
-
 func main() {
-	inputs := [][][]int{
-		{{1, 4, 6, 7, 8, 20}, {2, 7, 15}},
-		{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31}, {2, 7, 15}},
+	inputs := [][]int{
+		{-1, -8, 0, 5, -9},
+		{4, 3, 2},
+		{-1, -4, -5},
 	}
 
 	for _, input := range inputs {
-		result := mincostTickets(input[0], input[1])
+		result := maxSatisfaction(input)
 		fmt.Println(result)
 	}
 }

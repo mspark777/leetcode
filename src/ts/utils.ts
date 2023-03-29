@@ -1,3 +1,5 @@
+import '@total-typescript/ts-reset'
+
 export class TreeNode {
   val: number
   left: TreeNode | null
