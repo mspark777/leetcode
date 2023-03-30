@@ -2,27 +2,35 @@ from typing import List
 
 
 class Solution:
-    def maxSatisfaction(self, satisfaction: List[int]) -> int:
-        satisfaction.sort(reverse=True)
+    def isScramble(self, s1: str, s2: str) -> bool:
+        n = len(s1)
+        dp = [[[False for j in range(n)] for i in range(n)] for l in range(n + 1)]
+        for i in range(n):
+            for j in range(n):
+                dp[1][i][j] = s1[i] == s2[j]
 
-        max_satisfaction = 0
-        suffix_sum = 0
-
-        for s in satisfaction:
-            suffix_sum += s
-            if suffix_sum <= 0:
-                break
-            max_satisfaction += suffix_sum
-
-        return max_satisfaction
+        for length in range(2, n + 1):
+            for i in range(n + 1 - length):
+                for j in range(n + 1 - length):
+                    for new_length in range(1, length):
+                        dp1 = dp[new_length][i]
+                        dp2 = dp[length - new_length][i + new_length]
+                        dp[length][i][j] |= dp1[j] and dp2[j + new_length]
+                        dp[length][i][j] |= dp1[j + length - new_length] and dp2[j]
+        return dp[n][0][0]
 
 
 def main():
-    inputs: list[list[int]] = [[-1, -8, 0, 5, -9], [4, 3, 2], [-1, -4, -5]]
+    inputs: list[tuple[str, str]] = [
+        ("great", "rgeat"),
+        ("abcde", "caebd"),
+        ("a", "a"),
+        ("aa", "ab"),
+    ]
 
-    for satisfaction in inputs:
+    for s1, s2 in inputs:
         solution = Solution()
-        result = solution.maxSatisfaction(satisfaction)
+        result = solution.isScramble(s1, s2)
         print(result)
 
 
