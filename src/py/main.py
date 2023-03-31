@@ -2,35 +2,56 @@ from typing import List
 
 
 class Solution:
-    def isScramble(self, s1: str, s2: str) -> bool:
-        n = len(s1)
-        dp = [[[False for j in range(n)] for i in range(n)] for l in range(n + 1)]
-        for i in range(n):
-            for j in range(n):
-                dp[1][i][j] = s1[i] == s2[j]
+    def ways(self, pizza: List[str], k: int) -> int:
+        rows = len(pizza)
+        cols = len(pizza[0])
+        apples = self.matrix(rows + 1, cols + 1)
+        f = self.matrix(rows, cols)
 
-        for length in range(2, n + 1):
-            for i in range(n + 1 - length):
-                for j in range(n + 1 - length):
-                    for new_length in range(1, length):
-                        dp1 = dp[new_length][i]
-                        dp2 = dp[length - new_length][i + new_length]
-                        dp[length][i][j] |= dp1[j] and dp2[j + new_length]
-                        dp[length][i][j] |= dp1[j + length - new_length] and dp2[j]
-        return dp[n][0][0]
+        for row in range(rows - 1, -1, -1):
+            for col in range(cols - 1, -1, -1):
+                apples[row][col] = (
+                    self.btoi(pizza[row][col] == "A")
+                    + apples[row + 1][col]
+                    + apples[row][col + 1]
+                    - apples[row + 1][col + 1]
+                )
+                f[row][col] = self.btoi(apples[row][col] > 0)
+
+        mod = 1000000007
+        for remain in range(1, k):
+            g = self.matrix(rows, cols)
+            for row in range(rows):
+                for col in range(cols):
+                    for next_row in range(row + 1, rows):
+                        if (apples[row][col] - apples[next_row][col]) > 0:
+                            g[row][col] += f[next_row][col]
+                            g[row][col] %= mod
+
+                    for next_col in range(col + 1, cols):
+                        if (apples[row][col] - apples[row][next_col]) > 0:
+                            g[row][col] += f[row][next_col]
+                            g[row][col] %= mod
+            f = g
+        return f[0][0]
+
+    def btoi(self, b: bool) -> int:
+        return 1 if b else 0
+
+    def matrix(self, rows: int, cols: int) -> list[list[int]]:
+        return [[0 for j in range(cols)] for i in range(rows)]
 
 
 def main():
-    inputs: list[tuple[str, str]] = [
-        ("great", "rgeat"),
-        ("abcde", "caebd"),
-        ("a", "a"),
-        ("aa", "ab"),
+    inputs: list[tuple[list[str], int]] = [
+        (["A..", "AAA", "..."], 3),
+        (["A..", "AA.", "..."], 3),
+        (["A..", "A..", "..."], 1),
     ]
 
-    for s1, s2 in inputs:
+    for pizza, k in inputs:
         solution = Solution()
-        result = solution.isScramble(s1, s2)
+        result = solution.ways(pizza, k)
         print(result)
 
 

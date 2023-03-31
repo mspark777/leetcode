@@ -1,45 +1,59 @@
-function isScramble (s1: string, s2: string): boolean {
-  const dp = new Array<boolean[][]>(s1.length + 1)
-  for (let i = 0; i <= s1.length; i += 1) {
-    dp[i] = new Array<boolean[]>(s1.length)
-    for (let j = 0; j < s1.length; j += 1) {
-      dp[i][j] = new Array<boolean>(s1.length).fill(false)
+function bton (b: boolean): number {
+  return b ? 1 : 0
+}
+
+function ways (pizza: string[], k: number): number {
+  const rows = pizza.length
+  const cols = pizza[0].length
+  const apples = Array.from(new Array(rows + 1), () => new Array<number>(cols + 1).fill(0))
+  let f = Array.from(new Array(rows), () => new Array<number>(cols).fill(0))
+
+  for (let row = rows - 1; row >= 0; row -= 1) {
+    for (let col = cols - 1; col >= 0; col -= 1) {
+      apples[row][col] =
+        bton(pizza[row][col] === 'A') +
+        apples[row + 1][col] +
+        apples[row][col + 1] -
+        apples[row + 1][col + 1]
+      f[row][col] = bton(apples[row][col] > 0)
     }
   }
 
-  for (let i = 0; i < s1.length; i += 1) {
-    for (let j = 0; j < s1.length; j += 1) {
-      dp[1][i][j] = s1[i] === s2[j]
-    }
-  }
+  const mod = 1000000007
+  for (let remain = 1; remain < k; remain += 1) {
+    const g = Array.from(new Array(rows), () => new Array<number>(cols).fill(0))
 
-  for (let length = 2; length <= s1.length; length += 1) {
-    for (let i = 0; i <= (s1.length - length); i += 1) {
-      for (let j = 0; j <= (s1.length - length); j += 1) {
-        for (let newLength = 1; newLength < length; newLength += 1) {
-          const dp1 = dp[newLength][i]
-          const dp2 = dp[length - newLength][i + newLength]
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        for (let nextRow = row + 1; nextRow < rows; nextRow += 1) {
+          if (apples[row][col] - apples[nextRow][col] > 0) {
+            g[row][col] += f[nextRow][col]
+            g[row][col] %= mod
+          }
+        }
 
-          dp[length][i][j] ||= dp1[j] && dp2[j + newLength]
-          dp[length][i][j] ||= dp1[j + length - newLength] && dp2[j]
+        for (let nextCol = col + 1; nextCol < cols; nextCol += 1) {
+          if (apples[row][col] - apples[row][nextCol] > 0) {
+            g[row][col] += f[row][nextCol]
+            g[row][col] %= mod
+          }
         }
       }
     }
+    f = g
   }
-
-  return dp[s1.length][0][0]
+  return f[0][0]
 }
 
 async function main (): Promise<void> {
-  const inputs: string[][] = [
-    ['great', 'rgeat'],
-    ['abcde', 'caebd'],
-    ['a', 'a'],
-    ['aa', 'ab']
+  const inputs: Array<[string[], number]> = [
+    [['A..', 'AAA', '...'], 3],
+    [['A..', 'AA.', '...'], 3],
+    [['A..', 'A..', '...'], 1]
   ]
 
-  for (const [s1, s2] of inputs) {
-    const result = isScramble(s1, s2)
+  for (const [pizza, k] of inputs) {
+    const result = ways(pizza, k)
     console.log(result)
   }
 }
