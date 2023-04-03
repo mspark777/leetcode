@@ -3,66 +3,38 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn ways(pizza: Vec<String>, k: i32) -> i32 {
-        let rows = pizza.len();
-        let cols = pizza[0].len();
-        let mut apples = Self::matrix(rows + 1, cols + 1);
-        let mut f = Self::matrix(rows, cols);
+    pub fn num_rescue_boats(people: Vec<i32>, limit: i32) -> i32 {
+        let mut people = people;
+        people.sort_unstable();
 
-        for row in (0..rows).rev() {
-            for col in (0..cols).rev() {
-                apples[row][col] = Self::btoi(pizza[row].as_bytes()[col] == b'A')
-                    + apples[row + 1][col]
-                    + apples[row][col + 1]
-                    - apples[row + 1][col + 1];
-                f[row][col] = Self::btoi(apples[row][col] > 0);
+        let mut left = 0;
+        let mut right = (people.len() as i32) - 1;
+        let mut result = 0;
+        while left <= right {
+            let light = people[left as usize];
+            let heavy = people[right as usize];
+            let total = light + heavy;
+
+            result += 1;
+            right -= 1;
+            if total <= limit {
+                left += 1;
             }
         }
 
-        const MOD: i32 = 1000000007;
-        for _remain in 1..k {
-            let mut g = Self::matrix(rows, cols);
-            for row in 0..rows {
-                for col in 0..cols {
-                    for next_row in (row + 1)..rows {
-                        if (apples[row][col] - apples[next_row][col]) > 0 {
-                            g[row][col] += f[next_row][col];
-                            g[row][col] %= MOD;
-                        }
-                    }
-
-                    for next_col in (col + 1)..cols {
-                        if (apples[row][col] - apples[row][next_col]) > 0 {
-                            g[row][col] += f[row][next_col];
-                            g[row][col] %= MOD;
-                        }
-                    }
-                }
-            }
-            f = g;
-        }
-        return f[0][0];
-    }
-
-    fn matrix(rows: usize, cols: usize) -> Vec<Vec<i32>> {
-        return vec![vec![0; cols]; rows];
-    }
-
-    fn btoi(b: bool) -> i32 {
-        return if b { 1 } else { 0 };
+        return result;
     }
 }
 
 fn main() {
     let inputs = [
-        (vec!["A..", "AAA", "..."], 3),
-        (vec!["A..", "AA.", "..."], 3),
-        (vec!["A..", "A..", "..."], 1),
+        (vec![1, 2], 3),
+        (vec![3, 2, 2, 1], 3),
+        (vec![3, 5, 3, 4], 5),
     ];
 
-    for (pizza, k) in inputs {
-        let pizza = pizza.iter().map(|s| s.to_string()).collect();
-        let result = Solution::ways(pizza, k);
+    for (people, limit) in inputs {
+        let result = Solution::num_rescue_boats(people, limit);
         println!("{result}");
     }
 }

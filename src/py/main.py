@@ -2,56 +2,34 @@ from typing import List
 
 
 class Solution:
-    def ways(self, pizza: List[str], k: int) -> int:
-        rows = len(pizza)
-        cols = len(pizza[0])
-        apples = self.matrix(rows + 1, cols + 1)
-        f = self.matrix(rows, cols)
+    def numRescueBoats(self, people: List[int], limit: int) -> int:
+        people.sort()
+        left = 0
+        right = len(people) - 1
+        result = 0
 
-        for row in range(rows - 1, -1, -1):
-            for col in range(cols - 1, -1, -1):
-                apples[row][col] = (
-                    self.btoi(pizza[row][col] == "A")
-                    + apples[row + 1][col]
-                    + apples[row][col + 1]
-                    - apples[row + 1][col + 1]
-                )
-                f[row][col] = self.btoi(apples[row][col] > 0)
+        while left <= right:
+            light = people[left]
+            heavy = people[right]
+            result += 1
+            total = light + heavy
+            right -= 1
+            if total <= limit:
+                left += 1
 
-        mod = 1000000007
-        for remain in range(1, k):
-            g = self.matrix(rows, cols)
-            for row in range(rows):
-                for col in range(cols):
-                    for next_row in range(row + 1, rows):
-                        if (apples[row][col] - apples[next_row][col]) > 0:
-                            g[row][col] += f[next_row][col]
-                            g[row][col] %= mod
-
-                    for next_col in range(col + 1, cols):
-                        if (apples[row][col] - apples[row][next_col]) > 0:
-                            g[row][col] += f[row][next_col]
-                            g[row][col] %= mod
-            f = g
-        return f[0][0]
-
-    def btoi(self, b: bool) -> int:
-        return 1 if b else 0
-
-    def matrix(self, rows: int, cols: int) -> list[list[int]]:
-        return [[0 for j in range(cols)] for i in range(rows)]
+        return result
 
 
 def main():
-    inputs: list[tuple[list[str], int]] = [
-        (["A..", "AAA", "..."], 3),
-        (["A..", "AA.", "..."], 3),
-        (["A..", "A..", "..."], 1),
+    inputs: list[tuple[list[int], int]] = [
+        ([1, 2], 3),
+        ([3, 2, 2, 1], 3),
+        ([3, 5, 3, 4], 5),
     ]
 
-    for pizza, k in inputs:
+    for people, limit in inputs:
         solution = Solution()
-        result = solution.ways(pizza, k)
+        result = solution.numRescueBoats(people, limit)
         print(result)
 
 
