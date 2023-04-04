@@ -3,38 +3,30 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn num_rescue_boats(people: Vec<i32>, limit: i32) -> i32 {
-        let mut people = people;
-        people.sort_unstable();
+    pub fn partition_string(s: String) -> i32 {
+        let mut seens = vec![-1; 26];
+        let mut count = 1;
+        let mut substart = 0;
 
-        let mut left = 0;
-        let mut right = (people.len() as i32) - 1;
-        let mut result = 0;
-        while left <= right {
-            let light = people[left as usize];
-            let heavy = people[right as usize];
-            let total = light + heavy;
-
-            result += 1;
-            right -= 1;
-            if total <= limit {
-                left += 1;
+        const ACODE: usize = 'a' as usize;
+        for (i, ch) in s.chars().enumerate() {
+            let code = (ch as usize) - ACODE;
+            if seens[code] >= substart {
+                count += 1;
+                substart = i as i32;
             }
+            seens[code] = i as i32;
         }
 
-        return result;
+        return count;
     }
 }
 
 fn main() {
-    let inputs = [
-        (vec![1, 2], 3),
-        (vec![3, 2, 2, 1], 3),
-        (vec![3, 5, 3, 4], 5),
-    ];
+    let inputs = ["abacaba".to_string(), "ssssss".to_string()];
 
-    for (people, limit) in inputs {
-        let result = Solution::num_rescue_boats(people, limit);
+    for s in inputs {
+        let result = Solution::partition_string(s);
         println!("{result}");
     }
 }

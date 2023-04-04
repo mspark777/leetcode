@@ -1,38 +1,33 @@
 /**
-  * @param {number[]} people
-  * @param {number} limit
-  * @returns {number}
+  * @param {string} s
+  * @returns {number]
   */
-function numRescueBoats (people, limit) {
-  people.sort((a, b) => a - b)
-  let left = 0
-  let right = people.length - 1
+function partitionString (s) {
+  const seens = new Array(26).fill(-1)
+  let count = 1
+  let substart = 0
 
-  let result = 0
-  while (left <= right) {
-    result += 1
-    const light = people[left]
-    const heavy = people[right]
-    const total = light + heavy
-
-    right -= 1
-    if (total <= limit) {
-      left += 1
+  const ACODE = 'a'.charCodeAt(0)
+  for (let i = 0; i < s.length; i += 1) {
+    const code = s.charCodeAt(i) - ACODE
+    if (seens[code] >= substart) {
+      count += 1
+      substart = i
     }
+    seens[code] = i
   }
 
-  return result
+  return count
 }
 
 async function main () {
   const inputs = [
-    [[1, 2], 3],
-    [[3, 2, 2, 1], 3],
-    [[3, 5, 3, 4], 5]
+    'abacaba',
+    'ssssss'
   ]
 
-  for (const [people, limit] of inputs) {
-    const result = numRescueBoats(people, limit)
+  for (const s of inputs) {
+    const result = partitionString(s)
     console.log(result)
   }
 }

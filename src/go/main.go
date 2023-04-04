@@ -2,44 +2,38 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func numRescueBoats(people []int, limit int) int {
-	sort.Ints(people)
-	left := 0
-	right := len(people) - 1
-	result := 0
-
-	for left <= right {
-		light := people[left]
-		heavy := people[right]
-		total := light + heavy
-
-		result += 1
-		right -= 1
-		if total <= limit {
-			left += 1
-		}
+func partitionString(s string) int {
+	seens := make([]int, 26)
+	for i := 0; i < 26; i += 1 {
+		seens[i] = -1
 	}
 
-	return result
-}
+	count := 1
+	substart := 0
+	const ACODE = rune('a')
 
-type input struct {
-	people []int
-	limit  int
+	for i, ch := range s {
+		code := ch - ACODE
+		if seens[code] >= substart {
+			count += 1
+			substart = i
+		}
+		seens[code] = i
+	}
+
+	return count
 }
 
 func main() {
-	inputs := []input{
-		{[]int{1, 2}, 3},
-		{[]int{3, 2, 2, 1}, 3},
-		{[]int{3, 5, 3, 4}, 5},
+	inputs := []string{
+		"abacaba",
+		"ssssss",
 	}
 
 	for _, input := range inputs {
-		result := numRescueBoats(input.people, input.limit)
+		result := partitionString(input)
 		fmt.Println(result)
 	}
 }

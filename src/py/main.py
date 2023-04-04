@@ -1,35 +1,26 @@
-from typing import List
-
-
 class Solution:
-    def numRescueBoats(self, people: List[int], limit: int) -> int:
-        people.sort()
-        left = 0
-        right = len(people) - 1
-        result = 0
+    def partitionString(self, s: str) -> int:
+        seens = [-1] * 26
+        count = 1
+        substart = 0
 
-        while left <= right:
-            light = people[left]
-            heavy = people[right]
-            result += 1
-            total = light + heavy
-            right -= 1
-            if total <= limit:
-                left += 1
+        ACODE = ord("a")
+        for i, ch in enumerate(s):
+            code = ord(ch) - ACODE
+            if seens[code] >= substart:
+                count += 1
+                substart = i
+            seens[code] = i
 
-        return result
+        return count
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([1, 2], 3),
-        ([3, 2, 2, 1], 3),
-        ([3, 5, 3, 4], 5),
-    ]
+    inputs: list[str] = ["abacaba", "ssssss"]
 
-    for people, limit in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.numRescueBoats(people, limit)
+        result = solution.partitionString(s)
         print(result)
 
 
