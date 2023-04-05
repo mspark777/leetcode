@@ -1,29 +1,27 @@
-function partitionString (s: string): number {
-  const seens = new Array(26).fill(-1)
-  let count = 1
-  let substart = 0
+function minimizeArrayValue (nums: number[]): number {
+  let result = 0n
+  let prefixSum = 0n
 
-  const ACODE = 'a'.charCodeAt(0)
-  for (let i = 0; i < s.length; i += 1) {
-    const code = s.charCodeAt(i) - ACODE
-    if (seens[code] >= substart) {
-      count += 1
-      substart = i
+  for (let i = 0; i < nums.length; i += 1) {
+    prefixSum += BigInt(nums[i])
+    const j = BigInt(i)
+    const sum = (prefixSum + j) / (j + 1n)
+    if (sum > result) {
+      result = sum
     }
-    seens[code] = i
   }
 
-  return count
+  return Number(result)
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    'abacaba',
-    'ssssss'
+  const inputs: number[][] = [
+    [3, 7, 1, 6],
+    [10, 1]
   ]
 
-  for (const s of inputs) {
-    const result = partitionString(s)
+  for (const nums of inputs) {
+    const result = minimizeArrayValue(nums)
     console.log(result)
   }
 }

@@ -1,26 +1,24 @@
+from typing import List
+
+
 class Solution:
-    def partitionString(self, s: str) -> int:
-        seens = [-1] * 26
-        count = 1
-        substart = 0
+    def minimizeArrayValue(self, nums: List[int]) -> int:
+        result = 0
+        prefix_sum = 0
 
-        ACODE = ord("a")
-        for i, ch in enumerate(s):
-            code = ord(ch) - ACODE
-            if seens[code] >= substart:
-                count += 1
-                substart = i
-            seens[code] = i
+        for i, num in enumerate(nums):
+            prefix_sum += num
+            result = max(result, (prefix_sum + i) // (i + 1))
 
-        return count
+        return result
 
 
 def main():
-    inputs: list[str] = ["abacaba", "ssssss"]
+    inputs: list[list[int]] = [[3, 7, 1, 6], [10, 1]]
 
-    for s in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.partitionString(s)
+        result = solution.minimizeArrayValue(nums)
         print(result)
 
 

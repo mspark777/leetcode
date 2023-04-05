@@ -4,36 +4,29 @@ import (
 	"fmt"
 )
 
-func partitionString(s string) int {
-	seens := make([]int, 26)
-	for i := 0; i < 26; i += 1 {
-		seens[i] = -1
-	}
+func minimizeArrayValue(nums []int) int {
+	result := 0
+	prefix_sum := 0
 
-	count := 1
-	substart := 0
-	const ACODE = rune('a')
-
-	for i, ch := range s {
-		code := ch - ACODE
-		if seens[code] >= substart {
-			count += 1
-			substart = i
+	for i, num := range nums {
+		prefix_sum += num
+		sum := (prefix_sum + i) / (i + 1)
+		if sum > result {
+			result = sum
 		}
-		seens[code] = i
 	}
 
-	return count
+	return result
 }
 
 func main() {
-	inputs := []string{
-		"abacaba",
-		"ssssss",
+	inputs := [][]int{
+		{3, 7, 1, 6},
+		{10, 1},
 	}
 
 	for _, input := range inputs {
-		result := partitionString(input)
+		result := minimizeArrayValue(input)
 		fmt.Println(result)
 	}
 }

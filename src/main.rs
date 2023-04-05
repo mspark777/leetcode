@@ -3,30 +3,24 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn partition_string(s: String) -> i32 {
-        let mut seens = vec![-1; 26];
-        let mut count = 1;
-        let mut substart = 0;
+    pub fn minimize_array_value(nums: Vec<i32>) -> i32 {
+        let mut result = 0usize;
+        let mut prefix_sum = 0usize;
 
-        const ACODE: usize = 'a' as usize;
-        for (i, ch) in s.chars().enumerate() {
-            let code = (ch as usize) - ACODE;
-            if seens[code] >= substart {
-                count += 1;
-                substart = i as i32;
-            }
-            seens[code] = i as i32;
+        for (i, &num) in nums.iter().enumerate() {
+            prefix_sum += num as usize;
+            result = result.max((prefix_sum + i) / (i + 1));
         }
 
-        return count;
+        return result as i32;
     }
 }
 
 fn main() {
-    let inputs = ["abacaba".to_string(), "ssssss".to_string()];
+    let inputs = [vec![3, 7, 1, 6], vec![10, 1]];
 
-    for s in inputs {
-        let result = Solution::partition_string(s);
+    for nums in inputs {
+        let result = Solution::minimize_array_value(nums);
         println!("{result}");
     }
 }
