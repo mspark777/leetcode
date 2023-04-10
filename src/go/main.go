@@ -4,29 +4,38 @@ import (
 	"fmt"
 )
 
-func minimizeArrayValue(nums []int) int {
-	result := 0
-	prefix_sum := 0
+func isValid(s string) bool {
+	stack := []rune{}
+	for _, ch := range s {
+		if ch == '(' {
+			stack = append(stack, ')')
+		} else if ch == '{' {
+			stack = append(stack, '}')
+		} else if ch == '[' {
+			stack = append(stack, ']')
+		} else {
+			last := len(stack) - 1
+			if last < 0 {
+				return false
+			} else if stack[last] != ch {
+				return false
+			}
 
-	for i, num := range nums {
-		prefix_sum += num
-		sum := (prefix_sum + i) / (i + 1)
-		if sum > result {
-			result = sum
+			stack = stack[:last]
 		}
+
 	}
 
-	return result
+	return len(stack) == 0
 }
 
 func main() {
-	inputs := [][]int{
-		{3, 7, 1, 6},
-		{10, 1},
+	inputs := []string{
+		"()", "()[]{}", "(]",
 	}
 
-	for _, input := range inputs {
-		result := minimizeArrayValue(input)
+	for _, s := range inputs {
+		result := isValid(s)
 		fmt.Println(result)
 	}
 }

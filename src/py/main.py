@@ -1,24 +1,27 @@
-from typing import List
-
-
 class Solution:
-    def minimizeArrayValue(self, nums: List[int]) -> int:
-        result = 0
-        prefix_sum = 0
+    def isValid(self, s: str) -> bool:
+        stack: list[str] = []
+        for ch in s:
+            if ch == "(":
+                stack.append(")")
+            elif ch == "{":
+                stack.append("}")
+            elif ch == "[":
+                stack.append("]")
+            elif not stack:
+                return False
+            elif stack.pop() != ch:
+                return False
 
-        for i, num in enumerate(nums):
-            prefix_sum += num
-            result = max(result, (prefix_sum + i) // (i + 1))
-
-        return result
+        return not stack
 
 
 def main():
-    inputs: list[list[int]] = [[3, 7, 1, 6], [10, 1]]
+    inputs: list[str] = ["()", "()[]{}", "(]"]
 
-    for nums in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.minimizeArrayValue(nums)
+        result = solution.isValid(s)
         print(result)
 
 
