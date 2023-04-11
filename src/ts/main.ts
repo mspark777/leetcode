@@ -1,27 +1,24 @@
-function minimizeArrayValue (nums: number[]): number {
-  let result = 0n
-  let prefixSum = 0n
-
-  for (let i = 0; i < nums.length; i += 1) {
-    prefixSum += BigInt(nums[i])
-    const j = BigInt(i)
-    const sum = (prefixSum + j) / (j + 1n)
-    if (sum > result) {
-      result = sum
+function removeStars (s: string): string {
+  const stack: string[] = []
+  for (const ch of s) {
+    if (ch === '*') {
+      stack.pop()
+    } else {
+      stack.push(ch)
     }
   }
 
-  return Number(result)
+  return stack.join('')
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [
-    [3, 7, 1, 6],
-    [10, 1]
+  const inputs: string[] = [
+    'leet**cod*e',
+    'erase*****'
   ]
 
-  for (const nums of inputs) {
-    const result = minimizeArrayValue(nums)
+  for (const s of inputs) {
+    const result = removeStars(s)
     console.log(result)
   }
 }

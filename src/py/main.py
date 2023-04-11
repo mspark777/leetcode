@@ -1,27 +1,21 @@
 class Solution:
-    def isValid(self, s: str) -> bool:
+    def removeStars(self, s: str) -> str:
         stack: list[str] = []
         for ch in s:
-            if ch == "(":
-                stack.append(")")
-            elif ch == "{":
-                stack.append("}")
-            elif ch == "[":
-                stack.append("]")
-            elif not stack:
-                return False
-            elif stack.pop() != ch:
-                return False
+            if ch == "*":
+                stack.pop()
+            else:
+                stack.append(ch)
 
-        return not stack
+        return "".join(stack)
 
 
 def main():
-    inputs: list[str] = ["()", "()[]{}", "(]"]
+    inputs: list[str] = ["leet**cod*e", "erase*****"]
 
     for s in inputs:
         solution = Solution()
-        result = solution.isValid(s)
+        result = solution.removeStars(s)
         print(result)
 
 

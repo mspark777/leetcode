@@ -4,38 +4,30 @@ import (
 	"fmt"
 )
 
-func isValid(s string) bool {
-	stack := []rune{}
+func removeStars(s string) string {
+	stack := make([]rune, 0, len(s))
 	for _, ch := range s {
-		if ch == '(' {
-			stack = append(stack, ')')
-		} else if ch == '{' {
-			stack = append(stack, '}')
-		} else if ch == '[' {
-			stack = append(stack, ']')
-		} else {
+		if ch == '*' {
 			last := len(stack) - 1
-			if last < 0 {
-				return false
-			} else if stack[last] != ch {
-				return false
+			if last >= 0 {
+				stack = stack[:last]
 			}
-
-			stack = stack[:last]
+		} else {
+			stack = append(stack, ch)
 		}
-
 	}
 
-	return len(stack) == 0
+	return string(stack)
 }
 
 func main() {
 	inputs := []string{
-		"()", "()[]{}", "(]",
+		"leet**cod*e",
+		"erase*****",
 	}
 
 	for _, s := range inputs {
-		result := isValid(s)
+		result := removeStars(s)
 		fmt.Println(result)
 	}
 }
