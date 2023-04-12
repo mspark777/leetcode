@@ -1,21 +1,28 @@
 class Solution:
-    def removeStars(self, s: str) -> str:
-        stack: list[str] = []
-        for ch in s:
-            if ch == "*":
-                stack.pop()
-            else:
-                stack.append(ch)
+    def simplifyPath(self, path: str) -> str:
+        segments = path.split("/")
+        result: list[str] = []
 
-        return "".join(stack)
+        for seg in segments:
+            if seg == "":
+                continue
+            elif seg == ".":
+                continue
+            elif seg == "..":
+                if result:
+                    result.pop()
+            else:
+                result.append(seg)
+
+        return "/{}".format("/".join(result))
 
 
 def main():
-    inputs: list[str] = ["leet**cod*e", "erase*****"]
+    inputs: list[str] = ["/home/", "/../", "/home//foo/"]
 
-    for s in inputs:
+    for path in inputs:
         solution = Solution()
-        result = solution.removeStars(s)
+        result = solution.simplifyPath(path)
         print(result)
 
 

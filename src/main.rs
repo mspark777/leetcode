@@ -3,25 +3,31 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn remove_stars(s: String) -> String {
-        let mut stack = Vec::<u8>::with_capacity(s.len());
-        for &ch in s.as_bytes().iter() {
-            if ch == ('*' as u8) {
-                stack.pop();
+    pub fn simplify_path(path: String) -> String {
+        let segments = path.split("/");
+        let mut result = Vec::<&str>::new();
+
+        for seg in segments {
+            if seg.eq("") {
+                continue;
+            } else if seg.eq(".") {
+                continue;
+            } else if seg.eq("..") {
+                result.pop();
             } else {
-                stack.push(ch);
+                result.push(seg);
             }
         }
 
-        return String::from_utf8(stack).unwrap();
+        return format!("/{}", result.join("/"));
     }
 }
 
 fn main() {
-    let inputs = ["leet**cod*e", "erase*****"];
+    let inputs = ["/home/", "/../", "/home//foo/"];
 
-    for s in inputs {
-        let result = Solution::remove_stars(s.to_string());
+    for path in inputs {
+        let result = Solution::simplify_path(path.to_string());
         println!("{result}");
     }
 }

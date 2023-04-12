@@ -1,28 +1,34 @@
 /**
-  * @param {string} s
+  * @param {string} path
   * @returns {string}
   */
-function removeStars (s) {
-  const stack = []
-  for (const ch of s) {
-    if (ch === '*') {
-      stack.pop()
+function simplifyPath (path) {
+  const segments = path.split('/')
+  const result = []
+
+  for (const seg of segments) {
+    if (seg === '') {
+      continue
+    } else if (seg === '.') {
+      continue
+    } else if (seg === '..') {
+      result.pop()
     } else {
-      stack.push(ch)
+      result.push(seg)
     }
   }
-
-  return stack.join('')
+  return `/${result.join('/')}`
 }
 
 async function main () {
   const inputs = [
-    'leet**cod*e',
-    'erase*****'
+    '/home/',
+    '/../',
+    '/home//foo/'
   ]
 
-  for (const s of inputs) {
-    const result = removeStars(s)
+  for (const path of inputs) {
+    const result = simplifyPath(path)
     console.log(result)
   }
 }

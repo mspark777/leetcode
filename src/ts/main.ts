@@ -1,24 +1,30 @@
-function removeStars (s: string): string {
-  const stack: string[] = []
-  for (const ch of s) {
-    if (ch === '*') {
-      stack.pop()
+function simplifyPath (path: string): string {
+  const segments = path.split('/')
+  const result: string[] = []
+
+  for (const seg of segments) {
+    if (seg === '') {
+      continue
+    } else if (seg === '.') {
+      continue
+    } else if (seg === '..') {
+      result.pop()
     } else {
-      stack.push(ch)
+      result.push(seg)
     }
   }
-
-  return stack.join('')
+  return `/${result.join('/')}`
 }
 
 async function main (): Promise<void> {
   const inputs: string[] = [
-    'leet**cod*e',
-    'erase*****'
+    '/home/',
+    '/../',
+    '/home//foo/'
   ]
 
-  for (const s of inputs) {
-    const result = removeStars(s)
+  for (const path of inputs) {
+    const result = simplifyPath(path)
     console.log(result)
   }
 }
