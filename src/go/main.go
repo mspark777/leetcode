@@ -2,40 +2,40 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func simplifyPath(path string) string {
-	segments := strings.Split(path, "/")
-	result := []string{}
+func validateStackSequences(pushed []int, popped []int) bool {
+	numCount := len(pushed)
+	stack := make([]int, 0, numCount)
+	popCount := 0
 
-	for _, seg := range segments {
-		if seg == "" {
-			continue
-		} else if seg == "." {
-			continue
-		} else if seg == ".." {
-			last := len(result) - 1
-			if last >= 0 {
-				result = result[:last]
+	for _, p := range pushed {
+		stack = append(stack, p)
+
+		for popCount < numCount {
+			top := len(stack) - 1
+			if top < 0 {
+				break
+			} else if stack[top] != popped[popCount] {
+				break
+			} else {
+				stack = stack[:top]
+				popCount += 1
 			}
-		} else {
-			result = append(result, seg)
 		}
 	}
 
-	return "/" + strings.Join(result, "/")
+	return popCount == numCount
 }
 
 func main() {
-	inputs := []string{
-		"/home/",
-		"/../",
-		"/home//foo/",
+	inputs := [][][]int{
+		{{1, 2, 3, 4, 5}, {4, 5, 3, 2, 1}},
+		{{1, 2, 3, 4, 5}, {4, 3, 5, 1, 2}},
 	}
 
-	for _, path := range inputs {
-		result := simplifyPath(path)
+	for _, input := range inputs {
+		result := validateStackSequences(input[0], input[1])
 		fmt.Println(result)
 	}
 }

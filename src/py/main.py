@@ -1,28 +1,35 @@
+from typing import List
+
+
 class Solution:
-    def simplifyPath(self, path: str) -> str:
-        segments = path.split("/")
-        result: list[str] = []
+    def validateStackSequences(self, pushed: List[int], popped: List[int]) -> bool:
+        num_count = len(pushed)
+        stack: list[int] = []
 
-        for seg in segments:
-            if seg == "":
-                continue
-            elif seg == ".":
-                continue
-            elif seg == "..":
-                if result:
-                    result.pop()
-            else:
-                result.append(seg)
+        pop_count = 0
+        for p in pushed:
+            stack.append(p)
+            while pop_count < num_count:
+                if not stack:
+                    break
+                elif stack[-1] != popped[pop_count]:
+                    break
+                else:
+                    stack.pop()
+                    pop_count += 1
 
-        return "/{}".format("/".join(result))
+        return pop_count == num_count
 
 
 def main():
-    inputs: list[str] = ["/home/", "/../", "/home//foo/"]
+    inputs: list[tuple[list[int], list[int]]] = [
+        ([1, 2, 3, 4, 5], [4, 5, 3, 2, 1]),
+        ([1, 2, 3, 4, 5], [4, 3, 5, 1, 2]),
+    ]
 
-    for path in inputs:
+    for pushed, popped in inputs:
         solution = Solution()
-        result = solution.simplifyPath(path)
+        result = solution.validateStackSequences(pushed, popped)
         print(result)
 
 

@@ -1,30 +1,33 @@
-function simplifyPath (path: string): string {
-  const segments = path.split('/')
-  const result: string[] = []
+function validateStackSequences (pushed: number[], popped: number[]): boolean {
+  const numCount = pushed.length
+  const stack: number[] = []
 
-  for (const seg of segments) {
-    if (seg === '') {
-      continue
-    } else if (seg === '.') {
-      continue
-    } else if (seg === '..') {
-      result.pop()
-    } else {
-      result.push(seg)
+  let popCount = 0
+  for (const p of pushed) {
+    stack.push(p)
+    while (popCount < numCount) {
+      if (stack.length < 1) {
+        break
+      } else if (stack.at(-1) !== popped[popCount]) {
+        break
+      }
+
+      stack.pop()
+      popCount += 1
     }
   }
-  return `/${result.join('/')}`
+
+  return popCount === numCount
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    '/home/',
-    '/../',
-    '/home//foo/'
+  const inputs: number[][][] = [
+    [[1, 2, 3, 4, 5], [4, 5, 3, 2, 1]],
+    [[1, 2, 3, 4, 5], [4, 3, 5, 1, 2]]
   ]
 
-  for (const path of inputs) {
-    const result = simplifyPath(path)
+  for (const [pushed, popped] of inputs) {
+    const result = validateStackSequences(pushed, popped)
     console.log(result)
   }
 }
