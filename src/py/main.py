@@ -1,35 +1,27 @@
-from typing import List
-
-
 class Solution:
-    def validateStackSequences(self, pushed: List[int], popped: List[int]) -> bool:
-        num_count = len(pushed)
-        stack: list[int] = []
+    def longestPalindromeSubseq(self, s: str) -> int:
+        n = len(s)
+        dp = [0] * n
+        dp_prev = dp.copy()
 
-        pop_count = 0
-        for p in pushed:
-            stack.append(p)
-            while pop_count < num_count:
-                if not stack:
-                    break
-                elif stack[-1] != popped[pop_count]:
-                    break
+        for i in range(n - 1, -1, -1):
+            dp[i] = 1
+            for j in range(i + 1, n):
+                if s[i] == s[j]:
+                    dp[j] = dp_prev[j - 1] + 2
                 else:
-                    stack.pop()
-                    pop_count += 1
+                    dp[j] = max(dp_prev[j], dp[j - 1])
+            dp_prev = dp.copy()
 
-        return pop_count == num_count
+        return dp[n - 1]
 
 
 def main():
-    inputs: list[tuple[list[int], list[int]]] = [
-        ([1, 2, 3, 4, 5], [4, 5, 3, 2, 1]),
-        ([1, 2, 3, 4, 5], [4, 3, 5, 1, 2]),
-    ]
+    inputs: list[str] = ["bbbab", "cbbd"]
 
-    for pushed, popped in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.validateStackSequences(pushed, popped)
+        result = solution.longestPalindromeSubseq(s)
         print(result)
 
 

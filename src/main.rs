@@ -3,37 +3,35 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn validate_stack_sequences(pushed: Vec<i32>, popped: Vec<i32>) -> bool {
-        let num_count = pushed.len();
-        let mut stack = Vec::<i32>::with_capacity(num_count);
-        let mut pop_count = 0usize;
+    pub fn longest_palindrome_subseq(s: String) -> i32 {
+        let n = s.len();
+        let mut dp = vec![0; n];
+        let mut dp_prev = vec![0; n];
 
-        for &p in pushed.iter() {
-            stack.push(p);
-            while let Some(&top) = stack.last() {
-                if pop_count >= num_count {
-                    break;
-                } else if top != popped[pop_count] {
-                    break;
+        let bytes = s.as_bytes();
+
+        for i in (0..n).rev() {
+            dp[i] = 1;
+            for j in (i + 1)..n {
+                if bytes[i] == bytes[j] {
+                    dp[j] = dp_prev[j - 1] + 2;
                 } else {
-                    stack.pop();
-                    pop_count += 1;
+                    dp[j] = dp_prev[j].max(dp[j - 1]);
                 }
             }
+
+            dp_prev = dp.clone();
         }
 
-        return num_count == pop_count;
+        return dp[n - 1];
     }
 }
 
 fn main() {
-    let inputs = [
-        (vec![1, 2, 3, 4, 5], vec![4, 5, 3, 2, 1]),
-        (vec![1, 2, 3, 4, 5], vec![4, 3, 5, 1, 2]),
-    ];
+    let inputs = ["bbbab", "cbbd"];
 
-    for (pushed, popped) in inputs {
-        let result = Solution::validate_stack_sequences(pushed, popped);
+    for s in inputs {
+        let result = Solution::longest_palindrome_subseq(s.to_string());
         println!("{result}");
     }
 }

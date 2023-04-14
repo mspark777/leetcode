@@ -1,33 +1,31 @@
-function validateStackSequences (pushed: number[], popped: number[]): boolean {
-  const numCount = pushed.length
-  const stack: number[] = []
+function longestPalindromeSubseq (s: string): number {
+  const n = s.length
+  const dp = new Array<number>(n).fill(0)
+  let dpPrev = new Array<number>(n).fill(0)
 
-  let popCount = 0
-  for (const p of pushed) {
-    stack.push(p)
-    while (popCount < numCount) {
-      if (stack.length < 1) {
-        break
-      } else if (stack.at(-1) !== popped[popCount]) {
-        break
+  for (let i = n - 1; i >= 0; i -= 1) {
+    dp[i] = 1
+    for (let j = i + 1; j < n; j += 1) {
+      if (s.charAt(i) === s.charAt(j)) {
+        dp[j] = dpPrev[j - 1] + 2
+      } else {
+        dp[j] = Math.max(dpPrev[j], dp[j - 1])
       }
-
-      stack.pop()
-      popCount += 1
     }
+    dpPrev = dp.slice()
   }
 
-  return popCount === numCount
+  return dp[n - 1]
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][][] = [
-    [[1, 2, 3, 4, 5], [4, 5, 3, 2, 1]],
-    [[1, 2, 3, 4, 5], [4, 3, 5, 1, 2]]
+  const inputs: string[] = [
+    'bbbab',
+    'cbbd'
   ]
 
-  for (const [pushed, popped] of inputs) {
-    const result = validateStackSequences(pushed, popped)
+  for (const s of inputs) {
+    const result = longestPalindromeSubseq(s)
     console.log(result)
   }
 }

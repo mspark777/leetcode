@@ -4,38 +4,40 @@ import (
 	"fmt"
 )
 
-func validateStackSequences(pushed []int, popped []int) bool {
-	numCount := len(pushed)
-	stack := make([]int, 0, numCount)
-	popCount := 0
+func longestPalindromeSubseq(s string) int {
+	n := len(s)
+	dp := make([]int, n)
+	dpPrev := make([]int, n)
 
-	for _, p := range pushed {
-		stack = append(stack, p)
-
-		for popCount < numCount {
-			top := len(stack) - 1
-			if top < 0 {
-				break
-			} else if stack[top] != popped[popCount] {
-				break
+	for i := n - 1; i >= 0; i -= 1 {
+		dp[i] = 1
+		for j := i + 1; j < n; j += 1 {
+			if s[i] == s[j] {
+				dp[j] = dpPrev[j-1] + 2
 			} else {
-				stack = stack[:top]
-				popCount += 1
+				prev := dpPrev[j]
+				cur := dp[j-1]
+				if prev > cur {
+					dp[j] = prev
+				} else {
+					dp[j] = cur
+				}
 			}
 		}
+		copy(dpPrev, dp)
 	}
 
-	return popCount == numCount
+	return dp[n-1]
 }
 
 func main() {
-	inputs := [][][]int{
-		{{1, 2, 3, 4, 5}, {4, 5, 3, 2, 1}},
-		{{1, 2, 3, 4, 5}, {4, 3, 5, 1, 2}},
+	inputs := []string{
+		"bbbab",
+		"cbbd",
 	}
 
-	for _, input := range inputs {
-		result := validateStackSequences(input[0], input[1])
+	for _, s := range inputs {
+		result := longestPalindromeSubseq(s)
 		fmt.Println(result)
 	}
 }
