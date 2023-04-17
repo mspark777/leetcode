@@ -1,27 +1,22 @@
+from typing import List
+
+
 class Solution:
-    def longestPalindromeSubseq(self, s: str) -> int:
-        n = len(s)
-        dp = [0] * n
-        dp_prev = dp.copy()
-
-        for i in range(n - 1, -1, -1):
-            dp[i] = 1
-            for j in range(i + 1, n):
-                if s[i] == s[j]:
-                    dp[j] = dp_prev[j - 1] + 2
-                else:
-                    dp[j] = max(dp_prev[j], dp[j - 1])
-            dp_prev = dp.copy()
-
-        return dp[n - 1]
+    def kidsWithCandies(self, candies: List[int], extra_candies: int) -> List[bool]:
+        max_candy = max(candies) - extra_candies
+        return [candy >= max_candy for candy in candies]
 
 
 def main():
-    inputs: list[str] = ["bbbab", "cbbd"]
+    inputs: list[tuple[list[int], int]] = [
+        ([2, 3, 5, 1, 3], 3),
+        ([4, 2, 1, 1, 2], 1),
+        ([12, 1, 12], 10),
+    ]
 
-    for s in inputs:
+    for candies, extra_candies in inputs:
         solution = Solution()
-        result = solution.longestPalindromeSubseq(s)
+        result = solution.kidsWithCandies(candies, extra_candies)
         print(result)
 
 

@@ -1,35 +1,22 @@
 /**
-  * @param {string} s
-  * @returns {number}
+  * @param {number[]} candies
+  * @param {number} extraCandies
+  * @returns {boolean[]}
   */
-function longestPalindromeSubseq (s) {
-  const n = s.length
-  const dp = new Array(n).fill(0)
-  let dpPrev = new Array(n).fill(0)
-
-  for (let i = n - 1; i >= 0; i -= 1) {
-    dp[i] = 1
-    for (let j = i + 1; j < n; j += 1) {
-      if (s.charAt(i) === s.charAt(j)) {
-        dp[j] = dpPrev[j - 1] + 2
-      } else {
-        dp[j] = Math.max(dpPrev[j], dp[j - 1])
-      }
-    }
-    dpPrev = dp.slice()
-  }
-
-  return dp[n - 1]
+function kidsWithCandies (candies, extraCandies) {
+  const maxCandy = Math.max(...candies) - extraCandies
+  return candies.map(candy => candy >= maxCandy)
 }
 
 async function main () {
   const inputs = [
-    'bbbab',
-    'cbbd'
+    [[2, 3, 5, 1, 3], 3],
+    [[4, 2, 1, 1, 2], 1],
+    [[12, 1, 12], 10]
   ]
 
-  for (const s of inputs) {
-    const result = longestPalindromeSubseq(s)
+  for (const [candies, extraCandies] of inputs) {
+    const result = kidsWithCandies(candies, extraCandies)
     console.log(result)
   }
 }

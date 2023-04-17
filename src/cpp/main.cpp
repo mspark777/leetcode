@@ -5,34 +5,43 @@
 
 class Solution {
 public:
-  int longestPalindromeSubseq(std::string s) {
-    const int n = s.size();
-    std::vector<int> dp(n);
-    std::vector<int> dp_prev(n);
+  std::vector<bool> kidsWithCandies(std::vector<int> &candies,
+                                    int extra_candies) {
+    int max_candy = -1;
+    for (auto candy : candies) {
+      max_candy = std::max(candy, max_candy);
+    }
+    max_candy -= extra_candies;
 
-    for (int i = n - 1; i >= 0; i -= 1) {
-      dp[i] = 1;
-      for (int j = i + 1; j < n; j += 1) {
-        if (s[i] == s[j]) {
-          dp[j] = dp_prev[j - 1] + 2;
-        } else {
-          dp[j] = std::max(dp_prev[j], dp[j - 1]);
-        }
-      }
-
-      dp_prev = dp;
+    std::vector<bool> result;
+    result.reserve(candies.size());
+    for (auto candy : candies) {
+      result.push_back(candy >= max_candy);
     }
 
-    return dp[n - 1];
+    return result;
   }
 };
 
+struct Input {
+  std::vector<int> candies;
+  const int extra_candies;
+};
+
 int main() {
-  std::string inputs[] = {"bbbab", "cbbd"};
+  const Input inputs[] = {
+      {.candies = std::vector<int>({2, 3, 5, 1, 3}), .extra_candies = 3},
+      {.candies = std::vector<int>({4, 2, 1, 1, 2}), .extra_candies = 1},
+      {.candies = std::vector<int>({12, 1, 12}), .extra_candies = 10},
+  };
 
   for (auto input : inputs) {
     Solution solution;
-    const int result = solution.longestPalindromeSubseq(input);
-    std::cout << result << std::endl;
+    const auto result =
+        solution.kidsWithCandies(input.candies, input.extra_candies);
+    for (auto r : result) {
+      std::cout << r << ", ";
+    }
+    std::cout << std::endl;
   }
 }

@@ -3,35 +3,21 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn longest_palindrome_subseq(s: String) -> i32 {
-        let n = s.len();
-        let mut dp = vec![0; n];
-        let mut dp_prev = vec![0; n];
-
-        let bytes = s.as_bytes();
-
-        for i in (0..n).rev() {
-            dp[i] = 1;
-            for j in (i + 1)..n {
-                if bytes[i] == bytes[j] {
-                    dp[j] = dp_prev[j - 1] + 2;
-                } else {
-                    dp[j] = dp_prev[j].max(dp[j - 1]);
-                }
-            }
-
-            dp_prev = dp.clone();
-        }
-
-        return dp[n - 1];
+    pub fn kids_with_candies(candies: Vec<i32>, extra_candies: i32) -> Vec<bool> {
+        let max_candy = candies.iter().max().unwrap() - extra_candies;
+        return candies.iter().map(|&c| c >= max_candy).collect();
     }
 }
 
 fn main() {
-    let inputs = ["bbbab", "cbbd"];
+    let inputs = [
+        (vec![2, 3, 5, 1, 3], 3),
+        (vec![4, 2, 1, 1, 2], 1),
+        (vec![12, 1, 12], 10),
+    ];
 
-    for s in inputs {
-        let result = Solution::longest_palindrome_subseq(s.to_string());
-        println!("{result}");
+    for (candies, extra_candies) in inputs {
+        let result = Solution::kids_with_candies(candies, extra_candies);
+        println!("{result:?}");
     }
 }
