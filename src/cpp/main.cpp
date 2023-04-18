@@ -5,18 +5,26 @@
 
 class Solution {
 public:
-  std::vector<bool> kidsWithCandies(std::vector<int> &candies,
-                                    int extra_candies) {
-    int max_candy = -1;
-    for (auto candy : candies) {
-      max_candy = std::max(candy, max_candy);
-    }
-    max_candy -= extra_candies;
+  std::string mergeAlternately(std::string word1, std::string word2) {
+    const int len1 = word1.length();
+    const int len2 = word2.length();
+    const int maxlen = std::max(len1, len2);
+    const int rlen = len1 + len2;
+    std::string result;
+    result.reserve(rlen);
 
-    std::vector<bool> result;
-    result.reserve(candies.size());
-    for (auto candy : candies) {
-      result.push_back(candy >= max_candy);
+    auto iter1 = word1.begin();
+    auto iter2 = word2.begin();
+    for (int i = 0; i < maxlen; i += 1) {
+      if (iter1 != word1.end()) {
+        result.push_back(*iter1);
+        ++iter1;
+      }
+
+      if (iter2 != word2.end()) {
+        result.push_back(*iter2);
+        ++iter2;
+      }
     }
 
     return result;
@@ -24,24 +32,16 @@ public:
 };
 
 struct Input {
-  std::vector<int> candies;
-  const int extra_candies;
+  std::string word1;
+  std::string word2;
 };
 
 int main() {
-  const Input inputs[] = {
-      {.candies = std::vector<int>({2, 3, 5, 1, 3}), .extra_candies = 3},
-      {.candies = std::vector<int>({4, 2, 1, 1, 2}), .extra_candies = 1},
-      {.candies = std::vector<int>({12, 1, 12}), .extra_candies = 10},
-  };
+  const Input inputs[] = {{"abc", "pqr"}, {"ab", "pqrs"}, {"abcd", "pq"}};
 
   for (auto input : inputs) {
     Solution solution;
-    const auto result =
-        solution.kidsWithCandies(input.candies, input.extra_candies);
-    for (auto r : result) {
-      std::cout << r << ", ";
-    }
-    std::cout << std::endl;
+    const auto result = solution.mergeAlternately(input.word1, input.word2);
+    std::cout << result << std::endl;
   }
 }

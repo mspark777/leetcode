@@ -1,22 +1,23 @@
-from typing import List
-
-
 class Solution:
-    def kidsWithCandies(self, candies: List[int], extra_candies: int) -> List[bool]:
-        max_candy = max(candies) - extra_candies
-        return [candy >= max_candy for candy in candies]
+    def mergeAlternately(self, word1: str, word2: str) -> str:
+        result: list[str] = []
+
+        for i in range(max(len(word1), len(word2))):
+            if i < len(word1):
+                result.append(word1[i])
+
+            if i < len(word2):
+                result.append(word2[i])
+
+        return "".join(result)
 
 
 def main():
-    inputs: list[tuple[list[int], int]] = [
-        ([2, 3, 5, 1, 3], 3),
-        ([4, 2, 1, 1, 2], 1),
-        ([12, 1, 12], 10),
-    ]
+    inputs: list[tuple[str, str]] = [("abc", "pqr"), ("ab", "pqrs"), ("abcd", "pq")]
 
-    for candies, extra_candies in inputs:
+    for word1, word2 in inputs:
         solution = Solution()
-        result = solution.kidsWithCandies(candies, extra_candies)
+        result = solution.mergeAlternately(word1, word2)
         print(result)
 
 

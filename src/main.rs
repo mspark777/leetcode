@@ -3,21 +3,37 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn kids_with_candies(candies: Vec<i32>, extra_candies: i32) -> Vec<bool> {
-        let max_candy = candies.iter().max().unwrap() - extra_candies;
-        return candies.iter().map(|&c| c >= max_candy).collect();
+    pub fn merge_alternately(word1: String, word2: String) -> String {
+        let len1 = word1.len();
+        let len2 = word2.len();
+        let rlen = len1 + len2;
+        let maxlen = len1.max(len2);
+        let mut result = vec![0u8; rlen];
+        let mut pos = 0usize;
+        let bytes1 = word1.as_bytes();
+        let bytes2 = word2.as_bytes();
+
+        for i in 0..maxlen {
+            if i < len1 {
+                result[pos] = bytes1[i];
+                pos += 1;
+            }
+
+            if i < len2 {
+                result[pos] = bytes2[i];
+                pos += 1;
+            }
+        }
+
+        return String::from_utf8(result).unwrap();
     }
 }
 
 fn main() {
-    let inputs = [
-        (vec![2, 3, 5, 1, 3], 3),
-        (vec![4, 2, 1, 1, 2], 1),
-        (vec![12, 1, 12], 10),
-    ];
+    let inputs = [("abc", "pqr"), ("ab", "pqrs"), ("abcd", "pq")];
 
-    for (candies, extra_candies) in inputs {
-        let result = Solution::kids_with_candies(candies, extra_candies);
-        println!("{result:?}");
+    for (word1, word2) in inputs {
+        let result = Solution::merge_alternately(word1.to_string(), word2.to_string());
+        println!("{result}");
     }
 }

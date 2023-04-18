@@ -4,38 +4,41 @@ import (
 	"fmt"
 )
 
-func kidsWithCandies(candies []int, extraCandies int) []bool {
-	maxCandy := -1
-	for _, candy := range candies {
-		if candy > maxCandy {
-			maxCandy = candy
+func mergeAlternately(word1 string, word2 string) string {
+	len1 := len(word1)
+	len2 := len(word2)
+	rlen := len1 + len2
+	maxlen := len1
+	if len2 > len1 {
+		maxlen = len2
+	}
+
+	pos := 0
+	result := make([]byte, rlen)
+	for i := 0; i < maxlen; i += 1 {
+		if i < len1 {
+			result[pos] = word1[i]
+			pos += 1
+		}
+
+		if i < len2 {
+			result[pos] = word2[i]
+			pos += 1
 		}
 	}
 
-	maxCandy -= extraCandies
-
-	result := make([]bool, len(candies))
-	for i, candy := range candies {
-		result[i] = candy >= maxCandy
-	}
-
-	return result
-}
-
-type input struct {
-	candies      []int
-	extraCandies int
+	return string(result)
 }
 
 func main() {
-	inputs := []input{
-		{[]int{2, 3, 5, 1, 3}, 3},
-		{[]int{4, 2, 1, 1, 2}, 1},
-		{[]int{12, 1, 12}, 10},
+	inputs := [][]string{
+		{"abc", "pqr"},
+		{"ab", "pqrs"},
+		{"abcd", "pq"},
 	}
 
 	for _, input := range inputs {
-		result := kidsWithCandies(input.candies, input.extraCandies)
+		result := mergeAlternately(input[0], input[1])
 		fmt.Println(result)
 	}
 }
