@@ -1,23 +1,60 @@
+from typing import Optional
+
+from utils import TreeNode, new_tree_right, new_tree_node, new_tree_val
+
+
 class Solution:
-    def mergeAlternately(self, word1: str, word2: str) -> str:
-        result: list[str] = []
+    max_step: int
 
-        for i in range(max(len(word1), len(word2))):
-            if i < len(word1):
-                result.append(word1[i])
+    def __init__(self):
+        self.max_step = 0
 
-            if i < len(word2):
-                result.append(word2[i])
+    def dfs(self, node: Optional[TreeNode], left: bool, steps: int):
+        if node is None:
+            return
 
-        return "".join(result)
+        self.max_step = max(self.max_step, steps)
+        if left:
+            self.dfs(node.left, False, steps + 1)
+            self.dfs(node.right, True, 1)
+        else:
+            self.dfs(node.left, False, 1)
+            self.dfs(node.right, True, steps + 1)
+
+    def longestZigZag(self, root: Optional[TreeNode]) -> int:
+        self.dfs(root, True, 0)
+        self.dfs(root, False, 0)
+
+        return self.max_step
 
 
 def main():
-    inputs: list[tuple[str, str]] = [("abc", "pqr"), ("ab", "pqrs"), ("abcd", "pq")]
+    inputs: list[Optional[TreeNode]] = [
+        new_tree_right(
+            1,
+            new_tree_node(
+                1,
+                new_tree_val(1),
+                new_tree_node(
+                    1,
+                    new_tree_right(1, new_tree_right(1, new_tree_val(1))),
+                    new_tree_val(1),
+                ),
+            ),
+        ),
+        new_tree_node(
+            1,
+            new_tree_right(
+                1, new_tree_node(1, new_tree_right(1, new_tree_val(1)), new_tree_val(1))
+            ),
+            new_tree_val(1),
+        ),
+        new_tree_val(1),
+    ]
 
-    for word1, word2 in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.mergeAlternately(word1, word2)
+        result = solution.longestZigZag(root)
         print(result)
 
 

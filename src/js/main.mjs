@@ -1,38 +1,56 @@
-/**
-  * @param {string} word1
-  * @param {string} worl2
-  */
-function mergeAlternately (word1, word2) {
-  const rlen = word1.length + word2.length
-  const result = new Array(rlen)
-  let pos = 0
-  for (let i = 0; i < Math.max(word1.length, word2.length); i += 1) {
-    const ch1 = word1.charAt(i)
-    const ch2 = word2.charAt(i)
+import { newTreeNode, newTreeRight, newTreeVal, TreeNode, unused } from './utils.mjs'
+unused(TreeNode)
 
-    if (ch1 != null) {
-      result[pos] = ch1
-      pos += 1
-    }
-
-    if (ch2 != null) {
-      result[pos] = ch2
-      pos += 1
-    }
+class DFS {
+  /** @type {number} */
+  maxSteps
+  constructor () {
+    this.maxSteps = 0
   }
 
-  return result.join('')
+  /**
+    * @param {TreeNode | null} node
+    * @param {boolean} left
+    * @param {number} steps
+    * @returns {undefined}
+    */
+  dfs (node, left, steps) {
+    if (node == null) {
+      return
+    }
+
+    this.maxSteps = Math.max(this.maxSteps, steps)
+    if (left) {
+      this.dfs(node.left, false, steps + 1)
+      this.dfs(node.right, true, 1)
+    } else {
+      this.dfs(node.left, false, 1)
+      this.dfs(node.right, true, steps + 1)
+    }
+  }
+}
+
+/**
+  * @param {TreeNode | null} root
+  * @returns {number}
+  */
+function longestZigZag (root) {
+  const dfs = new DFS()
+  dfs.dfs(root, true, 0)
+  dfs.dfs(root, false, 0)
+
+  return dfs.maxSteps
 }
 
 async function main () {
   const inputs = [
-    ['abc', 'pqr'],
-    ['ab', 'pqrs'],
-    ['abcd', 'pq']
+    newTreeRight(1, newTreeNode(1, newTreeVal(1), newTreeNode(1, newTreeRight(1, newTreeRight(1, newTreeVal(1))), newTreeVal(1)))),
+    newTreeNode(1, newTreeRight(1, newTreeNode(1, newTreeRight(1, newTreeVal(1)), newTreeVal(1))), newTreeVal(1)),
+    newTreeVal(1)
   ]
 
-  for (const [word1, word2] of inputs) {
-    const result = mergeAlternately(word1, word2)
+  for (const root of inputs) {
+    const result = longestZigZag(root)
     console.log(result)
   }
 }

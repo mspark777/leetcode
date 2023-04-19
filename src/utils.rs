@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 pub struct Solution {}
 
 #[allow(dead_code)]
@@ -157,5 +159,36 @@ impl UnionFind {
             self.parents[yi] = xset;
             self.ranks[xi] += 1;
         }
+    }
+}
+
+#[allow(dead_code)]
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+#[allow(dead_code)]
+impl TreeNode {
+    pub fn new_node(
+        val: i32,
+        left: Option<Rc<RefCell<Self>>>,
+        right: Option<Rc<RefCell<Self>>>,
+    ) -> Option<Rc<RefCell<Self>>> {
+        return Some(Rc::new(RefCell::new(Self { val, left, right })));
+    }
+
+    pub fn new_left(val: i32, left: Option<Rc<RefCell<Self>>>) -> Option<Rc<RefCell<Self>>> {
+        return Self::new_node(val, left, None);
+    }
+
+    pub fn new_right(val: i32, right: Option<Rc<RefCell<Self>>>) -> Option<Rc<RefCell<Self>>> {
+        return Self::new_node(val, None, right);
+    }
+
+    pub fn new_val(val: i32) -> Option<Rc<RefCell<Self>>> {
+        return Self::new_node(val, None, None);
     }
 }

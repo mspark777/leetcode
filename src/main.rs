@@ -1,39 +1,67 @@
 mod utils;
 
-use utils::Solution;
+use utils::{Solution, TreeNode};
 
+use std::cell::RefCell;
+use std::rc::Rc;
 impl Solution {
-    pub fn merge_alternately(word1: String, word2: String) -> String {
-        let len1 = word1.len();
-        let len2 = word2.len();
-        let rlen = len1 + len2;
-        let maxlen = len1.max(len2);
-        let mut result = vec![0u8; rlen];
-        let mut pos = 0usize;
-        let bytes1 = word1.as_bytes();
-        let bytes2 = word2.as_bytes();
+    pub fn longest_zig_zag(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        let mut max_steps = 0;
+        Self::dfs(&root, true, 0, &mut max_steps);
+        Self::dfs(&root, false, 0, &mut max_steps);
 
-        for i in 0..maxlen {
-            if i < len1 {
-                result[pos] = bytes1[i];
-                pos += 1;
-            }
+        return max_steps;
+    }
 
-            if i < len2 {
-                result[pos] = bytes2[i];
-                pos += 1;
-            }
+    fn dfs(some_node: &Option<Rc<RefCell<TreeNode>>>, left: bool, steps: i32, max_steps: &mut i32) {
+        if some_node.is_none() {
+            return;
         }
 
-        return String::from_utf8(result).unwrap();
+        let node = some_node.as_ref().unwrap().borrow();
+        let max = *max_steps;
+        *max_steps = max.max(steps);
+        if left {
+            Self::dfs(&node.left, false, steps + 1, max_steps);
+            Self::dfs(&node.right, true, 1, max_steps);
+        } else {
+            Self::dfs(&node.left, false, 1, max_steps);
+            Self::dfs(&node.right, true, steps + 1, max_steps);
+        }
     }
 }
 
 fn main() {
-    let inputs = [("abc", "pqr"), ("ab", "pqrs"), ("abcd", "pq")];
+    let inputs = [
+        TreeNode::new_right(
+            1,
+            TreeNode::new_node(
+                1,
+                TreeNode::new_val(1),
+                TreeNode::new_node(
+                    1,
+                    TreeNode::new_right(1, TreeNode::new_right(1, TreeNode::new_val(1))),
+                    TreeNode::new_val(1),
+                ),
+            ),
+        ),
+        TreeNode::new_node(
+            1,
+            TreeNode::new_right(
+                1,
+                TreeNode::new_node(
+                    1,
+                    TreeNode::new_right(1, TreeNode::new_val(1)),
+                    TreeNode::new_val(1),
+                ),
+            ),
+            TreeNode::new_val(1),
+        ),
+        TreeNode::new_val(1),
+    ];
 
-    for (word1, word2) in inputs {
-        let result = Solution::merge_alternately(word1.to_string(), word2.to_string());
+    for root in inputs {
+        let result = Solution::longest_zig_zag(root);
         println!("{result}");
     }
 }
