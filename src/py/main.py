@@ -1,60 +1,55 @@
 from typing import Optional
 
-from utils import TreeNode, new_tree_right, new_tree_node, new_tree_val
+from utils import TreeNode, new_tree_right, new_tree_node, new_tree_val, new_tree_left
 
 
 class Solution:
-    max_step: int
+    def widthOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
 
-    def __init__(self):
-        self.max_step = 0
+        result = 1
+        queue: list[tuple[TreeNode, int]] = [(root, 0)]
+        while queue:
+            count = len(queue)
+            start = queue[0][1]
+            end = queue[-1][1]
+            result = max(result, end - start + 1)
 
-    def dfs(self, node: Optional[TreeNode], left: bool, steps: int):
-        if node is None:
-            return
+            for i in range(count):
+                node, node_idx = queue[i]
+                idx = node_idx - start
+                left = node.left
+                right = node.right
 
-        self.max_step = max(self.max_step, steps)
-        if left:
-            self.dfs(node.left, False, steps + 1)
-            self.dfs(node.right, True, 1)
-        else:
-            self.dfs(node.left, False, 1)
-            self.dfs(node.right, True, steps + 1)
+                if left is not None:
+                    queue.append((left, 2 * idx + 1))
 
-    def longestZigZag(self, root: Optional[TreeNode]) -> int:
-        self.dfs(root, True, 0)
-        self.dfs(root, False, 0)
+                if right is not None:
+                    queue.append((right, 2 * (idx + 1)))
+            queue = queue[count:]
 
-        return self.max_step
+        return result
 
 
 def main():
     inputs: list[Optional[TreeNode]] = [
-        new_tree_right(
+        new_tree_node(
             1,
-            new_tree_node(
-                1,
-                new_tree_val(1),
-                new_tree_node(
-                    1,
-                    new_tree_right(1, new_tree_right(1, new_tree_val(1))),
-                    new_tree_val(1),
-                ),
-            ),
+            new_tree_node(3, new_tree_val(5), new_tree_val(3)),
+            new_tree_right(2, new_tree_val(9)),
         ),
         new_tree_node(
             1,
-            new_tree_right(
-                1, new_tree_node(1, new_tree_right(1, new_tree_val(1)), new_tree_val(1))
-            ),
-            new_tree_val(1),
+            new_tree_left(3, new_tree_left(5, new_tree_val(6))),
+            new_tree_right(2, new_tree_left(9, new_tree_val(7))),
         ),
-        new_tree_val(1),
+        new_tree_node(1, new_tree_left(3, new_tree_val(5)), new_tree_val(2)),
     ]
 
     for root in inputs:
         solution = Solution()
-        result = solution.longestZigZag(root)
+        result = solution.widthOfBinaryTree(root)
         print(result)
 
 

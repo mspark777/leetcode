@@ -1,44 +1,47 @@
-import { newTreeNode, newTreeRight, newTreeVal, type TreeNode } from './utils'
+import { newTreeLeft, newTreeNode, newTreeRight, newTreeVal, type TreeNode } from './utils'
 
-class DFS {
-  public maxSteps: number
-  public constructor () {
-    this.maxSteps = 0
+function widthOfBinaryTree (root: TreeNode | null): number {
+  if (root == null) {
+    return 0
   }
 
-  public dfs (node: TreeNode | null, left: boolean, steps: number): void {
-    if (node == null) {
-      return
+  let result = 1
+  let queue: Array<[TreeNode, bigint]> = [[root, 0n]]
+  while (queue.length > 0) {
+    const count = queue.length
+    const start = queue[0][1]
+    const end = queue[count - 1][1]
+    result = Math.max(result, Number(end - start + 1n))
+    for (let i = 0; i < count; i += 1) {
+      const [node, nodeIdx] = queue[i]
+      const idx = nodeIdx - start
+      const left = node.left
+      const right = node.right
+
+      if (left != null) {
+        queue.push([left, 2n * idx + 1n])
+      }
+
+      if (right != null) {
+        queue.push([right, 2n * (idx + 1n)])
+      }
     }
 
-    this.maxSteps = Math.max(this.maxSteps, steps)
-    if (left) {
-      this.dfs(node.left, false, steps + 1)
-      this.dfs(node.right, true, 1)
-    } else {
-      this.dfs(node.left, false, 1)
-      this.dfs(node.right, true, steps + 1)
-    }
+    queue = queue.slice(count)
   }
-}
 
-function longestZigZag (root: TreeNode | null): number {
-  const dfs = new DFS()
-  dfs.dfs(root, true, 0)
-  dfs.dfs(root, false, 0)
-
-  return dfs.maxSteps
+  return result
 }
 
 async function main (): Promise<void> {
   const inputs: Array<TreeNode | null> = [
-    newTreeRight(1, newTreeNode(1, newTreeVal(1), newTreeNode(1, newTreeRight(1, newTreeRight(1, newTreeVal(1))), newTreeVal(1)))),
-    newTreeNode(1, newTreeRight(1, newTreeNode(1, newTreeRight(1, newTreeVal(1)), newTreeVal(1))), newTreeVal(1)),
-    newTreeVal(1)
+    newTreeNode(1, newTreeNode(3, newTreeVal(5), newTreeVal(3)), newTreeRight(2, newTreeVal(9))),
+    newTreeNode(1, newTreeLeft(3, newTreeLeft(5, newTreeVal(6))), newTreeRight(2, newTreeLeft(9, newTreeVal(7)))),
+    newTreeNode(1, newTreeLeft(3, newTreeVal(5)), newTreeVal(2))
   ]
 
   for (const root of inputs) {
-    const result = longestZigZag(root)
+    const result = widthOfBinaryTree(root)
     console.log(result)
   }
 }
