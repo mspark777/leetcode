@@ -1,47 +1,48 @@
-import { newTreeLeft, newTreeNode, newTreeRight, newTreeVal, type TreeNode } from './utils'
-
-function widthOfBinaryTree (root: TreeNode | null): number {
-  if (root == null) {
-    return 0
+function profitableSchemes (n: number, minProfit: number, group: number[], profits: number[]): number {
+  const MOD = 1000000007
+  const MAXN = 101
+  const dp: number[][][] = new Array(MAXN)
+  for (let i = 0; i < MAXN; i += 1) {
+    dp[i] = new Array(MAXN)
+    for (let j = 0; j < MAXN; j += 1) {
+      dp[i][j] = new Array(MAXN).fill(0)
+    }
   }
 
-  let result = 1
-  let queue: Array<[TreeNode, bigint]> = [[root, 0n]]
-  while (queue.length > 0) {
-    const count = queue.length
-    const start = queue[0][1]
-    const end = queue[count - 1][1]
-    result = Math.max(result, Number(end - start + 1n))
-    for (let i = 0; i < count; i += 1) {
-      const [node, nodeIdx] = queue[i]
-      const idx = nodeIdx - start
-      const left = node.left
-      const right = node.right
+  for (let count = 0; count <= n; count++) {
+    dp[group.length][count][minProfit] = 1
+  }
 
-      if (left != null) {
-        queue.push([left, 2n * idx + 1n])
-      }
-
-      if (right != null) {
-        queue.push([right, 2n * (idx + 1n)])
+  for (let index = group.length - 1; index >= 0; index -= 1) {
+    for (let count = 0; count <= n; count += 1) {
+      for (let profit = 0; profit <= minProfit; profit += 1) {
+        dp[index][count][profit] = dp[index + 1][count][profit]
+        if (count + group[index] <= n) {
+          dp[index][count][profit] =
+            (dp[index][count][profit] + dp[index + 1][count + group[index]][Math.min(minProfit, profit + profits[index])]) % MOD
+        }
       }
     }
-
-    queue = queue.slice(count)
   }
 
-  return result
+  return dp[0][0][0]
+}
+
+interface Input {
+  readonly n: number
+  readonly minProfit: number
+  readonly group: number[]
+  readonly profit: number[]
 }
 
 async function main (): Promise<void> {
-  const inputs: Array<TreeNode | null> = [
-    newTreeNode(1, newTreeNode(3, newTreeVal(5), newTreeVal(3)), newTreeRight(2, newTreeVal(9))),
-    newTreeNode(1, newTreeLeft(3, newTreeLeft(5, newTreeVal(6))), newTreeRight(2, newTreeLeft(9, newTreeVal(7)))),
-    newTreeNode(1, newTreeLeft(3, newTreeVal(5)), newTreeVal(2))
+  const inputs: Input[] = [
+    { n: 5, minProfit: 3, group: [2, 2], profit: [2, 3] },
+    { n: 10, minProfit: 5, group: [2, 3, 5], profit: [6, 7, 8] }
   ]
 
-  for (const root of inputs) {
-    const result = widthOfBinaryTree(root)
+  for (const { n, minProfit, group, profit } of inputs) {
+    const result = profitableSchemes(n, minProfit, group, profit)
     console.log(result)
   }
 }
