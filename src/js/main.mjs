@@ -1,55 +1,58 @@
-import { newTreeLeft, newTreeNode, newTreeRight, newTreeVal, TreeNode, unused } from './utils.mjs'
-unused(TreeNode)
-
-/**
-  * @param {TreeNode | null} root
-  * @returns {number}
-  */
-function widthOfBinaryTree (root) {
-  if (root == null) {
-    return 0
+class SmallestInfiniteSet {
+  /** @type {number} */
+  #current
+  /** @type {Set<number>} */
+  #set
+  constructor () {
+    this.#current = 1
+    this.#set = new Set()
   }
 
-  let result = 1
-  /** @type {Array<[TreeNode, bigint]>} */
-  let queue = [[root, 0n]]
-  while (queue.length > 0) {
-    const count = queue.length
-    const start = queue[0][1]
-    const end = queue[count - 1][1]
-    result = Math.max(result, Number(end - start + 1n))
-    for (let i = 0; i < count; i += 1) {
-      const [node, nodeIdx] = queue[i]
-      const idx = nodeIdx - start
-      const left = node.left
-      const right = node.right
+  /**
+    * @returns {number}
+    */
+  popSmallest () {
+    if (this.#set.size < 1) {
+      const result = this.#current
+      this.#current += 1
 
-      if (left != null) {
-        queue.push([left, 2n * idx + 1n])
-      }
-
-      if (right != null) {
-        queue.push([right, 2n * (idx + 1n)])
-      }
+      return result
     }
 
-    queue = queue.slice(count)
+    let result = Number.MAX_SAFE_INTEGER
+    for (const num of this.#set) {
+      result = Math.min(result, num)
+    }
+
+    this.#set.delete(result)
+    return result
   }
 
-  return result
+  /**
+    * @param {number} num
+    * @returns {undefined}
+    */
+  addBack (num) {
+    if (this.#current <= num) {
+      return
+    } else if (this.#set.has(num)) {
+      return
+    }
+
+    this.#set.add(num)
+  }
 }
 
 async function main () {
-  const inputs = [
-    newTreeNode(1, newTreeNode(3, newTreeVal(5), newTreeVal(3)), newTreeRight(2, newTreeVal(9))),
-    newTreeNode(1, newTreeLeft(3, newTreeLeft(5, newTreeVal(6))), newTreeRight(2, newTreeLeft(9, newTreeVal(7)))),
-    newTreeNode(1, newTreeLeft(3, newTreeVal(5)), newTreeVal(2))
-  ]
-
-  for (const root of inputs) {
-    const result = widthOfBinaryTree(root)
-    console.log(result)
-  }
+  const smallestInfiniteSet = new SmallestInfiniteSet()
+  smallestInfiniteSet.addBack(2)
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
+  smallestInfiniteSet.addBack(1)
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
 }
 
 main()

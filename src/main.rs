@@ -1,34 +1,57 @@
 mod utils;
 
-use std::collections::BinaryHeap;
+use std::{
+    cmp::Reverse,
+    collections::{BinaryHeap, HashSet},
+};
 
-use utils::Solution;
+struct SmallestInfiniteSet {
+    current: i32,
+    memo: HashSet<i32>,
+    queue: BinaryHeap<Reverse<i32>>,
+}
 
-impl Solution {
-    pub fn last_stone_weight(stones: Vec<i32>) -> i32 {
-        let mut queue = BinaryHeap::<i32>::with_capacity(stones.len());
+impl SmallestInfiniteSet {
+    fn new() -> Self {
+        return Self {
+            current: 1,
+            memo: HashSet::new(),
+            queue: BinaryHeap::new(),
+        };
+    }
 
-        for &s in stones.iter() {
-            queue.push(s);
+    fn pop_smallest(&mut self) -> i32 {
+        if self.queue.is_empty() {
+            let result = self.current;
+            self.current += 1;
+            return result;
         }
 
-        while let Some(y) = queue.pop() {
-            if let Some(x) = queue.pop() {
-                queue.push(y - x);
-            } else {
-                return y;
-            }
+        let result = self.queue.pop().unwrap().0;
+        self.memo.remove(&result);
+        return result;
+    }
+
+    fn add_back(&mut self, num: i32) {
+        if self.current <= num {
+            return;
+        } else if self.memo.contains(&num) {
+            return;
         }
 
-        return 0;
+        self.memo.insert(num);
+        self.queue.push(Reverse(num))
     }
 }
 
 fn main() {
-    let inputs = [vec![2, 7, 4, 1, 8, 1], vec![1]];
-
-    for stones in inputs {
-        let result = Solution::last_stone_weight(stones);
-        println!("{result}");
-    }
+    let mut smallest_infinite_set = SmallestInfiniteSet::new();
+    smallest_infinite_set.add_back(2);
+    println!("{}", smallest_infinite_set.pop_smallest());
+    println!("{}", smallest_infinite_set.pop_smallest());
+    println!("{}", smallest_infinite_set.pop_smallest());
+    smallest_infinite_set.add_back(1);
+    println!("{}", smallest_infinite_set.pop_smallest());
+    println!("{}", smallest_infinite_set.pop_smallest());
+    println!("{}", smallest_infinite_set.pop_smallest());
 }

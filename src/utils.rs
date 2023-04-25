@@ -1,5 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
+#[allow(dead_code)]
 pub struct Solution {}
 
 #[allow(dead_code)]

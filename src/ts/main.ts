@@ -1,50 +1,49 @@
-function profitableSchemes (n: number, minProfit: number, group: number[], profits: number[]): number {
-  const MOD = 1000000007
-  const MAXN = 101
-  const dp: number[][][] = new Array(MAXN)
-  for (let i = 0; i < MAXN; i += 1) {
-    dp[i] = new Array(MAXN)
-    for (let j = 0; j < MAXN; j += 1) {
-      dp[i][j] = new Array(MAXN).fill(0)
+class SmallestInfiniteSet {
+  private current: number
+  private readonly set: Set<number>
+  public constructor () {
+    this.current = 1
+    this.set = new Set()
+  }
+
+  public popSmallest (): number {
+    if (this.set.size < 1) {
+      const result = this.current
+      this.current += 1
+
+      return result
     }
-  }
 
-  for (let count = 0; count <= n; count++) {
-    dp[group.length][count][minProfit] = 1
-  }
-
-  for (let index = group.length - 1; index >= 0; index -= 1) {
-    for (let count = 0; count <= n; count += 1) {
-      for (let profit = 0; profit <= minProfit; profit += 1) {
-        dp[index][count][profit] = dp[index + 1][count][profit]
-        if (count + group[index] <= n) {
-          dp[index][count][profit] =
-            (dp[index][count][profit] + dp[index + 1][count + group[index]][Math.min(minProfit, profit + profits[index])]) % MOD
-        }
-      }
+    let result = Number.MAX_SAFE_INTEGER
+    for (const num of this.set) {
+      result = Math.min(result, num)
     }
+
+    this.set.delete(result)
+    return result
   }
 
-  return dp[0][0][0]
-}
+  public addBack (num: number): void {
+    if (this.current <= num) {
+      return
+    } else if (this.set.has(num)) {
+      return
+    }
 
-interface Input {
-  readonly n: number
-  readonly minProfit: number
-  readonly group: number[]
-  readonly profit: number[]
+    this.set.add(num)
+  }
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { n: 5, minProfit: 3, group: [2, 2], profit: [2, 3] },
-    { n: 10, minProfit: 5, group: [2, 3, 5], profit: [6, 7, 8] }
-  ]
-
-  for (const { n, minProfit, group, profit } of inputs) {
-    const result = profitableSchemes(n, minProfit, group, profit)
-    console.log(result)
-  }
+  const smallestInfiniteSet = new SmallestInfiniteSet()
+  smallestInfiniteSet.addBack(2)
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
+  smallestInfiniteSet.addBack(1)
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
+  console.log(smallestInfiniteSet.popSmallest())
 }
 
 main()

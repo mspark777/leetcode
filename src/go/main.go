@@ -4,60 +4,54 @@ import (
 	"fmt"
 )
 
-type queueNode struct {
-	node  *TreeNode
-	index int
+type SmallestInfiniteSet struct {
+	current int
+	memo    map[int]bool
 }
 
-func widthOfBinaryTree(root *TreeNode) int {
-	if root == nil {
-		return 0
+func Constructor() SmallestInfiniteSet {
+	return SmallestInfiniteSet{
+		current: 1,
+		memo:    map[int]bool{},
+	}
+}
+
+func (this *SmallestInfiniteSet) PopSmallest() int {
+	if len(this.memo) < 1 {
+		result := this.current
+		this.current += 1
+		return result
 	}
 
-	result := 1
-	queue := []*queueNode{{root, 0}}
-
-	for len(queue) > 0 {
-		count := len(queue)
-		start := queue[0].index
-		end := queue[count-1].index
-		current := end - start + 1
-		if current > result {
-			result = current
+	result := int((^uint(0)) >> 1)
+	for num := range this.memo {
+		if num < result {
+			result = num
 		}
-
-		for i := 0; i < count; i += 1 {
-			qnode := queue[i]
-			node := qnode.node
-			nodeIdx := qnode.index
-			idx := nodeIdx - start
-			left := node.Left
-			right := node.Right
-
-			if left != nil {
-				queue = append(queue, &queueNode{left, 2*idx + 1})
-			}
-
-			if right != nil {
-				queue = append(queue, &queueNode{right, 2 * (idx + 1)})
-			}
-		}
-
-		queue = queue[count:]
 	}
 
+	delete(this.memo, result)
 	return result
 }
 
-func main() {
-	inputs := []*TreeNode{
-		newTreeNode(1, newTreeNode(3, newTreeVal(5), newTreeVal(3)), newTreeRight(2, newTreeVal(9))),
-		newTreeNode(1, newTreeLeft(3, newTreeLeft(5, newTreeVal(6))), newTreeRight(2, newTreeLeft(9, newTreeVal(7)))),
-		newTreeNode(1, newTreeLeft(3, newTreeVal(5)), newTreeVal(2)),
+func (this *SmallestInfiniteSet) AddBack(num int) {
+	if this.current <= num {
+		return
+	} else if _, ok := this.memo[num]; ok {
+		return
 	}
 
-	for _, root := range inputs {
-		result := widthOfBinaryTree(root)
-		fmt.Println(result)
-	}
+	this.memo[num] = true
+}
+
+func main() {
+	smallestInfiniteSet := Constructor()
+	smallestInfiniteSet.AddBack(2)
+	fmt.Println(smallestInfiniteSet.PopSmallest())
+	fmt.Println(smallestInfiniteSet.PopSmallest())
+	fmt.Println(smallestInfiniteSet.PopSmallest())
+	smallestInfiniteSet.AddBack(1)
+	fmt.Println(smallestInfiniteSet.PopSmallest())
+	fmt.Println(smallestInfiniteSet.PopSmallest())
+	fmt.Println(smallestInfiniteSet.PopSmallest())
 }
