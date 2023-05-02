@@ -4,50 +4,35 @@ import (
 	"fmt"
 )
 
-func isSimilar(a, b string) bool {
-	diff := 0
+func arraySign(nums []int) int {
+	result := 1
+	for _, num := range nums {
+		if num == 0 {
+			return 0
+		}
 
-	for i, ca := range a {
-		cb := rune(b[i])
-		if ca != cb {
-			diff += 1
+		if num < 0 {
+			result *= -1
 		}
 	}
 
-	return (diff == 0) || (diff == 2)
-}
-
-func numSimilarGroups(strs []string) int {
-	strsLen := len(strs)
-	uf := UnionFindConstructor(strsLen)
-	result := strsLen
-
-	for i := 0; i < strsLen; i += 1 {
-		a := strs[i]
-		for j := i + 1; j < strsLen; j += 1 {
-			b := strs[j]
-			if !isSimilar(a, b) {
-				continue
-			}
-
-			if uf.Find(i) != uf.Find(j) {
-				result -= 1
-				uf.Union(i, j)
-			}
-		}
+	if result < 0 {
+		return -1
 	}
 
-	return result
+	return 1
 }
 
 func main() {
-	inputs := [][]string{
-		{"tars", "rats", "arts", "star"},
-		{"omv", "ovm"},
+	inputs := [][]int{
+		{-1, -2, -3, -4, 3, 2, 1},
+		{1, 5, 0, 2, -3},
+		{-1, 1, -1, 1, -1},
+		{9, 72, 34, 29, -49, -22, -77, -17, -66, -75, -44, -30, -24},
 	}
 
-	for _, strs := range inputs {
-		result := numSimilarGroups(strs)
+	for _, nums := range inputs {
+		result := arraySign(nums)
 		fmt.Println(result)
 	}
 }

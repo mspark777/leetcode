@@ -1,42 +1,24 @@
 from typing import List
-
-from utils import UnionFind
+from functools import reduce
 
 
 class Solution:
-    def numSimilarGroups(self, strs: List[str]) -> int:
-        strs_len = len(strs)
-        result = strs_len
-        uf = UnionFind(strs_len)
-        for i in range(strs_len):
-            a = strs[i]
-            for j in range(i + 1, strs_len):
-                b = strs[j]
-                if not self.is_similar(a, b):
-                    continue
+    def arraySign(self, nums: List[int]) -> int:
+        result = reduce(lambda a, b: a * b, nums)
+        if result < 0:
+            return -1
+        elif result > 0:
+            return 1
 
-                if uf.find(i) != uf.find(j):
-                    result -= 1
-                    uf.union(i, j)
-
-        return result
-
-    def is_similar(self, a: str, b: str) -> bool:
-        diff = 0
-
-        for ca, cb in zip(a, b):
-            if ca != cb:
-                diff += 1
-
-        return diff in [0, 2]
+        return 0
 
 
 def main():
-    inputs = [["tars", "rats", "arts", "star"], ["omv", "ovm"]]
+    inputs = [[-1, -2, -3, -4, 3, 2, 1], [1, 5, 0, 2, -3], [-1, 1, -1, 1, -1]]
 
-    for strs in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.numSimilarGroups(strs)
+        result = solution.arraySign(nums)
         print(result)
 
 

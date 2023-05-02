@@ -1,53 +1,34 @@
-use utils::{Solution, UnionFind};
-
 mod utils;
 
+use utils::Solution;
+
 impl Solution {
-    pub fn num_similar_groups(strs: Vec<String>) -> i32 {
-        let mut result = strs.len() as i32;
-        let mut uf = UnionFind::new(result);
+    pub fn array_sign(nums: Vec<i32>) -> i32 {
+        let mut sign = 0;
+        for &num in nums.iter() {
+            if num == 0 {
+                return 0;
+            }
 
-        for (i, a) in strs.iter().enumerate() {
-            for (j, b) in strs.iter().skip(i + 1).enumerate() {
-                if !Self::is_similar(a, b) {
-                    continue;
-                }
-
-                let x = i as i32;
-                let y = (i + j + 1) as i32;
-                if uf.find(x) != uf.find(y) {
-                    result -= 1;
-                    uf.union(x, y);
-                }
+            if num < 0 {
+                sign ^= 1;
             }
         }
 
-        return result;
-    }
-
-    fn is_similar(a: &String, b: &String) -> bool {
-        let mut diff = 0;
-        let abytes = a.as_bytes();
-        let bbytes = b.as_bytes();
-
-        for i in 0..abytes.len() {
-            if abytes[i] != bbytes[i] {
-                diff += 1;
-            }
-        }
-
-        return match diff {
-            0 | 2 => true,
-            _ => false,
-        };
+        return if sign == 0 { 1 } else { -1 };
     }
 }
 
 fn main() {
-    let inputs = [vec!["tars", "rats", "arts", "star"], vec!["omv", "ovm"]];
+    let inputs = [
+        vec![-1, -2, -3, -4, 3, 2, 1],
+        vec![1, 5, 0, 2, -3],
+        vec![-1, 1, -1, 1, -1],
+        vec![9, 72, 34, 29, -49, -22, -77, -17, -66, -75, -44, -30, -24],
+    ];
 
-    for strs in inputs {
-        let result = Solution::num_similar_groups(strs.iter().map(|s| s.to_string()).collect());
+    for nums in inputs {
+        let result = Solution::array_sign(nums);
         println!("{result}");
     }
 }
