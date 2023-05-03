@@ -1,23 +1,21 @@
-function arraySign (nums: number[]): number {
-  const result = nums.reduce((acc, cur) => acc * cur)
-  if (result < 0) {
-    return -1
-  } else if (result > 0) {
-    return 1
-  }
+function filter (nums1: number[], nums2: number[]): number[] {
+  const set1 = new Set<number>(nums2)
+  const set2 = new Set(nums1.filter(n => !set1.has(n)))
+  return [...set2]
+}
 
-  return 0
+function findDifference (nums1: number[], nums2: number[]): number[][] {
+  return [filter(nums1, nums2), filter(nums2, nums1)]
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][] = [
-    [-1, -2, -3, -4, 3, 2, 1],
-    [1, 5, 0, 2, -3],
-    [-1, 1, -1, 1, -1]
+  const inputs: number[][][] = [
+    [[1, 2, 3], [2, 4, 6]],
+    [[1, 2, 3, 3], [1, 1, 2, 2]]
   ]
 
-  for (const nums of inputs) {
-    const result = arraySign(nums)
+  for (const [nums1, nums2] of inputs) {
+    const result = findDifference(nums1, nums2)
     console.log(result)
   }
 }

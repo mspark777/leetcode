@@ -1,24 +1,22 @@
 from typing import List
-from functools import reduce
 
 
 class Solution:
-    def arraySign(self, nums: List[int]) -> int:
-        result = reduce(lambda a, b: a * b, nums)
-        if result < 0:
-            return -1
-        elif result > 0:
-            return 1
+    def findDifference(self, nums1: List[int], nums2: List[int]) -> List[List[int]]:
+        return [self.filter(nums1, nums2), self.filter(nums2, nums1)]
 
-        return 0
+    def filter(self, nums1: list[int], nums2: list[int]) -> list[int]:
+        set1 = set(nums2)
+        set2 = set([num for num in nums1 if not num in set1])
+        return list(set2)
 
 
 def main():
-    inputs = [[-1, -2, -3, -4, 3, 2, 1], [1, 5, 0, 2, -3], [-1, 1, -1, 1, -1]]
+    inputs = [([1, 2, 3], [2, 4, 6]), ([1, 2, 3, 3], [1, 1, 2, 2])]
 
-    for nums in inputs:
+    for nums1, nums2 in inputs:
         solution = Solution()
-        result = solution.arraySign(nums)
+        result = solution.findDifference(nums1, nums2)
         print(result)
 
 

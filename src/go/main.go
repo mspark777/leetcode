@@ -4,35 +4,42 @@ import (
 	"fmt"
 )
 
-func arraySign(nums []int) int {
-	result := 1
-	for _, num := range nums {
-		if num == 0 {
-			return 0
-		}
+func filter(nums1, nums2 []int) []int {
+	set1 := make(map[int]bool, len(nums2))
+	for _, num := range nums2 {
+		set1[num] = true
+	}
 
-		if num < 0 {
-			result *= -1
+	set2 := map[int]bool{}
+	for _, num := range nums1 {
+		if _, ok := set1[num]; !ok {
+			set2[num] = true
 		}
 	}
 
-	if result < 0 {
-		return -1
+	result := make([]int, 0, len(set2))
+	for num := range set2 {
+		result = append(result, num)
 	}
 
-	return 1
+	return result
+}
+
+func findDifference(nums1, nums2 []int) [][]int {
+	return [][]int{
+		filter(nums1, nums2),
+		filter(nums2, nums1),
+	}
 }
 
 func main() {
-	inputs := [][]int{
-		{-1, -2, -3, -4, 3, 2, 1},
-		{1, 5, 0, 2, -3},
-		{-1, 1, -1, 1, -1},
-		{9, 72, 34, 29, -49, -22, -77, -17, -66, -75, -44, -30, -24},
+	inputs := [][][]int{
+		{{1, 2, 3}, {2, 4, 6}},
+		{{1, 2, 3, 3}, {1, 1, 2, 2}},
 	}
 
-	for _, nums := range inputs {
-		result := arraySign(nums)
+	for _, input := range inputs {
+		result := findDifference(input[0], input[1])
 		fmt.Println(result)
 	}
 }
