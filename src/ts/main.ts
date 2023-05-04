@@ -1,21 +1,53 @@
-function filter (nums1: number[], nums2: number[]): number[] {
-  const set1 = new Set<number>(nums2)
-  const set2 = new Set(nums1.filter(n => !set1.has(n)))
-  return [...set2]
-}
+function predictPartyVictory (senate: string): string {
+  const R = 'R'
+  const D = 'D'
+  let rcount = 0
+  let dcount = 0
+  let dfloating = 0
+  let rfloating = 0
 
-function findDifference (nums1: number[], nums2: number[]): number[][] {
-  return [filter(nums1, nums2), filter(nums2, nums1)]
+  const queue = senate.split('')
+  for (const c of queue) {
+    if (c === R) {
+      rcount += 1
+    } else {
+      dcount += 1
+    }
+  }
+
+  while ((rcount > 0) && (dcount > 0)) {
+    const curr = queue.shift()
+
+    if (curr === D) {
+      if (dfloating > 0) {
+        dfloating -= 1
+        dcount -= 1
+      } else {
+        rfloating += 1
+        queue.push(D)
+      }
+    } else {
+      if (rfloating > 0) {
+        rfloating -= 1
+        rcount -= 1
+      } else {
+        dfloating += 1
+        queue.push(R)
+      }
+    }
+  }
+
+  return rcount > 0 ? 'Radiant' : 'Dire'
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][][] = [
-    [[1, 2, 3], [2, 4, 6]],
-    [[1, 2, 3, 3], [1, 1, 2, 2]]
+  const inputs: string[] = [
+    'RD',
+    'RDD'
   ]
 
-  for (const [nums1, nums2] of inputs) {
-    const result = findDifference(nums1, nums2)
+  for (const senate of inputs) {
+    const result = predictPartyVictory(senate)
     console.log(result)
   }
 }

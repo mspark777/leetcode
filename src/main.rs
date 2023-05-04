@@ -1,30 +1,58 @@
 mod utils;
 
-use std::collections::HashSet;
-use std::iter::FromIterator;
+use std::{collections::VecDeque, iter::FromIterator};
 use utils::Solution;
 
 impl Solution {
-    pub fn find_difference(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<Vec<i32>> {
-        return vec![Self::filter(&nums1, &nums2), Self::filter(&nums2, &nums1)];
-    }
+    pub fn predict_party_victory(senate: String) -> String {
+        const R: u8 = b'R';
+        const D: u8 = b'D';
+        let mut rcount = 0;
+        let mut dcount = 0;
+        let mut dfloating = 0;
+        let mut rfloating = 0;
 
-    fn filter(nums1: &Vec<i32>, nums2: &Vec<i32>) -> Vec<i32> {
-        let set1 = HashSet::<i32>::from_iter(nums2.iter().cloned());
-        let set2 = HashSet::<i32>::from_iter(nums1.iter().filter(|n| !set1.contains(n)).cloned());
+        let mut queue = VecDeque::from_iter(senate.as_bytes().iter().cloned());
+        for &c in queue.iter() {
+            if c == R {
+                rcount += 1;
+            } else {
+                dcount += 1;
+            }
+        }
 
-        return set2.iter().cloned().collect();
+        while (rcount > 0) && (dcount > 0) {
+            let curr = queue.pop_front().unwrap();
+
+            if curr == D {
+                if dfloating > 0 {
+                    dfloating -= 1;
+                    dcount -= 1;
+                } else {
+                    rfloating += 1;
+                    queue.push_back(D);
+                }
+            } else {
+                if rfloating > 0 {
+                    rfloating -= 1;
+                    rcount -= 1;
+                } else {
+                    dfloating += 1;
+                    queue.push_back(R);
+                }
+            }
+        }
+
+        let result = if rcount > 0 { "Radiant" } else { "Dire" };
+        return result.to_string();
     }
 }
 
 fn main() {
-    let inputs = [
-        (vec![1, 2, 3], vec![2, 4, 6]),
-        (vec![1, 2, 3, 3], vec![1, 1, 2, 2]),
-    ];
+    let inputs = ["RD", "RDD"];
 
-    for (nums1, nums2) in inputs {
-        let result = Solution::find_difference(nums1, nums2);
-        println!("{result:?}");
+    for senate in inputs {
+        let result = Solution::predict_party_victory(senate.to_string());
+        println!("{result}");
     }
 }
