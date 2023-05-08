@@ -4,60 +4,41 @@ import (
 	"fmt"
 )
 
-func predictPartyVictory(senate string) string {
-	const R rune = 'R'
-	const D rune = 'D'
-	rcount := 0
-	dcount := 0
-	dfloating := 0
-	rfloating := 0
-
-	queue := []rune(senate)
-	for _, c := range queue {
-		if c == R {
-			rcount += 1
-		} else {
-			dcount += 1
-		}
+func diagonalSum(mat [][]int) int {
+	result := 0
+	for left := 0; left < len(mat); left += 1 {
+		right := len(mat) - (left + 1)
+		result += mat[left][left] + mat[right][left]
 	}
 
-	for (rcount > 0) && (dcount > 0) {
-		curr := queue[0]
-		queue = queue[1:]
-		if curr == D {
-			if dfloating > 0 {
-				dfloating -= 1
-				dcount -= 1
-			} else {
-				rfloating += 1
-				queue = append(queue, D)
-			}
-		} else {
-			if rfloating > 0 {
-				rfloating -= 1
-				rcount -= 1
-			} else {
-				dfloating += 1
-				queue = append(queue, R)
-			}
-		}
+	if (len(mat) & 1) == 1 {
+		m := len(mat) / 2
+		result -= mat[m][m]
 	}
 
-	if rcount > 0 {
-		return "Radiant"
-	}
-
-	return "Dire"
+	return result
 }
 
 func main() {
-	inputs := []string{
-		"RD",
-		"RDD",
+	inputs := [][][]int{
+		{
+			{1, 2, 3},
+			{4, 5, 6},
+			{7, 8, 9},
+		},
+		{
+			{1, 1, 1, 1},
+			{1, 1, 1, 1},
+			{1, 1, 1, 1},
+			{1, 1, 1, 1},
+		},
+		{
+			{5},
+		},
 	}
 
-	for _, senate := range inputs {
-		result := predictPartyVictory(senate)
+	for _, mat := range inputs {
+		result := diagonalSum(mat)
 		fmt.Println(result)
 	}
 }

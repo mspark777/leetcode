@@ -1,46 +1,30 @@
+from typing import List
+
+
 class Solution:
-    def predictPartyVictory(self, senate: str) -> str:
-        R = "R"
-        D = "D"
-        rcount = 0
-        dcount = 0
-        rfloating = 0
-        dfloating = 0
+    def diagonalSum(self, mat: List[List[int]]) -> int:
+        result = 0
+        for left in range(len(mat)):
+            right = len(mat) - (left + 1)
+            result += mat[left][left] + mat[right][left]
 
-        queue = list(senate)
-        for c in queue:
-            if c == R:
-                rcount += 1
-            else:
-                dcount += 1
+        if (len(mat) & 1) == 1:
+            m = len(mat) // 2
+            result -= mat[m][m]
 
-        while (rcount > 0) and (dcount > 0):
-            curr = queue.pop(0)
-
-            if curr == D:
-                if dfloating > 0:
-                    dfloating -= 1
-                    dcount -= 1
-                else:
-                    rfloating += 1
-                    queue.append(D)
-            else:
-                if rfloating > 0:
-                    rfloating -= 1
-                    rcount -= 1
-                else:
-                    dfloating += 1
-                    queue.append(R)
-
-        return "Radiant" if rcount > 0 else "Dire"
+        return result
 
 
 def main():
-    inputs = ["RD", "RDD"]
+    inputs = [
+        [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+        [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+        [[5]],
+    ]
 
-    for senate in inputs:
+    for mat in inputs:
         solution = Solution()
-        result = solution.predictPartyVictory(senate)
+        result = solution.diagonalSum(mat)
         print(result)
 
 

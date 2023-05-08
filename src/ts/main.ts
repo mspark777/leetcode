@@ -1,53 +1,38 @@
-function predictPartyVictory (senate: string): string {
-  const R = 'R'
-  const D = 'D'
-  let rcount = 0
-  let dcount = 0
-  let dfloating = 0
-  let rfloating = 0
-
-  const queue = senate.split('')
-  for (const c of queue) {
-    if (c === R) {
-      rcount += 1
-    } else {
-      dcount += 1
-    }
+function diagonalSum (mat: number[][]): number {
+  let result = 0
+  for (let left = 0; left < mat.length; left += 1) {
+    const right = mat.length - (left + 1)
+    result += mat[left][left] + mat[right][left]
   }
 
-  while ((rcount > 0) && (dcount > 0)) {
-    const curr = queue.shift()
-
-    if (curr === D) {
-      if (dfloating > 0) {
-        dfloating -= 1
-        dcount -= 1
-      } else {
-        rfloating += 1
-        queue.push(D)
-      }
-    } else {
-      if (rfloating > 0) {
-        rfloating -= 1
-        rcount -= 1
-      } else {
-        dfloating += 1
-        queue.push(R)
-      }
-    }
+  if ((mat.length % 2) === 1) {
+    const m = Math.trunc(mat.length / 2)
+    result -= mat[m][m]
   }
 
-  return rcount > 0 ? 'Radiant' : 'Dire'
+  return result
 }
 
 async function main (): Promise<void> {
-  const inputs: string[] = [
-    'RD',
-    'RDD'
+  const inputs: number[][][] = [
+    [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9]
+    ],
+    [
+      [1, 1, 1, 1],
+      [1, 1, 1, 1],
+      [1, 1, 1, 1],
+      [1, 1, 1, 1]
+    ],
+    [
+      [5]
+    ]
   ]
 
-  for (const senate of inputs) {
-    const result = predictPartyVictory(senate)
+  for (const mat of inputs) {
+    const result = diagonalSum(mat)
     console.log(result)
   }
 }
