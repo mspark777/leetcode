@@ -4,41 +4,46 @@ import (
 	"fmt"
 )
 
-func diagonalSum(mat [][]int) int {
-	result := 0
-	for left := 0; left < len(mat); left += 1 {
-		right := len(mat) - (left + 1)
-		result += mat[left][left] + mat[right][left]
+func floorMod(x, y int) int {
+	return ((x % y) + y) % y
+}
+
+func generateMatrix(n int) [][]int {
+	result := make([][]int, n)
+	cnt := 1
+	dir := [][]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+	d := 0
+	row := 0
+	col := 0
+
+	for i := 0; i < n; i += 1 {
+		result[i] = make([]int, n)
 	}
 
-	if (len(mat) & 1) == 1 {
-		m := len(mat) / 2
-		result -= mat[m][m]
+	for cnt <= (n * n) {
+		result[row][col] = cnt
+		cnt += 1
+		r := floorMod(row+dir[d][0], n)
+		c := floorMod(col+dir[d][1], n)
+
+		if result[r][c] != 0 {
+			d = (d + 1) % 4
+		}
+
+		row += dir[d][0]
+		col += dir[d][1]
 	}
 
 	return result
 }
 
 func main() {
-	inputs := [][][]int{
-		{
-			{1, 2, 3},
-			{4, 5, 6},
-			{7, 8, 9},
-		},
-		{
-			{1, 1, 1, 1},
-			{1, 1, 1, 1},
-			{1, 1, 1, 1},
-			{1, 1, 1, 1},
-		},
-		{
-			{5},
-		},
+	inputs := []int{
+		3, 1,
 	}
 
-	for _, mat := range inputs {
-		result := diagonalSum(mat)
+	for _, n := range inputs {
+		result := generateMatrix(n)
 		fmt.Println(result)
 	}
 }

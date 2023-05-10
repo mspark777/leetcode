@@ -1,38 +1,39 @@
-function diagonalSum (mat: number[][]): number {
-  let result = 0
-  for (let left = 0; left < mat.length; left += 1) {
-    const right = mat.length - (left + 1)
-    result += mat[left][left] + mat[right][left]
-  }
+function floowMod (x: number, y: number): number {
+  return ((x % y) + y) % y
+}
 
-  if ((mat.length % 2) === 1) {
-    const m = Math.trunc(mat.length / 2)
-    result -= mat[m][m]
+function generateMatrix (n: number): number[][] {
+  const result = Array.from(new Array(n), () => new Array(n).fill(0))
+  let cnt = 1
+  const dir = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+  let d = 0
+  let row = 0
+  let col = 0
+
+  while (cnt <= (n * n)) {
+    result[row][col] = cnt
+    cnt += 1
+    const r = floowMod(row + dir[d][0], n)
+    const c = floowMod(col + dir[d][1], n)
+
+    if (result[r][c] !== 0) {
+      d = (d + 1) % 4
+    }
+
+    row += dir[d][0]
+    col += dir[d][1]
   }
 
   return result
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][][] = [
-    [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9]
-    ],
-    [
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
-      [1, 1, 1, 1]
-    ],
-    [
-      [5]
-    ]
+  const inputs: number[] = [
+    3, 1
   ]
 
-  for (const mat of inputs) {
-    const result = diagonalSum(mat)
+  for (const n of inputs) {
+    const result = generateMatrix(n)
     console.log(result)
   }
 }

@@ -1,17 +1,32 @@
 /**
-  * @param {number[][]} mat
+  * @param {number} x
+  * @param {number} y
   * @returns {number}
   */
-function diagonalSum (mat) {
-  let result = 0
-  for (let left = 0; left < mat.length; left += 1) {
-    const right = mat.length - (left + 1)
-    result += mat[left][left] + mat[right][left]
-  }
+function floowMod (x, y) {
+  return ((x % y) + y) % y
+}
 
-  if ((mat.length % 2) === 1) {
-    const m = Math.trunc(mat.length / 2)
-    result -= mat[m][m]
+function generateMatrix (n) {
+  const result = Array.from(new Array(n), () => new Array(n).fill(0))
+  let cnt = 1
+  const dir = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+  let d = 0
+  let row = 0
+  let col = 0
+
+  while (cnt <= (n * n)) {
+    result[row][col] = cnt
+    cnt += 1
+    const r = floowMod(row + dir[d][0], n)
+    const c = floowMod(col + dir[d][1], n)
+
+    if (result[r][c] !== 0) {
+      d = (d + 1) % 4
+    }
+
+    row += dir[d][0]
+    col += dir[d][1]
   }
 
   return result
@@ -19,24 +34,11 @@ function diagonalSum (mat) {
 
 async function main () {
   const inputs = [
-    [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9]
-    ],
-    [
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
-      [1, 1, 1, 1],
-      [1, 1, 1, 1]
-    ],
-    [
-      [5]
-    ]
+    3, 1
   ]
 
-  for (const mat of inputs) {
-    const result = diagonalSum(mat)
+  for (const n of inputs) {
+    const result = generateMatrix(n)
     console.log(result)
   }
 }

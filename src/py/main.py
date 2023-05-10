@@ -2,29 +2,39 @@ from typing import List
 
 
 class Solution:
-    def diagonalSum(self, mat: List[List[int]]) -> int:
-        result = 0
-        for left in range(len(mat)):
-            right = len(mat) - (left + 1)
-            result += mat[left][left] + mat[right][left]
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        result = [[0 for c in range(n)] for r in range(n)]
+        cnt = 1
+        dir = ((0, 1), (1, 0), (0, -1), (-1, 0))
+        d = 0
+        row = 0
+        col = 0
 
-        if (len(mat) & 1) == 1:
-            m = len(mat) // 2
-            result -= mat[m][m]
+        while cnt <= (n * n):
+            result[row][col] = cnt
+            cnt += 1
+
+            r = self.floorMod(row + dir[d][0], n)
+            c = self.floorMod(col + dir[d][1], n)
+
+            if result[r][c] != 0:
+                d = (d + 1) % 4
+
+            row += dir[d][0]
+            col += dir[d][1]
 
         return result
 
+    def floorMod(self, x: int, y: int) -> int:
+        return ((x % y) + y) % y
+
 
 def main():
-    inputs = [
-        [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-        [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
-        [[5]],
-    ]
+    inputs = [3, 1]
 
-    for mat in inputs:
+    for n in inputs:
         solution = Solution()
-        result = solution.diagonalSum(mat)
+        result = solution.generateMatrix(n)
         print(result)
 
 
