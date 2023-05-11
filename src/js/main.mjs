@@ -1,44 +1,40 @@
 /**
-  * @param {number} x
-  * @param {number} y
+  * @param {number[]} nums1
+  * @param {number[]} nums2
   * @returns {number}
   */
-function floowMod (x, y) {
-  return ((x % y) + y) % y
-}
+function maxUncrossedLines (nums1, nums2) {
+  const len1 = nums1.length
+  const len2 = nums2.length
 
-function generateMatrix (n) {
-  const result = Array.from(new Array(n), () => new Array(n).fill(0))
-  let cnt = 1
-  const dir = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-  let d = 0
-  let row = 0
-  let col = 0
+  const dp = new Array(len2 + 1).fill(0)
+  let dpPrev = new Array(len2 + 1).fill(0)
 
-  while (cnt <= (n * n)) {
-    result[row][col] = cnt
-    cnt += 1
-    const r = floowMod(row + dir[d][0], n)
-    const c = floowMod(col + dir[d][1], n)
-
-    if (result[r][c] !== 0) {
-      d = (d + 1) % 4
+  for (let i = 1; i <= len1; i += 1) {
+    for (let j = 1; j <= len2; j += 1) {
+      if (nums1[i - 1] === nums2[j - 1]) {
+        dp[j] = 1 + dpPrev[j - 1]
+      } else {
+        dp[j] = Math.max(dp[j - 1], dpPrev[j])
+      }
     }
 
-    row += dir[d][0]
-    col += dir[d][1]
+    dpPrev = dp.slice()
   }
 
-  return result
+  return dp[len2]
 }
 
 async function main () {
   const inputs = [
-    3, 1
+    [[1, 4, 2], [1, 2, 4]],
+    [[2, 5, 1, 2, 5], [10, 5, 2, 1, 5, 2]],
+    [[1, 3, 7, 1, 7, 5], [1, 9, 2, 5, 1]],
+    [[3, 2], [2, 2, 2, 3]]
   ]
 
-  for (const n of inputs) {
-    const result = generateMatrix(n)
+  for (const [nums1, nums2] of inputs) {
+    const result = maxUncrossedLines(nums1, nums2)
     console.log(result)
   }
 }

@@ -3,39 +3,39 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn generate_matrix(n: i32) -> Vec<Vec<i32>> {
-        let mut result = vec![vec![0 as i32; n as usize]; n as usize];
-        let dir = [(0, 1), (1, 0), (0, -1), (-1, 0)];
-        let mut d = 0;
-        let mut row = 0;
-        let mut col = 0;
+    pub fn max_uncrossed_lines(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let len1 = nums1.len();
+        let len2 = nums2.len();
 
-        for cnt in 1..=(n * n) {
-            result[row as usize][col as usize] = cnt as i32;
-            let r = Self::floor_mod(row + dir[d as usize].0, n) as usize;
-            let c = Self::floor_mod(col + dir[d as usize].1, n) as usize;
+        let mut dp = vec![0; len2 + 1];
+        let mut dp_prev = vec![0; len2 + 1];
 
-            if result[r][c] != 0 {
-                d = (d + 1) % 4;
+        for i in 1..=len1 {
+            for j in 1..=len2 {
+                if nums1[i - 1] == nums2[j - 1] {
+                    dp[j] = 1 + dp_prev[j - 1];
+                } else {
+                    dp[j] = dp[j - 1].max(dp_prev[j]);
+                }
             }
 
-            row += dir[d].0;
-            col += dir[d].1;
+            dp_prev = dp.clone();
         }
 
-        return result;
-    }
-
-    fn floor_mod(x: i32, y: i32) -> i32 {
-        return ((x % y) + y) % y;
+        return dp[len2];
     }
 }
 
 fn main() {
-    let inputs = [3, 1];
+    let inputs = [
+        (vec![1, 4, 2], vec![1, 2, 4]),
+        (vec![2, 5, 1, 2, 5], vec![10, 5, 2, 1, 5, 2]),
+        (vec![1, 3, 7, 1, 7, 5], vec![1, 9, 2, 5, 1]),
+        (vec![3, 2], vec![2, 2, 2, 3]),
+    ];
 
-    for n in inputs {
-        let result = Solution::generate_matrix(n);
-        println!("{result:?}");
+    for (nums1, nums2) in inputs {
+        let result = Solution::max_uncrossed_lines(nums1, nums2);
+        println!("{result}");
     }
 }

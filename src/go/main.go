@@ -4,46 +4,44 @@ import (
 	"fmt"
 )
 
-func floorMod(x, y int) int {
-	return ((x % y) + y) % y
-}
+func maxUncrossedLines(nums1 []int, nums2 []int) int {
+	len1 := len(nums1)
+	len2 := len(nums2)
 
-func generateMatrix(n int) [][]int {
-	result := make([][]int, n)
-	cnt := 1
-	dir := [][]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
-	d := 0
-	row := 0
-	col := 0
+	dp := make([]int, len2+1)
+	dpPrev := make([]int, len2+1)
 
-	for i := 0; i < n; i += 1 {
-		result[i] = make([]int, n)
-	}
-
-	for cnt <= (n * n) {
-		result[row][col] = cnt
-		cnt += 1
-		r := floorMod(row+dir[d][0], n)
-		c := floorMod(col+dir[d][1], n)
-
-		if result[r][c] != 0 {
-			d = (d + 1) % 4
+	for i := 1; i <= len1; i += 1 {
+		for j := 1; j <= len2; j += 1 {
+			if nums1[i-1] == nums2[j-1] {
+				dp[j] = 1 + dpPrev[j-1]
+			} else {
+				cur := dp[j-1]
+				prev := dpPrev[j]
+				if cur < prev {
+					dp[j] = prev
+				} else {
+					dp[j] = cur
+				}
+			}
 		}
 
-		row += dir[d][0]
-		col += dir[d][1]
+		copy(dpPrev, dp)
 	}
 
-	return result
+	return dp[len2]
 }
 
 func main() {
-	inputs := []int{
-		3, 1,
+	inputs := [][][]int{
+		{{1, 4, 2}, {1, 2, 4}},
+		{{2, 5, 1, 2, 5}, {10, 5, 2, 1, 5, 2}},
+		{{1, 3, 7, 1, 7, 5}, {1, 9, 2, 5, 1}},
+		{{3, 2}, {2, 2, 2, 3}},
 	}
 
-	for _, n := range inputs {
-		result := generateMatrix(n)
+	for _, input := range inputs {
+		result := maxUncrossedLines(input[0], input[1])
 		fmt.Println(result)
 	}
 }

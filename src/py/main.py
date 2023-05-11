@@ -2,39 +2,35 @@ from typing import List
 
 
 class Solution:
-    def generateMatrix(self, n: int) -> List[List[int]]:
-        result = [[0 for c in range(n)] for r in range(n)]
-        cnt = 1
-        dir = ((0, 1), (1, 0), (0, -1), (-1, 0))
-        d = 0
-        row = 0
-        col = 0
+    def maxUncrossedLines(self, nums1: List[int], nums2: List[int]) -> int:
+        len1 = len(nums1)
+        len2 = len(nums2)
+        dp = [0 for i in range(len2 + 1)]
+        dp_prev = [0 for i in range(len2 + 1)]
 
-        while cnt <= (n * n):
-            result[row][col] = cnt
-            cnt += 1
+        for i in range(1, len1 + 1):
+            for j in range(1, len2 + 1):
+                if nums1[i - 1] == nums2[j - 1]:
+                    dp[j] = 1 + dp_prev[j - 1]
+                else:
+                    dp[j] = max(dp[j - 1], dp_prev[j])
 
-            r = self.floorMod(row + dir[d][0], n)
-            c = self.floorMod(col + dir[d][1], n)
+            dp_prev = dp.copy()
 
-            if result[r][c] != 0:
-                d = (d + 1) % 4
-
-            row += dir[d][0]
-            col += dir[d][1]
-
-        return result
-
-    def floorMod(self, x: int, y: int) -> int:
-        return ((x % y) + y) % y
+        return dp[len2]
 
 
 def main():
-    inputs = [3, 1]
+    inputs = [
+        ([1, 4, 2], [1, 2, 4]),
+        ([2, 5, 1, 2, 5], [10, 5, 2, 1, 5, 2]),
+        ([1, 3, 7, 1, 7, 5], [1, 9, 2, 5, 1]),
+        ([3, 2], [2, 2, 2, 3]),
+    ]
 
-    for n in inputs:
+    for nums1, nums2 in inputs:
         solution = Solution()
-        result = solution.generateMatrix(n)
+        result = solution.maxUncrossedLines(nums1, nums2)
         print(result)
 
 
