@@ -2,35 +2,33 @@ from typing import List
 
 
 class Solution:
-    def maxUncrossedLines(self, nums1: List[int], nums2: List[int]) -> int:
-        len1 = len(nums1)
-        len2 = len(nums2)
-        dp = [0 for i in range(len2 + 1)]
-        dp_prev = [0 for i in range(len2 + 1)]
+    def mostPoints(self, questions: List[List[int]]) -> int:
+        qlen = len(questions)
+        last = qlen - 1
+        dp = [0 for i in range(qlen)]
+        dp[last] = questions[last][0]
 
-        for i in range(1, len1 + 1):
-            for j in range(1, len2 + 1):
-                if nums1[i - 1] == nums2[j - 1]:
-                    dp[j] = 1 + dp_prev[j - 1]
-                else:
-                    dp[j] = max(dp[j - 1], dp_prev[j])
+        for i in range(last - 1, -1, -1):
+            [point, power] = questions[i]
+            dp[i] = point
 
-            dp_prev = dp.copy()
+            if (i + power) < last:
+                dp[i] += dp[i + power + 1]
 
-        return dp[len2]
+            dp[i] = max(dp[i], dp[i + 1])
+
+        return dp[0]
 
 
 def main():
     inputs = [
-        ([1, 4, 2], [1, 2, 4]),
-        ([2, 5, 1, 2, 5], [10, 5, 2, 1, 5, 2]),
-        ([1, 3, 7, 1, 7, 5], [1, 9, 2, 5, 1]),
-        ([3, 2], [2, 2, 2, 3]),
+        [[3, 2], [4, 3], [4, 4], [2, 5]],
+        [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]],
     ]
 
-    for nums1, nums2 in inputs:
+    for questions in inputs:
         solution = Solution()
-        result = solution.maxUncrossedLines(nums1, nums2)
+        result = solution.mostPoints(questions)
         print(result)
 
 

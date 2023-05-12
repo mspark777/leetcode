@@ -1,40 +1,34 @@
 /**
-  * @param {number[]} nums1
-  * @param {number[]} nums2
+  * @param {number[][]} questions
   * @returns {number}
   */
-function maxUncrossedLines (nums1, nums2) {
-  const len1 = nums1.length
-  const len2 = nums2.length
+function mostPoints (questions) {
+  const qlen = questions.length
+  const last = qlen - 1
+  const dp = new Array(qlen).fill(0)
+  dp[last] = questions[last][0]
 
-  const dp = new Array(len2 + 1).fill(0)
-  let dpPrev = new Array(len2 + 1).fill(0)
+  for (let i = last - 1; i >= 0; i -= 1) {
+    const [point, power] = questions[i]
+    dp[i] = point
 
-  for (let i = 1; i <= len1; i += 1) {
-    for (let j = 1; j <= len2; j += 1) {
-      if (nums1[i - 1] === nums2[j - 1]) {
-        dp[j] = 1 + dpPrev[j - 1]
-      } else {
-        dp[j] = Math.max(dp[j - 1], dpPrev[j])
-      }
+    if ((i + power) < last) {
+      dp[i] += dp[i + power + 1]
     }
-
-    dpPrev = dp.slice()
+    dp[i] = Math.max(dp[i], dp[i + 1])
   }
 
-  return dp[len2]
+  return dp[0]
 }
 
 async function main () {
   const inputs = [
-    [[1, 4, 2], [1, 2, 4]],
-    [[2, 5, 1, 2, 5], [10, 5, 2, 1, 5, 2]],
-    [[1, 3, 7, 1, 7, 5], [1, 9, 2, 5, 1]],
-    [[3, 2], [2, 2, 2, 3]]
+    [[3, 2], [4, 3], [4, 4], [2, 5]],
+    [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
   ]
 
-  for (const [nums1, nums2] of inputs) {
-    const result = maxUncrossedLines(nums1, nums2)
+  for (const questions of inputs) {
+    const result = mostPoints(questions)
     console.log(result)
   }
 }
