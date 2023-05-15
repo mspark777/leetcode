@@ -52,6 +52,16 @@ export function newList (vals: number[]): ListNode | null {
   return head.next
 }
 
+export function listToArr (node: ListNode | null): number[] {
+  const nums: number[] = []
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
+  }
+
+  return nums
+}
+
 export function newCycleList (vals: number[], pos: number): ListNode | null {
   const head = new ListNode()
   let tail = head

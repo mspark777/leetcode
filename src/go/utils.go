@@ -43,6 +43,16 @@ func newList(vals []int) *ListNode {
 	return head.Next
 }
 
+func listToArr(node *ListNode) []int {
+	nums := []int{}
+	for node != nil {
+		nums = append(nums, node.Val)
+		node = node.Next
+	}
+
+	return nums
+}
+
 func newCycleList(vals []int, pos int) *ListNode {
 	head := newListNode(0, nil)
 	tail := head

@@ -98,6 +98,20 @@ export function newList (vals) {
 }
 
 /**
+  * @param {ListNode | null} node
+  * @returns {number[]}
+  */
+export function listToArr (node) {
+  const nums = []
+  while (node != null) {
+    nums.push(node.val)
+    node = node.next
+  }
+
+  return nums
+}
+
+/**
   * @param {number[]} vals
   * @param {number} pos
   * @returns {ListNode|null}

@@ -1,35 +1,48 @@
+import { ListNode, newList, unused, listToArr } from './utils.mjs'
+
+unused(ListNode)
+
 /**
-  * @param {number[][]} questions
-  * @returns {number}
+  * @param {ListNode | null} head
+  * @param {number} k
+  * @returns {ListNode | null}
   */
-function mostPoints (questions) {
-  const qlen = questions.length
-  const last = qlen - 1
-  const dp = new Array(qlen).fill(0)
-  dp[last] = questions[last][0]
-
-  for (let i = last - 1; i >= 0; i -= 1) {
-    const [point, power] = questions[i]
-    dp[i] = point
-
-    if ((i + power) < last) {
-      dp[i] += dp[i + power + 1]
-    }
-    dp[i] = Math.max(dp[i], dp[i + 1])
+function swapNodes (head, k) {
+  let left = head
+  for (let i = 1; i < k; i += 1) {
+    left = left?.next ?? null
   }
 
-  return dp[0]
+  if (left == null) {
+    return head
+  }
+
+  let right = head
+  for (let i = left; i?.next != null; i = i.next) {
+    right = right?.next ?? null
+  }
+
+  if (right == null) {
+    return head
+  }
+
+  const l = left.val
+  const r = right.val
+  left.val = r
+  right.val = l
+
+  return head
 }
 
 async function main () {
   const inputs = [
-    [[3, 2], [4, 3], [4, 4], [2, 5]],
-    [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
+    { head: newList([1, 2, 3, 4, 5]), k: 2 },
+    { head: newList([7, 9, 6, 6, 7, 8, 3, 0, 9, 5]), k: 5 }
   ]
 
-  for (const questions of inputs) {
-    const result = mostPoints(questions)
-    console.log(result)
+  for (const { head, k } of inputs) {
+    const result = swapNodes(head, k)
+    console.log(listToArr(result))
   }
 }
 

@@ -1,35 +1,44 @@
-from typing import List
+from typing import List, Optional
+
+from utils import ListNode, new_list, list_to_arr
 
 
 class Solution:
-    def mostPoints(self, questions: List[List[int]]) -> int:
-        qlen = len(questions)
-        last = qlen - 1
-        dp = [0 for i in range(qlen)]
-        dp[last] = questions[last][0]
+    def swapNodes(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        left = head
+        for i in range(1, k):
+            left = left.next if left is not None else None
 
-        for i in range(last - 1, -1, -1):
-            [point, power] = questions[i]
-            dp[i] = point
+        if left is None:
+            return head
 
-            if (i + power) < last:
-                dp[i] += dp[i + power + 1]
+        right = head
+        i = left
+        while i.next is not None:
+            i = i.next
+            right = right.next if right is not None else None
 
-            dp[i] = max(dp[i], dp[i + 1])
+        if right is None:
+            return head
 
-        return dp[0]
+        l = left.val
+        r = right.val
+        left.val = r
+        right.val = l
+
+        return head
 
 
 def main():
     inputs = [
-        [[3, 2], [4, 3], [4, 4], [2, 5]],
-        [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]],
+        (new_list([1, 2, 3, 4, 5]), 2),
+        (new_list([7, 9, 6, 6, 7, 8, 3, 0, 9, 5]), 5),
     ]
 
-    for questions in inputs:
+    for head, k in inputs:
         solution = Solution()
-        result = solution.mostPoints(questions)
-        print(result)
+        result = solution.swapNodes(head, k)
+        print(list_to_arr(result))
 
 
 if __name__ == "__main__":

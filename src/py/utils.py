@@ -59,6 +59,15 @@ def new_list(vals: list[int]) -> Optional[ListNode]:
     return head.next
 
 
+def list_to_arr(node: Optional[ListNode]) -> list[int]:
+    nums: list[int] = []
+    while node is not None:
+        nums.append(node.val)
+        node = node.next
+
+    return nums
+
+
 def new_cycle_list(vals: list[int], pos: int) -> Optional[ListNode]:
     head = new_list_node(0, None)
     tail = head

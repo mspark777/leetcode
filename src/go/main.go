@@ -4,38 +4,49 @@ import (
 	"fmt"
 )
 
-func mostPoints(questions [][]int) int64 {
-	qlen := len(questions)
-	last := qlen - 1
-	dp := make([]int, qlen)
-	dp[last] = questions[last][0]
-
-	for i := last - 1; i >= 0; i -= 1 {
-		question := questions[i]
-		dp[i] = question[0]
-		power := question[1]
-
-		if (i + power) < last {
-			dp[i] += dp[i+power+1]
-		}
-
-		j := i + 1
-		if dp[j] > dp[i] {
-			dp[i] = dp[j]
+func swapNodes(head *ListNode, k int) *ListNode {
+	left := head
+	for i := 1; i < k; i += 1 {
+		if left != nil {
+			left = left.Next
 		}
 	}
 
-	return int64(dp[0])
+	if left == nil {
+		return head
+	}
+
+	right := head
+	for i := left; i.Next != nil; i = i.Next {
+		right = right.Next
+	}
+
+	if right == nil {
+		return head
+	}
+
+	l := left.Val
+	r := right.Val
+
+	left.Val = r
+	right.Val = l
+
+	return head
+}
+
+type input struct {
+	head *ListNode
+	k    int
 }
 
 func main() {
-	inputs := [][][]int{
-		{{3, 2}, {4, 3}, {4, 4}, {2, 5}},
-		{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}},
+	inputs := []input{
+		{head: newList([]int{1, 2, 3, 4, 5}), k: 2},
+		{head: newList([]int{7, 9, 6, 6, 7, 8, 3, 0, 9, 5}), k: 5},
 	}
 
 	for _, input := range inputs {
-		result := mostPoints(input)
-		fmt.Println(result)
+		result := swapNodes(input.head, input.k)
+		fmt.Println(listToArr(result))
 	}
 }
