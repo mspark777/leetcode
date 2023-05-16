@@ -4,44 +4,38 @@ unused(ListNode)
 
 /**
   * @param {ListNode | null} head
-  * @param {number} k
   * @returns {ListNode | null}
   */
-function swapNodes (head, k) {
-  let left = head
-  for (let i = 1; i < k; i += 1) {
-    left = left?.next ?? null
-  }
-
-  if (left == null) {
+function swapPairs (head) {
+  if (head?.next == null) {
     return head
   }
 
-  let right = head
-  for (let i = left; i?.next != null; i = i.next) {
-    right = right?.next ?? null
+  const dummy = new ListNode()
+  let prev = dummy
+  let curr = head
+
+  while (curr?.next != null) {
+    prev.next = curr.next
+    curr.next = prev.next.next
+    prev.next.next = curr
+
+    prev = curr
+    curr = curr.next
   }
 
-  if (right == null) {
-    return head
-  }
-
-  const l = left.val
-  const r = right.val
-  left.val = r
-  right.val = l
-
-  return head
+  return dummy.next
 }
 
 async function main () {
   const inputs = [
-    { head: newList([1, 2, 3, 4, 5]), k: 2 },
-    { head: newList([7, 9, 6, 6, 7, 8, 3, 0, 9, 5]), k: 5 }
+    newList([1, 2, 3, 4]),
+    newList([]),
+    newList([1])
   ]
 
-  for (const { head, k } of inputs) {
-    const result = swapNodes(head, k)
+  for (const head of inputs) {
+    const result = swapPairs(head)
     console.log(listToArr(result))
   }
 }
