@@ -1,37 +1,43 @@
 from typing import Optional
 
-from utils import ListNode, new_list, list_to_arr
+from utils import ListNode, new_list
 
 
 class Solution:
-    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if head is None:
-            return head
-        elif head.next is None:
-            return head
+    def pairSum(self, head: Optional[ListNode]) -> int:
+        node_count = 0
+        node = head
+        while node is not None:
+            node_count += 1
+            node = node.next
 
-        dummy = ListNode(-1, None)
-        prev = dummy
-        curr = head
+        nums = [0 for i in range(node_count)]
+        node = head
+        i = 0
+        while node is not None:
+            nums[i] = node.val
+            node = node.next
+            i += 1
 
-        while (curr is not None) and (curr.next is not None):
-            prev.next = curr.next
-            curr.next = prev.next.next
-            prev.next.next = curr
+        i = 0
+        j = node_count - 1
+        result = 0
 
-            prev = curr
-            curr = curr.next
+        while i < j:
+            result = max(result, nums[i] + nums[j])
+            i += 1
+            j -= 1
 
-        return dummy.next
+        return result
 
 
 def main():
-    inputs = [new_list([1, 2, 3, 4]), new_list([]), new_list([1])]
+    inputs = [new_list([5, 4, 2, 1]), new_list([4, 2, 2, 3]), new_list([1, 100000])]
 
     for head in inputs:
         solution = Solution()
-        result = solution.swapPairs(head)
-        print(list_to_arr(result))
+        result = solution.pairSum(head)
+        print(result)
 
 
 if __name__ == "__main__":

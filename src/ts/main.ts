@@ -1,36 +1,40 @@
-import { ListNode, listToArr, newList } from './utils'
+import { type ListNode, newList } from './utils'
 
-function swapPairs (head: ListNode | null): ListNode | null {
-  if (head?.next == null) {
-    return head
+function pairSum (head: ListNode | null): number {
+  let nodeCount = 0
+  for (let node = head; node != null; node = node.next) {
+    nodeCount += 1
   }
 
-  const dummy = new ListNode()
-  let prev: ListNode | null = dummy
-  let curr: ListNode | null = head
-
-  while (curr?.next != null) {
-    prev.next = curr.next
-    curr.next = prev.next.next
-    prev.next.next = curr
-
-    prev = curr
-    curr = curr.next
+  let i = 0
+  const nums = new Array<number>(nodeCount)
+  for (let node = head; node != null; node = node.next) {
+    nums[i] = node.val
+    i += 1
   }
 
-  return dummy.next
+  i = 0
+  let j = nodeCount - 1
+  let result = 0
+  while (i < j) {
+    result = Math.max(result, nums[i] + nums[j])
+    i += 1
+    j -= 1
+  }
+
+  return result
 }
 
 async function main (): Promise<void> {
   const inputs: Array<ListNode | null> = [
-    newList([1, 2, 3, 4]),
-    newList([]),
-    newList([1])
+    newList([5, 4, 2, 1]),
+    newList([4, 2, 2, 3]),
+    newList([1, 100000])
   ]
 
   for (const head of inputs) {
-    const result = swapPairs(head)
-    console.log(listToArr(result))
+    const result = pairSum(head)
+    console.log(result)
   }
 }
 

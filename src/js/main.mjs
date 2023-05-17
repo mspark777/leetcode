@@ -1,42 +1,46 @@
-import { ListNode, newList, unused, listToArr } from './utils.mjs'
+import { ListNode, newList, unused } from './utils.mjs'
 
 unused(ListNode)
 
 /**
   * @param {ListNode | null} head
-  * @returns {ListNode | null}
+  * @returns {number}
   */
-function swapPairs (head) {
-  if (head?.next == null) {
-    return head
+function pairSum (head) {
+  let nodeCount = 0
+  for (let node = head; node != null; node = node.next) {
+    nodeCount += 1
   }
 
-  const dummy = new ListNode()
-  let prev = dummy
-  let curr = head
-
-  while (curr?.next != null) {
-    prev.next = curr.next
-    curr.next = prev.next.next
-    prev.next.next = curr
-
-    prev = curr
-    curr = curr.next
+  let i = 0
+  const nums = new Array(nodeCount)
+  for (let node = head; node != null; node = node.next) {
+    nums[i] = node.val
+    i += 1
   }
 
-  return dummy.next
+  i = 0
+  let j = nodeCount - 1
+  let result = 0
+  while (i < j) {
+    result = Math.max(result, nums[i] + nums[j])
+    i += 1
+    j -= 1
+  }
+
+  return result
 }
 
 async function main () {
   const inputs = [
-    newList([1, 2, 3, 4]),
-    newList([]),
-    newList([1])
+    newList([5, 4, 2, 1]),
+    newList([4, 2, 2, 3]),
+    newList([1, 100000])
   ]
 
   for (const head of inputs) {
-    const result = swapPairs(head)
-    console.log(listToArr(result))
+    const result = pairSum(head)
+    console.log(result)
   }
 }
 
