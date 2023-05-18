@@ -8,10 +8,10 @@ js:
 	@npm run start:js
 
 go:
-	@go run src/go/main.go src/go/utils.go
+	@go run src/main.go
 
 py:
-	@python src/py/main.py
+	@python src/main.py
 
 sh:
 	@${SHELL} src/main.sh
