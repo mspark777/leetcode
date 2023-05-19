@@ -1,33 +1,45 @@
 /**
-  * @param {number} n
-  * @param {number[][]} edges
-  * @returns {number[]}
+  * @param {number[][]} graph
+  * @returns {boolean}
   */
-function findSmallestSetOfVertices (n, edges) {
-  const toEdges = new Array(n).fill(false)
-  for (const edge of edges) {
-    const to = edge[1]
-    toEdges[to] = true
-  }
+function isBipartite (graph) {
+  const NONE = 0
+  const RED = 1
+  // const BLUE = -1
+  const colors = new Array(graph.length).fill(NONE)
+  const stack = []
+  for (let i = 0; i < graph.length; i += 1) {
+    if (colors[i] !== NONE) {
+      continue
+    }
 
-  const result = []
-  for (const [i, isto] of toEdges.entries()) {
-    if (!isto) {
-      result.push(i)
+    colors[i] = RED
+    stack.push(i)
+    for (let vertex = stack.pop(); vertex != null; vertex = stack.pop()) {
+      const color = colors[vertex]
+      for (const adjacent of graph[vertex]) {
+        const acolor = colors[adjacent]
+        if (acolor === NONE) {
+          colors[adjacent] = -color
+          stack.push(adjacent)
+        } else if (color === acolor) {
+          return false
+        }
+      }
     }
   }
 
-  return result
+  return true
 }
 
 async function main () {
   const inputs = [
-    { n: 6, edges: [[0, 1], [0, 2], [2, 5], [3, 4], [4, 2]] },
-    { n: 5, edges: [[0, 1], [2, 1], [3, 1], [1, 4], [2, 4]] }
+    [[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]],
+    [[1, 3], [0, 2], [1, 3], [0, 2]]
   ]
 
-  for (const { n, edges } of inputs) {
-    const result = findSmallestSetOfVertices(n, edges)
+  for (const graph of inputs) {
+    const result = isBipartite(graph)
     console.log(result)
   }
 }

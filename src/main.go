@@ -4,36 +4,49 @@ import (
 	"fmt"
 )
 
-func findSmallestSetOfVertices(n int, edges [][]int) []int {
-	toEdges := make([]bool, n)
-	for _, edge := range edges {
-		to := edge[1]
-		toEdges[to] = true
-	}
+func isBipartite(graph [][]int) bool {
+	const NONE int = 0
+	const RED int = 1
+	// const BLUE int = -1
 
-	result := []int{}
-	for i, isto := range toEdges {
-		if !isto {
-			result = append(result, i)
+	colors := make([]int, len(graph))
+	stack := []int{}
+
+	for i := 0; i < len(graph); i += 1 {
+		if colors[i] != NONE {
+			continue
+		}
+
+		colors[i] = RED
+		stack = append(stack, i)
+		for len(stack) > 0 {
+			top := len(stack) - 1
+			vertex := stack[top]
+			color := colors[vertex]
+			stack = stack[:top]
+			for _, adjacent := range graph[vertex] {
+				acolor := colors[adjacent]
+				if acolor == NONE {
+					colors[adjacent] = -color
+					stack = append(stack, adjacent)
+				} else if color == acolor {
+					return false
+				}
+			}
 		}
 	}
 
-	return result
-}
-
-type input struct {
-	n     int
-	edges [][]int
+	return true
 }
 
 func main() {
-	inputs := []input{
-		{n: 6, edges: [][]int{{0, 1}, {0, 2}, {2, 5}, {3, 4}, {4, 2}}},
-		{n: 5, edges: [][]int{{0, 1}, {2, 1}, {3, 1}, {1, 4}, {2, 4}}},
+	inputs := [][][]int{
+		{{1, 2, 3}, {0, 2}, {0, 1, 3}, {0, 2}},
+		{{1, 3}, {0, 2}, {1, 3}, {0, 2}},
 	}
 
-	for _, input := range inputs {
-		result := findSmallestSetOfVertices(input.n, input.edges)
+	for _, graph := range inputs {
+		result := isBipartite(graph)
 		fmt.Println(result)
 	}
 }
