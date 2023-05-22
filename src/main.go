@@ -2,51 +2,53 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func isBipartite(graph [][]int) bool {
-	const NONE int = 0
-	const RED int = 1
-	// const BLUE int = -1
+type frequent struct {
+	num   int
+	count int
+}
 
-	colors := make([]int, len(graph))
-	stack := []int{}
-
-	for i := 0; i < len(graph); i += 1 {
-		if colors[i] != NONE {
-			continue
-		}
-
-		colors[i] = RED
-		stack = append(stack, i)
-		for len(stack) > 0 {
-			top := len(stack) - 1
-			vertex := stack[top]
-			color := colors[vertex]
-			stack = stack[:top]
-			for _, adjacent := range graph[vertex] {
-				acolor := colors[adjacent]
-				if acolor == NONE {
-					colors[adjacent] = -color
-					stack = append(stack, adjacent)
-				} else if color == acolor {
-					return false
-				}
-			}
-		}
+func topKFrequent(nums []int, k int) []int {
+	counts := map[int]int{}
+	for _, num := range nums {
+		counts[num] += 1
 	}
 
-	return true
+	frequents := make([]frequent, len(counts))
+	i := 0
+	for num, count := range counts {
+		frequents[i] = frequent{num, count}
+		i += 1
+	}
+
+	sort.Slice(frequents, func(i, j int) bool {
+		return frequents[j].count < frequents[i].count
+	})
+
+	frequents = frequents[0:k]
+	result := make([]int, k)
+	for i, frequent := range frequents {
+		result[i] = frequent.num
+	}
+
+	return result
+}
+
+type input struct {
+	nums []int
+	k    int
 }
 
 func main() {
-	inputs := [][][]int{
-		{{1, 2, 3}, {0, 2}, {0, 1, 3}, {0, 2}},
-		{{1, 3}, {0, 2}, {1, 3}, {0, 2}},
+	inputs := []input{
+		{nums: []int{1, 1, 1, 2, 2, 3}, k: 2},
+		{nums: []int{1}, k: 1},
 	}
 
-	for _, graph := range inputs {
-		result := isBipartite(graph)
+	for _, input := range inputs {
+		result := topKFrequent(input.nums, input.k)
 		fmt.Println(result)
 	}
 }

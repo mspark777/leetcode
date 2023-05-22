@@ -1,40 +1,20 @@
 from typing import List
+from collections import Counter
 
 
 class Solution:
-    def isBipartite(self, graph: List[List[int]]) -> bool:
-        NONE = 0
-        RED = 1
-        # BLUE = -1
-
-        colors = [NONE for _ in range(len(graph))]
-        stack: list[int] = []
-        for i in range(len(graph)):
-            if colors[i] != NONE:
-                continue
-
-            colors[i] = RED
-            stack.append(i)
-            while stack:
-                vertex = stack.pop()
-                color = colors[vertex]
-                for adjacent in graph[vertex]:
-                    acolor = colors[adjacent]
-                    if acolor == NONE:
-                        colors[adjacent] = -color
-                        stack.append(adjacent)
-                    elif color == acolor:
-                        return False
-
-        return True
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        counts = list(Counter(nums).items())
+        counts.sort(key=lambda a: -a[1])
+        return [c[0] for c in counts[0:k]]
 
 
 def main():
-    inputs = [[[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]], [[1, 3], [0, 2], [1, 3], [0, 2]]]
+    inputs = [([1, 1, 1, 2, 2, 3], 2), ([1], 1)]
 
-    for graph in inputs:
+    for nums, k in inputs:
         solution = Solution()
-        result = solution.isBipartite(graph)
+        result = solution.topKFrequent(nums, k)
         print(result)
 
 

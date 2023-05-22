@@ -1,43 +1,28 @@
 import '@total-typescript/ts-reset'
 
-function isBipartite (graph: number[][]): boolean {
-  const NONE = 0
-  const RED = 1
-  // const BLUE = -1
-  const colors = new Array<number>(graph.length).fill(NONE)
-  const stack: number[] = []
-  for (let i = 0; i < graph.length; i += 1) {
-    if (colors[i] !== NONE) {
-      continue
-    }
-
-    colors[i] = RED
-    stack.push(i)
-    for (let vertex = stack.pop(); vertex != null; vertex = stack.pop()) {
-      const color = colors[vertex]
-      for (const adjacent of graph[vertex]) {
-        const acolor = colors[adjacent]
-        if (acolor === NONE) {
-          colors[adjacent] = -color
-          stack.push(adjacent)
-        } else if (color === acolor) {
-          return false
-        }
-      }
-    }
+function topKFrequent (nums: number[], k: number): number[] {
+  const counts = new Map<number, number>()
+  for (const num of nums) {
+    const count = counts.get(num) ?? 0
+    counts.set(num, count + 1)
   }
 
-  return true
+  return [...counts].sort((a, b) => b[1] - a[1]).slice(0, k).map(a => a[0])
+}
+
+interface Input {
+  readonly nums: number[]
+  readonly k: number
 }
 
 async function main (): Promise<void> {
-  const inputs: number[][][] = [
-    [[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]],
-    [[1, 3], [0, 2], [1, 3], [0, 2]]
+  const inputs: Input[] = [
+    { nums: [1, 1, 1, 2, 2, 3], k: 2 },
+    { nums: [1], k: 1 }
   ]
 
-  for (const graph of inputs) {
-    const result = isBipartite(graph)
+  for (const { nums, k } of inputs) {
+    const result = topKFrequent(nums, k)
     console.log(result)
   }
 }
