@@ -1,30 +1,41 @@
 import '@total-typescript/ts-reset'
 
-function topKFrequent (nums: number[], k: number): number[] {
-  const counts = new Map<number, number>()
-  for (const num of nums) {
-    const count = counts.get(num) ?? 0
-    counts.set(num, count + 1)
+class KthLargest {
+  private readonly k: number
+  private readonly nums: number[]
+  public constructor (k: number, nums: number[]) {
+    this.k = k - 1
+    this.nums = nums
+    this.nums.sort((a, b) => b - a)
   }
 
-  return [...counts].sort((a, b) => b[1] - a[1]).slice(0, k).map(a => a[0])
-}
+  public add (val: number): number {
+    let i = 0
+    while (i < this.nums.length) {
+      if (val > this.nums[i]) {
+        break
+      } else {
+        i += 1
+      }
+    }
 
-interface Input {
-  readonly nums: number[]
-  readonly k: number
+    if (i < this.nums.length) {
+      this.nums.splice(i, 0, val)
+    } else {
+      this.nums.push(val)
+    }
+
+    return this.nums[this.k]
+  }
 }
 
 async function main (): Promise<void> {
-  const inputs: Input[] = [
-    { nums: [1, 1, 1, 2, 2, 3], k: 2 },
-    { nums: [1], k: 1 }
-  ]
-
-  for (const { nums, k } of inputs) {
-    const result = topKFrequent(nums, k)
-    console.log(result)
-  }
+  const kthLargest = new KthLargest(3, [4, 5, 8, 2])
+  console.log(kthLargest.add(3))
+  console.log(kthLargest.add(5))
+  console.log(kthLargest.add(10))
+  console.log(kthLargest.add(9))
+  console.log(kthLargest.add(4))
 }
 
 main()

@@ -1,21 +1,36 @@
 from typing import List
-from collections import Counter
+from queue import PriorityQueue
 
 
-class Solution:
-    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
-        counts = list(Counter(nums).items())
-        counts.sort(key=lambda a: -a[1])
-        return [c[0] for c in counts[0:k]]
+class KthLargest:
+    k: int
+    queue: PriorityQueue
+
+    def __init__(self, k: int, nums: List[int]):
+        self.k = k
+        self.queue = PriorityQueue()
+
+        for num in nums:
+            self.add(num)
+
+    def add(self, val: int) -> int:
+        self.queue.put(val)
+
+        while self.queue.qsize() > self.k:
+            self.queue.get()
+
+        v = self.queue.get()
+        self.queue.put(v)
+        return v
 
 
 def main():
-    inputs = [([1, 1, 1, 2, 2, 3], 2), ([1], 1)]
-
-    for nums, k in inputs:
-        solution = Solution()
-        result = solution.topKFrequent(nums, k)
-        print(result)
+    kth_largest = KthLargest(3, [4, 5, 8, 2])
+    print(kth_largest.add(3))
+    print(kth_largest.add(5))
+    print(kth_largest.add(10))
+    print(kth_largest.add(9))
+    print(kth_largest.add(4))
 
 
 if __name__ == "__main__":

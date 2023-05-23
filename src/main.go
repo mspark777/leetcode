@@ -5,50 +5,48 @@ import (
 	"sort"
 )
 
-type frequent struct {
-	num   int
-	count int
+type KthLargest struct {
+	k    int
+	nums []int
 }
 
-func topKFrequent(nums []int, k int) []int {
-	counts := map[int]int{}
-	for _, num := range nums {
-		counts[num] += 1
-	}
-
-	frequents := make([]frequent, len(counts))
-	i := 0
-	for num, count := range counts {
-		frequents[i] = frequent{num, count}
-		i += 1
-	}
-
-	sort.Slice(frequents, func(i, j int) bool {
-		return frequents[j].count < frequents[i].count
+func Constructor(k int, nums []int) KthLargest {
+	sort.Slice(nums, func(i, j int) bool {
+		return nums[j] < nums[i]
 	})
 
-	frequents = frequents[0:k]
-	result := make([]int, k)
-	for i, frequent := range frequents {
-		result[i] = frequent.num
+	return KthLargest{
+		k:    k - 1,
+		nums: nums,
 	}
-
-	return result
 }
 
-type input struct {
-	nums []int
-	k    int
+func (this *KthLargest) Add(val int) int {
+	i := 0
+	for i < len(this.nums) {
+		if val > this.nums[i] {
+			break
+		} else {
+			i += 1
+		}
+	}
+
+	this.nums = append(this.nums, val)
+	if i < len(this.nums) {
+		for j := len(this.nums) - 1; j > i; j -= 1 {
+			this.nums[j] = this.nums[j-1]
+		}
+		this.nums[i] = val
+	}
+
+	return this.nums[this.k]
 }
 
 func main() {
-	inputs := []input{
-		{nums: []int{1, 1, 1, 2, 2, 3}, k: 2},
-		{nums: []int{1}, k: 1},
-	}
-
-	for _, input := range inputs {
-		result := topKFrequent(input.nums, input.k)
-		fmt.Println(result)
-	}
+	kthLargest := Constructor(3, []int{4, 5, 8, 1})
+	fmt.Println(kthLargest.Add(3))
+	fmt.Println(kthLargest.Add(5))
+	fmt.Println(kthLargest.Add(10))
+	fmt.Println(kthLargest.Add(9))
+	fmt.Println(kthLargest.Add(4))
 }
