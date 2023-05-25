@@ -1,47 +1,43 @@
 mod utils;
 
-use std::{cmp::Reverse, collections::BinaryHeap};
+use utils::Solution;
 
-struct KthLargest {
-    k: usize,
-    queue: BinaryHeap<Reverse<i32>>,
-}
-
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl KthLargest {
-    fn new(k: i32, nums: Vec<i32>) -> Self {
-        let k = k as usize;
-        let mut queue = BinaryHeap::<Reverse<i32>>::with_capacity(k + 1);
-        for &num in nums.iter() {
-            Self::add_val(&mut queue, num, k)
+impl Solution {
+    pub fn new21_game(n: i32, k: i32, max_pts: i32) -> f64 {
+        if k == 0 {
+            return 1.0;
+        } else if n >= (k + max_pts) {
+            return 1.0;
         }
 
-        return Self { k, queue };
-    }
+        let mut dp = vec![0.0; (n + 1) as usize];
+        dp[0] = 1.0;
+        let mut sum = 1.0;
+        let mut result = 0.0;
 
-    fn add(&mut self, val: i32) -> i32 {
-        Self::add_val(&mut self.queue, val, self.k);
+        for i in 1..=(n as usize) {
+            dp[i] = sum / (max_pts as f64);
+            if i < (k as usize) {
+                sum += dp[i];
+            } else {
+                result += dp[i];
+            }
 
-        return self.queue.peek().unwrap().0;
-    }
-
-    fn add_val(queue: &mut BinaryHeap<Reverse<i32>>, val: i32, size: usize) {
-        queue.push(Reverse(val));
-
-        if queue.len() > size {
-            queue.pop();
+            let m = max_pts as usize;
+            if i >= m {
+                sum -= dp[i - m];
+            }
         }
+
+        return result;
     }
 }
 
 fn main() {
-    let mut kth_largest = KthLargest::new(3, vec![4, 5, 8, 2]);
-    println!("{}", kth_largest.add(3));
-    println!("{}", kth_largest.add(5));
-    println!("{}", kth_largest.add(10));
-    println!("{}", kth_largest.add(9));
-    println!("{}", kth_largest.add(4));
+    let inputs = [(10, 1, 10), (6, 1, 10), (21, 17, 10)];
+
+    for (n, k, max_pts) in inputs {
+        let result = Solution::new21_game(n, k, max_pts);
+        println!("{result}");
+    }
 }

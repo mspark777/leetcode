@@ -1,41 +1,42 @@
 import '@total-typescript/ts-reset'
 
-class KthLargest {
-  private readonly k: number
-  private readonly nums: number[]
-  public constructor (k: number, nums: number[]) {
-    this.k = k - 1
-    this.nums = nums
-    this.nums.sort((a, b) => b - a)
+function new21Game (n: number, k: number, maxPts: number): number {
+  if (k === 0) {
+    return 1
+  } else if (n >= (k + maxPts)) {
+    return 1
   }
 
-  public add (val: number): number {
-    let i = 0
-    while (i < this.nums.length) {
-      if (val > this.nums[i]) {
-        break
-      } else {
-        i += 1
-      }
-    }
-
-    if (i < this.nums.length) {
-      this.nums.splice(i, 0, val)
+  const dp = new Array<number>(n + 1).fill(0)
+  dp[0] = 1
+  let sum = 1
+  let result = 0
+  for (let i = 1; i <= n; i += 1) {
+    dp[i] = sum / maxPts
+    if (i < k) {
+      sum += dp[i]
     } else {
-      this.nums.push(val)
+      result += dp[i]
     }
 
-    return this.nums[this.k]
+    if ((i - maxPts) >= 0) {
+      sum -= dp[i - maxPts]
+    }
   }
+  return result
 }
 
 async function main (): Promise<void> {
-  const kthLargest = new KthLargest(3, [4, 5, 8, 2])
-  console.log(kthLargest.add(3))
-  console.log(kthLargest.add(5))
-  console.log(kthLargest.add(10))
-  console.log(kthLargest.add(9))
-  console.log(kthLargest.add(4))
+  const inputs = [
+    [10, 1, 10],
+    [6, 1, 10],
+    [21, 17, 10]
+  ]
+
+  for (const [n, k, maxPts] of inputs) {
+    const result = new21Game(n, k, maxPts)
+    console.log(result)
+  }
 }
 
 main()
