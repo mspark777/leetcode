@@ -1,40 +1,48 @@
 import '@total-typescript/ts-reset'
 
-function new21Game (n: number, k: number, maxPts: number): number {
-  if (k === 0) {
-    return 1
-  } else if (n >= (k + maxPts)) {
-    return 1
+function f (piles: number[], dp: number[][][], p: number, i: number, m: number): number {
+  if (i === piles.length) {
+    return 0
+  } else if (dp[p][i][m] !== -1) {
+    return dp[p][i][m]
   }
 
-  const dp = new Array<number>(n + 1).fill(0)
-  dp[0] = 1
-  let sum = 1
-  let result = 0
-  for (let i = 1; i <= n; i += 1) {
-    dp[i] = sum / maxPts
-    if (i < k) {
-      sum += dp[i]
+  let result = p === 1 ? 1000000 : -1
+  let s = 0
+  for (let x = 1; x <= Math.min(2 * m, piles.length - i); x += 1) {
+    s += piles[i + x - 1]
+    if (p === 0) {
+      const r = f(piles, dp, 1, i + x, Math.max(m, x))
+      result = Math.max(result, s + r)
     } else {
-      result += dp[i]
-    }
-
-    if ((i - maxPts) >= 0) {
-      sum -= dp[i - maxPts]
+      const r = f(piles, dp, 0, i + x, Math.max(m, x))
+      result = Math.min(result, r)
     }
   }
+
+  dp[p][i][m] = result
   return result
+}
+
+function stoneGameII (piles: number[]): number {
+  const dp = new Array<number[][]>(2)
+  for (let p = 0; p < 2; p += 1) {
+    dp[p] = new Array(piles.length + 1)
+    for (let i = 0; i <= piles.length; i += 1) {
+      dp[p][i] = new Array(piles.length + 1).fill(-1)
+    }
+  }
+  return f(piles, dp, 0, 0, 1)
 }
 
 async function main (): Promise<void> {
   const inputs = [
-    [10, 1, 10],
-    [6, 1, 10],
-    [21, 17, 10]
+    [2, 7, 9, 4, 4],
+    [1, 2, 3, 4, 5, 100]
   ]
 
-  for (const [n, k, maxPts] of inputs) {
-    const result = new21Game(n, k, maxPts)
+  for (const piles of inputs) {
+    const result = stoneGameII(piles)
     console.log(result)
   }
 }
