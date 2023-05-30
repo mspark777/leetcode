@@ -1,43 +1,41 @@
 mod utils;
 
-use utils::Solution;
+struct MyHashSet {
+    keys: Vec<bool>,
+}
 
-impl Solution {
-    pub fn new21_game(n: i32, k: i32, max_pts: i32) -> f64 {
-        if k == 0 {
-            return 1.0;
-        } else if n >= (k + max_pts) {
-            return 1.0;
-        }
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl MyHashSet {
+    fn new() -> Self {
+        return Self {
+            keys: vec![false; 1000001],
+        };
+    }
 
-        let mut dp = vec![0.0; (n + 1) as usize];
-        dp[0] = 1.0;
-        let mut sum = 1.0;
-        let mut result = 0.0;
+    fn add(&mut self, key: i32) {
+        self.keys[key as usize] = true;
+    }
 
-        for i in 1..=(n as usize) {
-            dp[i] = sum / (max_pts as f64);
-            if i < (k as usize) {
-                sum += dp[i];
-            } else {
-                result += dp[i];
-            }
+    fn remove(&mut self, key: i32) {
+        self.keys[key as usize] = false;
+    }
 
-            let m = max_pts as usize;
-            if i >= m {
-                sum -= dp[i - m];
-            }
-        }
-
-        return result;
+    fn contains(&self, key: i32) -> bool {
+        return self.keys[key as usize];
     }
 }
 
 fn main() {
-    let inputs = [(10, 1, 10), (6, 1, 10), (21, 17, 10)];
-
-    for (n, k, max_pts) in inputs {
-        let result = Solution::new21_game(n, k, max_pts);
-        println!("{result}");
-    }
+    let mut my_hash_set = MyHashSet::new();
+    my_hash_set.add(1);
+    my_hash_set.add(2);
+    println!("{}", my_hash_set.contains(1));
+    println!("{}", my_hash_set.contains(3));
+    my_hash_set.add(2);
+    println!("{}", my_hash_set.contains(2));
+    my_hash_set.remove(2);
+    println!("{}", my_hash_set.contains(2));
 }

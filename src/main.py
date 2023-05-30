@@ -1,35 +1,29 @@
-class Solution:
-    def new21Game(self, n: int, k: int, max_pts: int) -> float:
-        if k == 0:
-            return 1.0
-        elif n >= (k + max_pts):
-            return 1.0
+class MyHashSet:
+    nums: list[bool]
 
-        dp = [0.0 for _ in range(n + 1)]
-        dp[0] = 1.0
-        sum = 1.0
-        result = 0.0
+    def __init__(self):
+        self.nums = [False for i in range(1000001)]
 
-        for i in range(1, n + 1):
-            dp[i] = sum / max_pts
-            if i < k:
-                sum += dp[i]
-            else:
-                result += dp[i]
+    def add(self, key: int) -> None:
+        self.nums[key] = True
 
-            if (i - max_pts) >= 0:
-                sum -= dp[i - max_pts]
+    def remove(self, key: int) -> None:
+        self.nums[key] = False
 
-        return result
+    def contains(self, key: int) -> bool:
+        return self.nums[key]
 
 
 def main():
-    inputs = [(10, 1, 10), (6, 1, 10), (21, 17, 10)]
-
-    for n, k, max_pts in inputs:
-        solution = Solution()
-        result = solution.new21Game(n, k, max_pts)
-        print(result)
+    my_hash_set = MyHashSet()
+    my_hash_set.add(1)
+    my_hash_set.add(2)
+    print(my_hash_set.contains(1))
+    print(my_hash_set.contains(3))
+    my_hash_set.add(2)
+    print(my_hash_set.contains(2))
+    my_hash_set.remove(2)
+    print(my_hash_set.contains(2))
 
 
 if __name__ == "__main__":

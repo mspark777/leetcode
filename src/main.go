@@ -4,42 +4,36 @@ import (
 	"fmt"
 )
 
-func new21Game(n int, k int, maxPts int) float64 {
-	if k == 0 {
-		return 1.0
-	} else if n >= (k + maxPts) {
-		return 1.0
+type MyHashSet struct {
+	nums []bool
+}
+
+func Constructor() MyHashSet {
+	return MyHashSet{
+		nums: make([]bool, 1000001),
 	}
+}
 
-	dp := make([]float64, n+1)
-	dp[0] = 1.0
-	sum := 1.0
-	result := 0.0
-	for i := 1; i <= n; i += 1 {
-		dp[i] = sum / float64(maxPts)
-		if i < k {
-			sum += dp[i]
-		} else {
-			result += dp[i]
-		}
+func (this *MyHashSet) Add(key int) {
+	this.nums[key] = true
+}
 
-		if (i - maxPts) >= 0 {
-			sum -= dp[i-maxPts]
-		}
-	}
+func (this *MyHashSet) Remove(key int) {
+	this.nums[key] = false
+}
 
-	return result
+func (this *MyHashSet) Contains(key int) bool {
+	return this.nums[key]
 }
 
 func main() {
-	inputs := [][]int{
-		{10, 1, 10},
-		{6, 1, 10},
-		{21, 17, 10},
-	}
-
-	for _, input := range inputs {
-		result := new21Game(input[0], input[1], input[2])
-		fmt.Println(result)
-	}
+	myHashSet := Constructor()
+	myHashSet.Add(1)
+	myHashSet.Add(2)
+	fmt.Println(myHashSet.Contains(1))
+	fmt.Println(myHashSet.Contains(3))
+	myHashSet.Add(2)
+	fmt.Println(myHashSet.Contains(2))
+	myHashSet.Remove(2)
+	fmt.Println(myHashSet.Contains(2))
 }
