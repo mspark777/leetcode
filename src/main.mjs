@@ -1,86 +1,90 @@
-class UndergroundSystem {
-  /** @type { Map<string, [number, number] } */
-  #times
-  /** @type { Map<number, [string, number] } */
-  #checkIns
-  constructor () {
-    this.#times = new Map()
-    this.#checkIns = new Map()
+/**
+  * @param {number} x
+  * @param {number} y
+  * @param {number} dx
+  * @param {number} dy
+  * @returns {boolean}
+  */
+function outRange (x, y, dx, dy) {
+  return (x < 0) || (y < 0) || (x > dx) || (y > dy)
+}
+
+/**
+  * @param {number} x
+  * @param {number} y
+  * @param {number} dx
+  * @param {number} dy
+  * @returns {boolean}
+  */
+function reached (x, y, dx, dy) {
+  return (x === dx) && (y === dy)
+}
+
+/**
+  * @param {number[][]} grid
+  * @returns {number}
+  */
+function shortestPathBinaryMatrix (grid) {
+  const VISIT = 1
+  const NOT_FOUND = -1
+
+  const dx = grid[0].length - 1
+  const dy = grid.length - 1
+  if (grid[dy][dx] === VISIT) {
+    return NOT_FOUND
   }
 
-  /**
-    * @param {number} id
-    * @param {string} stationName
-    * @param {number} t
-    * @returns {undefined}
-    */
-  checkIn (id, stationName, t) {
-    this.#checkIns.set(id, [stationName, t])
-  }
+  const nexts = [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+    [-1, 0],
+    [1, 0],
+    [-1, 1],
+    [0, 1],
+    [1, 1]
+  ]
 
-  /**
-    * @param {number} id
-    * @param {string} stationName
-    * @param {number} t
-    * @returns {undefined}
-    */
-  checkOut (id, stationName, t) {
-    const memo = this.#checkIns.get(id)
-    if (memo == null) {
-      return
+  let result = Number.MAX_SAFE_INTEGER
+  const queue = [{ x: 0, y: 0, length: 1 }]
+  for (let node = queue.shift(); node != null; node = queue.shift()) {
+    if (reached(node.x, node.y, dx, dy)) {
+      result = Math.min(result, node.length)
+      continue
+    } else if (grid[node.y][node.x] === VISIT) {
+      continue
     }
 
-    const [from, inAt] = memo
-    const key = `${from}-${stationName}`
-    const travelTime = t - inAt
-    const [total, count] = this.#times.get(key) ?? [0, 0]
-    this.#times.set(key, [total + travelTime, count + 1])
+    const length = node.length + 1
+    if (length >= result) {
+      continue
+    }
+
+    grid[node.y][node.x] = VISIT
+
+    for (const [nx, ny] of nexts) {
+      const x = node.x + nx
+      const y = node.y + ny
+      if (!outRange(x, y, dx, dy)) {
+        queue.push({ x, y, length })
+      }
+    }
   }
 
-  /**
-    * @param {string} startStation
-    * @param {string} endStation
-    * @returns {number}
-    */
-  getAverageTime (startStation, endStation) {
-    const key = `${startStation}-${endStation}`
-    const [total, count] = this.#times.get(key) ?? [0, 0]
-    return total / count
-  }
-}
-
-function case0 () {
-  const undergroundSystem = new UndergroundSystem()
-  undergroundSystem.checkIn(45, 'Leyton', 3)
-  undergroundSystem.checkIn(32, 'Paradise', 8)
-  undergroundSystem.checkIn(27, 'Leyton', 10)
-  undergroundSystem.checkOut(45, 'Waterloo', 15)
-  undergroundSystem.checkOut(27, 'Waterloo', 20)
-  undergroundSystem.checkOut(32, 'Cambridge', 22)
-  console.log(undergroundSystem.getAverageTime('Paradise', 'Cambridge'))
-  console.log(undergroundSystem.getAverageTime('Leyton', 'Waterloo'))
-  undergroundSystem.checkIn(10, 'Leyton', 24)
-  console.log(undergroundSystem.getAverageTime('Leyton', 'Waterloo'))
-  undergroundSystem.checkOut(10, 'Waterloo', 38)
-  console.log(undergroundSystem.getAverageTime('Leyton', 'Waterloo'))
-}
-
-function case1 () {
-  const undergroundSystem = new UndergroundSystem()
-  undergroundSystem.checkIn(10, 'Leyton', 3)
-  undergroundSystem.checkOut(10, 'Paradise', 8)
-  console.log(undergroundSystem.getAverageTime('Leyton', 'Paradise'))
-  undergroundSystem.checkIn(5, 'Leyton', 10)
-  undergroundSystem.checkOut(5, 'Paradise', 16)
-  console.log(undergroundSystem.getAverageTime('Leyton', 'Paradise'))
-  undergroundSystem.checkIn(2, 'Leyton', 21)
-  undergroundSystem.checkOut(2, 'Paradise', 30)
-  console.log(undergroundSystem.getAverageTime('Leyton', 'Paradise'))
+  return result < Number.MAX_SAFE_INTEGER ? result : NOT_FOUND
 }
 
 function main () {
-  case0()
-  console.log('---')
-  case1()
+  const inputs = [
+    [[0, 1], [1, 0]],
+    [[0, 0, 0], [1, 1, 0], [1, 1, 0]],
+    [[1, 0, 0], [1, 1, 0], [1, 1, 0]],
+    [[0, 0, 0], [1, 1, 0], [1, 1, 1]]
+  ]
+
+  for (const grid of inputs) {
+    const result = shortestPathBinaryMatrix(grid)
+    console.log(result)
+  }
 }
 main()
