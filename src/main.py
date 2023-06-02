@@ -2,68 +2,63 @@ from typing import List
 
 
 class Solution:
-    def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
-        VISIT = 1
-        NOT_FOUND = -1
+    def maximumDetonation(self, bombs: List[List[int]]) -> int:
+        graph: dict[int, list[int]] = {}
 
-        dx = len(grid[0]) - 1
-        dy = len(grid) - 1
-        if grid[dy][dx] == VISIT:
-            return NOT_FOUND
-        nexts: list[tuple[int, int]] = [
-            (-1, -1),
-            (0, -1),
-            (1, -1),
-            (-1, 0),
-            (1, 0),
-            (-1, 1),
-            (0, 1),
-            (1, 1),
-        ]
+        for i, ibomb in enumerate(bombs):
+            for j, jbomb in enumerate(bombs):
+                if i == j:
+                    continue
 
-        MAX: int = 2**31
-        result = MAX
-        queue: list[tuple[int, int, int]] = [(0, 0, 1)]
-        while queue:
-            cx, cy, clen = queue.pop(0)
-            if self.reached(cx, cy, dx, dy):
-                result = min(result, clen)
+                [ix, iy, ir] = ibomb
+                [jx, jy, _] = jbomb
+                dx = ix - jx
+                dy = iy - jy
+                d = (dx * dx) + (dy * dy)
+                r = ir * ir
+                if r < d:
+                    continue
+
+                nodes = graph.get(i)
+                if nodes is not None:
+                    nodes.append(j)
+                else:
+                    graph[i] = [j]
+
+        result = 0
+        for i in range(len(bombs)):
+            result = max(result, self.dfs(i, graph))
+
+        return result
+
+    def dfs(self, i: int, graph: dict[int, list[int]]) -> int:
+        stack: list[int] = [i]
+        visited: set[int] = set(stack)
+
+        while stack:
+            top = stack.pop()
+            nodes = graph.get(top)
+            if nodes is None:
                 continue
-            elif grid[cy][cx] == VISIT:
-                continue
 
-            nlen = clen + 1
-            if nlen > result:
-                continue
+            for node in nodes:
+                if node not in visited:
+                    stack.append(node)
+                    visited.add(node)
 
-            grid[cy][cx] = VISIT
-
-            for nx, ny in nexts:
-                x = cx + nx
-                y = cy + ny
-                if not self.out_range(x, y, dx, dy):
-                    queue.append((x, y, nlen))
-
-        return result if result < MAX else NOT_FOUND
-
-    def reached(self, x: int, y: int, dx: int, dy: int) -> bool:
-        return (x == dx) and (y == dy)
-
-    def out_range(self, x: int, y: int, dx: int, dy: int) -> bool:
-        return (x < 0) or (y < 0) or (x > dx) or (y > dy)
+        return len(visited)
 
 
 def main():
     inputs = [
-        [[0, 1], [1, 0]],
-        [[0, 0, 0], [1, 1, 0], [1, 1, 0]],
-        [[1, 0, 0], [1, 1, 0], [1, 1, 0]],
-        [[0, 0, 0], [1, 1, 0], [1, 1, 1]],
+        [[2, 1, 3], [6, 1, 4]],
+        [[1, 1, 5], [10, 10, 5]],
+        [[1, 2, 3], [2, 3, 1], [3, 4, 2], [4, 5, 3], [5, 6, 4]],
     ]
 
-    for grid in inputs:
+    for bombs in inputs:
         solution = Solution()
-        result = solution.shortestPathBinaryMatrix(grid)
+        result = solution.maximumDetonation(bombs)
         print(result)
 
 

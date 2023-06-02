@@ -1,89 +1,72 @@
 /**
-  * @param {number} x
-  * @param {number} y
-  * @param {number} dx
-  * @param {number} dy
-  * @returns {boolean}
+  * @param {number} i
+  * @param {Map<number, number[]>} graph
+  * @returns number
   */
-function outRange (x, y, dx, dy) {
-  return (x < 0) || (y < 0) || (x > dx) || (y > dy)
-}
+function dfs (i, graph) {
+  const stack = [i]
+  const visited = new Set([i])
 
-/**
-  * @param {number} x
-  * @param {number} y
-  * @param {number} dx
-  * @param {number} dy
-  * @returns {boolean}
-  */
-function reached (x, y, dx, dy) {
-  return (x === dx) && (y === dy)
-}
-
-/**
-  * @param {number[][]} grid
-  * @returns {number}
-  */
-function shortestPathBinaryMatrix (grid) {
-  const VISIT = 1
-  const NOT_FOUND = -1
-
-  const dx = grid[0].length - 1
-  const dy = grid.length - 1
-  if (grid[dy][dx] === VISIT) {
-    return NOT_FOUND
-  }
-
-  const nexts = [
-    [-1, -1],
-    [0, -1],
-    [1, -1],
-    [-1, 0],
-    [1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1]
-  ]
-
-  let result = Number.MAX_SAFE_INTEGER
-  const queue = [{ x: 0, y: 0, length: 1 }]
-  for (let node = queue.shift(); node != null; node = queue.shift()) {
-    if (reached(node.x, node.y, dx, dy)) {
-      result = Math.min(result, node.length)
-      continue
-    } else if (grid[node.y][node.x] === VISIT) {
-      continue
-    }
-
-    const length = node.length + 1
-    if (length >= result) {
-      continue
-    }
-
-    grid[node.y][node.x] = VISIT
-
-    for (const [nx, ny] of nexts) {
-      const x = node.x + nx
-      const y = node.y + ny
-      if (!outRange(x, y, dx, dy)) {
-        queue.push({ x, y, length })
+  for (let top = stack.pop(); top != null; top = stack.pop()) {
+    const nodes = graph.get(top) ?? []
+    for (const node of nodes) {
+      if (!visited.has(node)) {
+        stack.push(node)
+        visited.add(node)
       }
     }
   }
 
-  return result < Number.MAX_SAFE_INTEGER ? result : NOT_FOUND
+  return visited.size
+}
+
+/**
+  * @param {number[][]} bombs
+  * @returns {number}
+  */
+function maximumDetonation (bombs) {
+  /** @type {Map<number, number[]> */
+  const graph = new Map()
+
+  for (const [i, ibomb] of bombs.entries()) {
+    for (const [j, jbomb] of bombs.entries()) {
+      if (i === j) {
+        continue
+      }
+
+      const [ix, iy, ir] = ibomb
+      const [jx, jy] = jbomb
+      const dx = ix - jx
+      const dy = iy - jy
+      const range = ir * ir
+      const distance = (dx * dx) + (dy * dy)
+      if (range < distance) {
+        continue
+      }
+
+      const nodes = graph.get(i) ?? []
+      nodes.push(j)
+      graph.set(i, nodes)
+    }
+  }
+
+  let result = 0
+  for (let i = 0; i < bombs.length; i += 1) {
+    result = Math.max(result, dfs(i, graph))
+  }
+
+  return result
 }
 
 function main () {
   const inputs = [
-    [[0, 1], [1, 0]],
-    [[0, 0, 0], [1, 1, 0], [1, 1, 0]],
-    [[1, 0, 0], [1, 1, 0], [1, 1, 0]],
-    [[0, 0, 0], [1, 1, 0], [1, 1, 1]]
+    [[2, 1, 3], [6, 1, 4]],
+    [[1, 1, 5], [10, 10, 5]],
+    [[1, 2, 3], [2, 3, 1], [3, 4, 2], [4, 5, 3], [5, 6, 4]]
   ]
 
-  for (const grid of inputs) {
-    const result = shortestPathBinaryMatrix(grid)
+  for (const bombs of inputs) {
+    const result = maximumDetonation(bombs)
     console.log(result)
   }
 }

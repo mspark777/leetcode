@@ -4,36 +4,78 @@ import (
 	"fmt"
 )
 
-type MyHashSet struct {
-	nums []bool
-}
+func dfs(i int, graph map[int][]int) int {
+	stack := make([]int, 0, len(graph))
+	visited := map[int]bool{i: true}
 
-func Constructor() MyHashSet {
-	return MyHashSet{
-		nums: make([]bool, 1000001),
+	stack = append(stack, i)
+
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+		nodes, ok := graph[top]
+		if !ok {
+			continue
+		}
+
+		for _, node := range nodes {
+			if _, v := visited[node]; !v {
+				stack = append(stack, node)
+				visited[node] = true
+			}
+		}
 	}
+
+	return len(visited)
 }
 
-func (this *MyHashSet) Add(key int) {
-	this.nums[key] = true
-}
+func maximumDetonation(bombs [][]int) int {
+	graph := map[int][]int{}
 
-func (this *MyHashSet) Remove(key int) {
-	this.nums[key] = false
-}
+	for i, ibomb := range bombs {
+		for j, jbomb := range bombs {
+			if i == j {
+				continue
+			}
 
-func (this *MyHashSet) Contains(key int) bool {
-	return this.nums[key]
+			dx := ibomb[0] - jbomb[0]
+			dy := ibomb[1] - jbomb[1]
+			d := (dx * dx) + (dy * dy)
+			r := ibomb[2] * ibomb[2]
+			if r < d {
+				continue
+			}
+
+			nodes, ok := graph[i]
+			if ok {
+				graph[i] = append(nodes, j)
+			} else {
+				graph[i] = []int{j}
+			}
+		}
+	}
+
+	result := 0
+	for i := range bombs {
+		count := dfs(i, graph)
+		if count > result {
+			result = count
+		}
+	}
+
+	return result
 }
 
 func main() {
-	myHashSet := Constructor()
-	myHashSet.Add(1)
-	myHashSet.Add(2)
-	fmt.Println(myHashSet.Contains(1))
-	fmt.Println(myHashSet.Contains(3))
-	myHashSet.Add(2)
-	fmt.Println(myHashSet.Contains(2))
-	myHashSet.Remove(2)
-	fmt.Println(myHashSet.Contains(2))
+	inputs := [][][]int{
+		{{2, 1, 3}, {6, 1, 4}},
+		{{1, 1, 5}, {10, 10, 5}},
+		{{1, 2, 3}, {2, 3, 1}, {3, 4, 2}, {4, 5, 3}, {5, 6, 4}},
+	}
+
+	for _, bombs := range inputs {
+		result := maximumDetonation(bombs)
+		fmt.Println(result)
+	}
 }
