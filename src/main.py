@@ -1,16 +1,33 @@
+from typing import List
+
+
 class Solution:
-    def minFlips(self, a: int, b: int, c: int) -> int:
-        d = (a | b) ^ c
-        e = a & b & d
-        return d.bit_count() + e.bit_count()
+    def countNegatives(self, grid: List[List[int]]) -> int:
+        result = 0
+        col_count = len(grid[0])
+        cur = col_count - 1
+
+        for row in grid:
+            while cur >= 0:
+                if row[cur] < 0:
+                    cur -= 1
+                else:
+                    break
+
+            result += col_count - (cur + 1)
+
+        return result
 
 
 def main():
-    inputs = [(2, 6, 5), (4, 2, 7), (1, 2, 3), (7, 3, 9)]
+    inputs = [
+        [[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]],
+        [[3, 2], [1, 0]],
+    ]
 
-    for a, b, c in inputs:
+    for grid in inputs:
         solution = Solution()
-        result = solution.minFlips(a, b, c)
+        result = solution.countNegatives(grid)
         print(result)
 
 

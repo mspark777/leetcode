@@ -2,28 +2,36 @@ package main
 
 import (
 	"fmt"
-	"math/bits"
 )
 
-func minFlips(a int, b int, c int) int {
-	ua := uint(a)
-	ub := uint(b)
-	uc := uint(c)
-	ud := (ua | ub) ^ uc
-	ue := ua & ub & ud
-	return bits.OnesCount(ud) + bits.OnesCount(ue)
+func countNegatives(grid [][]int) int {
+	result := 0
+	colCount := len(grid[0])
+	cur := colCount - 1
+
+	for _, row := range grid {
+		for cur >= 0 {
+			if row[cur] < 0 {
+				cur -= 1
+			} else {
+				break
+			}
+		}
+
+		result += colCount - (cur + 1)
+	}
+
+	return result
 }
 
 func main() {
-	inputs := [][]int{
-		{2, 6, 5},
-		{4, 2, 7},
-		{1, 2, 3},
-		{7, 3, 9},
+	inputs := [][][]int{
+		{{4, 3, 2, -1}, {3, 2, 1, -1}, {1, 1, -1, -2}, {-1, -1, -2, -3}},
+		{{3, 2}, {1, 0}},
 	}
 
-	for _, input := range inputs {
-		result := minFlips(input[0], input[1], input[2])
+	for _, grid := range inputs {
+		result := countNegatives(grid)
 		fmt.Println(result)
 	}
 }

@@ -3,19 +3,40 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn min_flips(a: i32, b: i32, c: i32) -> i32 {
-        let d = (a | b) ^ c;
-        let e = a & b & d;
-        let result = d.count_ones() + e.count_ones();
-        return result as i32;
+    pub fn count_negatives(grid: Vec<Vec<i32>>) -> i32 {
+        let mut result = 0;
+        let col_count = grid[0].len() as i32;
+        let mut cur = col_count - 1;
+
+        for row in grid.iter() {
+            while cur >= 0 {
+                if row[cur as usize] < 0 {
+                    cur -= 1;
+                } else {
+                    break;
+                }
+            }
+
+            result += col_count - (cur + 1)
+        }
+
+        return result;
     }
 }
 
 fn main() {
-    let inputs = [(2, 6, 5), (4, 2, 7), (1, 2, 3), (7, 3, 9)];
+    let inputs = [
+        vec![
+            vec![4, 3, 2, -1],
+            vec![3, 2, 1, -1],
+            vec![1, 1, -1, -2],
+            vec![-1, -1, -2, -3],
+        ],
+        vec![vec![3, 2], vec![1, 0]],
+    ];
 
-    for (a, b, c) in inputs {
-        let result = Solution::min_flips(a, b, c);
+    for grid in inputs {
+        let result = Solution::count_negatives(grid);
         println!("{result}");
     }
 }

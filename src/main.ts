@@ -1,30 +1,33 @@
 import '@total-typescript/ts-reset'
 
-function countSetBits (n: number): number {
-  let count = 0
-  while (n > 0) {
-    n &= (n - 1)
-    count++
-  }
-  return count
-}
+function countNegatives (grid: number[][]): number {
+  let result = 0
+  const colCount = grid[0].length
+  let cur = colCount - 1
 
-function minFlips (a: number, b: number, c: number): number {
-  const d = (a | b) ^ c
-  const e = a & b & d
-  return countSetBits(d) + countSetBits(e)
+  for (const row of grid) {
+    while (cur >= 0) {
+      if (row[cur] < 0) {
+        cur -= 1
+      } else {
+        break
+      }
+    }
+
+    result += colCount - (cur + 1)
+  }
+
+  return result
 }
 
 function main (): void {
   const inputs = [
-    [2, 6, 5],
-    [4, 2, 7],
-    [1, 2, 3],
-    [7, 3, 9]
+    [[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]],
+    [[3, 2], [1, 0]]
   ]
 
-  for (const [a, b, c] of inputs) {
-    const result = minFlips(a, b, c)
+  for (const grid of inputs) {
+    const result = countNegatives(grid)
     console.log(result)
   }
 }
