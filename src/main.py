@@ -2,32 +2,31 @@ from typing import List
 
 
 class Solution:
-    def countNegatives(self, grid: List[List[int]]) -> int:
-        result = 0
-        col_count = len(grid[0])
-        cur = col_count - 1
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        t = ord(target)
+        left = 0
+        right = len(letters) - 1
+        while left <= right:
+            middle = (left + right) // 2
+            letter = ord(letters[middle])
+            if letter <= t:
+                left = middle + 1
+            else:
+                right = middle - 1
 
-        for row in grid:
-            while cur >= 0:
-                if row[cur] < 0:
-                    cur -= 1
-                else:
-                    break
-
-            result += col_count - (cur + 1)
-
-        return result
+        return letters[left] if left < len(letters) else letters[0]
 
 
 def main():
     inputs = [
-        [[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]],
-        [[3, 2], [1, 0]],
+        (["c", "f", "j"], "a"),
+        (["c", "f", "j"], "c"),
+        (["x", "x", "y", "y"], "z"),
     ]
 
-    for grid in inputs:
+    for letters, target in inputs:
         solution = Solution()
-        result = solution.countNegatives(grid)
+        result = solution.nextGreatestLetter(letters, target)
         print(result)
 
 

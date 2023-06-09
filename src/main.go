@@ -4,34 +4,40 @@ import (
 	"fmt"
 )
 
-func countNegatives(grid [][]int) int {
-	result := 0
-	colCount := len(grid[0])
-	cur := colCount - 1
-
-	for _, row := range grid {
-		for cur >= 0 {
-			if row[cur] < 0 {
-				cur -= 1
-			} else {
-				break
-			}
+func nextGreatestLetter(letters []byte, target byte) byte {
+	left := 0
+	right := len(letters) - 1
+	for left <= right {
+		middle := (left + right) / 2
+		letter := letters[middle]
+		if letter <= target {
+			left = middle + 1
+		} else {
+			right = middle - 1
 		}
-
-		result += colCount - (cur + 1)
 	}
 
-	return result
+	if left < len(letters) {
+		return letters[left]
+	}
+
+	return letters[0]
+}
+
+type input struct {
+	letters []byte
+	target  byte
 }
 
 func main() {
-	inputs := [][][]int{
-		{{4, 3, 2, -1}, {3, 2, 1, -1}, {1, 1, -1, -2}, {-1, -1, -2, -3}},
-		{{3, 2}, {1, 0}},
+	inputs := []input{
+		{letters: []byte{'c', 'f', 'j'}, target: 'a'},
+		{letters: []byte{'c', 'f', 'j'}, target: 'c'},
+		{letters: []byte{'x', 'x', 'y', 'y'}, target: 'z'},
 	}
 
-	for _, grid := range inputs {
-		result := countNegatives(grid)
+	for _, input := range inputs {
+		result := nextGreatestLetter(input.letters, input.target)
 		fmt.Println(result)
 	}
 }

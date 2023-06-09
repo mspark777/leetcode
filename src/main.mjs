@@ -1,35 +1,34 @@
 /**
-  * @param {number[][]} grid
-  * @returns {number}
+  * @param {string[]} letters
+  * @param {string} target
+  * @returns {string}
   */
-function countNegatives (grid) {
-  let result = 0
-  const colCount = grid[0].length
-  let cur = colCount - 1
-
-  for (const row of grid) {
-    while (cur >= 0) {
-      if (row[cur] < 0) {
-        cur -= 1
-      } else {
-        break
-      }
+function nextGreatestLetter (letters, target) {
+  let left = 0
+  let right = letters.length - 1
+  while (left <= right) {
+    const middle = Math.trunc((left + right) / 2)
+    const letter = letters[middle]
+    const cmp = letter.localeCompare(target)
+    if (cmp <= 0) {
+      left = middle + 1
+    } else {
+      right = middle - 1
     }
-
-    result += colCount - (cur + 1)
   }
 
-  return result
+  return left < letters.length ? letters[left] : letters[0]
 }
 
 function main () {
   const inputs = [
-    [[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]],
-    [[3, 2], [1, 0]]
+    [['c', 'f', 'j'], 'a'],
+    [['c', 'f', 'j'], 'c'],
+    [['x', 'x', 'y', 'y'], 'z']
   ]
 
-  for (const grid of inputs) {
-    const result = countNegatives(grid)
+  for (const [letters, target] of inputs) {
+    const result = nextGreatestLetter(letters, target)
     console.log(result)
   }
 }
