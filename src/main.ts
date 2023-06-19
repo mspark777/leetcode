@@ -1,31 +1,25 @@
 import '@total-typescript/ts-reset'
 
-function nextGreatestLetter (letters: string[], target: string): string {
-  let left = 0
-  let right = letters.length - 1
-  while (left <= right) {
-    const middle = Math.trunc((left + right) / 2)
-    const letter = letters[middle]
-    const cmp = letter.localeCompare(target)
-    if (cmp <= 0) {
-      left = middle + 1
-    } else {
-      right = middle - 1
-    }
+function largestAltitude (gain: number[]): number {
+  let result = 0
+  let current = result
+
+  for (const altitude of gain) {
+    current += altitude
+    result = Math.max(result, current)
   }
 
-  return left < letters.length ? letters[left] : letters[0]
+  return result
 }
 
 function main (): void {
-  const inputs: Array<[string[], string]> = [
-    [['c', 'f', 'j'], 'a'],
-    [['c', 'f', 'j'], 'c'],
-    [['x', 'x', 'y', 'y'], 'z']
+  const inputs: number[][] = [
+    [-5, 1, 5, 0, -7],
+    [-4, -3, -2, -1, 4, 3, 2]
   ]
 
-  for (const [letters, target] of inputs) {
-    const result = nextGreatestLetter(letters, target)
+  for (const gain of inputs) {
+    const result = largestAltitude(gain)
     console.log(result)
   }
 }

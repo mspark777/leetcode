@@ -3,39 +3,24 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn next_greatest_letter(letters: Vec<char>, target: char) -> char {
-        let mut left = 0usize;
-        let mut right = letters.len() - 1;
-        while left <= right {
-            let middle = (left + right) / 2;
-            let letter = letters[middle];
-            if letter <= target {
-                left = middle + 1;
-            } else if middle >= 1 {
-                right = middle - 1;
-            } else {
-                left = letters.len();
-                break;
-            }
+    pub fn largest_altitude(gain: Vec<i32>) -> i32 {
+        let mut result = 0;
+        let mut current = result;
+
+        for &altitude in gain.iter() {
+            current += altitude;
+            result = result.max(current);
         }
 
-        if left < letters.len() {
-            return letters[left];
-        }
-
-        return letters[0];
+        return result;
     }
 }
 
 fn main() {
-    let inputs = [
-        (vec!['c', 'f', 'j'], 'a'),
-        (vec!['c', 'f', 'j'], 'c'),
-        (vec!['x', 'x', 'y', 'y'], 'z'),
-    ];
+    let inputs = [vec![-5, 1, 5, 0, -7], vec![-4, -3, -2, -1, 4, 3, 2]];
 
-    for (letters, target) in inputs {
-        let result = Solution::next_greatest_letter(letters, target);
+    for gain in inputs {
+        let result = Solution::largest_altitude(gain);
         println!("{result}");
     }
 }

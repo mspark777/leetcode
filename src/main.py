@@ -2,31 +2,23 @@ from typing import List
 
 
 class Solution:
-    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
-        t = ord(target)
-        left = 0
-        right = len(letters) - 1
-        while left <= right:
-            middle = (left + right) // 2
-            letter = ord(letters[middle])
-            if letter <= t:
-                left = middle + 1
-            else:
-                right = middle - 1
+    def largestAltitude(self, gain: List[int]) -> int:
+        result = 0
+        current = result
 
-        return letters[left] if left < len(letters) else letters[0]
+        for altitude in gain:
+            current += altitude
+            result = max(result, current)
+
+        return result
 
 
 def main():
-    inputs = [
-        (["c", "f", "j"], "a"),
-        (["c", "f", "j"], "c"),
-        (["x", "x", "y", "y"], "z"),
-    ]
+    inputs = [[-5, 1, 5, 0, -7], [-4, -3, -2, -1, 4, 3, 2]]
 
-    for letters, target in inputs:
+    for gain in inputs:
         solution = Solution()
-        result = solution.nextGreatestLetter(letters, target)
+        result = solution.largestAltitude(gain)
         print(result)
 
 
