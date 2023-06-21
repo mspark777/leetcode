@@ -1,22 +1,34 @@
 import '@total-typescript/ts-reset'
 
-function getAverages (nums: number[], k: number): number[] {
-  if (k < 1) {
-    return nums
+function getCost (nums: number[], cost: number[], base: number): number {
+  let result = 0
+  for (const [i, num] of nums.entries()) {
+    result += Math.abs(num - base) * cost[i]
   }
 
-  const result = nums.map(() => -1)
-  const windowLen = (k * 2) + 1
-  if (windowLen > nums.length) {
-    return result
+  return result
+}
+
+function minCost (nums: number[], cost: number[]): number {
+  let left = 1000001
+  let right = 0
+  for (const num of nums) {
+    left = Math.min(left, num)
+    right = Math.max(right, num)
   }
 
-  let windowSum = nums.slice(0, windowLen).reduce((acc, cur) => acc + cur)
-  result[k] = Math.trunc(windowSum / windowLen)
+  let result = getCost(nums, cost, nums[0])
+  while (left < right) {
+    const mid = Math.trunc((left + right) / 2)
+    const cost1 = getCost(nums, cost, mid)
+    const cost2 = getCost(nums, cost, mid + 1)
+    result = Math.min(cost1, cost2)
 
-  for (let i = windowLen; i < nums.length; i += 1) {
-    windowSum = windowSum - nums[i - windowLen] + nums[i]
-    result[i - k] = Math.trunc(windowSum / windowLen)
+    if (cost1 > cost2) {
+      left = mid + 1
+    } else {
+      right = mid
+    }
   }
 
   return result
@@ -24,18 +36,17 @@ function getAverages (nums: number[], k: number): number[] {
 
 interface Input {
   readonly nums: number[]
-  readonly k: number
+  readonly cost: number[]
 }
 
 function main (): void {
   const inputs: Input[] = [
-    { nums: [7, 4, 3, 9, 1, 8, 5, 2, 6], k: 3 },
-    { nums: [100000], k: 0 },
-    { nums: [8], k: 100000 }
+    { nums: [1, 3, 5, 2], cost: [2, 3, 1, 14] },
+    { nums: [2, 2, 2, 2, 2], cost: [4, 2, 8, 1, 3] }
   ]
 
-  for (const { nums, k } of inputs) {
-    const result = getAverages(nums, k)
+  for (const { nums, cost } of inputs) {
+    const result = minCost(nums, cost)
     console.log(result)
   }
 }

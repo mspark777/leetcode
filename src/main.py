@@ -1,33 +1,42 @@
 from typing import List
-from functools import reduce
 
 
 class Solution:
-    def getAverages(self, nums: List[int], k: int) -> List[int]:
-        if k < 1:
-            return nums
+    def minCost(self, nums: List[int], cost: List[int]) -> int:
+        left = 1000001
+        right = 0
+        for num in nums:
+            left = min(left, num)
+            right = max(right, num)
 
-        result = [-1] * len(nums)
-        window_len = (k * 2) + 1
-        if window_len > len(nums):
-            return result
+        result = self.get_cost(nums, cost, nums[0])
+        while left < right:
+            mid = (left + right) // 2
+            cost1 = self.get_cost(nums, cost, mid)
+            cost2 = self.get_cost(nums, cost, mid + 1)
+            result = min(cost1, cost2)
 
-        window_sum = reduce(lambda x, y: x + y, nums[0:window_len])
-        result[k] = window_sum // window_len
+            if cost1 > cost2:
+                left = mid + 1
+            else:
+                right = mid
 
-        for i in range(window_len, len(nums)):
-            window_sum = window_sum - nums[i - window_len] + nums[i]
-            result[i - k] = window_sum // window_len
+        return result
+
+    def get_cost(self, nums: list[int], cost: list[int], base: int) -> int:
+        result = 0
+        for i, num in enumerate(nums):
+            result += abs(num - base) * cost[i]
 
         return result
 
 
 def main():
-    inputs = [([7, 4, 3, 9, 1, 8, 5, 2, 6], 3), ([100000], 0), ([8], 100000)]
+    inputs = [([1, 3, 5, 2], [2, 3, 1, 14]), ([2, 2, 2, 2, 2], [4, 2, 8, 1, 3])]
 
-    for nums, k in inputs:
+    for nums, cost in inputs:
         solution = Solution()
-        result = solution.getAverages(nums, k)
+        result = solution.minCost(nums, cost)
         print(result)
 
 

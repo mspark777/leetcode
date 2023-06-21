@@ -3,28 +3,38 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn get_averages(nums: Vec<i32>, k: i32) -> Vec<i32> {
-        if k < 1 {
-            return nums;
+    pub fn min_cost(nums: Vec<i32>, cost: Vec<i32>) -> i64 {
+        let mut left = 1000001;
+        let mut right = 0;
+        for &num in nums.iter() {
+            left = left.min(num);
+            right = right.max(num);
         }
 
-        let mut result = vec![-1; nums.len()];
-        let window_len = (k * 2) + 1;
-        if (window_len as usize) > nums.len() {
-            return result;
+        let mut result = Self::get_cost(&nums, &cost, nums[0]);
+        while left < right {
+            let mid = (left + right) / 2;
+            let cost1 = Self::get_cost(&nums, &cost, mid);
+            let cost2 = Self::get_cost(&nums, &cost, mid + 1);
+
+            if cost1 < cost2 {
+                result = cost1;
+                right = mid;
+            } else {
+                result = cost2;
+                left = mid + 1;
+            }
         }
 
-        let mut window_sum = nums
-            .iter()
-            .take(window_len as usize)
-            .cloned()
-            .reduce(|acc, cur| acc + cur)
-            .unwrap();
-        result[k as usize] = window_sum / window_len;
+        return result;
+    }
 
-        for i in (window_len as usize)..nums.len() {
-            window_sum = window_sum - nums[i - window_len as usize] + nums[i];
-            result[i - k as usize] = window_sum / window_len;
+    fn get_cost(nums: &Vec<i32>, cost: &Vec<i32>, base: i32) -> i64 {
+        let mut result = 0i64;
+
+        for (i, &num) in nums.iter().enumerate() {
+            let diff = (num - base).abs() as i64;
+            result += diff * (cost[i]) as i64;
         }
 
         return result;
@@ -33,13 +43,12 @@ impl Solution {
 
 fn main() {
     let inputs = [
-        (vec![7, 4, 3, 9, 1, 8, 5, 2, 6], 3),
-        (vec![100000], 0),
-        (vec![8], 100000),
+        (vec![1, 3, 5, 2], vec![2, 3, 1, 14]),
+        (vec![2, 2, 2, 2, 2], vec![4, 2, 8, 1, 3]),
     ];
 
-    for (nums, k) in inputs {
-        let result = Solution::get_averages(nums, k);
+    for (nums, cost) in inputs {
+        let result = Solution::min_cost(nums, cost);
         println!("{result:?}");
     }
 }

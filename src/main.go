@@ -4,30 +4,46 @@ import (
 	"fmt"
 )
 
-func getAverages(nums []int, k int) []int {
-	if k < 1 {
-		return nums
+func getCost(nums []int, cost []int, base int) int64 {
+	result := int64(0)
+
+	for i, num := range nums {
+		diff := int64(num - base)
+		if diff < 0 {
+			diff *= -1
+		}
+
+		result += diff * int64(cost[i])
 	}
 
-	result := make([]int, len(nums))
-	for i := range nums {
-		result[i] = -1
+	return result
+}
+
+func minCost(nums []int, cost []int) int64 {
+	left := 1000001
+	right := 0
+	for _, num := range nums {
+		if num < left {
+			left = num
+		}
+
+		if num > right {
+			right = num
+		}
 	}
 
-	windowLen := (k * 2) + 1
-	if windowLen > len(nums) {
-		return result
-	}
-
-	windowSum := 0
-	for i := 0; i < windowLen; i += 1 {
-		windowSum += nums[i]
-	}
-	result[k] = windowSum / windowLen
-
-	for i := windowLen; i < len(nums); i += 1 {
-		windowSum = windowSum - nums[i-windowLen] + nums[i]
-		result[i-k] = windowSum / windowLen
+	result := getCost(nums, cost, nums[0])
+	for left < right {
+		mid := (left + right) / 2
+		cost1 := getCost(nums, cost, mid)
+		cost2 := getCost(nums, cost, mid+1)
+		if cost1 < cost2 {
+			result = cost1
+			right = mid
+		} else {
+			result = cost2
+			left = mid + 1
+		}
 	}
 
 	return result
@@ -35,18 +51,17 @@ func getAverages(nums []int, k int) []int {
 
 type input struct {
 	nums []int
-	k    int
+	cost []int
 }
 
 func main() {
 	inputs := []input{
-		{nums: []int{7, 4, 3, 9, 1, 8, 5, 2, 6}, k: 3},
-		{nums: []int{100000}, k: 0},
-		{nums: []int{8}, k: 100000},
+		{nums: []int{1, 3, 5, 2}, cost: []int{2, 3, 1, 14}},
+		{nums: []int{2, 2, 2, 2, 2}, cost: []int{4, 2, 8, 1, 3}},
 	}
 
 	for _, input := range inputs {
-		result := getAverages(input.nums, input.k)
+		result := minCost(input.nums, input.cost)
 		fmt.Println(result)
 	}
 }
