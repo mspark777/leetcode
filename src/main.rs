@@ -1,40 +1,81 @@
 mod utils;
 
+use std::{cmp::Ordering, collections::BinaryHeap};
+
 use utils::Solution;
 
-impl Solution {
-    pub fn min_cost(nums: Vec<i32>, cost: Vec<i32>) -> i64 {
-        let mut left = 1000001;
-        let mut right = 0;
-        for &num in nums.iter() {
-            left = left.min(num);
-            right = right.max(num);
+#[derive(Eq, PartialEq)]
+struct Node {
+    cost: i32,
+    section: bool,
+}
+
+impl Ord for Node {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let diff = self.cost - other.cost;
+        if diff < 0 {
+            return Ordering::Greater;
+        } else if diff > 0 {
+            return Ordering::Less;
         }
 
-        let mut result = Self::get_cost(&nums, &cost, nums[0]);
-        while left < right {
-            let mid = (left + right) / 2;
-            let cost1 = Self::get_cost(&nums, &cost, mid);
-            let cost2 = Self::get_cost(&nums, &cost, mid + 1);
-
-            if cost1 < cost2 {
-                result = cost1;
-                right = mid;
-            } else {
-                result = cost2;
-                left = mid + 1;
-            }
-        }
-
-        return result;
+        return if self.section {
+            Ordering::Less
+        } else {
+            Ordering::Greater
+        };
     }
+}
 
-    fn get_cost(nums: &Vec<i32>, cost: &Vec<i32>, base: i32) -> i64 {
+impl PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        return Some(self.cmp(other));
+    }
+}
+
+impl Solution {
+    pub fn total_cost(costs: Vec<i32>, k: i32, candidates: i32) -> i64 {
+        let k = k as usize;
+        let candidates = candidates as usize;
+        let mut queue = BinaryHeap::<Node>::with_capacity(costs.len());
+        for i in 0..candidates {
+            queue.push(Node {
+                cost: costs[i],
+                section: false,
+            });
+        }
+
+        for i in candidates.max(costs.len() - candidates)..costs.len() {
+            queue.push(Node {
+                cost: costs[i],
+                section: true,
+            });
+        }
+
         let mut result = 0i64;
+        let mut head = candidates;
 
-        for (i, &num) in nums.iter().enumerate() {
-            let diff = (num - base).abs() as i64;
-            result += diff * (cost[i]) as i64;
+        let tail = costs.len() as i64 - (1 + candidates) as i64;
+        let mut tail = tail.max(0) as usize;
+        for _i in 0..k {
+            let Node { cost, section } = queue.pop().unwrap();
+            result += cost as i64;
+
+            if head <= tail {
+                if section {
+                    queue.push(Node {
+                        cost: costs[tail],
+                        section: true,
+                    });
+                    tail -= 1;
+                } else {
+                    queue.push(Node {
+                        cost: costs[head],
+                        section: false,
+                    });
+                    head += 1;
+                }
+            }
         }
 
         return result;
@@ -43,12 +84,21 @@ impl Solution {
 
 fn main() {
     let inputs = [
-        (vec![1, 3, 5, 2], vec![2, 3, 1, 14]),
-        (vec![2, 2, 2, 2, 2], vec![4, 2, 8, 1, 3]),
+        (vec![17, 12, 10, 2, 7, 2, 11, 20, 8], 3, 4),
+        (vec![1, 2, 4, 1], 3, 3),
+        (
+            vec![
+                69, 10, 63, 24, 1, 71, 55, 46, 4, 61, 78, 21, 85, 52, 83, 77, 42, 21, 73, 2, 80,
+                99, 98, 89, 55, 94, 63, 50, 43, 62, 14,
+            ],
+            21,
+            31,
+        ),
+        (vec![10, 1, 11, 10], 2, 1),
     ];
 
-    for (nums, cost) in inputs {
-        let result = Solution::min_cost(nums, cost);
+    for (costs, k, candidates) in inputs {
+        let result = Solution::total_cost(costs, k, candidates);
         println!("{result:?}");
     }
 }
