@@ -1,28 +1,25 @@
 mod utils;
 
-use std::{cmp::Ordering, collections::BinaryHeap};
+use std::{
+    cmp::Ordering,
+    collections::{BinaryHeap, HashSet},
+};
 
 use utils::Solution;
 
-#[derive(Eq, PartialEq)]
+#[derive(PartialEq, Eq)]
 struct Node {
-    cost: i32,
-    section: bool,
+    sum: i32,
+    i1: usize,
+    i2: usize,
 }
 
 impl Ord for Node {
-    fn cmp(&self, other: &Self) -> Ordering {
-        let diff = self.cost - other.cost;
-        if diff < 0 {
-            return Ordering::Greater;
-        } else if diff > 0 {
-            return Ordering::Less;
-        }
-
-        return if self.section {
-            Ordering::Less
-        } else {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        return if self.sum < other.sum {
             Ordering::Greater
+        } else {
+            Ordering::Less
         };
     }
 }
@@ -34,47 +31,51 @@ impl PartialOrd for Node {
 }
 
 impl Solution {
-    pub fn total_cost(costs: Vec<i32>, k: i32, candidates: i32) -> i64 {
-        let k = k as usize;
-        let candidates = candidates as usize;
-        let mut queue = BinaryHeap::<Node>::with_capacity(costs.len());
-        for i in 0..candidates {
-            queue.push(Node {
-                cost: costs[i],
-                section: false,
-            });
-        }
+    pub fn k_smallest_pairs(nums1: Vec<i32>, nums2: Vec<i32>, k: i32) -> Vec<Vec<i32>> {
+        let mut k = k as usize;
+        let len1 = nums1.len();
+        let len2 = nums2.len();
 
-        for i in candidates.max(costs.len() - candidates)..costs.len() {
-            queue.push(Node {
-                cost: costs[i],
-                section: true,
-            });
-        }
+        let mut result = Vec::<Vec<i32>>::with_capacity(k);
+        let mut visited = HashSet::<(usize, usize)>::with_capacity(len1 + len2);
+        let mut queue = BinaryHeap::<Node>::with_capacity(visited.capacity());
 
-        let mut result = 0i64;
-        let mut head = candidates;
+        queue.push(Node {
+            sum: nums1[0] + nums2[0],
+            i1: 0,
+            i2: 0,
+        });
+        visited.insert((0, 0));
 
-        let tail = costs.len() as i64 - (1 + candidates) as i64;
-        let mut tail = tail.max(0) as usize;
-        for _i in 0..k {
-            let Node { cost, section } = queue.pop().unwrap();
-            result += cost as i64;
+        while let Some(node) = queue.pop() {
+            let i1 = node.i1;
+            let i2 = node.i2;
+            result.push(vec![nums1[i1], nums2[i2]]);
 
-            if head <= tail {
-                if section {
-                    queue.push(Node {
-                        cost: costs[tail],
-                        section: true,
-                    });
-                    tail -= 1;
-                } else {
-                    queue.push(Node {
-                        cost: costs[head],
-                        section: false,
-                    });
-                    head += 1;
-                }
+            let i3 = i1 + 1;
+            if (i3 < len1) && !visited.contains(&(i3, i2)) {
+                queue.push(Node {
+                    sum: nums1[i3] + nums2[i2],
+                    i1: i3,
+                    i2,
+                });
+                visited.insert((i3, i2));
+            }
+
+            let i4 = i2 + 1;
+            if (i4 < len2) && !visited.contains(&(i1, i4)) {
+                queue.push(Node {
+                    sum: nums1[i1] + nums2[i4],
+                    i1,
+                    i2: i4,
+                });
+                visited.insert((i1, i4));
+            }
+
+            if k > 1 {
+                k -= 1;
+            } else {
+                break;
             }
         }
 
@@ -84,21 +85,13 @@ impl Solution {
 
 fn main() {
     let inputs = [
-        (vec![17, 12, 10, 2, 7, 2, 11, 20, 8], 3, 4),
-        (vec![1, 2, 4, 1], 3, 3),
-        (
-            vec![
-                69, 10, 63, 24, 1, 71, 55, 46, 4, 61, 78, 21, 85, 52, 83, 77, 42, 21, 73, 2, 80,
-                99, 98, 89, 55, 94, 63, 50, 43, 62, 14,
-            ],
-            21,
-            31,
-        ),
-        (vec![10, 1, 11, 10], 2, 1),
+        (vec![1, 7, 11], vec![2, 4, 6], 3),
+        (vec![1, 1, 2], vec![1, 2, 3], 2),
+        (vec![1, 2], vec![3], 3),
     ];
 
-    for (costs, k, candidates) in inputs {
-        let result = Solution::total_cost(costs, k, candidates);
+    for (nums1, nums2, k) in inputs {
+        let result = Solution::k_smallest_pairs(nums1, nums2, k);
         println!("{result:?}");
     }
 }
