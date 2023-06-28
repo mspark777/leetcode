@@ -4,64 +4,54 @@ import (
 	"fmt"
 )
 
-func getCost(nums []int, cost []int, base int) int64 {
-	result := int64(0)
+func maxProbability(n int, edges [][]int, succProb []float64, start int, end int) float64 {
+	maxProps := make([]float64, n)
+	maxProps[start] = 1.0
 
-	for i, num := range nums {
-		diff := int64(num - base)
-		if diff < 0 {
-			diff *= -1
+	for i := 0; i < n-1; i += 1 {
+		breakable := true
+		for j, edge := range edges {
+			u := edge[0]
+			v := edge[1]
+			prob := succProb[j]
+			umax := maxProps[u] * prob
+			if umax > maxProps[v] {
+				maxProps[v] = umax
+				breakable = false
+			}
+
+			vmax := maxProps[v] * prob
+			if vmax > maxProps[u] {
+				maxProps[u] = vmax
+				breakable = false
+			}
 		}
 
-		result += diff * int64(cost[i])
-	}
-
-	return result
-}
-
-func minCost(nums []int, cost []int) int64 {
-	left := 1000001
-	right := 0
-	for _, num := range nums {
-		if num < left {
-			left = num
-		}
-
-		if num > right {
-			right = num
-		}
-	}
-
-	result := getCost(nums, cost, nums[0])
-	for left < right {
-		mid := (left + right) / 2
-		cost1 := getCost(nums, cost, mid)
-		cost2 := getCost(nums, cost, mid+1)
-		if cost1 < cost2 {
-			result = cost1
-			right = mid
-		} else {
-			result = cost2
-			left = mid + 1
+		if breakable {
+			break
 		}
 	}
 
-	return result
+	return maxProps[end]
 }
 
 type input struct {
-	nums []int
-	cost []int
+	n        int
+	edges    [][]int
+	succProb []float64
+	start    int
+	end      int
 }
 
 func main() {
 	inputs := []input{
-		{nums: []int{1, 3, 5, 2}, cost: []int{2, 3, 1, 14}},
-		{nums: []int{2, 2, 2, 2, 2}, cost: []int{4, 2, 8, 1, 3}},
+		{n: 3, edges: [][]int{{0, 1}, {1, 2}, {0, 2}}, succProb: []float64{0.5, 0.5, 0.2}, start: 0, end: 2},
+		{n: 3, edges: [][]int{{0, 1}, {1, 2}, {0, 2}}, succProb: []float64{0.5, 0.5, 0.3}, start: 0, end: 2},
+		{n: 3, edges: [][]int{{0, 1}}, succProb: []float64{0.5}, start: 0, end: 2},
 	}
 
 	for _, input := range inputs {
-		result := minCost(input.nums, input.cost)
+		result := maxProbability(input.n, input.edges, input.succProb, input.start, input.end)
 		fmt.Println(result)
 	}
 }

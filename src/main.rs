@@ -1,97 +1,68 @@
 mod utils;
 
-use std::{
-    cmp::Ordering,
-    collections::{BinaryHeap, HashSet},
-};
-
 use utils::Solution;
 
-#[derive(PartialEq, Eq)]
-struct Node {
-    sum: i32,
-    i1: usize,
-    i2: usize,
-}
-
-impl Ord for Node {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        return if self.sum < other.sum {
-            Ordering::Greater
-        } else {
-            Ordering::Less
-        };
-    }
-}
-
-impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        return Some(self.cmp(other));
-    }
-}
-
 impl Solution {
-    pub fn k_smallest_pairs(nums1: Vec<i32>, nums2: Vec<i32>, k: i32) -> Vec<Vec<i32>> {
-        let mut k = k as usize;
-        let len1 = nums1.len();
-        let len2 = nums2.len();
+    pub fn max_probability(
+        n: i32,
+        edges: Vec<Vec<i32>>,
+        succ_prob: Vec<f64>,
+        start: i32,
+        end: i32,
+    ) -> f64 {
+        let n = n as usize;
+        let mut max_props = vec![0.0; n];
+        max_props[start as usize] = 1.0;
 
-        let mut result = Vec::<Vec<i32>>::with_capacity(k);
-        let mut visited = HashSet::<(usize, usize)>::with_capacity(len1 + len2);
-        let mut queue = BinaryHeap::<Node>::with_capacity(visited.capacity());
+        for _ in 0..(n - 1) {
+            let mut breakable = true;
+            for (j, edge) in edges.iter().enumerate() {
+                let u = edge[0] as usize;
+                let v = edge[1] as usize;
+                let prob = succ_prob[j];
+                let umax = max_props[u] * prob;
+                if umax > max_props[v] {
+                    max_props[v] = umax;
+                    breakable = false;
+                }
 
-        queue.push(Node {
-            sum: nums1[0] + nums2[0],
-            i1: 0,
-            i2: 0,
-        });
-        visited.insert((0, 0));
-
-        while let Some(node) = queue.pop() {
-            let i1 = node.i1;
-            let i2 = node.i2;
-            result.push(vec![nums1[i1], nums2[i2]]);
-
-            let i3 = i1 + 1;
-            if (i3 < len1) && !visited.contains(&(i3, i2)) {
-                queue.push(Node {
-                    sum: nums1[i3] + nums2[i2],
-                    i1: i3,
-                    i2,
-                });
-                visited.insert((i3, i2));
+                let vmax = max_props[v] * prob;
+                if vmax > max_props[u] {
+                    max_props[u] = vmax;
+                    breakable = false;
+                }
             }
 
-            let i4 = i2 + 1;
-            if (i4 < len2) && !visited.contains(&(i1, i4)) {
-                queue.push(Node {
-                    sum: nums1[i1] + nums2[i4],
-                    i1,
-                    i2: i4,
-                });
-                visited.insert((i1, i4));
-            }
-
-            if k > 1 {
-                k -= 1;
-            } else {
+            if breakable {
                 break;
             }
         }
 
-        return result;
+        return max_props[end as usize];
     }
 }
 
 fn main() {
     let inputs = [
-        (vec![1, 7, 11], vec![2, 4, 6], 3),
-        (vec![1, 1, 2], vec![1, 2, 3], 2),
-        (vec![1, 2], vec![3], 3),
+        (
+            3,
+            vec![vec![0, 1], vec![1, 2], vec![0, 2]],
+            vec![0.5, 0.5, 0.2],
+            0,
+            2,
+        ),
+        (
+            3,
+            vec![vec![0, 1], vec![1, 2], vec![0, 2]],
+            vec![0.5, 0.5, 0.3],
+            0,
+            2,
+        ),
+        (3, vec![vec![0, 1]], vec![0.5], 0, 2),
     ];
 
-    for (nums1, nums2, k) in inputs {
-        let result = Solution::k_smallest_pairs(nums1, nums2, k);
-        println!("{result:?}");
+    for (n, edges, succ_prob, start, end) in inputs {
+        let result = Solution::max_probability(n, edges, succ_prob, start, end);
+        println!("{result}");
     }
 }

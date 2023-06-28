@@ -1,33 +1,51 @@
 import '@total-typescript/ts-reset'
 
-function longestArithSeqLength (nums: number[]): number {
-  let result = 0
-  const dp = new Array<Map<number, number>>(nums.length)
-  for (let right = 0; right < nums.length; right += 1) {
-    dp[right] = new Map()
-    for (let left = 0; left < right; left += 1) {
-      const diff = nums[left] - nums[right]
-      const rmap = dp[right]
-      const lmap = dp[left]
+function maxProbability (n: number, edges: number[][], succProb: number[], start: number, end: number): number {
+  const maxProbs = new Array<number>(n).fill(0)
+  maxProbs[start] = 1
 
-      const curLen = (lmap.get(diff) ?? 1) + 1
-      rmap.set(diff, curLen)
-      result = Math.max(result, curLen)
+  for (let i = 0; i < n - 1; i += 1) {
+    let breakable = true
+    for (const [j, [u, v]] of edges.entries()) {
+      const prob = succProb[j]
+      const umax = maxProbs[u] * prob
+      if (umax > maxProbs[v]) {
+        maxProbs[v] = umax
+        breakable = false
+      }
+
+      const vmax = maxProbs[v] * prob
+      if (vmax > maxProbs[u]) {
+        maxProbs[u] = vmax
+        breakable = false
+      }
+    }
+
+    if (breakable) {
+      break
     }
   }
 
-  return result
+  return maxProbs[end]
+}
+
+interface Input {
+  readonly n: number
+  readonly edges: number[][]
+  readonly succProb: number[]
+  readonly start: number
+  readonly end: number
 }
 
 function main (): void {
-  const inputs: number[][] = [
-    [3, 6, 9, 12],
-    [9, 4, 7, 2, 10],
-    [20, 1, 15, 3, 10, 5, 8]
+  const inputs: Input[] = [
+    { n: 3, edges: [[0, 1], [1, 2], [0, 2]], succProb: [0.5, 0.5, 0.2], start: 0, end: 2 },
+    { n: 3, edges: [[0, 1], [1, 2], [0, 2]], succProb: [0.5, 0.5, 0.3], start: 0, end: 2 },
+    { n: 3, edges: [[0, 1]], succProb: [0.5], start: 0, end: 2 }
   ]
 
-  for (const nums of inputs) {
-    const result = longestArithSeqLength(nums)
+  for (const { n, edges, succProb, start, end } of inputs) {
+    const result = maxProbability(n, edges, succProb, start, end)
     console.log(result)
   }
 }

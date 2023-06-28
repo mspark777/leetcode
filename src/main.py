@@ -2,32 +2,54 @@ from typing import List
 
 
 class Solution:
-    def longestArithSeqLength(self, nums: List[int]) -> int:
-        result = 0
-        dp: list[dict[int, int]] = []
-        for right in range(len(nums)):
-            dp.append(dict())
-            for left in range(right):
-                diff = nums[left] - nums[right]
-                lmap = dp[left]
-                rmap = dp[right]
+    def maxProbability(
+        self,
+        n: int,
+        edges: List[List[int]],
+        succ_prob: List[float],
+        start: int,
+        end: int,
+    ) -> float:
+        max_props = [0.0] * n
+        max_props[start] = 1.0
 
-                cur_len = lmap.get(diff)
-                if cur_len is None:
-                    cur_len = 1
-                cur_len += 1
-                rmap[diff] = cur_len
-                result = max(result, cur_len)
+        for _ in range(n - 1):
+            breakable = True
+            for j, [u, v] in enumerate(edges):
+                prob = succ_prob[j]
+                umax = max_props[u] * prob
+                if umax > max_props[v]:
+                    max_props[v] = umax
+                    breakable = False
 
-        return result
+                vmax = max_props[v] * prob
+                if vmax > max_props[u]:
+                    max_props[u] = vmax
+                    breakable = False
+
+            if breakable:
+                break
+
+        return max_props[end]
 
 
 def main():
-    inputs = [[3, 6, 9, 12], [9, 4, 7, 2, 10], [20, 1, 15, 3, 10, 5, 8]]
+    inputs = [
+        (3, [[0, 1], [1, 2], [0, 2]], [0.5, 0.5, 0.2], 0, 2),
+        (3, [[0, 1], [1, 2], [0, 2]], [0.5, 0.5, 0.3], 0, 2),
+        (3, [[0, 1]], [0.5], 0, 2),
+        (
+            5,
+            [[2, 3], [1, 2], [3, 4], [1, 3], [1, 4], [0, 1], [2, 4], [0, 4], [0, 2]],
+            [0.06, 0.26, 0.49, 0.25, 0.2, 0.64, 0.23, 0.21, 0.77],
+            0,
+            3,
+        ),
+    ]
 
-    for nums in inputs:
+    for n, edges, succ_prob, start, end in inputs:
         solution = Solution()
-        result = solution.longestArithSeqLength(nums)
+        result = solution.maxProbability(n, edges, succ_prob, start, end)
         print(result)
 
 
