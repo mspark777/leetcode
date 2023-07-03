@@ -1,51 +1,64 @@
 import '@total-typescript/ts-reset'
 
-function maxProbability (n: number, edges: number[][], succProb: number[], start: number, end: number): number {
-  const maxProbs = new Array<number>(n).fill(0)
-  maxProbs[start] = 1
+function buddyStrings (s: string, goal: string): boolean {
+  if (s.length !== goal.length) {
+    return false
+  }
 
-  for (let i = 0; i < n - 1; i += 1) {
-    let breakable = true
-    for (const [j, [u, v]] of edges.entries()) {
-      const prob = succProb[j]
-      const umax = maxProbs[u] * prob
-      if (umax > maxProbs[v]) {
-        maxProbs[v] = umax
-        breakable = false
+  if (s === goal) {
+    const counts = new Map<string, number>()
+    for (const c of s) {
+      const count = counts.get(c) ?? 0
+      if (count === 1) {
+        return true
+      } else {
+        counts.set(c, count + 1)
       }
-
-      const vmax = maxProbs[v] * prob
-      if (vmax > maxProbs[u]) {
-        maxProbs[u] = vmax
-        breakable = false
-      }
-    }
-
-    if (breakable) {
-      break
     }
   }
 
-  return maxProbs[end]
-}
+  let first = -1
+  let second = -1
+  for (let i = 0; i < s.length; i += 1) {
+    const c = s.charAt(i)
+    const g = goal.charAt(i)
+    if (c === g) {
+      continue
+    }
 
-interface Input {
-  readonly n: number
-  readonly edges: number[][]
-  readonly succProb: number[]
-  readonly start: number
-  readonly end: number
+    if (first < 0) {
+      first = i
+    } else if (second < 0) {
+      second = i
+    } else {
+      return false
+    }
+  }
+
+  if (first < 0) {
+    return false
+  } else if (second < 0) {
+    return false
+  }
+
+  if (s.charAt(first) !== goal.charAt(second)) {
+    return false
+  } else if (s.charAt(second) !== goal.charAt(first)) {
+    return false
+  }
+
+  return true
 }
 
 function main (): void {
-  const inputs: Input[] = [
-    { n: 3, edges: [[0, 1], [1, 2], [0, 2]], succProb: [0.5, 0.5, 0.2], start: 0, end: 2 },
-    { n: 3, edges: [[0, 1], [1, 2], [0, 2]], succProb: [0.5, 0.5, 0.3], start: 0, end: 2 },
-    { n: 3, edges: [[0, 1]], succProb: [0.5], start: 0, end: 2 }
+  const inputs: string[][] = [
+    ['ab', 'ba'],
+    ['ab', 'ab'],
+    ['aa', 'aa']
   ]
 
-  for (const { n, edges, succProb, start, end } of inputs) {
-    const result = maxProbability(n, edges, succProb, start, end)
+  for (const [s, goal] of inputs) {
+    const result = buddyStrings(s, goal)
     console.log(result)
   }
 }

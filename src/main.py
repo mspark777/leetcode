@@ -1,55 +1,52 @@
-from typing import List
-
-
 class Solution:
-    def maxProbability(
-        self,
-        n: int,
-        edges: List[List[int]],
-        succ_prob: List[float],
-        start: int,
-        end: int,
-    ) -> float:
-        max_props = [0.0] * n
-        max_props[start] = 1.0
+    def buddyStrings(self, s: str, goal: str) -> bool:
+        slen = len(s)
+        glen = len(goal)
+        if slen != glen:
+            return False
 
-        for _ in range(n - 1):
-            breakable = True
-            for j, [u, v] in enumerate(edges):
-                prob = succ_prob[j]
-                umax = max_props[u] * prob
-                if umax > max_props[v]:
-                    max_props[v] = umax
-                    breakable = False
+        if s == goal:
+            counts: set[str] = set()
+            for c in s:
+                if c in counts:
+                    return True
+                else:
+                    counts.add(c)
 
-                vmax = max_props[v] * prob
-                if vmax > max_props[u]:
-                    max_props[u] = vmax
-                    breakable = False
+        first = -1
+        second = -1
+        for i in range(slen):
+            c = s[i]
+            g = goal[i]
+            if c == g:
+                continue
 
-            if breakable:
-                break
+            if first < 0:
+                first = i
+            elif second < 0:
+                second = i
+            else:
+                return False
 
-        return max_props[end]
+        if first < 0:
+            return False
+        elif second < 0:
+            return False
+
+        if s[first] != goal[second]:
+            return False
+        elif s[second] != goal[first]:
+            return False
+
+        return True
 
 
 def main():
-    inputs = [
-        (3, [[0, 1], [1, 2], [0, 2]], [0.5, 0.5, 0.2], 0, 2),
-        (3, [[0, 1], [1, 2], [0, 2]], [0.5, 0.5, 0.3], 0, 2),
-        (3, [[0, 1]], [0.5], 0, 2),
-        (
-            5,
-            [[2, 3], [1, 2], [3, 4], [1, 3], [1, 4], [0, 1], [2, 4], [0, 4], [0, 2]],
-            [0.06, 0.26, 0.49, 0.25, 0.2, 0.64, 0.23, 0.21, 0.77],
-            0,
-            3,
-        ),
-    ]
+    inputs = [("ab", "ba"), ("ab", "ab"), ("aa", "aa")]
 
-    for n, edges, succ_prob, start, end in inputs:
+    for s, goal in inputs:
         solution = Solution()
-        result = solution.maxProbability(n, edges, succ_prob, start, end)
+        result = solution.buddyStrings(s, goal)
         print(result)
 
 

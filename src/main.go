@@ -4,54 +4,67 @@ import (
 	"fmt"
 )
 
-func maxProbability(n int, edges [][]int, succProb []float64, start int, end int) float64 {
-	maxProps := make([]float64, n)
-	maxProps[start] = 1.0
+func buddyStrings(s string, goal string) bool {
+	sbytes := []byte(s)
+	gbytes := []byte(goal)
+	slen := len(sbytes)
+	glen := len(gbytes)
+	if slen != glen {
+		return false
+	}
 
-	for i := 0; i < n-1; i += 1 {
-		breakable := true
-		for j, edge := range edges {
-			u := edge[0]
-			v := edge[1]
-			prob := succProb[j]
-			umax := maxProps[u] * prob
-			if umax > maxProps[v] {
-				maxProps[v] = umax
-				breakable = false
+	if s == goal {
+		counts := make([]int, 26)
+		for _, s := range sbytes {
+			i := s - byte('a')
+			if counts[i] == 1 {
+				return true
+			} else {
+				counts[i] += 1
 			}
-
-			vmax := maxProps[v] * prob
-			if vmax > maxProps[u] {
-				maxProps[u] = vmax
-				breakable = false
-			}
-		}
-
-		if breakable {
-			break
 		}
 	}
 
-	return maxProps[end]
-}
+	first := -1
+	second := -1
+	for i := 0; i < slen; i += 1 {
+		c := sbytes[i]
+		g := gbytes[i]
+		if c == g {
+			continue
+		}
 
-type input struct {
-	n        int
-	edges    [][]int
-	succProb []float64
-	start    int
-	end      int
+		if first < 0 {
+			first = i
+		} else if second < 0 {
+			second = i
+		} else {
+			return false
+		}
+	}
+
+	if first < 0 {
+		return false
+	} else if second < 0 {
+		return false
+	}
+
+	if sbytes[first] != gbytes[second] {
+		return false
+	} else if sbytes[second] != gbytes[first] {
+		return false
+	}
+
+	return true
 }
 
 func main() {
-	inputs := []input{
-		{n: 3, edges: [][]int{{0, 1}, {1, 2}, {0, 2}}, succProb: []float64{0.5, 0.5, 0.2}, start: 0, end: 2},
-		{n: 3, edges: [][]int{{0, 1}, {1, 2}, {0, 2}}, succProb: []float64{0.5, 0.5, 0.3}, start: 0, end: 2},
-		{n: 3, edges: [][]int{{0, 1}}, succProb: []float64{0.5}, start: 0, end: 2},
+	inputs := [][]string{
+		{"ab", "ba"}, {"ab", "ab"}, {"aa", "aa"},
 	}
 
 	for _, input := range inputs {
-		result := maxProbability(input.n, input.edges, input.succProb, input.start, input.end)
+		result := buddyStrings(input[0], input[1])
 		fmt.Println(result)
 	}
 }
