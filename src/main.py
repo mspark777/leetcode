@@ -2,26 +2,30 @@ from typing import List
 
 
 class Solution:
-    def singleNumber(self, nums: List[int]) -> int:
-        a = 0
-        b = 0
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        for i in range(len(nums)):
+            while (
+                (nums[i] > 0)
+                and (nums[i] <= len(nums))
+                and (nums[nums[i] - 1] != nums[i])
+            ):
+                temp = nums[i]
+                nums[i] = nums[temp - 1]
+                nums[temp - 1] = temp
 
-        for num in nums:
-            tempa = (a & ~b & ~num) + (~a & b & num)
-            tempb = (~a & b & ~num) + (~a & ~b & num)
+        for i, num in enumerate(nums):
+            if num != (i + 1):
+                return i + 1
 
-            a = tempa
-            b = tempb
-
-        return a | b
+        return len(nums) + 1
 
 
 def main():
-    inputs = [[2, 2, 3, 2], [0, 1, 0, 1, 0, 1, 99]]
+    inputs = [[1, 2, 0], [3, 4, -1, 1], [7, 8, 9, 11, 12]]
 
     for nums in inputs:
         solution = Solution()
-        result = solution.singleNumber(nums)
+        result = solution.firstMissingPositive(nums)
         print(result)
 
 
