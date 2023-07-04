@@ -1,68 +1,30 @@
 /**
-  * @param {string} s
-  * @param {string} goal
-  * @returns {boolean}
+  * @param {number[]} nums
+  * @returns {number}
   */
-function buddyStrings (s, goal) {
-  if (s.length !== goal.length) {
-    return false
+function singleNumber (nums) {
+  let a = 0
+  let b = 0
+
+  for (const num of nums) {
+    const tempa = (a & ~b & ~num) + (~a & b & num)
+    const tempb = (~a & b & ~num) + (~a & ~b & num)
+
+    a = tempa
+    b = tempb
   }
 
-  if (s === goal) {
-    /** @type {Map<string, number>} */
-    const counts = new Map()
-    for (const c of s) {
-      const count = counts.get(c) ?? 0
-      if (count === 1) {
-        return true
-      } else {
-        counts.set(c, count + 1)
-      }
-    }
-  }
-
-  let first = -1
-  let second = -1
-  for (let i = 0; i < s.length; i += 1) {
-    const c = s.charAt(i)
-    const g = goal.charAt(i)
-    if (c === g) {
-      continue
-    }
-
-    if (first < 0) {
-      first = i
-    } else if (second < 0) {
-      second = i
-    } else {
-      return false
-    }
-  }
-
-  if (first < 0) {
-    return false
-  } else if (second < 0) {
-    return false
-  }
-
-  if (s.charAt(first) !== goal.charAt(second)) {
-    return false
-  } else if (s.charAt(second) !== goal.charAt(first)) {
-    return false
-  }
-
-  return true
+  return a | b
 }
 
 function main () {
   const inputs = [
-    ['ab', 'ba'],
-    ['ab', 'ab'],
-    ['aa', 'aa']
+    [2, 2, 3, 2],
+    [0, 1, 0, 1, 0, 1, 99]
   ]
 
-  for (const [s, goal] of inputs) {
-    const result = buddyStrings(s, goal)
+  for (const input of inputs) {
+    const result = singleNumber(input)
     console.log(result)
   }
 }

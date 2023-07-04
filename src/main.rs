@@ -3,66 +3,27 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn buddy_strings(s: String, goal: String) -> bool {
-        let sbytes = s.as_bytes();
-        let gbytes = goal.as_bytes();
-        let slen = sbytes.len();
-        let glen = gbytes.len();
-        if slen != glen {
-            return false;
+    pub fn single_number(nums: Vec<i32>) -> i32 {
+        let mut a = 0;
+        let mut b = 0;
+
+        for &num in nums.iter() {
+            let tempa = (a & !b & !num) + (!a & b & num);
+            let tempb = (!a & b & !num) + (!a & !b & num);
+
+            a = tempa;
+            b = tempb;
         }
 
-        if s == goal {
-            let mut counts = vec![0; 26];
-            for &c in sbytes.iter() {
-                let code = (c - b'a') as usize;
-                if counts[code] == 1 {
-                    return true;
-                } else {
-                    counts[code] += 1;
-                }
-            }
-        }
-
-        let mut first = slen;
-        let mut second = slen;
-        for i in 0..sbytes.len() {
-            let c = sbytes[i];
-            let g = gbytes[i];
-            if c == g {
-                continue;
-            }
-
-            if first == sbytes.len() {
-                first = i;
-            } else if second == sbytes.len() {
-                second = i;
-            } else {
-                return false;
-            }
-        }
-
-        if first == slen {
-            return false;
-        } else if second == slen {
-            return false;
-        }
-
-        if sbytes[first] != gbytes[second] {
-            return false;
-        } else if sbytes[second] != gbytes[first] {
-            return false;
-        }
-
-        return true;
+        return a | b;
     }
 }
 
 fn main() {
-    let inputs = [("ab", "ba"), ("ab", "ab"), ("aa", "aa")];
+    let inputs = [vec![2, 2, 3, 2], vec![0, 1, 0, 1, 0, 1, 99]];
 
-    for (s, goal) in inputs {
-        let result = Solution::buddy_strings(s.to_string(), goal.to_string());
+    for nums in inputs {
+        let result = Solution::single_number(nums);
         println!("{result}");
     }
 }

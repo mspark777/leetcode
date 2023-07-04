@@ -1,52 +1,27 @@
+from typing import List
+
+
 class Solution:
-    def buddyStrings(self, s: str, goal: str) -> bool:
-        slen = len(s)
-        glen = len(goal)
-        if slen != glen:
-            return False
+    def singleNumber(self, nums: List[int]) -> int:
+        a = 0
+        b = 0
 
-        if s == goal:
-            counts: set[str] = set()
-            for c in s:
-                if c in counts:
-                    return True
-                else:
-                    counts.add(c)
+        for num in nums:
+            tempa = (a & ~b & ~num) + (~a & b & num)
+            tempb = (~a & b & ~num) + (~a & ~b & num)
 
-        first = -1
-        second = -1
-        for i in range(slen):
-            c = s[i]
-            g = goal[i]
-            if c == g:
-                continue
+            a = tempa
+            b = tempb
 
-            if first < 0:
-                first = i
-            elif second < 0:
-                second = i
-            else:
-                return False
-
-        if first < 0:
-            return False
-        elif second < 0:
-            return False
-
-        if s[first] != goal[second]:
-            return False
-        elif s[second] != goal[first]:
-            return False
-
-        return True
+        return a | b
 
 
 def main():
-    inputs = [("ab", "ba"), ("ab", "ab"), ("aa", "aa")]
+    inputs = [[2, 2, 3, 2], [0, 1, 0, 1, 0, 1, 99]]
 
-    for s, goal in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.buddyStrings(s, goal)
+        result = solution.singleNumber(nums)
         print(result)
 
 
