@@ -1,32 +1,33 @@
 import '@total-typescript/ts-reset'
 
-function firstMissingPositive (nums: number[]): number {
-  for (let i = 0; i < nums.length; i += 1) {
-    while ((nums[i] > 0) && (nums[i] <= nums.length) && (nums[nums[i] - 1] !== nums[i])) {
-      const temp = nums[i]
-      nums[i] = nums[temp - 1]
-      nums[temp - 1] = temp
+function longestSubarray (nums: number[]): number {
+  let zeroCount = 0
+  let result = 0
+  let start = 0
+
+  for (const [i, num] of nums.entries()) {
+    zeroCount += num === 0 ? 1 : 0
+
+    while (zeroCount > 1) {
+      zeroCount -= nums[start] === 0 ? 1 : 0
+      start += 1
     }
+
+    result = Math.max(result, i - start)
   }
 
-  for (let i = 0; i < nums.length; i += 1) {
-    if (nums[i] !== (i + 1)) {
-      return i + 1
-    }
-  }
-
-  return nums.length + 1
+  return result
 }
 
 function main (): void {
   const inputs: number[][] = [
-    [1, 2, 0],
-    [3, 4, -1, 1],
-    [7, 8, 9, 11, 12]
+    [1, 1, 0, 1],
+    [0, 1, 1, 1, 0, 1, 1, 0, 1],
+    [1, 1, 1]
   ]
 
   for (const nums of inputs) {
-    const result = firstMissingPositive(nums)
+    const result = longestSubarray(nums)
     console.log(result)
   }
 }

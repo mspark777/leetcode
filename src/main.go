@@ -4,33 +4,42 @@ import (
 	"fmt"
 )
 
-func firstMissingPositive(nums []int) int {
-	for i := 0; i < len(nums); i += 1 {
-		for (nums[i] > 0) && (nums[i] <= len(nums)) && (nums[nums[i]-1] != nums[i]) {
-			temp := nums[i]
-			nums[i] = nums[temp-1]
-			nums[temp-1] = temp
-		}
-	}
+func longestSubarray(nums []int) int {
+	zeroCount := 0
+	result := 0
+	start := 0
 
 	for i, num := range nums {
-		if num != (i + 1) {
-			return i + 1
+		if num == 0 {
+			zeroCount += 1
+		}
+
+		for zeroCount > 1 {
+			if nums[start] == 0 {
+				zeroCount -= 1
+			}
+
+			start += 1
+		}
+
+		oneCount := i - start
+		if oneCount > result {
+			result = oneCount
 		}
 	}
 
-	return len(nums) + 1
+	return result
 }
 
 func main() {
 	inputs := [][]int{
-		{1, 2, 0},
-		{3, 4, -1, 1},
-		{7, 8, 9, 11, 12},
+		{1, 1, 0, 1},
+		{0, 1, 1, 1, 0, 1, 1, 0, 1},
+		{1, 1, 1},
 	}
 
 	for _, input := range inputs {
-		result := firstMissingPositive(input)
+		result := longestSubarray(input)
 		fmt.Println(result)
 	}
 }
