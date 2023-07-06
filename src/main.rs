@@ -3,39 +3,34 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn longest_subarray(nums: Vec<i32>) -> i32 {
-        let mut zero_count = 0;
-        let mut result = 0usize;
-        let mut start = 0;
+    pub fn min_sub_array_len(target: i32, nums: Vec<i32>) -> i32 {
+        let mut left = 0usize;
+        let mut sum = 0;
+        let mut result = i32::MAX;
 
-        for (i, &num) in nums.iter().enumerate() {
-            if num == 0 {
-                zero_count += 1;
+        for (right, &num) in nums.iter().enumerate() {
+            sum += num;
+            while sum >= target {
+                let l = right - left + 1;
+                result = result.min(l as i32);
+                sum -= nums[left];
+                left += 1;
             }
-
-            while zero_count > 1 {
-                if nums[start] == 0 {
-                    zero_count -= 1;
-                }
-                start += 1;
-            }
-
-            result = result.max(i - start);
         }
 
-        return result as i32;
+        return if result < i32::MAX { result } else { 0 };
     }
 }
 
 fn main() {
     let inputs = [
-        vec![1, 1, 0, 1],
-        vec![0, 1, 1, 1, 0, 1, 1, 0, 1],
-        vec![1, 1, 1],
+        (7, vec![2, 3, 1, 2, 4, 3]),
+        (4, vec![1, 4, 4]),
+        (11, vec![1, 1, 1, 1, 1, 1, 1, 1]),
     ];
 
-    for nums in inputs {
-        let result = Solution::longest_subarray(nums);
+    for (target, nums) in inputs {
+        let result = Solution::min_sub_array_len(target, nums);
         println!("{result}");
     }
 }

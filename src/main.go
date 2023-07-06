@@ -4,42 +4,45 @@ import (
 	"fmt"
 )
 
-func longestSubarray(nums []int) int {
-	zeroCount := 0
-	result := 0
-	start := 0
+func minSubArrayLen(target int, nums []int) int {
+	left := 0
+	sum := 0
+	result := 0x8FFFFFFF
 
-	for i, num := range nums {
-		if num == 0 {
-			zeroCount += 1
-		}
-
-		for zeroCount > 1 {
-			if nums[start] == 0 {
-				zeroCount -= 1
+	for right, num := range nums {
+		sum += num
+		for sum >= target {
+			l := right - left + 1
+			if l < result {
+				result = l
 			}
 
-			start += 1
+			sum -= nums[left]
+			left += 1
 		}
+	}
 
-		oneCount := i - start
-		if oneCount > result {
-			result = oneCount
-		}
+	if result >= 0x8FFFFFFF {
+		result = 0
 	}
 
 	return result
 }
 
+type input struct {
+	target int
+	nums   []int
+}
+
 func main() {
-	inputs := [][]int{
-		{1, 1, 0, 1},
-		{0, 1, 1, 1, 0, 1, 1, 0, 1},
-		{1, 1, 1},
+	inputs := []input{
+		{target: 7, nums: []int{2, 3, 1, 2, 4, 3}},
+		{target: 4, nums: []int{1, 4, 4}},
+		{target: 11, nums: []int{1, 1, 1, 1, 1, 1, 1, 1}},
 	}
 
 	for _, input := range inputs {
-		result := longestSubarray(input)
+		result := minSubArrayLen(input.target, input.nums)
 		fmt.Println(result)
 	}
 }

@@ -2,29 +2,27 @@ from typing import List
 
 
 class Solution:
-    def longestSubarray(self, nums: List[int]) -> int:
-        zero_count = 0
-        result = 0
-        start = 0
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        left = 0
+        sum = 0
+        result = 2**31
 
-        for i, num in enumerate(nums):
-            zero_count += 1 if num == 0 else 0
+        for right, num in enumerate(nums):
+            sum += num
+            while sum >= target:
+                result = min(result, right - left + 1)
+                sum -= nums[left]
+                left += 1
 
-            while zero_count > 1:
-                zero_count -= 1 if nums[start] == 0 else 0
-                start += 1
-
-            result = max(result, i - start)
-
-        return result
+        return result if result < (2**31) else 0
 
 
 def main():
-    inputs = [[1, 1, 0, 1], [0, 1, 1, 1, 0, 1, 1, 0, 1], [1, 1, 1]]
+    inputs = [(7, [2, 3, 1, 2, 4, 3]), (4, [1, 4, 4]), (11, [1, 1, 1, 1, 1, 1, 1, 1])]
 
-    for nums in inputs:
+    for target, nums in inputs:
         solution = Solution()
-        result = solution.longestSubarray(nums)
+        result = solution.minSubArrayLen(target, nums)
         print(result)
 
 
