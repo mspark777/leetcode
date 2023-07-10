@@ -4,45 +4,69 @@ import (
 	"fmt"
 )
 
-func minSubArrayLen(target int, nums []int) int {
-	left := 0
-	sum := 0
-	result := 0x8FFFFFFF
-
-	for right, num := range nums {
-		sum += num
-		for sum >= target {
-			l := right - left + 1
-			if l < result {
-				result = l
-			}
-
-			sum -= nums[left]
-			left += 1
-		}
-	}
-
-	if result >= 0x8FFFFFFF {
-		result = 0
-	}
-
-	return result
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-type input struct {
-	target int
-	nums   []int
+func newnode(val int, left, right *TreeNode) *TreeNode {
+	return &TreeNode{Val: val, Left: left, Right: right}
+}
+
+func newright(val int, right *TreeNode) *TreeNode {
+	return newnode(val, nil, right)
+}
+
+func newval(val int) *TreeNode {
+	return newnode(val, nil, nil)
+}
+
+func minDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	queue := []*TreeNode{root}
+	depth := 0
+
+	for len(queue) > 0 {
+		depth += 1
+		count := len(queue)
+
+		for i := 0; i < count; i += 1 {
+			node := queue[i]
+			found := true
+
+			if node.Left != nil {
+				found = false
+				queue = append(queue, node.Left)
+			}
+
+			if node.Right != nil {
+				found = false
+				queue = append(queue, node.Right)
+			}
+
+			if found {
+				return depth
+			}
+		}
+
+		queue = queue[count:]
+	}
+
+	return depth
 }
 
 func main() {
-	inputs := []input{
-		{target: 7, nums: []int{2, 3, 1, 2, 4, 3}},
-		{target: 4, nums: []int{1, 4, 4}},
-		{target: 11, nums: []int{1, 1, 1, 1, 1, 1, 1, 1}},
+	inputs := []*TreeNode{
+		newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+		newright(2, newright(3, newright(4, newright(5, newval(6))))),
 	}
 
 	for _, input := range inputs {
-		result := minSubArrayLen(input.target, input.nums)
+		result := minDepth(input)
 		fmt.Println(result)
 	}
 }

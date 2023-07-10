@@ -1,28 +1,67 @@
-from typing import List
+from __future__ import annotations
+from typing import Optional
+
+
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+def newnode(val: int, left: Optional[TreeNode], right: Optional[TreeNode]) -> TreeNode:
+    return TreeNode(val, left, right)
+
+
+def newright(val: int, right: Optional[TreeNode]) -> TreeNode:
+    return TreeNode(val, None, right)
+
+
+def newval(val: int) -> TreeNode:
+    return TreeNode(val)
 
 
 class Solution:
-    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
-        left = 0
-        sum = 0
-        result = 2**31
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
 
-        for right, num in enumerate(nums):
-            sum += num
-            while sum >= target:
-                result = min(result, right - left + 1)
-                sum -= nums[left]
-                left += 1
+        queue: list[TreeNode] = [root]
+        depth = 0
+        while queue:
+            depth += 1
+            count = len(queue)
+            for i in range(count):
+                node = queue[i]
+                found = True
+                if node.left is not None:
+                    found = False
+                    queue.append(node.left)
 
-        return result if result < (2**31) else 0
+                if node.right is not None:
+                    found = False
+                    queue.append(node.right)
+
+                if found:
+                    return depth
+            queue = queue[count:]
+
+        return depth
 
 
 def main():
-    inputs = [(7, [2, 3, 1, 2, 4, 3]), (4, [1, 4, 4]), (11, [1, 1, 1, 1, 1, 1, 1, 1])]
+    inputs = [
+        newnode(3, newval(9), newnode(20, newval(15), newval(7))),
+        newright(2, newright(3, newright(4, newright(5, newval(6))))),
+    ]
 
-    for target, nums in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.minSubArrayLen(target, nums)
+        result = solution.minDepth(root)
         print(result)
 
 
