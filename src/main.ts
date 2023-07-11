@@ -1,36 +1,104 @@
 import '@total-typescript/ts-reset'
 
-function minSubArrayLen (target: number, nums: number[]): number {
-  let left = 0
-  let sum = 0
-  let result = Number.MAX_SAFE_INTEGER
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
 
-  for (let right = 0; right < nums.length; right += 1) {
-    sum += nums[right]
-    while (sum >= target) {
-      result = Math.min(result, right - left + 1)
-      sum -= nums[left]
-      left += 1
-    }
+function newnode (val: number, left?: TreeNode | null, right?: TreeNode | null): TreeNode {
+  return new TreeNode(val, left, right)
+}
+
+function newleft (val: number, left?: TreeNode | null): TreeNode {
+  return newnode(val, left)
+}
+
+function newright (val: number, right?: TreeNode | null): TreeNode {
+  return newnode(val, undefined, right)
+}
+
+function newval (val: number): TreeNode {
+  return newnode(val)
+}
+
+function buildGraph (graph: Map<number, number[]>, node: TreeNode | null, parent: TreeNode | null): void {
+  if (node == null) {
+    return
   }
 
-  return result < Number.MAX_SAFE_INTEGER ? result : 0
+  if (parent != null) {
+    const currAbsents = graph.get(node.val) ?? []
+    currAbsents.push(parent.val)
+    graph.set(node.val, currAbsents)
+
+    const parentAbsents = graph.get(parent.val) ?? []
+    parentAbsents.push(node.val)
+    graph.set(parent.val, parentAbsents)
+  }
+
+  if (node.left != null) {
+    buildGraph(graph, node.left, node)
+  }
+
+  if (node.right != null) {
+    buildGraph(graph, node.right, node)
+  }
+}
+
+function dfs (graph: Map<number, number[]>, visited: Set<number>, current: number, distance: number, target: number, result: number[]): void {
+  if (distance === target) {
+    result.push(current)
+    return
+  }
+
+  const next = distance + 1
+  for (const neighbor of graph.get(current) ?? []) {
+    if (visited.has(neighbor)) {
+      continue
+    }
+
+    visited.add(neighbor)
+    dfs(graph, visited, neighbor, next, target, result)
+  }
+}
+
+function distanceK (root: TreeNode | null, target: TreeNode | null, k: number): number[] {
+  if (root == null) {
+    return []
+  } else if (target == null) {
+    return []
+  }
+
+  const graph = new Map<number, number[]>()
+  buildGraph(graph, root, null)
+
+  const result: number[] = []
+  const visited = new Set<number>([target.val])
+  dfs(graph, visited, target.val, 0, k, result)
+
+  return result
 }
 
 interface Input {
-  readonly target: number
-  readonly nums: number[]
+  readonly root: TreeNode
+  readonly target: TreeNode
+  readonly k: number
 }
 
 function main (): void {
   const inputs: Input[] = [
-    { target: 7, nums: [2, 3, 1, 2, 4, 3] },
-    { target: 4, nums: [1, 4, 4] },
-    { target: 11, nums: [1, 1, 1, 1, 1, 1, 1, 1] }
+    { root: newnode(3, newnode(5, newval(6), newnode(2, newval(7), newval(4))), newnode(1, newval(0), newval(8))), target: newval(5), k: 2 },
+    { root: newval(1), target: newval(1), k: 3 }
   ]
 
-  for (const { target, nums } of inputs) {
-    const result = minSubArrayLen(target, nums)
+  for (const { root, target, k } of inputs) {
+    const result = distanceK(root, target, k)
     console.log(result)
   }
 }
