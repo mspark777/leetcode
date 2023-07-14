@@ -4,69 +4,37 @@ import (
 	"fmt"
 )
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
+func longestSubsequence(arr []int, difference int) int {
+	dp := map[int]int{}
+	result := 1
 
-func newnode(val int, left, right *TreeNode) *TreeNode {
-	return &TreeNode{Val: val, Left: left, Right: right}
-}
+	for _, num := range arr {
+		before, _ := dp[num-difference]
+		now := before + 1
+		dp[num] = now
 
-func newright(val int, right *TreeNode) *TreeNode {
-	return newnode(val, nil, right)
-}
-
-func newval(val int) *TreeNode {
-	return newnode(val, nil, nil)
-}
-
-func minDepth(root *TreeNode) int {
-	if root == nil {
-		return 0
-	}
-
-	queue := []*TreeNode{root}
-	depth := 0
-
-	for len(queue) > 0 {
-		depth += 1
-		count := len(queue)
-
-		for i := 0; i < count; i += 1 {
-			node := queue[i]
-			found := true
-
-			if node.Left != nil {
-				found = false
-				queue = append(queue, node.Left)
-			}
-
-			if node.Right != nil {
-				found = false
-				queue = append(queue, node.Right)
-			}
-
-			if found {
-				return depth
-			}
+		if now > result {
+			result = now
 		}
-
-		queue = queue[count:]
 	}
 
-	return depth
+	return result
+}
+
+type input struct {
+	arr        []int
+	difference int
 }
 
 func main() {
-	inputs := []*TreeNode{
-		newnode(3, newval(9), newnode(20, newval(15), newval(7))),
-		newright(2, newright(3, newright(4, newright(5, newval(6))))),
+	inputs := []input{
+		{arr: []int{1, 2, 3, 4}, difference: 1},
+		{arr: []int{1, 3, 5, 7}, difference: 1},
+		{arr: []int{1, 5, 7, 8, 5, 3, 4, 2, 1}, difference: -2},
 	}
 
 	for _, input := range inputs {
-		result := minDepth(input)
+		result := longestSubsequence(input.arr, input.difference)
 		fmt.Println(result)
 	}
 }

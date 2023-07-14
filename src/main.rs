@@ -1,36 +1,36 @@
 mod utils;
 
+use std::collections::HashMap;
+
 use utils::Solution;
 
 impl Solution {
-    pub fn min_sub_array_len(target: i32, nums: Vec<i32>) -> i32 {
-        let mut left = 0usize;
-        let mut sum = 0;
-        let mut result = i32::MAX;
+    pub fn longest_subsequence(arr: Vec<i32>, difference: i32) -> i32 {
+        let mut dp = HashMap::<i32, i32>::with_capacity(arr.len());
+        let mut result = 0;
 
-        for (right, &num) in nums.iter().enumerate() {
-            sum += num;
-            while sum >= target {
-                let l = right - left + 1;
-                result = result.min(l as i32);
-                sum -= nums[left];
-                left += 1;
-            }
+        for &num in arr.iter() {
+            let d = num - difference;
+            let &before = dp.get(&d).unwrap_or(&0);
+            let now = before + 1;
+            dp.insert(num, now);
+
+            result = result.max(now);
         }
 
-        return if result < i32::MAX { result } else { 0 };
+        return result;
     }
 }
 
 fn main() {
     let inputs = [
-        (7, vec![2, 3, 1, 2, 4, 3]),
-        (4, vec![1, 4, 4]),
-        (11, vec![1, 1, 1, 1, 1, 1, 1, 1]),
+        (vec![1, 2, 3, 4], 1),
+        (vec![1, 3, 5, 7], 1),
+        (vec![1, 5, 7, 8, 5, 3, 4, 2, 1], -2),
     ];
 
-    for (target, nums) in inputs {
-        let result = Solution::min_sub_array_len(target, nums);
+    for (arr, difference) in inputs {
+        let result = Solution::longest_subsequence(arr, difference);
         println!("{result}");
     }
 }
