@@ -2,39 +2,39 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func longestSubsequence(arr []int, difference int) int {
-	dp := map[int]int{}
-	result := 1
+func eraseOverlapIntervals(intervals [][]int) int {
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i][1] < intervals[j][1]
+	})
 
-	for _, num := range arr {
-		before, _ := dp[num-difference]
-		now := before + 1
-		dp[num] = now
+	result := 0
+	k := -(0x8FFFFFFF)
+	for _, interval := range intervals {
+		x := interval[0]
+		y := interval[1]
 
-		if now > result {
-			result = now
+		if x >= k {
+			k = y
+		} else {
+			result += 1
 		}
 	}
 
 	return result
 }
 
-type input struct {
-	arr        []int
-	difference int
-}
-
 func main() {
-	inputs := []input{
-		{arr: []int{1, 2, 3, 4}, difference: 1},
-		{arr: []int{1, 3, 5, 7}, difference: 1},
-		{arr: []int{1, 5, 7, 8, 5, 3, 4, 2, 1}, difference: -2},
+	inputs := [][][]int{
+		{{1, 2}, {2, 3}, {3, 4}, {1, 3}},
+		{{1, 2}, {1, 2}, {1, 2}},
+		{{1, 2}, {2, 3}},
 	}
 
 	for _, input := range inputs {
-		result := longestSubsequence(input.arr, input.difference)
+		result := eraseOverlapIntervals(input)
 		fmt.Println(result)
 	}
 }

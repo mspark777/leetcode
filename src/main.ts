@@ -1,76 +1,38 @@
 import '@total-typescript/ts-reset'
 
-class ListNode {
-  val: number
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
-  }
-}
+function eraseOverlapIntervals (intervals: number[][]): number {
+  intervals.sort((a, b) => {
+    const ay = a[1] as number
+    const by = b[1] as number
+    return ay - by
+  })
 
-function ltoa (node: ListNode | null): number[] {
-  const arr: number[] = []
-  while (node != null) {
-    arr.push(node.val)
-    node = node.next
-  }
+  let result = 0
+  let k = Number.MIN_SAFE_INTEGER
+  for (const interval of intervals) {
+    const x = interval[0] as number
+    const y = interval[1] as number
 
-  return arr
-}
-
-function isNotEmpty (arr: number[]): boolean {
-  return arr.length > 0
-}
-
-function addTwoNumbers (l1: ListNode | null, l2: ListNode | null): ListNode | null {
-  const stack1 = ltoa(l1)
-  const stack2 = ltoa(l2)
-
-  let total = 0n
-  let carry = 0n
-  let result = new ListNode()
-  while (isNotEmpty(stack1) || isNotEmpty(stack2)) {
-    if (isNotEmpty(stack1)) {
-      total += BigInt(stack1.pop() as number)
+    if (x >= k) {
+      k = y
+    } else {
+      result += 1
     }
-
-    if (isNotEmpty(stack2)) {
-      total += BigInt(stack2.pop() as number)
-    }
-
-    result.val = Number(total % 10n)
-    carry = total / 10n
-    const head = new ListNode(Number(carry))
-    head.next = result
-    result = head
-    total = carry
   }
 
-  return carry === 0n ? result.next : result
-}
-
-function atol (arr: number[]): ListNode | null {
-  const head = new ListNode()
-  let tail = head
-  for (const num of arr) {
-    tail.next = new ListNode(num)
-    tail = tail.next
-  }
-
-  return head.next
+  return result
 }
 
 function main (): void {
   const inputs = [
-    [atol([7, 2, 4, 3]), atol([5, 6, 4])],
-    [atol([2, 4, 3]), atol([5, 6, 4])],
-    [atol([0]), atol([0])]
+    [[1, 2], [2, 3], [3, 4], [1, 3]],
+    [[1, 2], [1, 2], [1, 2]],
+    [[1, 2], [2, 3]]
   ]
 
-  for (const [l1, l2] of inputs) {
-    const result = addTwoNumbers(l1 as any, l2 as any)
-    console.log(ltoa(result))
+  for (const intervals of inputs) {
+    const result = eraseOverlapIntervals(intervals)
+    console.log(result)
   }
 }
 main()

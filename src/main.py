@@ -3,28 +3,31 @@ from typing import List
 
 
 class Solution:
-    def longestSubsequence(self, arr: List[int], difference: int) -> int:
-        dp: dict[int, int] = {}
-        result = 1
+    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
+        intervals.sort(key=lambda i: i[1])
 
-        for num in arr:
-            before = dp.get(num - difference)
-            if before is None:
-                before = 0
-            now = before + 1
-            dp[num] = now
+        result = 0
+        k = -(2**31)
 
-            result = max(result, now)
+        for [x, y] in intervals:
+            if x >= k:
+                k = y
+            else:
+                result += 1
 
         return result
 
 
 def main():
-    inputs = [([1, 2, 3, 4], 1), ([1, 3, 5, 7], 1), ([1, 5, 7, 8, 5, 3, 4, 2, 1], -2)]
+    inputs = [
+        [[1, 2], [2, 3], [3, 4], [1, 3]],
+        [[1, 2], [1, 2], [1, 2]],
+        [[1, 2], [2, 3]],
+    ]
 
-    for arr, difference in inputs:
+    for intervals in inputs:
         solution = Solution()
-        result = solution.longestSubsequence(arr, difference)
+        result = solution.eraseOverlapIntervals(intervals)
         print(result)
 
 

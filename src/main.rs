@@ -1,21 +1,23 @@
 mod utils;
 
-use std::collections::HashMap;
-
 use utils::Solution;
 
 impl Solution {
-    pub fn longest_subsequence(arr: Vec<i32>, difference: i32) -> i32 {
-        let mut dp = HashMap::<i32, i32>::with_capacity(arr.len());
+    pub fn erase_overlap_intervals(intervals: Vec<Vec<i32>>) -> i32 {
+        let mut intervals = intervals;
+        intervals.sort_unstable_by_key(|i| i[1]);
+
         let mut result = 0;
+        let mut k = i32::MIN;
+        for interval in intervals.iter() {
+            let x = interval[0];
+            let y = interval[1];
 
-        for &num in arr.iter() {
-            let d = num - difference;
-            let &before = dp.get(&d).unwrap_or(&0);
-            let now = before + 1;
-            dp.insert(num, now);
-
-            result = result.max(now);
+            if x >= k {
+                k = y;
+            } else {
+                result += 1;
+            }
         }
 
         return result;
@@ -24,13 +26,13 @@ impl Solution {
 
 fn main() {
     let inputs = [
-        (vec![1, 2, 3, 4], 1),
-        (vec![1, 3, 5, 7], 1),
-        (vec![1, 5, 7, 8, 5, 3, 4, 2, 1], -2),
+        vec![vec![1, 2], vec![2, 3], vec![3, 4], vec![1, 3]],
+        vec![vec![1, 2], vec![1, 2], vec![1, 2]],
+        vec![vec![1, 2], vec![2, 3]],
     ];
 
-    for (arr, difference) in inputs {
-        let result = Solution::longest_subsequence(arr, difference);
+    for intervals in inputs {
+        let result = Solution::erase_overlap_intervals(intervals);
         println!("{result}");
     }
 }
