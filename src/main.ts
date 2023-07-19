@@ -1,37 +1,48 @@
 import '@total-typescript/ts-reset'
 
-function eraseOverlapIntervals (intervals: number[][]): number {
-  intervals.sort((a, b) => {
-    const ay = a[1] as number
-    const by = b[1] as number
-    return ay - by
-  })
-
-  let result = 0
-  let k = Number.MIN_SAFE_INTEGER
-  for (const interval of intervals) {
-    const x = interval[0] as number
-    const y = interval[1] as number
-
-    if (x >= k) {
-      k = y
-    } else {
-      result += 1
-    }
+function solve (i: number, candidates: number[], temp: number[], target: number, result: number[][]): void {
+  if (target === 0) {
+    result.push(temp.slice())
+    return
   }
 
+  if (target < 0) {
+    return
+  }
+
+  if (i >= candidates.length) {
+    return
+  }
+
+  solve(i + 1, candidates, temp, target, result)
+
+  const candidate = candidates[i] as number
+  temp.push(candidate)
+  solve(i, candidates, temp, target - candidate, result)
+  temp.pop()
+}
+
+function combinationSum (candidates: number[], target: number): number[][] {
+  const result: number[][] = []
+
+  solve(0, candidates, [], target, result)
   return result
 }
 
+interface Input {
+  readonly candidates: number[]
+  readonly target: number
+}
+
 function main (): void {
-  const inputs = [
-    [[1, 2], [2, 3], [3, 4], [1, 3]],
-    [[1, 2], [1, 2], [1, 2]],
-    [[1, 2], [2, 3]]
+  const inputs: Input[] = [
+    { candidates: [2, 3, 6, 7], target: 7 },
+    { candidates: [2, 3, 5], target: 8 },
+    { candidates: [2], target: 1 }
   ]
 
-  for (const intervals of inputs) {
-    const result = eraseOverlapIntervals(intervals)
+  for (const { candidates, target } of inputs) {
+    const result = combinationSum(candidates, target)
     console.log(result)
   }
 }

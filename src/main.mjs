@@ -1,32 +1,54 @@
 /**
-  * @param {number[][]} intervals
-  * @returns {number}
+  * @param {number} i
+  * @param {number[]} candidates
+  * @param {number[]} temp
+  * @param {number} target
+  * @param {number[][]} result
+  * @returns {undefined}
   */
-function eraseOverlapIntervals (intervals) {
-  intervals.sort((a, b) => a[1] - b[1])
-
-  let result = 0
-  let k = Number.MIN_SAFE_INTEGER
-  for (const [x, y] of intervals) {
-    if (x >= k) {
-      k = y
-    } else {
-      result += 1
-    }
+function solve (i, candidates, temp, target, result) {
+  if (target === 0) {
+    result.push(temp.slice())
+    return
   }
 
+  if (target < 0) {
+    return
+  }
+
+  if (i >= candidates.length) {
+    return
+  }
+
+  solve(i + 1, candidates, temp, target, result)
+
+  const candidate = candidates[i]
+  temp.push(candidate)
+  solve(i, candidates, temp, target - candidate, result)
+  temp.pop()
+}
+
+/**
+  * @param {number[]} candidates
+  * @param {number} target
+  * @returns {number[][]}
+  */
+function combinationSum (candidates, target) {
+  const result = []
+
+  solve(0, candidates, [], target, result)
   return result
 }
 
 function main () {
   const inputs = [
-    [[1, 2], [2, 3], [3, 4], [1, 3]],
-    [[1, 2], [1, 2], [1, 2]],
-    [[1, 2], [2, 3]]
+    { candidates: [2, 3, 6, 7], target: 7 },
+    { candidates: [2, 3, 5], target: 8 },
+    { candidates: [2], target: 1 }
   ]
 
-  for (const intervals of inputs) {
-    const result = eraseOverlapIntervals(intervals)
+  for (const { candidates, target } of inputs) {
+    const result = combinationSum(candidates, target)
     console.log(result)
   }
 }

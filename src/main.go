@@ -2,39 +2,59 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func eraseOverlapIntervals(intervals [][]int) int {
-	sort.Slice(intervals, func(i, j int) bool {
-		return intervals[i][1] < intervals[j][1]
-	})
+type solve struct {
+	result [][]int
+	temp   []int
+}
 
-	result := 0
-	k := -(0x8FFFFFFF)
-	for _, interval := range intervals {
-		x := interval[0]
-		y := interval[1]
-
-		if x >= k {
-			k = y
-		} else {
-			result += 1
-		}
+func (s *solve) solve(i int, candidates []int, target int) {
+	if target == 0 {
+		t := make([]int, len(s.temp))
+		copy(t, s.temp)
+		s.result = append(s.result, t)
+		return
 	}
 
-	return result
+	if target < 0 {
+		return
+	}
+
+	if i >= len(candidates) {
+		return
+	}
+
+	s.solve(i+1, candidates, target)
+	candidate := candidates[i]
+	s.temp = append(s.temp, candidate)
+	s.solve(i, candidates, target-candidate)
+	s.temp = s.temp[0 : len(s.temp)-1]
+}
+
+func combinationSum(candidates []int, target int) [][]int {
+	s := solve{
+		result: [][]int{},
+		temp:   []int{},
+	}
+	s.solve(0, candidates, target)
+	return s.result
+}
+
+type input struct {
+	candidates []int
+	target     int
 }
 
 func main() {
-	inputs := [][][]int{
-		{{1, 2}, {2, 3}, {3, 4}, {1, 3}},
-		{{1, 2}, {1, 2}, {1, 2}},
-		{{1, 2}, {2, 3}},
+	inputs := []input{
+		{candidates: []int{2, 3, 6, 7}, target: 7},
+		{candidates: []int{2, 3, 5}, target: 8},
+		{candidates: []int{2}, target: 1},
 	}
 
 	for _, input := range inputs {
-		result := eraseOverlapIntervals(input)
+		result := combinationSum(input.candidates, input.target)
 		fmt.Println(result)
 	}
 }

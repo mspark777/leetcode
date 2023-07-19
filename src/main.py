@@ -3,31 +3,43 @@ from typing import List
 
 
 class Solution:
-    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
-        intervals.sort(key=lambda i: i[1])
-
-        result = 0
-        k = -(2**31)
-
-        for [x, y] in intervals:
-            if x >= k:
-                k = y
-            else:
-                result += 1
-
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        result: list[list[int]] = []
+        self.solve(0, candidates, [], target, result)
         return result
+
+    def solve(
+        self,
+        i: int,
+        candidates: list[int],
+        temp: list[int],
+        target: int,
+        result: list[list[int]],
+    ):
+        if target == 0:
+            result.append(temp.copy())
+            return
+
+        if target < 0:
+            return
+
+        if i >= len(candidates):
+            return
+
+        self.solve(i + 1, candidates, temp, target, result)
+
+        candidate = candidates[i]
+        temp.append(candidate)
+        self.solve(i, candidates, temp, target - candidate, result)
+        temp.pop()
 
 
 def main():
-    inputs = [
-        [[1, 2], [2, 3], [3, 4], [1, 3]],
-        [[1, 2], [1, 2], [1, 2]],
-        [[1, 2], [2, 3]],
-    ]
+    inputs = [([2, 3, 6, 7], 7), ([2, 3, 5], 8), ([2], 1)]
 
-    for intervals in inputs:
+    for candidates, target in inputs:
         solution = Solution()
-        result = solution.eraseOverlapIntervals(intervals)
+        result = solution.combinationSum(candidates, target)
         print(result)
 
 
