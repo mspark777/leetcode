@@ -1,48 +1,31 @@
 import '@total-typescript/ts-reset'
 
-function solve (i: number, candidates: number[], temp: number[], target: number, result: number[][]): void {
-  if (target === 0) {
-    result.push(temp.slice())
-    return
+function peakIndexInMountainArray (arr: number[]): number {
+  let left = 0
+  let right = arr.length - 1
+  while (left < right) {
+    const mid = Math.trunc((left + right) / 2)
+    const l = arr.at(mid) as number
+    const r = arr.at(mid + 1) as number
+    if (l < r) {
+      left = mid + 1
+    } else {
+      right = mid
+    }
   }
 
-  if (target < 0) {
-    return
-  }
-
-  if (i >= candidates.length) {
-    return
-  }
-
-  solve(i + 1, candidates, temp, target, result)
-
-  const candidate = candidates[i] as number
-  temp.push(candidate)
-  solve(i, candidates, temp, target - candidate, result)
-  temp.pop()
-}
-
-function combinationSum (candidates: number[], target: number): number[][] {
-  const result: number[][] = []
-
-  solve(0, candidates, [], target, result)
-  return result
-}
-
-interface Input {
-  readonly candidates: number[]
-  readonly target: number
+  return left
 }
 
 function main (): void {
-  const inputs: Input[] = [
-    { candidates: [2, 3, 6, 7], target: 7 },
-    { candidates: [2, 3, 5], target: 8 },
-    { candidates: [2], target: 1 }
+  const inputs: number[][] = [
+    [0, 1, 0],
+    [0, 2, 1, 0],
+    [0, 10, 5, 2]
   ]
 
-  for (const { candidates, target } of inputs) {
-    const result = combinationSum(candidates, target)
+  for (const arr of inputs) {
+    const result = peakIndexInMountainArray(arr)
     console.log(result)
   }
 }

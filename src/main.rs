@@ -3,48 +3,27 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn combination_sum(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
-        let mut result = Vec::<Vec<i32>>::new();
-        let mut temp = Vec::<i32>::new();
-        Self::solve(0, &candidates, &mut temp, target, &mut result);
-
-        return result;
-    }
-
-    fn solve(
-        i: usize,
-        candidates: &Vec<i32>,
-        temp: &mut Vec<i32>,
-        target: i32,
-        result: &mut Vec<Vec<i32>>,
-    ) {
-        if target == 0 {
-            result.push(temp.clone());
-            return;
+    pub fn peak_index_in_mountain_array(arr: Vec<i32>) -> i32 {
+        let mut left = 0usize;
+        let mut right = arr.len() - 1;
+        while left < right {
+            let mid = (left + right) / 2;
+            if arr[mid] < arr[mid + 1] {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
         }
 
-        if target < 0 {
-            return;
-        }
-
-        if i >= candidates.len() {
-            return;
-        }
-
-        Self::solve(i + 1, candidates, temp, target, result);
-
-        let candidate = candidates[i];
-        temp.push(candidate);
-        Self::solve(i, candidates, temp, target - candidate, result);
-        temp.pop();
+        return left as i32;
     }
 }
 
 fn main() {
-    let inputs = [(vec![2, 3, 6, 7], 7), (vec![2, 3, 5], 8), (vec![2], 1)];
+    let inputs = [vec![0, 1, 0], vec![0, 2, 1, 0], vec![0, 10, 5, 2]];
 
-    for (candidates, target) in inputs {
-        let result = Solution::combination_sum(candidates, target);
-        println!("{result:?}");
+    for arr in inputs {
+        let result = Solution::peak_index_in_mountain_array(arr);
+        println!("{result}");
     }
 }

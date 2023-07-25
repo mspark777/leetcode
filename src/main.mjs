@@ -1,54 +1,35 @@
-/**
-  * @param {number} i
-  * @param {number[]} candidates
-  * @param {number[]} temp
-  * @param {number} target
-  * @param {number[][]} result
-  * @returns {undefined}
-  */
-function solve (i, candidates, temp, target, result) {
-  if (target === 0) {
-    result.push(temp.slice())
-    return
-  }
-
-  if (target < 0) {
-    return
-  }
-
-  if (i >= candidates.length) {
-    return
-  }
-
-  solve(i + 1, candidates, temp, target, result)
-
-  const candidate = candidates[i]
-  temp.push(candidate)
-  solve(i, candidates, temp, target - candidate, result)
-  temp.pop()
-}
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number[]} candidates
-  * @param {number} target
-  * @returns {number[][]}
+  * @param {number[]} arr
+  * @returns {number}
   */
-function combinationSum (candidates, target) {
-  const result = []
+function peakIndexInMountainArray (arr) {
+  let left = 0
+  let right = arr.length - 1
+  while (left < right) {
+    const mid = Math.trunc((left + right) / 2)
+    const l = arr.at(mid)
+    const r = arr.at(mid + 1)
+    if (l < r) {
+      left = mid + 1
+    } else {
+      right = mid
+    }
+  }
 
-  solve(0, candidates, [], target, result)
-  return result
+  return left
 }
 
 function main () {
   const inputs = [
-    { candidates: [2, 3, 6, 7], target: 7 },
-    { candidates: [2, 3, 5], target: 8 },
-    { candidates: [2], target: 1 }
+    [0, 1, 0],
+    [0, 2, 1, 0],
+    [0, 10, 5, 2]
   ]
 
-  for (const { candidates, target } of inputs) {
-    const result = combinationSum(candidates, target)
+  for (const arr of inputs) {
+    const result = peakIndexInMountainArray(arr)
     console.log(result)
   }
 }

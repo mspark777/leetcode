@@ -3,43 +3,25 @@ from typing import List
 
 
 class Solution:
-    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
-        result: list[list[int]] = []
-        self.solve(0, candidates, [], target, result)
-        return result
+    def peakIndexInMountainArray(self, arr: List[int]) -> int:
+        left = 0
+        right = len(arr) - 1
+        while left < right:
+            mid = (left + right) // 2
+            if arr[mid] < arr[mid + 1]:
+                left = mid + 1
+            else:
+                right = mid
 
-    def solve(
-        self,
-        i: int,
-        candidates: list[int],
-        temp: list[int],
-        target: int,
-        result: list[list[int]],
-    ):
-        if target == 0:
-            result.append(temp.copy())
-            return
-
-        if target < 0:
-            return
-
-        if i >= len(candidates):
-            return
-
-        self.solve(i + 1, candidates, temp, target, result)
-
-        candidate = candidates[i]
-        temp.append(candidate)
-        self.solve(i, candidates, temp, target - candidate, result)
-        temp.pop()
+        return left
 
 
 def main():
-    inputs = [([2, 3, 6, 7], 7), ([2, 3, 5], 8), ([2], 1)]
+    inputs = [[0, 1, 0], [0, 2, 1, 0], [0, 10, 5, 2]]
 
-    for candidates, target in inputs:
+    for arr in inputs:
         solution = Solution()
-        result = solution.combinationSum(candidates, target)
+        result = solution.peakIndexInMountainArray(arr)
         print(result)
 
 
