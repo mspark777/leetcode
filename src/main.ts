@@ -1,18 +1,37 @@
 import '@total-typescript/ts-reset'
 
-function multiply (num1: string, num2: string): string {
-  const result = BigInt(num1) * BigInt(num2)
-  return result.toString()
+function maxRunTime (n: number, batteries: number[]): number {
+  const sumPower = batteries.reduce((acc, cur) => acc + cur)
+  let left = 1
+  let right = Math.round(sumPower / n)
+
+  while (left < right) {
+    const target = Math.round((left + right) / 2)
+    const extra = batteries.reduce((acc, power) => acc + Math.min(power, target), 0)
+
+    if (extra >= (n * target)) {
+      left = target
+    } else {
+      right = target - 1
+    }
+  }
+
+  return left
+}
+
+interface Input {
+  readonly n: number
+  readonly batteries: number[]
 }
 
 function main (): void {
-  const inputs: string[][] = [
-    ['2', '3'],
-    ['123', '456']
+  const inputs: Input[] = [
+    { n: 2, batteries: [3, 3, 3] },
+    { n: 2, batteries: [1, 1, 1, 1] }
   ]
 
-  for (const [num1, num2] of inputs) {
-    const result = multiply(num1 as string, num2 as string)
+  for (const { n, batteries } of inputs) {
+    const result = maxRunTime(n, batteries)
     console.log(result)
   }
 }
