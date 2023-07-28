@@ -1,30 +1,30 @@
 from __future__ import annotations
 from typing import List
-from functools import reduce
 
 
 class Solution:
-    def maxRunTime(self, n: int, batteries: List[int]) -> int:
-        left = 1
-        right = sum(batteries) // n
+    def PredictTheWinner(self, nums: List[int]) -> bool:
+        n = len(nums)
+        dp = nums.copy()
 
-        while left < right:
-            target = (left + right + 1) // 2
-            extra = reduce(lambda acc, power: acc + min(power, target), batteries, 0)
-            if extra >= (n * target):
-                left = target
-            else:
-                right = target - 1
+        for diff in range(1, n):
+            for left in range(n - diff):
+                right = left + diff
+                lnum = nums[left]
+                rnum = nums[right]
+                ldp = dp[left]
+                rdp = dp[left + 1]
+                dp[left] = max(lnum - rdp, rnum - ldp)
 
-        return left
+        return dp[0] >= 0
 
 
 def main():
-    inputs = [(2, [3, 3, 3]), (2, [1, 1, 1, 1])]
+    inputs = [[1, 5, 2], [1, 5, 233, 7]]
 
-    for n, batteries in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.maxRunTime(n, batteries)
+        result = solution.PredictTheWinner(nums)
         print(result)
 
 

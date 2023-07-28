@@ -3,38 +3,30 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn max_run_time(n: i32, batteries: Vec<i32>) -> i64 {
-        let n = n as i64;
-        let mut sum_power = 0i64;
-        for &power in batteries.iter() {
-            sum_power += power as i64;
-        }
+    pub fn predict_the_winner(nums: Vec<i32>) -> bool {
+        let n = nums.len();
+        let mut dp = nums.clone();
 
-        let mut left = 1i64;
-        let mut right = sum_power / n;
-
-        while left < right {
-            let target = (left + right + 1) / 2;
-            let extra = batteries
-                .iter()
-                .fold(0, |acc, &power| acc + target.min(power as i64));
-
-            if extra >= (n * target) {
-                left = target;
-            } else {
-                right = target - 1;
+        for diff in 1..n {
+            for left in 0..(n - diff) {
+                let right = left + diff;
+                let lnum = nums[left];
+                let rnum = nums[right];
+                let ldp = dp[left];
+                let rdp = dp[left + 1];
+                dp[left] = (lnum - rdp).max(rnum - ldp);
             }
         }
 
-        return left;
+        return dp[0] >= 0;
     }
 }
 
 fn main() {
-    let inputs = [(2, vec![3, 3, 3]), (2, vec![1, 1, 1, 1])];
+    let inputs = [vec![1, 5, 2], vec![1, 5, 233, 7]];
 
-    for (n, batteries) in inputs {
-        let result = Solution::max_run_time(n, batteries);
+    for nums in inputs {
+        let result = Solution::predict_the_winner(nums);
         println!("{result}");
     }
 }

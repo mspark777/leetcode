@@ -1,37 +1,32 @@
 import '@total-typescript/ts-reset'
 
-function maxRunTime (n: number, batteries: number[]): number {
-  const sumPower = batteries.reduce((acc, cur) => acc + cur)
-  let left = 1
-  let right = Math.round(sumPower / n)
+function PredictTheWinner (nums: number[]): boolean {
+  const n = nums.length
+  const dp = nums.slice()
 
-  while (left < right) {
-    const target = Math.round((left + right) / 2)
-    const extra = batteries.reduce((acc, power) => acc + Math.min(power, target), 0)
-
-    if (extra >= (n * target)) {
-      left = target
-    } else {
-      right = target - 1
+  for (let diff = 1; diff < n; diff += 1) {
+    for (let left = 0; left < n - diff; left += 1) {
+      const right = left + diff
+      const lnum = nums[left] as number
+      const rnum = nums[right] as number
+      const ldp = dp[left] as number
+      const rdp = dp[left + 1] as number
+      dp[left] = Math.max(lnum - rdp, rnum - ldp)
     }
   }
 
-  return left
-}
-
-interface Input {
-  readonly n: number
-  readonly batteries: number[]
+  const first = dp[0] as number
+  return first >= 0
 }
 
 function main (): void {
-  const inputs: Input[] = [
-    { n: 2, batteries: [3, 3, 3] },
-    { n: 2, batteries: [1, 1, 1, 1] }
+  const inputs: number[][] = [
+    [1, 5, 2],
+    [1, 5, 233, 7]
   ]
 
-  for (const { n, batteries } of inputs) {
-    const result = maxRunTime(n, batteries)
+  for (const nums of inputs) {
+    const result = PredictTheWinner(nums)
     console.log(result)
   }
 }
