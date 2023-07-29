@@ -2,41 +2,55 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
-func PredictTheWinner(nums []int) bool {
-	n := len(nums)
-	dp := make([]int, n)
-	copy(dp, nums)
+func max(i, j int) int {
+	if i < j {
+		return j
+	}
 
-	for diff := 1; diff < n; diff += 1 {
-		for left := 0; left < n-diff; left += 1 {
-			right := left + diff
-			lnum := nums[left]
-			rnum := nums[right]
-			ldp := dp[left]
-			rdp := dp[left+1]
-			l := lnum - rdp
-			r := rnum - ldp
-			if l < r {
-				dp[left] = r
-			} else {
-				dp[left] = l
+	return i
+}
+
+func calculateDP(i, j int, dp map[int]map[int]float64) float64 {
+	dp0 := dp[max(0, i-4)][j]
+	dp1 := dp[max(0, i-3)][j-1]
+	dp2 := dp[max(0, i-2)][max(0, j-2)]
+	dp3 := dp[i-1][max(0, j-3)]
+	sum := dp0 + dp1 + dp2 + dp3
+	return sum / 4
+}
+
+func soupServings(n int) float64 {
+	dp := map[int]map[int]float64{}
+	dp[0] = map[int]float64{0: 0.5}
+
+	m := int(math.Ceil(float64(n) / 25.0))
+	for k := 1; k <= m; k += 1 {
+		dp[k] = map[int]float64{0: 0}
+		dp[0][k] = 1
+
+		for j := 1; j <= k; j += 1 {
+			dp[j][k] = calculateDP(j, k, dp)
+			dp[k][j] = calculateDP(k, j, dp)
+
+			if dp[k][k] > (1 - 1e-5) {
+				return 1
 			}
 		}
 	}
 
-	return dp[0] >= 0
+	return dp[m][m]
 }
 
 func main() {
-	inputs := [][]int{
-		{1, 5, 2},
-		{1, 5, 233, 7},
+	inputs := []int{
+		50, 100,
 	}
 
 	for _, input := range inputs {
-		result := PredictTheWinner(input)
+		result := soupServings(input)
 		fmt.Println(result)
 	}
 }
