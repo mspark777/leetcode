@@ -2,55 +2,55 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 
-func max(i, j int) int {
-	if i < j {
-		return j
+func strangePrinter(s string) int {
+	bs := []byte(s)
+	n := len(bs)
+	dp := make([][]int, n)
+	for i := 0; i < n; i += 1 {
+		dp[i] = make([]int, n)
 	}
 
-	return i
-}
+	for l := 1; l <= n; l += 1 {
+		for left := 0; left <= n-l; left += 1 {
+			right := left + l - 1
+			dp[left][right] = n
 
-func calculateDP(i, j int, dp map[int]map[int]float64) float64 {
-	dp0 := dp[max(0, i-4)][j]
-	dp1 := dp[max(0, i-3)][j-1]
-	dp2 := dp[max(0, i-2)][max(0, j-2)]
-	dp3 := dp[i-1][max(0, j-3)]
-	sum := dp0 + dp1 + dp2 + dp3
-	return sum / 4
-}
+			j := -1
+			for i := left; i < right; i += 1 {
+				if (bs[i] != bs[right]) && (j == -1) {
+					j = i
+				}
 
-func soupServings(n int) float64 {
-	dp := map[int]map[int]float64{}
-	dp[0] = map[int]float64{0: 0.5}
+				if j != -1 {
+					lmin := dp[left][right]
+					rmin := 1 + dp[j][i] + dp[i+1][right]
+					if lmin < rmin {
+						dp[left][right] = lmin
+					} else {
+						dp[left][right] = rmin
+					}
+				}
+			}
 
-	m := int(math.Ceil(float64(n) / 25.0))
-	for k := 1; k <= m; k += 1 {
-		dp[k] = map[int]float64{0: 0}
-		dp[0][k] = 1
-
-		for j := 1; j <= k; j += 1 {
-			dp[j][k] = calculateDP(j, k, dp)
-			dp[k][j] = calculateDP(k, j, dp)
-
-			if dp[k][k] > (1 - 1e-5) {
-				return 1
+			if j == -1 {
+				dp[left][right] = 0
 			}
 		}
 	}
 
-	return dp[m][m]
+	return dp[0][n-1] + 1
 }
 
 func main() {
-	inputs := []int{
-		50, 100,
+	inputs := []string{
+		"aaabbb",
+		"aba",
 	}
 
 	for _, input := range inputs {
-		result := soupServings(input)
+		result := strangePrinter(input)
 		fmt.Println(result)
 	}
 }

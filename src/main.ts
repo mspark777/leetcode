@@ -1,45 +1,45 @@
 import '@total-typescript/ts-reset'
 
-function calculateDP (i: number, j: number, dp: Map<number, Map<number, number>>): number {
-  const dp0 = dp.get(Math.max(0, i - 4))?.get(j) as number
-  const dp1 = dp.get(Math.max(0, i - 3))?.get(j - 1) as number
-  const dp2 = dp.get(Math.max(0, i - 2))?.get(Math.max(0, j - 2)) as number
-  const dp3 = dp.get(i - 1)?.get(Math.max(0, j - 3)) as number
-  const sum = dp0 + dp1 + dp2 + dp3
-  return sum / 4
+function idx (n: number, r: number, c: number): number {
+  return (r * n) + c
 }
 
-function soupServings (n: number): number {
-  const dp = new Map<number, Map<number, number>>()
-  dp.set(0, new Map([[0, 0.5]]))
+function strangePrinter (s: string): number {
+  const n = s.length
+  const dp = new Array<number>(n * n).fill(0)
+  for (let l = 1; l <= n; l += 1) {
+    for (let left = 0; left <= n - l; left += 1) {
+      const right = left + l - 1
+      let j = -1
+      dp[idx(n, left, right)] = n
+      for (let i = left; i < right; i += 1) {
+        if ((s.charAt(i) !== s.charAt(right)) && (j === -1)) {
+          j = i
+        }
 
-  const m = Math.ceil(n / 25)
-  for (let k = 1; k <= m; k += 1) {
-    dp.set(k, new Map())
-    dp.get(0)?.set(k, 1)
-    dp.get(k)?.set(0, 0)
+        if (j !== -1) {
+          const lmin = dp[idx(n, left, right)] as number
+          const rmin = 1 + (dp[idx(n, j, i)] as number) + (dp[idx(n, i + 1, right)] as number)
+          dp[idx(n, left, right)] = Math.min(lmin, rmin)
+        }
+      }
 
-    for (let j = 1; j <= k; j += 1) {
-      dp.get(j)?.set(k, calculateDP(j, k, dp))
-      dp.get(k)?.set(j, calculateDP(k, j, dp))
-    }
-
-    const dpk = dp.get(k)?.get(k) as number
-    if (dpk > (1 - 1e-5)) {
-      return 1
+      if (j === -1) {
+        dp[idx(n, left, right)] = 0
+      }
     }
   }
 
-  return dp.get(m)?.get(m) as number
+  return (dp[idx(n, 0, n - 1)] as number) + 1
 }
 
 function main (): void {
-  const inputs: number[] = [
-    50, 100
+  const inputs: string[] = [
+    'aaabbb', 'aba'
   ]
 
-  for (const n of inputs) {
-    const result = soupServings(n)
+  for (const s of inputs) {
+    const result = strangePrinter(s)
     console.log(result)
   }
 }

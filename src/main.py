@@ -1,43 +1,37 @@
 from __future__ import annotations
-from math import ceil
 
 
 class Solution:
-    def soupServings(self, n: int) -> float:
-        dp: dict[int, dict[int, float]] = {}
-        dp[0] = {0: 0.5}
+    def strangePrinter(self, s: str) -> int:
+        n = len(s)
+        dp = [[0 for _ in range(n)] for _ in range(n)]
+        for l in range(1, n + 1):
+            for left in range(0, n - l + 1):
+                right = left + l - 1
+                j = -1
+                dp[left][right] = n
 
-        m = ceil(n / 25)
+                for i in range(left, right):
+                    if (s[i] != s[right]) and (j == -1):
+                        j = i
 
-        for k in range(1, m + 1):
-            dp[k] = {}
-            dp[0][k] = 1
-            dp[k][0] = 0
+                    if j != -1:
+                        lmin = dp[left][right]
+                        rmin = 1 + dp[j][i] + dp[i + 1][right]
+                        dp[left][right] = min(lmin, rmin)
 
-            for j in range(1, k + 1):
-                dp[j][k] = self.calculate_dp(j, k, dp)
-                dp[k][j] = self.calculate_dp(k, j, dp)
+                if j == -1:
+                    dp[left][right] = 0
 
-            if dp[k][k] > (1 - 1e-5):
-                return 1
-
-        return dp[m][m]
-
-    def calculate_dp(self, i: int, j: int, dp: dict[int, dict[int, float]]) -> float:
-        dp0 = dp[max(0, i - 4)][j]
-        dp1 = dp[max(0, i - 3)][j - 1]
-        dp2 = dp[max(0, i - 2)][max(0, j - 2)]
-        dp3 = dp[i - 1][max(0, j - 3)]
-        sum = dp0 + dp1 + dp2 + dp3
-        return sum / 4
+        return dp[0][n - 1] + 1
 
 
 def main():
-    inputs = [50, 100]
+    inputs = ["aaabbb", "aba"]
 
-    for n in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.soupServings(n)
+        result = solution.strangePrinter(s)
         print(result)
 
 
