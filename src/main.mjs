@@ -1,64 +1,61 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {string} s1
-  * @param {string} s2
-  * @returns {number}
+  * @param {number[]} candidates
+  * @param {number[]} combinations
+  * @param {number} remain
+  * @param {number} cur
+  * @param {number[][]} results
+  * @returns {undefined}
   */
-function minimumDeleteSum (s1, s2) {
-  const s1len = s1.length
-  const s2len = s2.length
-
-  if (s1len < s2len) {
-    return minimumDeleteSum(s2, s1)
+function backtrack (candidates, combinations, remain, cur, results) {
+  if (remain === 0) {
+    results.push(combinations.slice())
+    return
   }
 
-  /** @type {number[]} */
-  const curRow = new Array(s2len + 1).fill(0)
-  for (let i = 1; i <= s2len; i += 1) {
-    /** @type {number} */
-    const prev = curRow[i - 1]
-    curRow[i] = prev + s2.charCodeAt(i - 1)
-  }
-
-  for (let i = 1; i <= s1len; i += 1) {
-    /** @type {number} */
-    let cur = curRow[0]
-    curRow[0] += s1.charCodeAt(i - 1)
-
-    for (let j = 1; j <= s2len; j += 1) {
-      let col = 0
-      if (s1.charCodeAt(i - 1) === s2.charCodeAt(j - 1)) {
-        col = cur
-      } else {
-        /** @type {number} */
-        const curj = curRow[j]
-        /** @type {number} */
-        const prevj = curRow[j - 1]
-        col = Math.min(
-          s1.charCodeAt(i - 1) + curj,
-          s2.charCodeAt(j - 1) + prevj
-        )
-      }
-
-      /** @type {number} */
-      cur = curRow[j]
-      curRow[j] = col
+  for (let next = cur; next < candidates.length; next += 1) {
+    if ((next > cur) && (candidates[next] === candidates[next - 1])) {
+      continue
     }
-  }
 
-  /** @type {number} */
-  return curRow[s2len]
+    /** @type {number}  */
+    const pick = candidates[next]
+    const nextRemain = remain - pick
+    if (nextRemain < 0) {
+      break
+    }
+
+    combinations.push(pick)
+    backtrack(candidates, combinations, nextRemain, next + 1, results)
+    combinations.pop()
+  }
+}
+
+/**
+  * @param {number[]} candidates
+  * @param {number} target
+  * @returns {number[][]}
+  */
+function combinationSum2 (candidates, target) {
+  /** @type {number[][]} */
+  const results = []
+  /** @type {number[]} */
+  const combinations = []
+
+  candidates.sort((a, b) => a - b)
+  backtrack(candidates, combinations, target, 0, results)
+  return results
 }
 
 function main () {
   const inputs = [
-    ['sea', 'eat'],
-    ['delete', 'leet']
+    { candidates: [10, 1, 2, 7, 6, 1, 5], target: 8 },
+    { candidates: [2, 5, 2, 1, 2], target: 5 }
   ]
 
-  for (const [s1, s2] of inputs) {
-    const result = minimumDeleteSum(s1, s2)
+  for (const { candidates, target } of inputs) {
+    const result = combinationSum2(candidates, target)
     console.log(result)
   }
 }

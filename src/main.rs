@@ -3,55 +3,51 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn minimum_delete_sum(s1: String, s2: String) -> i32 {
-        let b1 = s1.as_bytes();
-        let b2 = s2.as_bytes();
-        return if b1.len() < b2.len() {
-            Self::minimum_delete_sum1(b2, b1)
-        } else {
-            Self::minimum_delete_sum1(b1, b2)
-        };
+    pub fn combination_sum2(candidates: Vec<i32>, target: i32) -> Vec<Vec<i32>> {
+        let mut candidates = candidates;
+        let mut results = Vec::<Vec<i32>>::new();
+        let mut combinations = Vec::<i32>::new();
+
+        candidates.sort_unstable();
+        Self::backtrack(&candidates, &mut combinations, target, 0, &mut results);
+        return results;
     }
 
-    fn minimum_delete_sum1(s1: &[u8], s2: &[u8]) -> i32 {
-        let s1len = s1.len();
-        let s2len = s2.len();
-
-        let mut cur_row = vec![0i32; s2len + 1];
-        for i in 1..=s2len {
-            let prev = cur_row[i - 1];
-            cur_row[i] = prev + (s2[i - 1] as i32);
+    fn backtrack(
+        candidates: &Vec<i32>,
+        combinations: &mut Vec<i32>,
+        remain: i32,
+        cur: usize,
+        results: &mut Vec<Vec<i32>>,
+    ) {
+        if remain == 0 {
+            results.push(combinations.clone());
+            return;
         }
 
-        for i in 1..=s1len {
-            let mut diag = cur_row[0];
-            cur_row[0] += s1[i - 1] as i32;
-
-            for j in 1..=s2len {
-                let answer = if s1[i - 1] == s2[j - 1] {
-                    diag
-                } else {
-                    let lmin = (s1[i - 1] as i32) + cur_row[j];
-                    let rmin = (s2[j - 1] as i32) + cur_row[j - 1];
-                    lmin.min(rmin)
-                };
-
-                diag = cur_row[j];
-                cur_row[j] = answer;
+        for next in cur..candidates.len() {
+            if (next > cur) && (candidates[next] == candidates[next - 1]) {
+                continue;
             }
-        }
 
-        return cur_row[s2len];
+            let pick = candidates[next];
+            let next_remain = remain - pick;
+            if next_remain < 0 {
+                break;
+            }
+
+            combinations.push(pick);
+            Self::backtrack(candidates, combinations, next_remain, next + 1, results);
+            combinations.pop();
+        }
     }
 }
 
 fn main() {
-    let inputs = [vec!["sea", "eat"], vec!["delete", "leet"]];
+    let inputs = [(vec![10, 1, 2, 7, 6, 1, 5], 8), (vec![2, 5, 2, 1, 2], 5)];
 
-    for input in inputs {
-        let s1 = input[0].to_string();
-        let s2 = input[1].to_string();
-        let result = Solution::minimum_delete_sum(s1, s2);
-        println!("{result}");
+    for (candidates, target) in inputs {
+        let result = Solution::combination_sum2(candidates, target);
+        println!("{result:?}");
     }
 }

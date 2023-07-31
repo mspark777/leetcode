@@ -1,44 +1,48 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def minimumDeleteSum(self, s1: str, s2: str) -> int:
-        s1len = len(s1)
-        s2len = len(s2)
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        results: list[list[int]] = []
+        combinations: list[int] = []
 
-        if s1len < s2len:
-            return self.minimumDeleteSum(s2, s1)
+        candidates.sort()
+        self.backtrack(candidates, combinations, target, 0, results)
+        return results
 
-        cur_row = [0 for _ in range(s2len + 1)]
-        for i in range(1, s2len + 1):
-            prev = cur_row[i - 1]
-            cur_row[i] = prev + ord(s2[i - 1])
+    def backtrack(
+        self,
+        candidates: list[int],
+        combinations: list[int],
+        remain: int,
+        cur: int,
+        results: list[list[int]],
+    ):
+        if remain == 0:
+            results.append(combinations.copy())
+            return
 
-        for i in range(1, s1len + 1):
-            diag = cur_row[0]
-            cur_row[0] += ord(s1[i - 1])
+        for next in range(cur, len(candidates)):
+            if (next > cur) and (candidates[next] == candidates[next - 1]):
+                continue
 
-            for j in range(1, s2len + 1):
-                cur = 0
-                if s1[i - 1] == s2[j - 1]:
-                    cur = diag
-                else:
-                    lmin = ord(s1[i - 1]) + cur_row[j]
-                    rmin = ord(s2[j - 1]) + cur_row[j - 1]
-                    cur = min(lmin, rmin)
+            pick = candidates[next]
+            next_remain = remain - pick
+            if next_remain < 0:
+                break
 
-                diag = cur_row[j]
-                cur_row[j] = cur
-
-        return cur_row[-1]
+            combinations.append(pick)
+            self.backtrack(candidates, combinations, next_remain, next + 1, results)
+            combinations.pop()
 
 
 def main():
-    inputs = [("sea", "eat"), ("delete", "leet")]
+    inputs = [([10, 1, 2, 7, 6, 1, 5], 8), ([2, 5, 2, 1, 2], 5)]
 
-    for s1, s2 in inputs:
+    for candidates, target in inputs:
         solution = Solution()
-        result = solution.minimumDeleteSum(s1, s2)
+        result = solution.combinationSum2(candidates, target)
         print(result)
 
 
