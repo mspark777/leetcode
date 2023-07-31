@@ -2,36 +2,43 @@ from __future__ import annotations
 
 
 class Solution:
-    def strangePrinter(self, s: str) -> int:
-        n = len(s)
-        dp = [[0 for _ in range(n)] for _ in range(n)]
-        for l in range(1, n + 1):
-            for left in range(0, n - l + 1):
-                right = left + l - 1
-                j = -1
-                dp[left][right] = n
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+        s1len = len(s1)
+        s2len = len(s2)
 
-                for i in range(left, right):
-                    if (s[i] != s[right]) and (j == -1):
-                        j = i
+        if s1len < s2len:
+            return self.minimumDeleteSum(s2, s1)
 
-                    if j != -1:
-                        lmin = dp[left][right]
-                        rmin = 1 + dp[j][i] + dp[i + 1][right]
-                        dp[left][right] = min(lmin, rmin)
+        cur_row = [0 for _ in range(s2len + 1)]
+        for i in range(1, s2len + 1):
+            prev = cur_row[i - 1]
+            cur_row[i] = prev + ord(s2[i - 1])
 
-                if j == -1:
-                    dp[left][right] = 0
+        for i in range(1, s1len + 1):
+            diag = cur_row[0]
+            cur_row[0] += ord(s1[i - 1])
 
-        return dp[0][n - 1] + 1
+            for j in range(1, s2len + 1):
+                cur = 0
+                if s1[i - 1] == s2[j - 1]:
+                    cur = diag
+                else:
+                    lmin = ord(s1[i - 1]) + cur_row[j]
+                    rmin = ord(s2[j - 1]) + cur_row[j - 1]
+                    cur = min(lmin, rmin)
+
+                diag = cur_row[j]
+                cur_row[j] = cur
+
+        return cur_row[-1]
 
 
 def main():
-    inputs = ["aaabbb", "aba"]
+    inputs = [("sea", "eat"), ("delete", "leet")]
 
-    for s in inputs:
+    for s1, s2 in inputs:
         solution = Solution()
-        result = solution.strangePrinter(s)
+        result = solution.minimumDeleteSum(s1, s2)
         print(result)
 
 

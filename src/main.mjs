@@ -1,63 +1,64 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number} n
-  * @param {number} r
-  * @param {number} c
+  * @param {string} s1
+  * @param {string} s2
   * @returns {number}
   */
-function idx (n, r, c) {
-  return (r * n) + c
-}
+function minimumDeleteSum (s1, s2) {
+  const s1len = s1.length
+  const s2len = s2.length
 
-/**
-  * @param {string} s
-  * @returns {number}
-  */
-function strangePrinter (s) {
-  const n = s.length
+  if (s1len < s2len) {
+    return minimumDeleteSum(s2, s1)
+  }
+
   /** @type {number[]} */
-  const dp = new Array(n * n).fill(0)
-  for (let l = 1; l <= n; l += 1) {
-    for (let left = 0; left <= n - l; left += 1) {
-      const right = left + l - 1
-      let j = -1
-      dp[idx(n, left, right)] = n
-      for (let i = left; i < right; i += 1) {
-        if ((s.charAt(i) !== s.charAt(right)) && (j === -1)) {
-          j = i
-        }
+  const curRow = new Array(s2len + 1).fill(0)
+  for (let i = 1; i <= s2len; i += 1) {
+    /** @type {number} */
+    const prev = curRow[i - 1]
+    curRow[i] = prev + s2.charCodeAt(i - 1)
+  }
 
-        if (j !== -1) {
-          const lmin = dp[idx(n, left, right)]
-          /** @type {number} */
-          const rmin0 = dp[idx(n, j, i)]
-          /** @type {number} */
-          const rmin1 = dp[idx(n, i + 1, right)]
-          const rmin = 1 + rmin0 + rmin1
-          dp[idx(n, left, right)] = Math.min(lmin, rmin)
-        }
+  for (let i = 1; i <= s1len; i += 1) {
+    /** @type {number} */
+    let cur = curRow[0]
+    curRow[0] += s1.charCodeAt(i - 1)
+
+    for (let j = 1; j <= s2len; j += 1) {
+      let col = 0
+      if (s1.charCodeAt(i - 1) === s2.charCodeAt(j - 1)) {
+        col = cur
+      } else {
+        /** @type {number} */
+        const curj = curRow[j]
+        /** @type {number} */
+        const prevj = curRow[j - 1]
+        col = Math.min(
+          s1.charCodeAt(i - 1) + curj,
+          s2.charCodeAt(j - 1) + prevj
+        )
       }
 
-      if (j === -1) {
-        dp[idx(n, left, right)] = 0
-      }
+      /** @type {number} */
+      cur = curRow[j]
+      curRow[j] = col
     }
   }
 
   /** @type {number} */
-  const result = dp[idx(n, 0, n - 1)]
-  return result + 1
+  return curRow[s2len]
 }
 
 function main () {
   const inputs = [
-    'aaabbb',
-    'aba'
+    ['sea', 'eat'],
+    ['delete', 'leet']
   ]
 
-  for (const s of inputs) {
-    const result = strangePrinter(s)
+  for (const [s1, s2] of inputs) {
+    const result = minimumDeleteSum(s1, s2)
     console.log(result)
   }
 }

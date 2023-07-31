@@ -1,45 +1,50 @@
 import '@total-typescript/ts-reset'
 
-function idx (n: number, r: number, c: number): number {
-  return (r * n) + c
-}
+function minimumDeleteSum (s1: string, s2: string): number {
+  const s1len = s1.length
+  const s2len = s2.length
 
-function strangePrinter (s: string): number {
-  const n = s.length
-  const dp = new Array<number>(n * n).fill(0)
-  for (let l = 1; l <= n; l += 1) {
-    for (let left = 0; left <= n - l; left += 1) {
-      const right = left + l - 1
-      let j = -1
-      dp[idx(n, left, right)] = n
-      for (let i = left; i < right; i += 1) {
-        if ((s.charAt(i) !== s.charAt(right)) && (j === -1)) {
-          j = i
-        }
+  if (s1len < s2len) {
+    return minimumDeleteSum(s2, s1)
+  }
 
-        if (j !== -1) {
-          const lmin = dp[idx(n, left, right)] as number
-          const rmin = 1 + (dp[idx(n, j, i)] as number) + (dp[idx(n, i + 1, right)] as number)
-          dp[idx(n, left, right)] = Math.min(lmin, rmin)
-        }
+  const curRow = new Array<number>(s2len + 1).fill(0)
+  for (let i = 1; i <= s2len; i += 1) {
+    const prev = curRow[i - 1] as number
+    curRow[i] = prev + s2.charCodeAt(i - 1)
+  }
+
+  for (let i = 1; i <= s1len; i += 1) {
+    let cur = curRow[0] as number
+    curRow[0] += s1.charCodeAt(i - 1)
+
+    for (let j = 1; j <= s2len; j += 1) {
+      let col = 0
+      if (s1.charCodeAt(i - 1) === s2.charCodeAt(j - 1)) {
+        col = cur
+      } else {
+        col = Math.min(
+          s1.charCodeAt(i - 1) + (curRow[j] as number),
+          s2.charCodeAt(j - 1) + (curRow[j - 1] as number)
+        )
       }
 
-      if (j === -1) {
-        dp[idx(n, left, right)] = 0
-      }
+      cur = curRow[j] as number
+      curRow[j] = col
     }
   }
 
-  return (dp[idx(n, 0, n - 1)] as number) + 1
+  return curRow[s2len] as number
 }
 
 function main (): void {
-  const inputs: string[] = [
-    'aaabbb', 'aba'
+  const inputs: string[][] = [
+    ['sea', 'eat'],
+    ['delete', 'leet']
   ]
 
-  for (const s of inputs) {
-    const result = strangePrinter(s)
+  for (const [s1, s2] of inputs) {
+    const result = minimumDeleteSum(s1 as string, s2 as string)
     console.log(result)
   }
 }
