@@ -4,49 +4,60 @@ import (
 	"fmt"
 )
 
-type solution struct {
-	results      [][]int
-	combinations []int
+func contain(nums []int, num int) bool {
+	for _, n := range nums {
+		if n == num {
+			return true
+		}
+	}
+
+	return false
 }
 
-func (solution *solution) backtrack(start, n, k int) {
-	if len(solution.combinations) == k {
-		temp := make([]int, len(solution.combinations))
-		copy(temp, solution.combinations)
+type solution struct {
+	results      [][]int
+	permutations []int
+}
+
+func (solution *solution) backtrack(nums []int) {
+	if len(solution.permutations) == len(nums) {
+		temp := make([]int, len(nums))
+		copy(temp, solution.permutations)
 		solution.results = append(solution.results, temp)
 		return
 	}
 
-	for i := start; i <= n; i += 1 {
-		solution.combinations = append(solution.combinations, i)
-		solution.backtrack(i+1, n, k)
-		last := len(solution.combinations) - 1
-		solution.combinations = solution.combinations[0:last]
+	for _, num := range nums {
+		if contain(solution.permutations, num) {
+			continue
+		}
+
+		solution.permutations = append(solution.permutations, num)
+		solution.backtrack(nums)
+		last := len(solution.permutations) - 1
+		solution.permutations = solution.permutations[0:last]
 	}
 }
 
-func combine(n int, k int) [][]int {
+func permute(nums []int) [][]int {
 	solution := solution{
 		results:      [][]int{},
-		combinations: []int{},
+		permutations: []int{},
 	}
-	solution.backtrack(1, n, k)
+
+	solution.backtrack(nums)
 	return solution.results
 }
 
-type input struct {
-	n int
-	k int
-}
-
 func main() {
-	inputs := []input{
-		{4, 2},
-		{1, 1},
+	inputs := [][]int{
+		{1, 2, 3},
+		{0, 1},
+		{1},
 	}
 
-	for _, input := range inputs {
-		result := combine(input.n, input.k)
+	for _, nums := range inputs {
+		result := permute(nums)
 		fmt.Println(result)
 	}
 }

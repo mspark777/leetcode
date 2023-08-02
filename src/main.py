@@ -3,37 +3,35 @@ from typing import List
 
 
 class Solution:
-    def combine(self, n: int, k: int) -> List[List[int]]:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        permutations: list[int] = []
         results: list[list[int]] = []
-        combinations: list[int] = []
-        self.backtrack(1, combinations, results, n, k)
+        self.backtrack(permutations, nums, results)
 
         return results
 
     def backtrack(
-        self,
-        start: int,
-        combinations: list[int],
-        results: list[list[int]],
-        n: int,
-        k: int,
+        self, permutations: list[int], nums: list[int], results: list[list[int]]
     ):
-        if len(combinations) == k:
-            results.append(combinations.copy())
+        if len(permutations) == len(nums):
+            results.append(permutations.copy())
             return
 
-        for i in range(start, n + 1):
-            combinations.append(i)
-            self.backtrack(i + 1, combinations, results, n, k)
-            combinations.pop()
+        for num in nums:
+            if num in permutations:
+                continue
+
+            permutations.append(num)
+            self.backtrack(permutations, nums, results)
+            permutations.pop()
 
 
 def main():
-    inputs = [(4, 2), (1, 1)]
+    inputs = [[1, 2, 3], [0, 1], [1]]
 
-    for n, k in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.combine(n, k)
+        result = solution.permute(nums)
         print(result)
 
 

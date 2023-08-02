@@ -1,34 +1,39 @@
 import '@total-typescript/ts-reset'
 
-function backtrack (start: number, combinations: number[], results: number[][], n: number, k: number): void {
-  if (combinations.length === k) {
-    results.push([...combinations])
+function backtrack (permutations: Set<number>, nums: number[], results: number[][]): void {
+  if (permutations.size === nums.length) {
+    results.push([...permutations])
     return
   }
 
-  for (let i = start; i <= n; i += 1) {
-    combinations.push(i)
-    backtrack(i + 1, combinations, results, n, k)
-    combinations.pop()
+  for (const num of nums) {
+    if (permutations.has(num)) {
+      continue
+    }
+
+    permutations.add(num)
+    backtrack(permutations, nums, results)
+    permutations.delete(num)
   }
 }
 
-function combine (n: number, k: number): number[][] {
+function permute (nums: number[]): number[][] {
   const results: number[][] = []
-  const combinations: number[] = []
-  backtrack(1, combinations, results, n, k)
+  const permutations = new Set<number>()
+  backtrack(permutations, nums, results)
 
   return results
 }
 
 function main (): void {
   const inputs: number[][] = [
-    [4, 2],
-    [1, 1]
+    [1, 2, 3],
+    [0, 1],
+    [1]
   ]
 
-  for (const [n, k] of inputs) {
-    const result = combine(n as number, k as number)
+  for (const nums of inputs) {
+    const result = permute(nums)
     console.log(result)
   }
 }

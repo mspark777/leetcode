@@ -1,49 +1,51 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number} start
-  * @param {number[]} combinations
+  * @param {Set<number>} permutations
+  * @param {number[]} nums
   * @param {number[][]} results
-  * @param {number} n
-  * @param {number} k
   * @returns {undefined}
   */
-function backtrack (start, combinations, results, n, k) {
-  if (combinations.length === k) {
-    results.push([...combinations])
+function backtrack (permutations, nums, results) {
+  if (permutations.size === nums.length) {
+    results.push([...permutations])
     return
   }
 
-  for (let i = start; i <= n; i += 1) {
-    combinations.push(i)
-    backtrack(i + 1, combinations, results, n, k)
-    combinations.pop()
+  for (const num of nums) {
+    if (permutations.has(num)) {
+      continue
+    }
+
+    permutations.add(num)
+    backtrack(permutations, nums, results)
+    permutations.delete(num)
   }
 }
 
 /**
-  * @param {number} n
-  * @param {number} k
+  * @param {number[]} nums
   * @returns {number[][]}
   */
-function combine (n, k) {
+function permute (nums) {
   /** @type {number[][]} */
   const results = []
-  /** @type {number[]} */
-  const combinations = []
-  backtrack(1, combinations, results, n, k)
+  /** @type {Set<number>} */
+  const permutations = new Set()
+  backtrack(permutations, nums, results)
 
   return results
 }
 
 function main () {
   const inputs = [
-    [4, 2],
-    [1, 1]
+    [1, 2, 3],
+    [0, 1],
+    [1]
   ]
 
-  for (const [n, k] of inputs) {
-    const result = combine(n, k)
+  for (const nums of inputs) {
+    const result = permute(nums)
     console.log(result)
   }
 }
