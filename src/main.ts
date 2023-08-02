@@ -1,39 +1,48 @@
 import '@total-typescript/ts-reset'
 
-function backtrack (permutations: Set<number>, nums: number[], results: number[][]): void {
-  if (permutations.size === nums.length) {
-    results.push([...permutations])
-    return
-  }
+function isMatch (s: string, p: string): boolean {
+  let si = 0
+  let pi = 0
+  let mi = 0
+  let starIdx = -1
 
-  for (const num of nums) {
-    if (permutations.has(num)) {
-      continue
+  while (si < s.length) {
+    if ((pi < p.length) && ((p.charAt(pi) === '?') || (s.charAt(si) === p.charAt(pi)))) {
+      si += 1
+      pi += 1
+    } else if ((pi < p.length) && (p.charAt(pi) === '*')) {
+      starIdx = pi
+      mi = si
+      pi += 1
+    } else if (starIdx >= 0) {
+      pi = starIdx + 1
+      mi += 1
+      si = mi
+    } else {
+      return false
     }
-
-    permutations.add(num)
-    backtrack(permutations, nums, results)
-    permutations.delete(num)
   }
-}
 
-function permute (nums: number[]): number[][] {
-  const results: number[][] = []
-  const permutations = new Set<number>()
-  backtrack(permutations, nums, results)
+  while (pi < p.length) {
+    if (p.charAt(pi) === '*') {
+      pi += 1
+    } else {
+      break
+    }
+  }
 
-  return results
+  return pi === p.length
 }
 
 function main (): void {
-  const inputs: number[][] = [
-    [1, 2, 3],
-    [0, 1],
-    [1]
+  const inputs: string[][] = [
+    ['aa', 'a'],
+    ['aa', '*'],
+    ['cb', '?a']
   ]
 
-  for (const nums of inputs) {
-    const result = permute(nums)
+  for (const [s, p] of inputs) {
+    const result = isMatch(s as string, p as string)
     console.log(result)
   }
 }

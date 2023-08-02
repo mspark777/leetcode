@@ -3,37 +3,52 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn permute(nums: Vec<i32>) -> Vec<Vec<i32>> {
-        let mut results = Vec::<Vec<i32>>::new();
-        let mut permutations = Vec::<i32>::new();
-        Self::backtrack(&mut permutations, &nums, &mut results);
+    pub fn is_match(s: String, p: String) -> bool {
+        const STAR: u8 = b'*';
+        const QM: u8 = b'?';
+        let s = s.as_bytes();
+        let p = p.as_bytes();
+        let mut si = 0usize;
+        let mut pi = 0usize;
+        let mut mi = 0usize;
+        let mut stari = None as Option<usize>;
 
-        return results;
-    }
-
-    fn backtrack(permutations: &mut Vec<i32>, nums: &Vec<i32>, results: &mut Vec<Vec<i32>>) {
-        if permutations.len() == nums.len() {
-            results.push(permutations.clone());
-            return;
-        }
-
-        for num in nums.iter() {
-            if permutations.contains(num) {
-                continue;
+        while si < s.len() {
+            if (pi < p.len()) && ((p[pi] == QM) || (s[si] == p[pi])) {
+                si += 1;
+                pi += 1;
+            } else if (pi < p.len()) && (p[pi] == STAR) {
+                stari = Some(pi);
+                mi = si;
+                pi += 1;
+            } else if let Some(sidx) = stari {
+                pi = sidx + 1;
+                mi += 1;
+                si = mi;
+            } else {
+                return false;
             }
-
-            permutations.push(*num);
-            Self::backtrack(permutations, nums, results);
-            permutations.pop();
         }
+
+        while pi < p.len() {
+            if p[pi] == STAR {
+                pi += 1;
+            } else {
+                break;
+            }
+        }
+
+        return pi == p.len();
     }
 }
 
 fn main() {
-    let inputs = [vec![1, 2, 3], vec![0, 1], vec![1]];
+    let inputs = [vec!["aa", "a"], vec!["aa", "*"], vec!["cb", "?a"]];
 
-    for nums in inputs {
-        let result = Solution::permute(nums);
-        println!("{result:?}");
+    for input in inputs {
+        let s = input[0].to_string();
+        let p = input[1].to_string();
+        let result = Solution::is_match(s, p);
+        println!("{result}");
     }
 }

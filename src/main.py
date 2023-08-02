@@ -1,37 +1,43 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def permute(self, nums: List[int]) -> List[List[int]]:
-        permutations: list[int] = []
-        results: list[list[int]] = []
-        self.backtrack(permutations, nums, results)
+    def isMatch(self, s: str, p: str) -> bool:
+        si = 0
+        pi = 0
+        mi = 0
+        stari = -1
 
-        return results
+        while si < len(s):
+            if (pi < len(p)) and ((p[pi] == "?") or (s[si] == p[pi])):
+                si += 1
+                pi += 1
+            elif (pi < len(p)) and (p[pi] == "*"):
+                stari = pi
+                mi = si
+                pi += 1
+            elif stari >= 0:
+                pi = stari
+                mi += 1
+                si = mi
+            else:
+                return False
 
-    def backtrack(
-        self, permutations: list[int], nums: list[int], results: list[list[int]]
-    ):
-        if len(permutations) == len(nums):
-            results.append(permutations.copy())
-            return
+        while pi < len(p):
+            if p[pi] == "*":
+                pi += 1
+            else:
+                break
 
-        for num in nums:
-            if num in permutations:
-                continue
-
-            permutations.append(num)
-            self.backtrack(permutations, nums, results)
-            permutations.pop()
+        return pi == len(p)
 
 
 def main():
-    inputs = [[1, 2, 3], [0, 1], [1]]
+    inputs = [("aa", "a"), ("aa", "*"), ("cb", "?a")]
 
-    for nums in inputs:
+    for s, p in inputs:
         solution = Solution()
-        result = solution.permute(nums)
+        result = solution.isMatch(s, p)
         print(result)
 
 

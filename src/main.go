@@ -4,60 +4,51 @@ import (
 	"fmt"
 )
 
-func contain(nums []int, num int) bool {
-	for _, n := range nums {
-		if n == num {
-			return true
+func isMatch(s string, p string) bool {
+	sb := []byte(s)
+	pb := []byte(p)
+	si := 0
+	pi := 0
+	mi := 0
+	stari := -1
+
+	for si < len(sb) {
+		if (pi < len(pb)) && ((pb[pi] == '?') || (sb[si] == pb[pi])) {
+			si += 1
+			pi += 1
+		} else if (pi < len(pb)) && (pb[pi] == '*') {
+			stari = pi
+			mi = si
+			pi += 1
+		} else if stari >= 0 {
+			pi = stari
+			mi += 1
+			si = mi
+		} else {
+			return false
 		}
 	}
 
-	return false
-}
-
-type solution struct {
-	results      [][]int
-	permutations []int
-}
-
-func (solution *solution) backtrack(nums []int) {
-	if len(solution.permutations) == len(nums) {
-		temp := make([]int, len(nums))
-		copy(temp, solution.permutations)
-		solution.results = append(solution.results, temp)
-		return
-	}
-
-	for _, num := range nums {
-		if contain(solution.permutations, num) {
-			continue
+	for pi < len(pb) {
+		if pb[pi] == '*' {
+			pi += 1
+		} else {
+			break
 		}
-
-		solution.permutations = append(solution.permutations, num)
-		solution.backtrack(nums)
-		last := len(solution.permutations) - 1
-		solution.permutations = solution.permutations[0:last]
-	}
-}
-
-func permute(nums []int) [][]int {
-	solution := solution{
-		results:      [][]int{},
-		permutations: []int{},
 	}
 
-	solution.backtrack(nums)
-	return solution.results
+	return pi == len(pb)
 }
 
 func main() {
-	inputs := [][]int{
-		{1, 2, 3},
-		{0, 1},
-		{1},
+	inputs := [][]string{
+		{"aa", "a"},
+		{"aa", "*"},
+		{"cb", "?a"},
 	}
 
-	for _, nums := range inputs {
-		result := permute(nums)
+	for _, input := range inputs {
+		result := isMatch(input[0], input[1])
 		fmt.Println(result)
 	}
 }

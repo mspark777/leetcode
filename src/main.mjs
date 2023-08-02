@@ -1,51 +1,53 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {Set<number>} permutations
-  * @param {number[]} nums
-  * @param {number[][]} results
-  * @returns {undefined}
+  * @param {string} s
+  * @param {string} p
+  * @returns {boolean}
   */
-function backtrack (permutations, nums, results) {
-  if (permutations.size === nums.length) {
-    results.push([...permutations])
-    return
-  }
+function isMatch (s, p) {
+  let si = 0
+  let pi = 0
+  let mi = 0
+  let starIdx = -1
 
-  for (const num of nums) {
-    if (permutations.has(num)) {
-      continue
+  while (si < s.length) {
+    if ((pi < p.length) && ((p.charAt(pi) === '?') || (s.charAt(si) === p.charAt(pi)))) {
+      si += 1
+      pi += 1
+    } else if ((pi < p.length) && (p.charAt(pi) === '*')) {
+      starIdx = pi
+      mi = si
+      pi += 1
+    } else if (starIdx >= 0) {
+      pi = starIdx + 1
+      mi += 1
+      si = mi
+    } else {
+      return false
     }
-
-    permutations.add(num)
-    backtrack(permutations, nums, results)
-    permutations.delete(num)
   }
-}
 
-/**
-  * @param {number[]} nums
-  * @returns {number[][]}
-  */
-function permute (nums) {
-  /** @type {number[][]} */
-  const results = []
-  /** @type {Set<number>} */
-  const permutations = new Set()
-  backtrack(permutations, nums, results)
+  while (pi < p.length) {
+    if (p.charAt(pi) === '*') {
+      pi += 1
+    } else {
+      break
+    }
+  }
 
-  return results
+  return pi === p.length
 }
 
 function main () {
   const inputs = [
-    [1, 2, 3],
-    [0, 1],
-    [1]
+    ['aa', 'a'],
+    ['aa', '*'],
+    ['cb', '?a']
   ]
 
-  for (const nums of inputs) {
-    const result = permute(nums)
+  for (const [s, p] of inputs) {
+    const result = isMatch(s, p)
     console.log(result)
   }
 }
