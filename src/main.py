@@ -1,43 +1,45 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def isMatch(self, s: str, p: str) -> bool:
-        si = 0
-        pi = 0
-        mi = 0
-        stari = -1
+    def letterCombinations(self, digits: str) -> List[str]:
+        if not digits:
+            return []
 
-        while si < len(s):
-            if (pi < len(p)) and ((p[pi] == "?") or (s[si] == p[pi])):
-                si += 1
-                pi += 1
-            elif (pi < len(p)) and (p[pi] == "*"):
-                stari = pi
-                mi = si
-                pi += 1
-            elif stari >= 0:
-                pi = stari
-                mi += 1
-                si = mi
-            else:
-                return False
+        letters_map: dict[str, str] = dict()
+        letters_map["2"] = "abc"
+        letters_map["3"] = "def"
+        letters_map["4"] = "ghi"
+        letters_map["5"] = "jkl"
+        letters_map["6"] = "mno"
+        letters_map["7"] = "pqrs"
+        letters_map["8"] = "tuv"
+        letters_map["9"] = "wxyz"
 
-        while pi < len(p):
-            if p[pi] == "*":
-                pi += 1
-            else:
-                break
+        stack: list[str] = [""]
+        result: list[str] = []
 
-        return pi == len(p)
+        while stack:
+            top = stack.pop()
+            ch = digits[len(top)]
+            letters = letters_map[ch]
+            for letter in letters:
+                combination = top + letter
+                if len(combination) == len(digits):
+                    result.append(combination)
+                else:
+                    stack.append(combination)
+
+        return result
 
 
 def main():
-    inputs = [("aa", "a"), ("aa", "*"), ("cb", "?a")]
+    inputs = ["23", "", "2"]
 
-    for s, p in inputs:
+    for digits in inputs:
         solution = Solution()
-        result = solution.isMatch(s, p)
+        result = solution.letterCombinations(digits)
         print(result)
 
 

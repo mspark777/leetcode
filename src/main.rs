@@ -1,54 +1,52 @@
 mod utils;
 
+use std::{char, collections::HashMap};
+
 use utils::Solution;
 
 impl Solution {
-    pub fn is_match(s: String, p: String) -> bool {
-        const STAR: u8 = b'*';
-        const QM: u8 = b'?';
-        let s = s.as_bytes();
-        let p = p.as_bytes();
-        let mut si = 0usize;
-        let mut pi = 0usize;
-        let mut mi = 0usize;
-        let mut stari = None as Option<usize>;
+    pub fn letter_combinations(digits: String) -> Vec<String> {
+        let digits = digits.as_bytes();
+        if digits.is_empty() {
+            return vec![];
+        }
 
-        while si < s.len() {
-            if (pi < p.len()) && ((p[pi] == QM) || (s[si] == p[pi])) {
-                si += 1;
-                pi += 1;
-            } else if (pi < p.len()) && (p[pi] == STAR) {
-                stari = Some(pi);
-                mi = si;
-                pi += 1;
-            } else if let Some(sidx) = stari {
-                pi = sidx + 1;
-                mi += 1;
-                si = mi;
-            } else {
-                return false;
+        let mut letters_map = HashMap::<u8, &'static str>::with_capacity(8);
+        letters_map.insert(b'2', "abc");
+        letters_map.insert(b'3', "def");
+        letters_map.insert(b'4', "ghi");
+        letters_map.insert(b'5', "jkl");
+        letters_map.insert(b'6', "mno");
+        letters_map.insert(b'7', "pqrs");
+        letters_map.insert(b'8', "tuv");
+        letters_map.insert(b'9', "wxyz");
+
+        let mut stack = vec!["".to_string()];
+        let mut result = Vec::<String>::new();
+
+        while let Some(top) = stack.pop() {
+            let code = digits[top.len()];
+            let letters = *(letters_map.get(&code).unwrap());
+            for &letter in letters.as_bytes() {
+                let ch = char::from_u32(letter as u32).unwrap();
+                let combination = format!("{top}{ch}");
+                if combination.len() == digits.len() {
+                    result.push(combination);
+                } else {
+                    stack.push(combination);
+                }
             }
         }
 
-        while pi < p.len() {
-            if p[pi] == STAR {
-                pi += 1;
-            } else {
-                break;
-            }
-        }
-
-        return pi == p.len();
+        return result;
     }
 }
 
 fn main() {
-    let inputs = [vec!["aa", "a"], vec!["aa", "*"], vec!["cb", "?a"]];
+    let inputs = ["23", "", "2"];
 
     for input in inputs {
-        let s = input[0].to_string();
-        let p = input[1].to_string();
-        let result = Solution::is_match(s, p);
-        println!("{result}");
+        let result = Solution::letter_combinations(input.to_string());
+        println!("{result:?}");
     }
 }

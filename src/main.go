@@ -4,51 +4,52 @@ import (
 	"fmt"
 )
 
-func isMatch(s string, p string) bool {
-	sb := []byte(s)
-	pb := []byte(p)
-	si := 0
-	pi := 0
-	mi := 0
-	stari := -1
+func letterCombinations(digits string) []string {
+	if len(digits) < 1 {
+		return []string{}
+	}
 
-	for si < len(sb) {
-		if (pi < len(pb)) && ((pb[pi] == '?') || (sb[si] == pb[pi])) {
-			si += 1
-			pi += 1
-		} else if (pi < len(pb)) && (pb[pi] == '*') {
-			stari = pi
-			mi = si
-			pi += 1
-		} else if stari >= 0 {
-			pi = stari
-			mi += 1
-			si = mi
-		} else {
-			return false
+	lettersMap := make(map[byte]string)
+	lettersMap['2'] = "abc"
+	lettersMap['3'] = "def"
+	lettersMap['4'] = "ghi"
+	lettersMap['5'] = "jkl"
+	lettersMap['6'] = "mno"
+	lettersMap['7'] = "pqrs"
+	lettersMap['8'] = "tuv"
+	lettersMap['9'] = "wxyz"
+
+	stack := []string{""}
+	result := []string{}
+
+	for len(stack) > 0 {
+		topidx := len(stack) - 1
+		top := stack[topidx]
+		stack = stack[:topidx]
+		ch := digits[len(top)]
+		letters := lettersMap[ch]
+		for _, letter := range letters {
+			combination := top + string(letter)
+			if len(combination) == len(digits) {
+				result = append(result, combination)
+			} else {
+				stack = append(stack, combination)
+			}
 		}
 	}
 
-	for pi < len(pb) {
-		if pb[pi] == '*' {
-			pi += 1
-		} else {
-			break
-		}
-	}
-
-	return pi == len(pb)
+	return result
 }
 
 func main() {
-	inputs := [][]string{
-		{"aa", "a"},
-		{"aa", "*"},
-		{"cb", "?a"},
+	inputs := []string{
+		"23",
+		"",
+		"2",
 	}
 
 	for _, input := range inputs {
-		result := isMatch(input[0], input[1])
+		result := letterCombinations(input)
 		fmt.Println(result)
 	}
 }
