@@ -1,47 +1,42 @@
 mod utils;
 
-use std::collections::HashSet;
-use std::iter::FromIterator;
-
 use utils::Solution;
 
 impl Solution {
-    pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
-        let s = s.as_bytes();
-        let words = HashSet::<&String>::from_iter(word_dict.iter());
-        let mut checks = vec![false; s.len() + 1];
-        checks[0] = true;
+    pub fn my_pow(x: f64, n: i32) -> f64 {
+        let mut x = x;
+        let mut n = n as i64;
 
-        for right in 1..=s.len() {
-            for left in 0..right {
-                if !checks[left] {
-                    continue;
-                }
-
-                let slice = &s[left..right];
-                let sub = String::from_utf8(slice.iter().cloned().collect()).unwrap();
-                if words.contains(&sub) {
-                    checks[right] = true;
-                    break;
-                }
-            }
+        if n < 0 {
+            n *= -1;
+            x = 1.0 / x;
         }
 
-        return checks[s.len()];
+        let mut result = 1.0;
+        while n != 0 {
+            if (n & 1) == 1 {
+                result *= x;
+                n -= 1;
+            }
+
+            x *= x;
+            n /= 2;
+        }
+
+        return result;
     }
 }
 
 fn main() {
     let inputs = [
-        ("leetcode", vec!["leet", "code"]),
-        ("applepenapple", vec!["apple", "pen"]),
-        ("catsandog", vec!["cats", "dog", "sand", "and", "cat"]),
+        (2.00000, 10),
+        (2.10000, 3),
+        (2.00000, -2),
+        (1.00000, -2147483648),
     ];
 
-    for (s, word_dict) in inputs {
-        let s = s.to_string();
-        let word_dict = word_dict.iter().map(|s| s.to_string()).collect();
-        let result = Solution::word_break(s, word_dict);
+    for (x, n) in inputs {
+        let result = Solution::my_pow(x, n);
         println!("{result}");
     }
 }

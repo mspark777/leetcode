@@ -1,41 +1,47 @@
 import '@total-typescript/ts-reset'
 
-function wordBreak (s: string, wordDict: string[]): boolean {
-  const words = new Set<string>(wordDict)
-  const checks = new Array<boolean>(s.length + 1).fill(false)
-  checks[0] = true
-
-  for (let right = 1; right <= s.length; right += 1) {
-    for (let left = 0; left < right; left += 1) {
-      if (checks[left] !== true) {
-        continue
-      }
-
-      const sub = s.substring(left, right)
-      if (words.has(sub)) {
-        checks[right] = true
-        break
-      }
-    }
+function myPow1 (x: number, n: bigint): number {
+  if (n === 0n) {
+    return 1
   }
 
-  return checks[s.length] as boolean
+  if (n < 0n) {
+    n *= -1n
+    x = 1 / x
+  }
+
+  let result = 1
+  while (n !== 0n) {
+    if ((n % 2n) === 1n) {
+      result *= x
+      n -= 1n
+    }
+
+    x *= x
+    n /= 2n
+  }
+
+  return result
+}
+
+function myPow (x: number, n: number): number {
+  return myPow1(x, BigInt(n))
 }
 
 interface Input {
-  readonly s: string
-  readonly wordDict: string[]
+  readonly x: number
+  readonly n: number
 }
 
 function main (): void {
   const inputs: Input[] = [
-    { s: 'leetcode', wordDict: ['leet', 'code'] },
-    { s: 'applepenapple', wordDict: ['apple', 'pen'] },
-    { s: 'catsandog', wordDict: ['cats', 'dog', 'sand', 'and', 'cat'] }
+    { x: 2.00000, n: 10 },
+    { x: 2.10000, n: 3 },
+    { x: 2.00000, n: -2 }
   ]
 
-  for (const { s, wordDict } of inputs) {
-    const result = wordBreak(s, wordDict)
+  for (const { x, n } of inputs) {
+    const result = myPow(x, n)
     console.log(result)
   }
 }

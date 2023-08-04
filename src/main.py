@@ -1,36 +1,34 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def wordBreak(self, s: str, word_dict: List[str]) -> bool:
-        words = set(word_dict)
-        checks = [False for _ in range(len(s) + 1)]
-        checks[0] = True
+    def myPow(self, x: float, n: int) -> float:
+        if n == 0:
+            return 1
 
-        for right in range(1, len(s) + 1):
-            for left in range(0, right):
-                if not checks[left]:
-                    continue
+        if n < 0:
+            n *= -1
+            x = 1 / x
 
-                sub = s[left:right]
-                if sub in words:
-                    checks[right] = True
-                    break
+        result = 1.0
 
-        return checks[len(s)]
+        while n != 0:
+            if (n & 1) == 1:
+                result *= x
+                n -= 1
+
+            x *= x
+            n //= 2
+
+        return result
 
 
 def main():
-    inputs = [
-        ("leetcode", ["leet", "code"]),
-        ("applepenapple", ["apple", "pen"]),
-        ("catsandog", ["cats", "dog", "sand", "and", "cat"]),
-    ]
+    inputs = [(2.00000, 10), (2.10000, 3), (2.00000, -2)]
 
-    for s, word_dict in inputs:
+    for x, n in inputs:
         solution = Solution()
-        result = solution.wordBreak(s, word_dict)
+        result = solution.myPow(x, n)
         print(result)
 
 

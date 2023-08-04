@@ -4,45 +4,44 @@ import (
 	"fmt"
 )
 
-func wordBreak(s string, wordDict []string) bool {
-	words := make(map[string]bool)
-	for _, w := range wordDict {
-		words[w] = true
+func myPow(x float64, n int) float64 {
+	if n == 0 {
+		return 1
 	}
 
-	checks := make([]bool, len(s)+1)
-	checks[0] = true
-	for right := 1; right <= len(s); right += 1 {
-		for left := 0; left < right; left += 1 {
-			if !checks[left] {
-				continue
-			}
+	if n < 0 {
+		n *= -1
+		x = 1 / x
+	}
 
-			sub := s[left:right]
-			if _, ok := words[sub]; ok {
-				checks[right] = true
-				break
-			}
+	result := 1.0
+	for n != 0 {
+		if (n & 1) == 1 {
+			result *= x
+			n -= 1
 		}
+
+		x *= x
+		n /= 2
 	}
 
-	return checks[len(s)]
+	return result
 }
 
 type input struct {
-	s        string
-	wordDict []string
+	x float64
+	n int
 }
 
 func main() {
 	inputs := []input{
-		{s: "leetcode", wordDict: []string{"leet", "code"}},
-		{s: "applepenapple", wordDict: []string{"apple", "pen"}},
-		{s: "catsandog", wordDict: []string{"cats", "dog", "sand", "and", "cat"}},
+		{x: 2.00000, n: 10},
+		{x: 2.10000, n: 3},
+		{x: 2.00000, n: -2},
 	}
 
 	for _, input := range inputs {
-		result := wordBreak(input.s, input.wordDict)
+		result := myPow(input.x, input.n)
 		fmt.Println(result)
 	}
 }
