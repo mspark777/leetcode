@@ -3,43 +3,34 @@ from typing import List
 
 
 class Solution:
-    def letterCombinations(self, digits: str) -> List[str]:
-        if not digits:
-            return []
+    def wordBreak(self, s: str, word_dict: List[str]) -> bool:
+        words = set(word_dict)
+        checks = [False for _ in range(len(s) + 1)]
+        checks[0] = True
 
-        letters_map: dict[str, str] = dict()
-        letters_map["2"] = "abc"
-        letters_map["3"] = "def"
-        letters_map["4"] = "ghi"
-        letters_map["5"] = "jkl"
-        letters_map["6"] = "mno"
-        letters_map["7"] = "pqrs"
-        letters_map["8"] = "tuv"
-        letters_map["9"] = "wxyz"
+        for right in range(1, len(s) + 1):
+            for left in range(0, right):
+                if not checks[left]:
+                    continue
 
-        stack: list[str] = [""]
-        result: list[str] = []
+                sub = s[left:right]
+                if sub in words:
+                    checks[right] = True
+                    break
 
-        while stack:
-            top = stack.pop()
-            ch = digits[len(top)]
-            letters = letters_map[ch]
-            for letter in letters:
-                combination = top + letter
-                if len(combination) == len(digits):
-                    result.append(combination)
-                else:
-                    stack.append(combination)
-
-        return result
+        return checks[len(s)]
 
 
 def main():
-    inputs = ["23", "", "2"]
+    inputs = [
+        ("leetcode", ["leet", "code"]),
+        ("applepenapple", ["apple", "pen"]),
+        ("catsandog", ["cats", "dog", "sand", "and", "cat"]),
+    ]
 
-    for digits in inputs:
+    for s, word_dict in inputs:
         solution = Solution()
-        result = solution.letterCombinations(digits)
+        result = solution.wordBreak(s, word_dict)
         print(result)
 
 

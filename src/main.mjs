@@ -1,56 +1,41 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {string} digits
-  * @returns {string[]}
+  * @param {string} s
+  * @param {string[]} wordDict
+  * @returns {boolean}
   */
-function letterCombinations (digits) {
-  if (digits.length < 1) {
-    return []
-  }
+function wordBreak (s, wordDict) {
+  const words = new Set(wordDict)
+  const checks = new Array(s.length + 1).fill(false)
+  checks[0] = true
 
-  /** @type {Map<string, string>} */
-  const lettersMap = new Map()
-  lettersMap.set('2', 'abc')
-  lettersMap.set('3', 'def')
-  lettersMap.set('4', 'ghi')
-  lettersMap.set('5', 'jkl')
-  lettersMap.set('6', 'mno')
-  lettersMap.set('7', 'pqrs')
-  lettersMap.set('8', 'tuv')
-  lettersMap.set('9', 'wxyz')
+  for (let right = 1; right <= s.length; right += 1) {
+    for (let left = 0; left < right; left += 1) {
+      if (checks[left] !== true) {
+        continue
+      }
 
-  /** @type {string[]} */
-  const stack = ['']
-  /** @type {string[]} */
-  const result = []
-
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const toplen = top.length
-    const ch = digits[toplen]
-    const letters = lettersMap.get(ch) ?? ''
-    for (const letter of letters) {
-      const combination = top + letter
-      if (combination.length === digits.length) {
-        result.push(combination)
-      } else {
-        stack.push(combination)
+      const sub = s.substring(left, right)
+      if (words.has(sub)) {
+        checks[right] = true
+        break
       }
     }
   }
 
-  return result
+  return checks[s.length]
 }
 
 function main () {
   const inputs = [
-    '23',
-    '',
-    '2'
+    { s: 'leetcode', wordDict: ['leet', 'code'] },
+    { s: 'applepenapple', wordDict: ['apple', 'pen'] },
+    { s: 'catsandog', wordDict: ['cats', 'dog', 'sand', 'and', 'cat'] }
   ]
 
-  for (const digits of inputs) {
-    const result = letterCombinations(digits)
+  for (const { s, wordDict } of inputs) {
+    const result = wordBreak(s, wordDict)
     console.log(result)
   }
 }

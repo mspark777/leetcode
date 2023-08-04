@@ -1,52 +1,47 @@
 mod utils;
 
-use std::{char, collections::HashMap};
+use std::collections::HashSet;
+use std::iter::FromIterator;
 
 use utils::Solution;
 
 impl Solution {
-    pub fn letter_combinations(digits: String) -> Vec<String> {
-        let digits = digits.as_bytes();
-        if digits.is_empty() {
-            return vec![];
-        }
+    pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
+        let s = s.as_bytes();
+        let words = HashSet::<&String>::from_iter(word_dict.iter());
+        let mut checks = vec![false; s.len() + 1];
+        checks[0] = true;
 
-        let mut letters_map = HashMap::<u8, &'static str>::with_capacity(8);
-        letters_map.insert(b'2', "abc");
-        letters_map.insert(b'3', "def");
-        letters_map.insert(b'4', "ghi");
-        letters_map.insert(b'5', "jkl");
-        letters_map.insert(b'6', "mno");
-        letters_map.insert(b'7', "pqrs");
-        letters_map.insert(b'8', "tuv");
-        letters_map.insert(b'9', "wxyz");
+        for right in 1..=s.len() {
+            for left in 0..right {
+                if !checks[left] {
+                    continue;
+                }
 
-        let mut stack = vec!["".to_string()];
-        let mut result = Vec::<String>::new();
-
-        while let Some(top) = stack.pop() {
-            let code = digits[top.len()];
-            let letters = *(letters_map.get(&code).unwrap());
-            for &letter in letters.as_bytes() {
-                let ch = char::from_u32(letter as u32).unwrap();
-                let combination = format!("{top}{ch}");
-                if combination.len() == digits.len() {
-                    result.push(combination);
-                } else {
-                    stack.push(combination);
+                let slice = &s[left..right];
+                let sub = String::from_utf8(slice.iter().cloned().collect()).unwrap();
+                if words.contains(&sub) {
+                    checks[right] = true;
+                    break;
                 }
             }
         }
 
-        return result;
+        return checks[s.len()];
     }
 }
 
 fn main() {
-    let inputs = ["23", "", "2"];
+    let inputs = [
+        ("leetcode", vec!["leet", "code"]),
+        ("applepenapple", vec!["apple", "pen"]),
+        ("catsandog", vec!["cats", "dog", "sand", "and", "cat"]),
+    ];
 
-    for input in inputs {
-        let result = Solution::letter_combinations(input.to_string());
-        println!("{result:?}");
+    for (s, word_dict) in inputs {
+        let s = s.to_string();
+        let word_dict = word_dict.iter().map(|s| s.to_string()).collect();
+        let result = Solution::word_break(s, word_dict);
+        println!("{result}");
     }
 }

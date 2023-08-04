@@ -4,52 +4,45 @@ import (
 	"fmt"
 )
 
-func letterCombinations(digits string) []string {
-	if len(digits) < 1 {
-		return []string{}
+func wordBreak(s string, wordDict []string) bool {
+	words := make(map[string]bool)
+	for _, w := range wordDict {
+		words[w] = true
 	}
 
-	lettersMap := make(map[byte]string)
-	lettersMap['2'] = "abc"
-	lettersMap['3'] = "def"
-	lettersMap['4'] = "ghi"
-	lettersMap['5'] = "jkl"
-	lettersMap['6'] = "mno"
-	lettersMap['7'] = "pqrs"
-	lettersMap['8'] = "tuv"
-	lettersMap['9'] = "wxyz"
+	checks := make([]bool, len(s)+1)
+	checks[0] = true
+	for right := 1; right <= len(s); right += 1 {
+		for left := 0; left < right; left += 1 {
+			if !checks[left] {
+				continue
+			}
 
-	stack := []string{""}
-	result := []string{}
-
-	for len(stack) > 0 {
-		topidx := len(stack) - 1
-		top := stack[topidx]
-		stack = stack[:topidx]
-		ch := digits[len(top)]
-		letters := lettersMap[ch]
-		for _, letter := range letters {
-			combination := top + string(letter)
-			if len(combination) == len(digits) {
-				result = append(result, combination)
-			} else {
-				stack = append(stack, combination)
+			sub := s[left:right]
+			if _, ok := words[sub]; ok {
+				checks[right] = true
+				break
 			}
 		}
 	}
 
-	return result
+	return checks[len(s)]
+}
+
+type input struct {
+	s        string
+	wordDict []string
 }
 
 func main() {
-	inputs := []string{
-		"23",
-		"",
-		"2",
+	inputs := []input{
+		{s: "leetcode", wordDict: []string{"leet", "code"}},
+		{s: "applepenapple", wordDict: []string{"apple", "pen"}},
+		{s: "catsandog", wordDict: []string{"cats", "dog", "sand", "and", "cat"}},
 	}
 
 	for _, input := range inputs {
-		result := letterCombinations(input)
+		result := wordBreak(input.s, input.wordDict)
 		fmt.Println(result)
 	}
 }

@@ -1,49 +1,41 @@
 import '@total-typescript/ts-reset'
 
-function letterCombinations (digits: string): string[] {
-  if (digits.length < 1) {
-    return []
-  }
+function wordBreak (s: string, wordDict: string[]): boolean {
+  const words = new Set<string>(wordDict)
+  const checks = new Array<boolean>(s.length + 1).fill(false)
+  checks[0] = true
 
-  const lettersMap = new Map<string, string>()
-  lettersMap.set('2', 'abc')
-  lettersMap.set('3', 'def')
-  lettersMap.set('4', 'ghi')
-  lettersMap.set('5', 'jkl')
-  lettersMap.set('6', 'mno')
-  lettersMap.set('7', 'pqrs')
-  lettersMap.set('8', 'tuv')
-  lettersMap.set('9', 'wxyz')
+  for (let right = 1; right <= s.length; right += 1) {
+    for (let left = 0; left < right; left += 1) {
+      if (checks[left] !== true) {
+        continue
+      }
 
-  const stack: string[] = ['']
-  const result: string[] = []
-
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    const toplen = top.length
-    const ch = digits[toplen] as string
-    const letters = lettersMap.get(ch) ?? ''
-    for (const letter of letters) {
-      const combination = top + letter
-      if (combination.length === digits.length) {
-        result.push(combination)
-      } else {
-        stack.push(combination)
+      const sub = s.substring(left, right)
+      if (words.has(sub)) {
+        checks[right] = true
+        break
       }
     }
   }
 
-  return result
+  return checks[s.length] as boolean
+}
+
+interface Input {
+  readonly s: string
+  readonly wordDict: string[]
 }
 
 function main (): void {
-  const inputs: string[] = [
-    '23',
-    '',
-    '2'
+  const inputs: Input[] = [
+    { s: 'leetcode', wordDict: ['leet', 'code'] },
+    { s: 'applepenapple', wordDict: ['apple', 'pen'] },
+    { s: 'catsandog', wordDict: ['cats', 'dog', 'sand', 'and', 'cat'] }
   ]
 
-  for (const digits of inputs) {
-    const result = letterCombinations(digits)
+  for (const { s, wordDict } of inputs) {
+    const result = wordBreak(s, wordDict)
     console.log(result)
   }
 }
