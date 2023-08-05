@@ -1,48 +1,71 @@
 import '@total-typescript/ts-reset'
 
-function myPow1 (x: number, n: bigint): number {
-  if (n === 0n) {
-    return 1
+class TreeNode {
+  val: number
+  left: TreeNode | null
+  right: TreeNode | null
+  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.left = (left === undefined ? null : left)
+    this.right = (right === undefined ? null : right)
+  }
+}
+
+function clone (node: TreeNode | null, offset: number): TreeNode | null {
+  if (node == null) {
+    return null
   }
 
-  if (n < 0n) {
-    n *= -1n
-    x = 1 / x
+  const cloned = new TreeNode(node.val + offset)
+  cloned.left = clone(node.left, offset)
+  cloned.right = clone(node.right, offset)
+  return cloned
+}
+
+function generateTrees (n: number): Array<TreeNode | null> {
+  const dp: Array<Array<TreeNode | null>> = []
+  for (let i = 0; i <= n; i += 1) {
+    dp.push([])
   }
 
-  let result = 1
-  while (n !== 0n) {
-    if ((n % 2n) === 1n) {
-      result *= x
-      n -= 1n
+  dp[0]?.push(null)
+
+  for (let numNodes = 1; numNodes <= n; numNodes += 1) {
+    for (let i = 1; i <= numNodes; i += 1) {
+      const j = numNodes - i
+      for (const left of dp[i - 1] ?? []) {
+        for (const right of dp[j] ?? []) {
+          const root = new TreeNode(i, left, clone(right, i))
+          dp[numNodes]?.push(root)
+        }
+      }
     }
-
-    x *= x
-    n /= 2n
   }
 
-  return result
+  return dp[n] as Array<TreeNode | null>
 }
 
-function myPow (x: number, n: number): number {
-  return myPow1(x, BigInt(n))
-}
+function toarr (node: TreeNode | null, arr: Array<number | null>): Array<number | null> {
+  arr.push(node?.val ?? null)
+  if (node != null) {
+    toarr(node.left, arr)
+    toarr(node.right, arr)
+  }
 
-interface Input {
-  readonly x: number
-  readonly n: number
+  return arr
 }
 
 function main (): void {
-  const inputs: Input[] = [
-    { x: 2.00000, n: 10 },
-    { x: 2.10000, n: 3 },
-    { x: 2.00000, n: -2 }
+  const inputs: number[] = [
+    3, 1
   ]
 
-  for (const { x, n } of inputs) {
-    const result = myPow(x, n)
-    console.log(result)
+  for (const n of inputs) {
+    const result = generateTrees(n)
+    for (const r of result) {
+      const nums = toarr(r, [])
+      console.log(nums)
+    }
   }
 }
 main()
