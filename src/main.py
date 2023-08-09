@@ -1,34 +1,44 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def myPow(self, x: float, n: int) -> float:
-        if n == 0:
-            return 1
+    def minimizeMax(self, nums: List[int], p: int) -> int:
+        nums.sort()
 
-        if n < 0:
-            n *= -1
-            x = 1 / x
+        left = 0
+        right = nums[-1] - nums[0]
+        while left < right:
+            mid = (left + right) // 2
+            if self.count_valid_pairs(nums, mid) >= p:
+                right = mid
+            else:
+                left = mid + 1
 
-        result = 1.0
+        return left
 
-        while n != 0:
-            if (n & 1) == 1:
-                result *= x
-                n -= 1
+    def count_valid_pairs(self, nums: list[int], threshold: int) -> int:
+        index = 1
+        count = 0
+        while index < len(nums):
+            first = nums[index - 1]
+            second = nums[index]
+            diff = second - first
+            if diff <= threshold:
+                count += 1
+                index += 1
 
-            x *= x
-            n //= 2
+            index += 1
 
-        return result
+        return count
 
 
 def main():
-    inputs = [(2.00000, 10), (2.10000, 3), (2.00000, -2)]
+    inputs = [([10, 1, 2, 7, 1, 3], 2), ([4, 2, 1, 2], 1)]
 
-    for x, n in inputs:
+    for nums, p in inputs:
         solution = Solution()
-        result = solution.myPow(x, n)
+        result = solution.minimizeMax(nums, p)
         print(result)
 
 

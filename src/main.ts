@@ -1,71 +1,56 @@
 import '@total-typescript/ts-reset'
 
-class TreeNode {
-  val: number
-  left: TreeNode | null
-  right: TreeNode | null
-  constructor (val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.left = (left === undefined ? null : left)
-    this.right = (right === undefined ? null : right)
+function countValidPairs (nums: number[], threshold: number): number {
+  let index = 0
+  let count = 0
+  const last = nums.length - 1
+  while (index < last) {
+    const n0 = nums[index] as number
+    const n1 = nums[index + 1] as number
+    const diff = n1 - n0
+    if (diff <= threshold) {
+      count += 1
+      index += 1
+    }
+
+    index += 1
   }
+
+  return count
 }
 
-function clone (node: TreeNode | null, offset: number): TreeNode | null {
-  if (node == null) {
-    return null
-  }
+function minimizeMax (nums: number[], p: number): number {
+  nums.sort((a, b) => a - b)
 
-  const cloned = new TreeNode(node.val + offset)
-  cloned.left = clone(node.left, offset)
-  cloned.right = clone(node.right, offset)
-  return cloned
-}
+  let left = 0
+  let right = (nums.at(-1) as number) - (nums.at(0) as number)
+  while (left < right) {
+    const mid = Math.trunc((left + right) / 2)
 
-function generateTrees (n: number): Array<TreeNode | null> {
-  const dp: Array<Array<TreeNode | null>> = []
-  for (let i = 0; i <= n; i += 1) {
-    dp.push([])
-  }
-
-  dp[0]?.push(null)
-
-  for (let numNodes = 1; numNodes <= n; numNodes += 1) {
-    for (let i = 1; i <= numNodes; i += 1) {
-      const j = numNodes - i
-      for (const left of dp[i - 1] ?? []) {
-        for (const right of dp[j] ?? []) {
-          const root = new TreeNode(i, left, clone(right, i))
-          dp[numNodes]?.push(root)
-        }
-      }
+    if (countValidPairs(nums, mid) >= p) {
+      right = mid
+    } else {
+      left = mid + 1
     }
   }
 
-  return dp[n] as Array<TreeNode | null>
+  return left
 }
 
-function toarr (node: TreeNode | null, arr: Array<number | null>): Array<number | null> {
-  arr.push(node?.val ?? null)
-  if (node != null) {
-    toarr(node.left, arr)
-    toarr(node.right, arr)
-  }
-
-  return arr
+interface Input {
+  readonly nums: number[]
+  readonly p: number
 }
 
 function main (): void {
-  const inputs: number[] = [
-    3, 1
+  const inputs: Input[] = [
+    { nums: [10, 1, 2, 7, 1, 3], p: 2 },
+    { nums: [4, 2, 1, 2], p: 1 }
   ]
 
-  for (const n of inputs) {
-    const result = generateTrees(n)
-    for (const r of result) {
-      const nums = toarr(r, [])
-      console.log(nums)
-    }
+  for (const { nums, p } of inputs) {
+    const result = minimizeMax(nums, p)
+    console.log(result)
   }
 }
 main()

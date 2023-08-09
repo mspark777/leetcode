@@ -1,52 +1,60 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number} x
-  * @param {bigint} n
+  * @param {number[]} nums
+  * @param {number} threshold
   * @returns {number}
   */
-function myPow1 (x, n) {
-  if (n === 0n) {
-    return 1
-  }
-
-  if (n < 0n) {
-    n *= -1n
-    x = 1 / x
-  }
-
-  let result = 1
-  while (n !== 0n) {
-    if ((n % 2n) === 1n) {
-      result *= x
-      n -= 1n
+function countValidPairs (nums, threshold) {
+  let index = 0
+  let count = 0
+  const last = nums.length - 1
+  while (index < last) {
+    const n0 = nums[index]
+    const n1 = nums[index + 1]
+    const diff = n1 - n0
+    if (diff <= threshold) {
+      count += 1
+      index += 1
     }
 
-    x *= x
-    n /= 2n
+    index += 1
   }
 
-  return result
+  return count
 }
 
 /**
-  * @param {number} x
-  * @param {number} n
+  * @param {number[]} nums
+  * @param {number} p
   * @returns {number}
   */
-function myPow (x, n) {
-  return myPow1(x, BigInt(n))
+function minimizeMax (nums, p) {
+  nums.sort((a, b) => a - b)
+
+  let left = 0
+  let right = nums.at(-1) - nums.at(0)
+  while (left < right) {
+    const mid = Math.trunc((left + right) / 2)
+
+    if (countValidPairs(nums, mid) >= p) {
+      right = mid
+    } else {
+      left = mid + 1
+    }
+  }
+
+  return left
 }
 
 function main () {
   const inputs = [
-    { x: 2.00000, n: 10 },
-    { x: 2.10000, n: 3 },
-    { x: 2.00000, n: -2 }
+    { nums: [10, 1, 2, 7, 1, 3], p: 2 },
+    { nums: [4, 2, 1, 2], p: 1 }
   ]
 
-  for (const { x, n } of inputs) {
-    const result = myPow(x, n)
+  for (const { nums, p } of inputs) {
+    const result = minimizeMax(nums, p)
     console.log(result)
   }
 }

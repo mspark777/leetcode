@@ -2,46 +2,57 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func myPow(x float64, n int) float64 {
-	if n == 0 {
-		return 1
-	}
-
-	if n < 0 {
-		n *= -1
-		x = 1 / x
-	}
-
-	result := 1.0
-	for n != 0 {
-		if (n & 1) == 1 {
-			result *= x
-			n -= 1
+func countValidPairs(nums []int, threshold int) int {
+	index := 1
+	count := 0
+	for index < len(nums) {
+		first := nums[index-1]
+		second := nums[index]
+		diff := second - first
+		if diff <= threshold {
+			count += 1
+			index += 1
 		}
 
-		x *= x
-		n /= 2
+		index += 1
 	}
 
-	return result
+	return count
+}
+
+func minimizeMax(nums []int, p int) int {
+	sort.Ints(nums)
+
+	left := 0
+	right := nums[len(nums)-1] - nums[0]
+	for left < right {
+		mid := (left + right) / 2
+		if countValidPairs(nums, mid) >= p {
+			right = mid
+		} else {
+			left = mid + 1
+		}
+	}
+
+	return left
 }
 
 type input struct {
-	x float64
-	n int
+	nums []int
+	p    int
 }
 
 func main() {
 	inputs := []input{
-		{x: 2.00000, n: 10},
-		{x: 2.10000, n: 3},
-		{x: 2.00000, n: -2},
+		{nums: []int{10, 1, 2, 7, 1, 3}, p: 2},
+		{nums: []int{4, 2, 1, 2}, p: 1},
 	}
 
 	for _, input := range inputs {
-		result := myPow(input.x, input.n)
+		result := minimizeMax(input.nums, input.p)
 		fmt.Println(result)
 	}
 }
