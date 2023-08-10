@@ -2,57 +2,62 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func countValidPairs(nums []int, threshold int) int {
-	index := 1
-	count := 0
-	for index < len(nums) {
-		first := nums[index-1]
-		second := nums[index]
-		diff := second - first
-		if diff <= threshold {
-			count += 1
-			index += 1
-		}
-
-		index += 1
+func search(nums []int, target int) bool {
+	right := len(nums)
+	if right < 1 {
+		return false
 	}
-
-	return count
-}
-
-func minimizeMax(nums []int, p int) int {
-	sort.Ints(nums)
 
 	left := 0
-	right := nums[len(nums)-1] - nums[0]
 	for left < right {
 		mid := (left + right) / 2
-		if countValidPairs(nums, mid) >= p {
-			right = mid
+		mnum := nums[mid]
+		if mnum == target {
+			return true
+		}
+
+		lnum := nums[left]
+		if lnum == mnum {
+			left += 1
+			continue
+		}
+
+		pivotArray := lnum <= mnum
+		targetArray := lnum <= target
+		if pivotArray != targetArray {
+			if pivotArray {
+				left = mid + 1
+			} else {
+				right = mid
+			}
 		} else {
-			left = mid + 1
+			if mnum < target {
+				left = mid + 1
+			} else {
+				right = mid
+			}
 		}
 	}
 
-	return left
+	return false
 }
 
 type input struct {
-	nums []int
-	p    int
+	nums   []int
+	target int
 }
 
 func main() {
 	inputs := []input{
-		{nums: []int{10, 1, 2, 7, 1, 3}, p: 2},
-		{nums: []int{4, 2, 1, 2}, p: 1},
+		{nums: []int{2, 5, 6, 0, 0, 1, 2}, target: 0},
+		{nums: []int{2, 5, 6, 0, 0, 1, 2}, target: 3},
+		{nums: []int{1, 0, 1, 1, 1}, target: 0},
 	}
 
 	for _, input := range inputs {
-		result := minimizeMax(input.nums, input.p)
+		result := search(input.nums, input.target)
 		fmt.Println(result)
 	}
 }

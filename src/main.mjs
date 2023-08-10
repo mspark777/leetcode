@@ -2,59 +2,58 @@
 
 /**
   * @param {number[]} nums
-  * @param {number} threshold
-  * @returns {number}
+  * @param {number} target
+  * @returns {boolean}
   */
-function countValidPairs (nums, threshold) {
-  let index = 0
-  let count = 0
-  const last = nums.length - 1
-  while (index < last) {
-    const n0 = nums[index]
-    const n1 = nums[index + 1]
-    const diff = n1 - n0
-    if (diff <= threshold) {
-      count += 1
-      index += 1
-    }
-
-    index += 1
+function search (nums, target) {
+  if (nums.length < 1) {
+    return false
   }
-
-  return count
-}
-
-/**
-  * @param {number[]} nums
-  * @param {number} p
-  * @returns {number}
-  */
-function minimizeMax (nums, p) {
-  nums.sort((a, b) => a - b)
 
   let left = 0
-  let right = nums.at(-1) - nums.at(0)
+  let right = nums.length
   while (left < right) {
     const mid = Math.trunc((left + right) / 2)
+    const mnum = nums[mid]
+    if (mnum === target) {
+      return true
+    }
 
-    if (countValidPairs(nums, mid) >= p) {
-      right = mid
+    const lnum = nums[left]
+    if (lnum === mnum) {
+      left += 1
+      continue
+    }
+
+    const pivotArray = lnum <= mnum
+    const targetArray = lnum <= target
+    if (pivotArray !== targetArray) {
+      if (pivotArray) {
+        left = mid + 1
+      } else {
+        right = mid
+      }
     } else {
-      left = mid + 1
+      if (mnum < target) {
+        left = mid + 1
+      } else {
+        right = mid
+      }
     }
   }
 
-  return left
+  return false
 }
 
 function main () {
   const inputs = [
-    { nums: [10, 1, 2, 7, 1, 3], p: 2 },
-    { nums: [4, 2, 1, 2], p: 1 }
+    { nums: [2, 5, 6, 0, 0, 1, 2], target: 0 },
+    { nums: [2, 5, 6, 0, 0, 1, 2], target: 3 },
+    { nums: [1, 0, 1, 1, 1], target: 0 }
   ]
 
-  for (const { nums, p } of inputs) {
-    const result = minimizeMax(nums, p)
+  for (const { nums, target } of inputs) {
+    const result = search(nums, target)
     console.log(result)
   }
 }

@@ -3,42 +3,50 @@ from typing import List
 
 
 class Solution:
-    def minimizeMax(self, nums: List[int], p: int) -> int:
-        nums.sort()
+    def search(self, nums: List[int], target: int) -> bool:
+        if not nums:
+            return False
 
         left = 0
-        right = nums[-1] - nums[0]
+        right = len(nums)
+
         while left < right:
             mid = (left + right) // 2
-            if self.count_valid_pairs(nums, mid) >= p:
-                right = mid
+            mnum = nums[mid]
+            if mnum == target:
+                return True
+
+            lnum = nums[left]
+            if lnum == mnum:
+                left += 1
+                continue
+
+            pivot_array = lnum <= mnum
+            target_array = lnum <= target
+            if pivot_array != target_array:
+                if pivot_array:
+                    left = mid + 1
+                else:
+                    right = mid
             else:
-                left = mid + 1
+                if mnum < target:
+                    left = mid + 1
+                else:
+                    right = mid
 
-        return left
-
-    def count_valid_pairs(self, nums: list[int], threshold: int) -> int:
-        index = 1
-        count = 0
-        while index < len(nums):
-            first = nums[index - 1]
-            second = nums[index]
-            diff = second - first
-            if diff <= threshold:
-                count += 1
-                index += 1
-
-            index += 1
-
-        return count
+        return False
 
 
 def main():
-    inputs = [([10, 1, 2, 7, 1, 3], 2), ([4, 2, 1, 2], 1)]
+    inputs = [
+        ([2, 5, 6, 0, 0, 1, 2], 0),
+        ([2, 5, 6, 0, 0, 1, 2], 3),
+        ([1, 0, 1, 1, 1], 0),
+    ]
 
-    for nums, p in inputs:
+    for nums, target in inputs:
         solution = Solution()
-        result = solution.minimizeMax(nums, p)
+        result = solution.search(nums, target)
         print(result)
 
 
