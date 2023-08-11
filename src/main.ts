@@ -1,59 +1,33 @@
 import '@total-typescript/ts-reset'
 
-function search (nums: number[], target: number): boolean {
-  if (nums.length < 1) {
-    return false
-  }
+function change (amount: number, coins: number[]): number {
+  const dp = new Array<number>(amount + 1).fill(0)
+  dp[0] = 1
 
-  let left = 0
-  let right = nums.length
-  while (left < right) {
-    const mid = Math.trunc((left + right) / 2)
-    const mnum = nums[mid] as number
-    if (mnum === target) {
-      return true
-    }
-
-    const lnum = nums[left] as number
-    if (lnum === mnum) {
-      left += 1
-      continue
-    }
-
-    const pivotArray = lnum <= mnum
-    const targetArray = lnum <= target
-    if (pivotArray !== targetArray) {
-      if (pivotArray) {
-        left = mid + 1
-      } else {
-        right = mid
-      }
-    } else {
-      if (mnum < target) {
-        left = mid + 1
-      } else {
-        right = mid
-      }
+  for (let i = coins.length - 1; i >= 0; i -= 1) {
+    const coin = coins[i] as number
+    for (let j = coin; j <= amount; j += 1) {
+      dp[j] += dp[j - coin] as number
     }
   }
 
-  return false
+  return dp[amount] as number
 }
 
 interface Input {
-  readonly nums: number[]
-  readonly target: number
+  readonly amount: number
+  readonly coins: number[]
 }
 
 function main (): void {
   const inputs: Input[] = [
-    { nums: [2, 5, 6, 0, 0, 1, 2], target: 0 },
-    { nums: [2, 5, 6, 0, 0, 1, 2], target: 3 },
-    { nums: [1, 0, 1, 1, 1], target: 0 }
+    { amount: 5, coins: [1, 2, 5] },
+    { amount: 3, coins: [2] },
+    { amount: 10, coins: [10] }
   ]
 
-  for (const { nums, target } of inputs) {
-    const result = search(nums, target)
+  for (const { amount, coins } of inputs) {
+    const result = change(amount, coins)
     console.log(result)
   }
 }

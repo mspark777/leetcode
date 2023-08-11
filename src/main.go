@@ -4,60 +4,34 @@ import (
 	"fmt"
 )
 
-func search(nums []int, target int) bool {
-	right := len(nums)
-	if right < 1 {
-		return false
-	}
+func change(amount int, coins []int) int {
+	dp := make([]int, amount+1)
+	dp[0] = 1
 
-	left := 0
-	for left < right {
-		mid := (left + right) / 2
-		mnum := nums[mid]
-		if mnum == target {
-			return true
-		}
-
-		lnum := nums[left]
-		if lnum == mnum {
-			left += 1
-			continue
-		}
-
-		pivotArray := lnum <= mnum
-		targetArray := lnum <= target
-		if pivotArray != targetArray {
-			if pivotArray {
-				left = mid + 1
-			} else {
-				right = mid
-			}
-		} else {
-			if mnum < target {
-				left = mid + 1
-			} else {
-				right = mid
-			}
+	for i := len(coins) - 1; i >= 0; i -= 1 {
+		coin := coins[i]
+		for j := coin; j <= amount; j += 1 {
+			dp[j] += dp[j-coin]
 		}
 	}
 
-	return false
+	return dp[amount]
 }
 
 type input struct {
-	nums   []int
-	target int
+	amount int
+	coins  []int
 }
 
 func main() {
 	inputs := []input{
-		{nums: []int{2, 5, 6, 0, 0, 1, 2}, target: 0},
-		{nums: []int{2, 5, 6, 0, 0, 1, 2}, target: 3},
-		{nums: []int{1, 0, 1, 1, 1}, target: 0},
+		{amount: 5, coins: []int{1, 2, 5}},
+		{amount: 3, coins: []int{2}},
+		{amount: 10, coins: []int{10}},
 	}
 
 	for _, input := range inputs {
-		result := search(input.nums, input.target)
+		result := change(input.amount, input.coins)
 		fmt.Println(result)
 	}
 }

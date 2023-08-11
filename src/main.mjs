@@ -1,59 +1,35 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number[]} nums
-  * @param {number} target
-  * @returns {boolean}
+  * @param {number} amount
+  * @param {number[]} coins
+  * @returns {number}
   */
-function search (nums, target) {
-  if (nums.length < 1) {
-    return false
-  }
+function change (amount, coins) {
+  /** @type {number[]} */
+  const dp = new Array(amount + 1).fill(0)
+  dp[0] = 1
 
-  let left = 0
-  let right = nums.length
-  while (left < right) {
-    const mid = Math.trunc((left + right) / 2)
-    const mnum = nums[mid]
-    if (mnum === target) {
-      return true
-    }
-
-    const lnum = nums[left]
-    if (lnum === mnum) {
-      left += 1
-      continue
-    }
-
-    const pivotArray = lnum <= mnum
-    const targetArray = lnum <= target
-    if (pivotArray !== targetArray) {
-      if (pivotArray) {
-        left = mid + 1
-      } else {
-        right = mid
-      }
-    } else {
-      if (mnum < target) {
-        left = mid + 1
-      } else {
-        right = mid
-      }
+  for (let i = coins.length - 1; i >= 0; i -= 1) {
+    const coin = coins[i]
+    for (let j = coin; j <= amount; j += 1) {
+      dp[j] += dp[j - coin]
     }
   }
 
-  return false
+  return dp[amount]
 }
 
 function main () {
   const inputs = [
-    { nums: [2, 5, 6, 0, 0, 1, 2], target: 0 },
-    { nums: [2, 5, 6, 0, 0, 1, 2], target: 3 },
-    { nums: [1, 0, 1, 1, 1], target: 0 }
+    { amount: 5, coins: [1, 2, 5] },
+    { amount: 3, coins: [2] },
+    { amount: 10, coins: [10] }
   ]
 
-  for (const { nums, target } of inputs) {
-    const result = search(nums, target)
+  for (const { amount, coins } of inputs) {
+    const result = change(amount, coins)
     console.log(result)
   }
 }

@@ -3,50 +3,24 @@ from typing import List
 
 
 class Solution:
-    def search(self, nums: List[int], target: int) -> bool:
-        if not nums:
-            return False
+    def change(self, amount: int, coins: List[int]) -> int:
+        dp = [0 for _ in range(amount + 1)]
+        dp[0] = 1
 
-        left = 0
-        right = len(nums)
+        for i in range(len(coins) - 1, -1, -1):
+            coin = coins[i]
+            for j in range(coin, amount + 1):
+                dp[j] += dp[j - coin]
 
-        while left < right:
-            mid = (left + right) // 2
-            mnum = nums[mid]
-            if mnum == target:
-                return True
-
-            lnum = nums[left]
-            if lnum == mnum:
-                left += 1
-                continue
-
-            pivot_array = lnum <= mnum
-            target_array = lnum <= target
-            if pivot_array != target_array:
-                if pivot_array:
-                    left = mid + 1
-                else:
-                    right = mid
-            else:
-                if mnum < target:
-                    left = mid + 1
-                else:
-                    right = mid
-
-        return False
+        return dp[amount]
 
 
 def main():
-    inputs = [
-        ([2, 5, 6, 0, 0, 1, 2], 0),
-        ([2, 5, 6, 0, 0, 1, 2], 3),
-        ([1, 0, 1, 1, 1], 0),
-    ]
+    inputs = [(5, [1, 2, 5]), (3, [2]), (10, [10])]
 
-    for nums, target in inputs:
+    for amount, coins in inputs:
         solution = Solution()
-        result = solution.search(nums, target)
+        result = solution.change(amount, coins)
         print(result)
 
 
