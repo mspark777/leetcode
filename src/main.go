@@ -2,36 +2,41 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func change(amount int, coins []int) int {
-	dp := make([]int, amount+1)
-	dp[0] = 1
+func merge(intervals [][]int) [][]int {
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i][0] < intervals[j][0]
+	})
 
-	for i := len(coins) - 1; i >= 0; i -= 1 {
-		coin := coins[i]
-		for j := coin; j <= amount; j += 1 {
-			dp[j] += dp[j-coin]
+	result := [][]int{intervals[0]}
+	for _, interval := range intervals[1:] {
+		last := result[len(result)-1]
+		lastEnd := last[1]
+		start := interval[0]
+		if lastEnd < start {
+			result = append(result, interval)
+			continue
+		}
+
+		end := interval[1]
+		if end > lastEnd {
+			last[1] = end
 		}
 	}
 
-	return dp[amount]
-}
-
-type input struct {
-	amount int
-	coins  []int
+	return result
 }
 
 func main() {
-	inputs := []input{
-		{amount: 5, coins: []int{1, 2, 5}},
-		{amount: 3, coins: []int{2}},
-		{amount: 10, coins: []int{10}},
+	inputs := [][][]int{
+		{{1, 3}, {2, 6}, {8, 10}, {15, 18}},
+		{{1, 4}, {4, 5}},
 	}
 
 	for _, input := range inputs {
-		result := change(input.amount, input.coins)
+		result := merge(input)
 		fmt.Println(result)
 	}
 }

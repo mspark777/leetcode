@@ -3,27 +3,36 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn change(amount: i32, coins: Vec<i32>) -> i32 {
-        let amount = amount as usize;
-        let mut dp = vec![0; amount + 1];
-        dp[0] = 1;
+    pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut intervals = intervals;
+        intervals.sort_unstable_by_key(|i| i[0]);
 
-        for i in (0..coins.len()).rev() {
-            let coin = coins[i] as usize;
-            for j in coin..=amount {
-                dp[j] += dp[j - coin];
+        let mut result = vec![intervals[0].clone()];
+        for interval in intervals.iter().skip(1) {
+            let last = result.last_mut().unwrap();
+            let last_end = last[1];
+            let start = interval[0];
+            if last_end < start {
+                result.push(interval.clone());
+            } else {
+                let end = interval[1];
+                last[1] = last_end.max(end);
             }
         }
 
-        return dp[amount];
+        return result;
     }
 }
 
 fn main() {
-    let inputs = [(5, vec![1, 2, 5]), (3, vec![2]), (10, vec![10])];
+    let inputs = [
+        vec![[1, 3], [2, 6], [8, 10], [15, 18]],
+        vec![[1, 4], [4, 5]],
+    ];
 
-    for (amount, coins) in inputs {
-        let result = Solution::change(amount, coins);
-        println!("{result}");
+    for intervals in inputs {
+        let intervals = intervals.iter().map(|i| i.to_vec()).collect();
+        let result = Solution::merge(intervals);
+        println!("{result:?}");
     }
 }

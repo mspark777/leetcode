@@ -2,34 +2,36 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number} amount
-  * @param {number[]} coins
-  * @returns {number}
+  * @param {number[][]} intervals
+  * @returns {number[][]}
   */
-function change (amount, coins) {
-  /** @type {number[]} */
-  const dp = new Array(amount + 1).fill(0)
-  dp[0] = 1
+function merge (intervals) {
+  intervals.sort((a, b) => a[0] - b[0])
 
-  for (let i = coins.length - 1; i >= 0; i -= 1) {
-    const coin = coins[i]
-    for (let j = coin; j <= amount; j += 1) {
-      dp[j] += dp[j - coin]
+  /** @type {number[][]} */
+  const result = [intervals[0]]
+  for (const interval of intervals.slice(1)) {
+    const [start, end] = interval
+    const last = result.at(-1)
+    const lastEnd = last[1]
+    if (lastEnd < start) {
+      result.push(interval)
+    } else {
+      last[1] = Math.max(lastEnd, end)
     }
   }
 
-  return dp[amount]
+  return result
 }
 
 function main () {
   const inputs = [
-    { amount: 5, coins: [1, 2, 5] },
-    { amount: 3, coins: [2] },
-    { amount: 10, coins: [10] }
+    [[1, 3], [2, 6], [8, 10], [15, 18]],
+    [[1, 4], [4, 5]]
   ]
 
-  for (const { amount, coins } of inputs) {
-    const result = change(amount, coins)
+  for (const intervals of inputs) {
+    const result = merge(intervals)
     console.log(result)
   }
 }

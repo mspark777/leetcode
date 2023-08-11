@@ -1,33 +1,35 @@
 import '@total-typescript/ts-reset'
 
-function change (amount: number, coins: number[]): number {
-  const dp = new Array<number>(amount + 1).fill(0)
-  dp[0] = 1
+function merge (intervals: number[][]): number[][] {
+  intervals.sort((as, bs) => {
+    const a = as[0] as number
+    const b = bs[0] as number
+    return a - b
+  })
 
-  for (let i = coins.length - 1; i >= 0; i -= 1) {
-    const coin = coins[i] as number
-    for (let j = coin; j <= amount; j += 1) {
-      dp[j] += dp[j - coin] as number
+  const result: number[][] = [intervals[0] as number[]]
+  for (const interval of intervals.slice(1)) {
+    const [start, end] = interval as [number, number]
+    const last = result.at(-1) as number[]
+    const lastEnd = last[1] as number
+    if (lastEnd < start) {
+      result.push(interval)
+    } else {
+      last[1] = Math.max(lastEnd, end)
     }
   }
 
-  return dp[amount] as number
-}
-
-interface Input {
-  readonly amount: number
-  readonly coins: number[]
+  return result
 }
 
 function main (): void {
-  const inputs: Input[] = [
-    { amount: 5, coins: [1, 2, 5] },
-    { amount: 3, coins: [2] },
-    { amount: 10, coins: [10] }
+  const inputs: number[][][] = [
+    [[1, 3], [2, 6], [8, 10], [15, 18]],
+    [[1, 4], [4, 5]]
   ]
 
-  for (const { amount, coins } of inputs) {
-    const result = change(amount, coins)
+  for (const intervals of inputs) {
+    const result = merge(intervals)
     console.log(result)
   }
 }
