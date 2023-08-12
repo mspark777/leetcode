@@ -2,41 +2,46 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func merge(intervals [][]int) [][]int {
-	sort.Slice(intervals, func(i, j int) bool {
-		return intervals[i][0] < intervals[j][0]
-	})
+func uniquePathsWithObstacles(obstacleGrid [][]int) int {
+	const OBSTACLE int = 1
+	rowCount := len(obstacleGrid)
+	colCount := len(obstacleGrid[0])
+	countGrid := make([][]int, rowCount)
+	for r := 0; r < rowCount; r += 1 {
+		countGrid[r] = make([]int, colCount)
+	}
 
-	result := [][]int{intervals[0]}
-	for _, interval := range intervals[1:] {
-		last := result[len(result)-1]
-		lastEnd := last[1]
-		start := interval[0]
-		if lastEnd < start {
-			result = append(result, interval)
-			continue
-		}
+	for r := 0; r < rowCount; r += 1 {
+		for c := 0; c < colCount; c += 1 {
+			if obstacleGrid[r][c] == OBSTACLE {
+				continue
+			}
 
-		end := interval[1]
-		if end > lastEnd {
-			last[1] = end
+			if (r + c) == 0 {
+				countGrid[r][c] = 1
+			} else if r == 0 {
+				countGrid[r][c] = countGrid[r][c-1]
+			} else if c == 0 {
+				countGrid[r][c] = countGrid[r-1][c]
+			} else {
+				countGrid[r][c] = countGrid[r-1][c] + countGrid[r][c-1]
+			}
 		}
 	}
 
-	return result
+	return countGrid[rowCount-1][colCount-1]
 }
 
 func main() {
 	inputs := [][][]int{
-		{{1, 3}, {2, 6}, {8, 10}, {15, 18}},
-		{{1, 4}, {4, 5}},
+		{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}},
+		{{0, 1}, {0, 0}},
 	}
 
 	for _, input := range inputs {
-		result := merge(input)
+		result := uniquePathsWithObstacles(input)
 		fmt.Println(result)
 	}
 }

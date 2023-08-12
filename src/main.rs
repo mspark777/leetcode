@@ -3,36 +3,42 @@ mod utils;
 use utils::Solution;
 
 impl Solution {
-    pub fn merge(intervals: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-        let mut intervals = intervals;
-        intervals.sort_unstable_by_key(|i| i[0]);
+    pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
+        const OBSTACLE: i32 = 1;
+        let row_count = obstacle_grid.len();
+        let col_count = obstacle_grid[0].len();
+        let mut count_grid = vec![vec![0; col_count]; row_count];
 
-        let mut result = vec![intervals[0].clone()];
-        for interval in intervals.iter().skip(1) {
-            let last = result.last_mut().unwrap();
-            let last_end = last[1];
-            let start = interval[0];
-            if last_end < start {
-                result.push(interval.clone());
-            } else {
-                let end = interval[1];
-                last[1] = last_end.max(end);
+        for r in 0..row_count {
+            for c in 0..col_count {
+                if obstacle_grid[r][c] == OBSTACLE {
+                    continue;
+                }
+
+                if (r + c) == 0 {
+                    count_grid[r][c] = 1;
+                } else if r == 0 {
+                    count_grid[r][c] = count_grid[r][c - 1]
+                } else if c == 0 {
+                    count_grid[r][c] = count_grid[r - 1][c]
+                } else {
+                    count_grid[r][c] = count_grid[r - 1][c] + count_grid[r][c - 1];
+                }
             }
         }
 
-        return result;
+        return count_grid[row_count - 1][col_count - 1];
     }
 }
 
 fn main() {
     let inputs = [
-        vec![[1, 3], [2, 6], [8, 10], [15, 18]],
-        vec![[1, 4], [4, 5]],
+        vec![vec![0, 0, 0], vec![0, 1, 0], vec![0, 0, 0]],
+        vec![vec![0, 1], vec![0, 0]],
     ];
 
-    for intervals in inputs {
-        let intervals = intervals.iter().map(|i| i.to_vec()).collect();
-        let result = Solution::merge(intervals);
-        println!("{result:?}");
+    for grid in inputs {
+        let result = Solution::unique_paths_with_obstacles(grid);
+        println!("{result}");
     }
 }

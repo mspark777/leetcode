@@ -1,35 +1,56 @@
 import '@total-typescript/ts-reset'
 
-function merge (intervals: number[][]): number[][] {
-  intervals.sort((as, bs) => {
-    const a = as[0] as number
-    const b = bs[0] as number
-    return a - b
-  })
+function getCell (grid: number[][], r: number, c: number): number {
+  const row = grid[r] as number[]
+  return row[c] as number
+}
 
-  const result: number[][] = [intervals[0] as number[]]
-  for (const interval of intervals.slice(1)) {
-    const [start, end] = interval as [number, number]
-    const last = result.at(-1) as number[]
-    const lastEnd = last[1] as number
-    if (lastEnd < start) {
-      result.push(interval)
-    } else {
-      last[1] = Math.max(lastEnd, end)
+function setCell (grid: number[][], r: number, c: number, v: number): void {
+  const row = grid[r] as number[]
+  row[c] = v
+}
+
+function uniquePathsWithObstacles (obstacleGrid: number[][]): number {
+  const OBSTACLE = 1
+  const rowCount = obstacleGrid.length
+  const colCount = obstacleGrid[0]?.length as number
+  const countGrid = new Array<number[]>(rowCount)
+  for (let r = 0; r < rowCount; r += 1) {
+    countGrid[r] = new Array(colCount).fill(0)
+  }
+
+  for (let r = 0; r < rowCount; r += 1) {
+    for (let c = 0; c < colCount; c += 1) {
+      if (getCell(obstacleGrid, r, c) === OBSTACLE) {
+        continue
+      }
+
+      if ((r + c) === 0) {
+        setCell(countGrid, r, c, 1)
+      } else if (r === 0) {
+        setCell(countGrid, r, c, getCell(countGrid, r, c - 1))
+      } else if (c === 0) {
+        setCell(countGrid, r, c, getCell(countGrid, r - 1, c))
+      } else {
+        setCell(countGrid, r, c,
+          getCell(countGrid, r - 1, c) +
+          getCell(countGrid, r, c - 1)
+        )
+      }
     }
   }
 
-  return result
+  return getCell(countGrid, rowCount - 1, colCount - 1)
 }
 
 function main (): void {
   const inputs: number[][][] = [
-    [[1, 3], [2, 6], [8, 10], [15, 18]],
-    [[1, 4], [4, 5]]
+    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+    [[0, 1], [0, 0]]
   ]
 
-  for (const intervals of inputs) {
-    const result = merge(intervals)
+  for (const input of inputs) {
+    const result = uniquePathsWithObstacles(input)
     console.log(result)
   }
 }
