@@ -1,34 +1,79 @@
 mod utils;
 
-use std::collections::BinaryHeap;
-
 use utils::Solution;
 
-impl Solution {
-    pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
-        let k = k as usize;
-        let mut queue = BinaryHeap::<i32>::with_capacity(k + 1);
+#[derive(PartialEq)]
+enum Direction {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN,
+}
 
-        for &num in nums.iter() {
-            queue.push(-num);
-            if queue.len() > k {
-                queue.pop();
+impl Solution {
+    pub fn spiral_order(matrix: Vec<Vec<i32>>) -> Vec<i32> {
+        let row_count = matrix.len();
+        let col_count = matrix[0].len();
+
+        let mut left = 0usize;
+        let mut right = col_count - 1;
+        let mut top = 0usize;
+        let mut bottom = row_count - 1;
+        let mut dir = Direction::RIGHT;
+        let mut result = Vec::<i32>::with_capacity(row_count * col_count);
+
+        while (left <= right) && (top <= bottom) {
+            if dir == Direction::RIGHT {
+                for col in left..=right {
+                    result.push(matrix[top][col]);
+                }
+                top += 1;
+                dir = Direction::DOWN
+            } else if dir == Direction::DOWN {
+                for row in top..=bottom {
+                    result.push(matrix[row][right]);
+                }
+
+                if right < 1 {
+                    break;
+                }
+
+                right -= 1;
+                dir = Direction::LEFT;
+            } else if dir == Direction::LEFT {
+                for col in (left..=right).rev() {
+                    result.push(matrix[bottom][col]);
+                }
+
+                if bottom < 1 {
+                    break;
+                }
+
+                bottom -= 1;
+                dir = Direction::UP;
+            } else {
+                for row in (top..=bottom).rev() {
+                    result.push(matrix[row][left]);
+                }
+
+                left += 1;
+                dir = Direction::RIGHT;
             }
         }
 
-        let kth = queue.pop().unwrap();
-        return -kth;
+        return result;
     }
 }
 
 fn main() {
     let inputs = [
-        (vec![3, 2, 1, 5, 6, 4], 2),
-        (vec![3, 2, 3, 1, 2, 4, 5, 5, 6], 4),
+        vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]],
+        vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12]],
+        vec![vec![3], vec![2]],
     ];
 
-    for (nums, k) in inputs {
-        let result = Solution::find_kth_largest(nums, k);
-        println!("{result}");
+    for matrix in inputs {
+        let result = Solution::spiral_order(matrix);
+        println!("{result:?}");
     }
 }
