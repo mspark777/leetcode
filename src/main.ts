@@ -1,56 +1,23 @@
 import '@total-typescript/ts-reset'
 
-function getCell (grid: number[][], r: number, c: number): number {
-  const row = grid[r] as number[]
-  return row[c] as number
+function findKthLargest (nums: number[], k: number): number {
+  nums.sort((a, b) => b - a)
+  return nums[k - 1] as number
 }
 
-function setCell (grid: number[][], r: number, c: number, v: number): void {
-  const row = grid[r] as number[]
-  row[c] = v
-}
-
-function uniquePathsWithObstacles (obstacleGrid: number[][]): number {
-  const OBSTACLE = 1
-  const rowCount = obstacleGrid.length
-  const colCount = obstacleGrid[0]?.length as number
-  const countGrid = new Array<number[]>(rowCount)
-  for (let r = 0; r < rowCount; r += 1) {
-    countGrid[r] = new Array(colCount).fill(0)
-  }
-
-  for (let r = 0; r < rowCount; r += 1) {
-    for (let c = 0; c < colCount; c += 1) {
-      if (getCell(obstacleGrid, r, c) === OBSTACLE) {
-        continue
-      }
-
-      if ((r + c) === 0) {
-        setCell(countGrid, r, c, 1)
-      } else if (r === 0) {
-        setCell(countGrid, r, c, getCell(countGrid, r, c - 1))
-      } else if (c === 0) {
-        setCell(countGrid, r, c, getCell(countGrid, r - 1, c))
-      } else {
-        setCell(countGrid, r, c,
-          getCell(countGrid, r - 1, c) +
-          getCell(countGrid, r, c - 1)
-        )
-      }
-    }
-  }
-
-  return getCell(countGrid, rowCount - 1, colCount - 1)
+interface Input {
+  readonly nums: number[]
+  readonly k: number
 }
 
 function main (): void {
-  const inputs: number[][][] = [
-    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-    [[0, 1], [0, 0]]
+  const inputs: Input[] = [
+    { nums: [3, 2, 1, 5, 6, 4], k: 2 },
+    { nums: [3, 2, 3, 1, 2, 4, 5, 5, 6], k: 4 }
   ]
 
-  for (const input of inputs) {
-    const result = uniquePathsWithObstacles(input)
+  for (const { nums, k } of inputs) {
+    const result = findKthLargest(nums, k)
     console.log(result)
   }
 }

@@ -1,36 +1,26 @@
 from __future__ import annotations
 from typing import List
+from queue import PriorityQueue
 
 
 class Solution:
-    def uniquePathsWithObstacles(self, obstacle_grid: List[List[int]]) -> int:
-        OBSTACLE = 1
-        row_count = len(obstacle_grid)
-        col_count = len(obstacle_grid[0])
-        count_grid = [[0 for _ in range(col_count)] for _ in range(row_count)]
-        for r in range(row_count):
-            for c in range(col_count):
-                if obstacle_grid[r][c] == OBSTACLE:
-                    continue
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        queue: PriorityQueue[int] = PriorityQueue(k + 1)
+        for num in nums:
+            queue.put(num)
+            if queue.qsize() > k:
+                queue.get()
 
-                if (r + c) == 0:
-                    count_grid[r][c] = 1
-                elif r == 0:
-                    count_grid[r][c] = count_grid[r][c - 1]
-                elif c == 0:
-                    count_grid[r][c] = count_grid[r - 1][c]
-                else:
-                    count_grid[r][c] = count_grid[r][c - 1] + count_grid[r - 1][c]
-
-        return count_grid[row_count - 1][col_count - 1]
+        result = queue.get()
+        return result
 
 
 def main():
-    inputs = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 1], [0, 0]]]
+    inputs = [([3, 2, 1, 5, 6, 4], 2), ([3, 2, 3, 1, 2, 4, 5, 5, 6], 4)]
 
-    for grid in inputs:
+    for nums, k in inputs:
         solution = Solution()
-        result = solution.uniquePathsWithObstacles(grid)
+        result = solution.findKthLargest(nums, k)
         print(result)
 
 

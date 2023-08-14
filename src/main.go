@@ -2,46 +2,27 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func uniquePathsWithObstacles(obstacleGrid [][]int) int {
-	const OBSTACLE int = 1
-	rowCount := len(obstacleGrid)
-	colCount := len(obstacleGrid[0])
-	countGrid := make([][]int, rowCount)
-	for r := 0; r < rowCount; r += 1 {
-		countGrid[r] = make([]int, colCount)
-	}
+func findKthLargest(nums []int, k int) int {
+	sort.Ints(nums)
+	return nums[len(nums)-k]
+}
 
-	for r := 0; r < rowCount; r += 1 {
-		for c := 0; c < colCount; c += 1 {
-			if obstacleGrid[r][c] == OBSTACLE {
-				continue
-			}
-
-			if (r + c) == 0 {
-				countGrid[r][c] = 1
-			} else if r == 0 {
-				countGrid[r][c] = countGrid[r][c-1]
-			} else if c == 0 {
-				countGrid[r][c] = countGrid[r-1][c]
-			} else {
-				countGrid[r][c] = countGrid[r-1][c] + countGrid[r][c-1]
-			}
-		}
-	}
-
-	return countGrid[rowCount-1][colCount-1]
+type input struct {
+	nums []int
+	k    int
 }
 
 func main() {
-	inputs := [][][]int{
-		{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}},
-		{{0, 1}, {0, 0}},
+	inputs := []input{
+		{nums: []int{3, 2, 1, 5, 6, 4}, k: 2},
+		{nums: []int{3, 2, 3, 1, 2, 4, 5, 5, 6}, k: 4},
 	}
 
 	for _, input := range inputs {
-		result := uniquePathsWithObstacles(input)
+		result := findKthLargest(input.nums, input.k)
 		fmt.Println(result)
 	}
 }

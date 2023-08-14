@@ -1,44 +1,34 @@
 mod utils;
 
+use std::collections::BinaryHeap;
+
 use utils::Solution;
 
 impl Solution {
-    pub fn unique_paths_with_obstacles(obstacle_grid: Vec<Vec<i32>>) -> i32 {
-        const OBSTACLE: i32 = 1;
-        let row_count = obstacle_grid.len();
-        let col_count = obstacle_grid[0].len();
-        let mut count_grid = vec![vec![0; col_count]; row_count];
+    pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
+        let k = k as usize;
+        let mut queue = BinaryHeap::<i32>::with_capacity(k + 1);
 
-        for r in 0..row_count {
-            for c in 0..col_count {
-                if obstacle_grid[r][c] == OBSTACLE {
-                    continue;
-                }
-
-                if (r + c) == 0 {
-                    count_grid[r][c] = 1;
-                } else if r == 0 {
-                    count_grid[r][c] = count_grid[r][c - 1]
-                } else if c == 0 {
-                    count_grid[r][c] = count_grid[r - 1][c]
-                } else {
-                    count_grid[r][c] = count_grid[r - 1][c] + count_grid[r][c - 1];
-                }
+        for &num in nums.iter() {
+            queue.push(-num);
+            if queue.len() > k {
+                queue.pop();
             }
         }
 
-        return count_grid[row_count - 1][col_count - 1];
+        let kth = queue.pop().unwrap();
+        return -kth;
     }
 }
 
 fn main() {
     let inputs = [
-        vec![vec![0, 0, 0], vec![0, 1, 0], vec![0, 0, 0]],
-        vec![vec![0, 1], vec![0, 0]],
+        (vec![3, 2, 1, 5, 6, 4], 2),
+        (vec![3, 2, 3, 1, 2, 4, 5, 5, 6], 4),
     ];
 
-    for grid in inputs {
-        let result = Solution::unique_paths_with_obstacles(grid);
+    for (nums, k) in inputs {
+        let result = Solution::find_kth_largest(nums, k);
         println!("{result}");
     }
 }
