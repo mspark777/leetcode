@@ -15,6 +15,3 @@ py:
 
 sh:
 	@${SHELL} src/main.sh
-
-rs:
-	cargo +1.58.1 run
