@@ -1,82 +1,72 @@
 import '@total-typescript/ts-reset'
 
-function goright (matrix: number[][], row: number, left: number, right: number, result: number[]): void {
-  for (let col = left; col <= right; col += 1) {
-    const cell = matrix.at(row)?.at(col) as number
-    result.push(cell)
+class ListNode {
+  val: number
+  next: ListNode | null
+  constructor (val?: number, next?: ListNode | null) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
   }
 }
 
-function godown (matrix: number[][], col: number, top: number, bottom: number, result: number[]): void {
-  for (let row = top; row <= bottom; row += 1) {
-    const cell = matrix.at(row)?.at(col) as number
-    result.push(cell)
-  }
-}
+function partition (head: ListNode | null, x: number): ListNode | null {
+  const beforeHead = new ListNode(0)
+  const afterHead = new ListNode(0)
+  let before = beforeHead
+  let after = afterHead
 
-function goleft (matrix: number[][], row: number, left: number, right: number, result: number[]): void {
-  for (let col = right; col >= left; col -= 1) {
-    const cell = matrix.at(row)?.at(col) as number
-    result.push(cell)
-  }
-}
-
-function goup (matrix: number[][], col: number, top: number, bottom: number, result: number[]): void {
-  for (let row = bottom; row >= top; row -= 1) {
-    const cell = matrix.at(row)?.at(col) as number
-    result.push(cell)
-  }
-}
-
-enum Direction {
-  LEFT,
-  RIGHT,
-  UP,
-  DOWN
-}
-
-function spiralOrder (matrix: number[][]): number[] {
-  const rowCount = matrix.length
-  const colCount = matrix[0]?.length as number
-  let left = 0
-  let right = colCount - 1
-  let top = 0
-  let bottom = rowCount - 1
-  let dir = Direction.RIGHT
-  const result: number[] = []
-
-  while ((left <= right) && (top <= bottom)) {
-    if (dir === Direction.RIGHT) {
-      goright(matrix, top, left, right, result)
-      top += 1
-      dir = Direction.DOWN
-    } else if (dir === Direction.DOWN) {
-      godown(matrix, right, top, bottom, result)
-      right -= 1
-      dir = Direction.LEFT
-    } else if (dir === Direction.LEFT) {
-      goleft(matrix, bottom, left, right, result)
-      bottom -= 1
-      dir = Direction.UP
+  while (head != null) {
+    const { val } = head
+    if (head.val < x) {
+      before.next = new ListNode(val)
+      before = before.next
     } else {
-      goup(matrix, left, top, bottom, result)
-      left += 1
-      dir = Direction.RIGHT
+      after.next = new ListNode(val)
+      after = after.next
     }
+
+    head = head.next
+  }
+  after.next = null
+  before.next = afterHead.next
+
+  return beforeHead.next
+}
+
+interface Input {
+  readonly head: number[]
+  readonly x: number
+}
+
+function arrtolist (vals: number[]): ListNode | null {
+  const dummy = new ListNode()
+  let tail = dummy
+  for (const val of vals) {
+    tail.next = new ListNode(val)
+    tail = tail.next
+  }
+  return dummy.next
+}
+
+function listtoarr (node: ListNode | null): number[] {
+  const vals: number[] = []
+  while (node != null) {
+    vals.push(node.val)
+    node = node.next
   }
 
-  return result
+  return vals
 }
 
 function main (): void {
-  const inputs: number[][][] = [
-    [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-    [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]
+  const inputs: Input[] = [
+    { head: [1, 4, 3, 2, 5, 2], x: 3 },
+    { head: [2, 1], x: 2 }
   ]
 
-  for (const matrix of inputs) {
-    const result = spiralOrder(matrix)
-    console.log(result)
+  for (const { head, x } of inputs) {
+    const result = partition(arrtolist(head), x)
+    console.log(listtoarr(result))
   }
 }
 main()
