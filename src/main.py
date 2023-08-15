@@ -1,60 +1,77 @@
 from __future__ import annotations
 from typing import List
-from enum import Enum
-
-
-class Direction(Enum):
-    LEFT = 0
-    RIGHT = 1
-    UP = 2
-    DOWN = 3
+from collections import deque, defaultdict
 
 
 class Solution:
-    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
-        row_count = len(matrix)
-        col_count = len(matrix[0])
-        left = 0
-        right = col_count - 1
-        top = 0
-        bottom = row_count - 1
-        dir = Direction.RIGHT
-        result: list[int] = []
+    def shift_for_all_keys(self, cell: str, stand: str) -> int:
+        return 1 << (ord(cell) - ord(stand))
 
-        while (left <= right) and (top <= bottom):
-            if dir == Direction.RIGHT:
-                for col in range(left, right + 1):
-                    result.append(matrix[top][col])
-                top += 1
-                dir = Direction.DOWN
-            elif dir == Direction.DOWN:
-                for row in range(top, bottom + 1):
-                    result.append(matrix[row][right])
-                right -= 1
-                dir = Direction.LEFT
-            elif dir == Direction.LEFT:
-                for col in range(right, left - 1, -1):
-                    result.append(matrix[bottom][col])
-                bottom -= 1
-                dir = Direction.UP
-            else:
-                for row in range(bottom, top - 1, -1):
-                    result.append(matrix[row][left])
-                left += 1
-                dir = Direction.RIGHT
+    def shortestPathAllKeys(self, grid: List[str]) -> int:
+        row_count = len(grid)
+        col_count = len(grid[0])
+        queue: deque[tuple[int, int, int, int]] = deque()
+        seen: dict[int, set[tuple[int, int]]] = defaultdict(set)
+        key_set: set[str] = set()
+        lock_set: set[str] = set()
+        all_keys = 0
+        WALL = "#"
+        STARTING = "@"
 
-        return result
+        for r in range(row_count):
+            for c in range(col_count):
+                cell = grid[r][c]
+                if cell in "abcdef":
+                    all_keys += self.shift_for_all_keys(cell, "a")
+                    key_set.add(cell)
+                elif cell in "ABCDEF":
+                    lock_set.add(cell)
+                elif cell == STARTING:
+                    queue.append((r, c, 0, 0))
+                    seen[0].add((r, c))
+
+        while queue:
+            cur_r, cur_c, keys, dist = queue.popleft()
+            for dr, dc in ((0, 1), (1, 0), (-1, 0), (0, -1)):
+                new_r = cur_r + dr
+                new_c = cur_c + dc
+                if (new_r < 0) or (new_r >= row_count):
+                    continue
+                elif (new_c < 0) or (new_c >= col_count):
+                    continue
+
+                cell = grid[new_r][new_c]
+                if cell == WALL:
+                    continue
+
+                if (cell in key_set) and not (
+                    self.shift_for_all_keys(cell, "a") & keys
+                ):
+                    new_keys = keys | self.shift_for_all_keys(cell, "a")
+                    if new_keys == all_keys:
+                        return dist + 1
+
+                    seen[new_keys].add((new_r, new_c))
+                    queue.append((new_r, new_c, new_keys, dist + 1))
+                    continue
+
+                if (cell in lock_set) and not (
+                    self.shift_for_all_keys(cell, "A") & keys
+                ):
+                    continue
+
+                if (new_r, new_c) not in seen[keys]:
+                    seen[keys].add((new_r, new_c))
+                    queue.append((new_r, new_c, keys, dist + 1))
+        return -1
 
 
 def main():
-    inputs = [
-        [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-        [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]],
-    ]
+    inputs = [["@.a..", "###.#", "b.A.B"], ["@..aA", "..B#.", "....b"], ["@Aa"]]
 
-    for matrix in inputs:
+    for grid in inputs:
         solution = Solution()
-        result = solution.spiralOrder(matrix)
+        result = solution.shortestPathAllKeys(grid)
         print(result)
 
 
