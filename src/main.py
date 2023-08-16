@@ -1,77 +1,45 @@
 from __future__ import annotations
 from typing import List
-from collections import deque, defaultdict
+from collections import deque
 
 
 class Solution:
-    def shift_for_all_keys(self, cell: str, stand: str) -> int:
-        return 1 << (ord(cell) - ord(stand))
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        queue: deque[int] = deque()
+        result: list[int] = []
 
-    def shortestPathAllKeys(self, grid: List[str]) -> int:
-        row_count = len(grid)
-        col_count = len(grid[0])
-        queue: deque[tuple[int, int, int, int]] = deque()
-        seen: dict[int, set[tuple[int, int]]] = defaultdict(set)
-        key_set: set[str] = set()
-        lock_set: set[str] = set()
-        all_keys = 0
-        WALL = "#"
-        STARTING = "@"
+        for i in range(k):
+            while queue:
+                if nums[i] >= nums[queue[-1]]:
+                    queue.pop()
+                else:
+                    break
+            queue.append(i)
 
-        for r in range(row_count):
-            for c in range(col_count):
-                cell = grid[r][c]
-                if cell in "abcdef":
-                    all_keys += self.shift_for_all_keys(cell, "a")
-                    key_set.add(cell)
-                elif cell in "ABCDEF":
-                    lock_set.add(cell)
-                elif cell == STARTING:
-                    queue.append((r, c, 0, 0))
-                    seen[0].add((r, c))
+        result.append(nums[queue[0]])
 
-        while queue:
-            cur_r, cur_c, keys, dist = queue.popleft()
-            for dr, dc in ((0, 1), (1, 0), (-1, 0), (0, -1)):
-                new_r = cur_r + dr
-                new_c = cur_c + dc
-                if (new_r < 0) or (new_r >= row_count):
-                    continue
-                elif (new_c < 0) or (new_c >= col_count):
-                    continue
+        for i in range(k, len(nums)):
+            if queue and queue[0] == (i - k):
+                queue.popleft()
 
-                cell = grid[new_r][new_c]
-                if cell == WALL:
-                    continue
+            while queue:
+                if nums[i] >= nums[queue[-1]]:
+                    queue.pop()
+                else:
+                    break
 
-                if (cell in key_set) and not (
-                    self.shift_for_all_keys(cell, "a") & keys
-                ):
-                    new_keys = keys | self.shift_for_all_keys(cell, "a")
-                    if new_keys == all_keys:
-                        return dist + 1
+            queue.append(i)
+            result.append(nums[queue[0]])
 
-                    seen[new_keys].add((new_r, new_c))
-                    queue.append((new_r, new_c, new_keys, dist + 1))
-                    continue
-
-                if (cell in lock_set) and not (
-                    self.shift_for_all_keys(cell, "A") & keys
-                ):
-                    continue
-
-                if (new_r, new_c) not in seen[keys]:
-                    seen[keys].add((new_r, new_c))
-                    queue.append((new_r, new_c, keys, dist + 1))
-        return -1
+        return result
 
 
 def main():
-    inputs = [["@.a..", "###.#", "b.A.B"], ["@..aA", "..B#.", "....b"], ["@Aa"]]
+    inputs = [([1, 3, -1, -3, 5, 3, 6, 7], 3), ([1], 1)]
 
-    for grid in inputs:
+    for nums, k in inputs:
         solution = Solution()
-        result = solution.shortestPathAllKeys(grid)
+        result = solution.maxSlidingWindow(nums, k)
         print(result)
 
 
