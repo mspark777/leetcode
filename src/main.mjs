@@ -1,66 +1,82 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
+const QUEEN = 'Q'
+const EMPTY = '.'
+
 /**
-  * @param {number[]} nums
-  * @param {number} k
-  * @returns {number[]}
+  * @param {number} row
+  * @param {number} col
+  * @param {string[][]} board
+  * @returns {boolean}
   */
-function maxSlidingWindow (nums, k) {
-  /** @type {number[]} */
-  const queue = []
-  /** @type {number[]} */
+function isSafe (row, col, board) {
+  for (let r = row, c = col; (r >= 0) && (c >= 0); r -= 1, c -= 1) {
+    if (board.at(r)?.at(c) === QUEEN) {
+      return false
+    }
+  }
+
+  for (let c = col; c >= 0; c -= 1) {
+    if (board.at(row)?.at(c) === QUEEN) {
+      return false
+    }
+  }
+
+  for (let r = row, c = col; (r < board.length) && (c >= 0); r += 1, c -= 1) {
+    if (board.at(r)?.at(c) === QUEEN) {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+  * @param {number} col
+  * @param {string[][]} board
+  * @param {string[][]} result
+  * @returns {undefined}
+  */
+function solve (col, board, result) {
+  if (col >= board.length) {
+    result.push(board.map(b => b.join('')))
+    return
+  }
+
+  for (let r = 0; r < board.length; r += 1) {
+    if (isSafe(r, col, board)) {
+      board[r][col] = QUEEN
+      solve(col + 1, board, result)
+      board[r][col] = EMPTY
+    }
+  }
+}
+
+/**
+  * @param {number} n
+  * @returns {string[][]}
+  */
+function solveNQueens (n) {
+  /** @type {string[][]} */
   const result = []
-
-  for (let i = 0; i < k; i += 1) {
-    while (queue.length > 0) {
-      const taili = queue.at(-1)
-      const tail = nums[taili]
-      const num = nums[i]
-      if (num >= tail) {
-        queue.pop()
-      } else {
-        break
-      }
-    }
-
-    queue.push(i)
+  /** @type {string[][]} */
+  const board = new Array(n)
+  for (let i = 0; i < n; i += 1) {
+    board[i] = new Array(n).fill(EMPTY)
   }
 
-  result.push(nums[queue[0]])
-
-  for (let i = k; i < nums.length; i += 1) {
-    const head = queue[0]
-    if (head === (i - k)) {
-      queue.shift()
-    }
-
-    while (queue.length > 0) {
-      const taili = queue.at(-1)
-      const tail = nums[taili]
-      const num = nums[i]
-      if (num >= tail) {
-        queue.pop()
-      } else {
-        break
-      }
-    }
-
-    queue.push(i)
-    result.push(nums[queue[0]])
-  }
-
+  solve(0, board, result)
   return result
 }
 
 function main () {
   const inputs = [
-    { nums: [1, 3, -1, -3, 5, 3, 6, 7], k: 3 },
-    { nums: [1], k: 1 }
+    4, 1
   ]
 
-  for (const { nums, k } of inputs) {
-    const result = maxSlidingWindow(nums, k)
+  for (const n of inputs) {
+    const result = solveNQueens(n)
     console.log(result)
   }
 }

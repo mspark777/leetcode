@@ -1,63 +1,64 @@
 import '@total-typescript/ts-reset'
 
-function maxSlidingWindow (nums: number[], k: number): number[] {
-  const queue: number[] = []
-  const result: number[] = []
+const QUEEN = 'Q'
+const EMPTY = '.'
 
-  for (let i = 0; i < k; i += 1) {
-    while (queue.length > 0) {
-      const taili = queue.at(-1) as number
-      const tail = nums[taili] as number
-      const num = nums[i] as number
-      if (num >= tail) {
-        queue.pop()
-      } else {
-        break
-      }
+function isSafe (row: number, col: number, board: string[][]): boolean {
+  for (let r = row, c = col; (r >= 0) && (c >= 0); r -= 1, c -= 1) {
+    if (board.at(r)?.at(c) === QUEEN) {
+      return false
     }
-
-    queue.push(i)
   }
 
-  result.push(nums[queue[0] as number] as number)
-
-  for (let i = k; i < nums.length; i += 1) {
-    const head = queue[0] as number
-    if (head === (i - k)) {
-      queue.shift()
+  for (let c = col; c >= 0; c -= 1) {
+    if (board.at(row)?.at(c) === QUEEN) {
+      return false
     }
-
-    while (queue.length > 0) {
-      const taili = queue.at(-1) as number
-      const tail = nums[taili] as number
-      const num = nums[i] as number
-      if (num >= tail) {
-        queue.pop()
-      } else {
-        break
-      }
-    }
-
-    queue.push(i)
-    result.push(nums[queue[0] as number] as number)
   }
 
+  for (let r = row, c = col; (r < board.length) && (c >= 0); r += 1, c -= 1) {
+    if (board.at(r)?.at(c) === QUEEN) {
+      return false
+    }
+  }
+
+  return true
+}
+
+function solve (col: number, board: string[][], result: string[][]): void {
+  if (col >= board.length) {
+    result.push(board.map(b => b.join('')))
+    return
+  }
+
+  for (let r = 0; r < board.length; r += 1) {
+    if (isSafe(r, col, board)) {
+      const row = board[r] as string[]
+      row[col] = QUEEN
+      solve(col + 1, board, result)
+      row[col] = EMPTY
+    }
+  }
+}
+
+function solveNQueens (n: number): string[][] {
+  const result: string[][] = []
+  const board = new Array<string[]>(n)
+  for (let i = 0; i < n; i += 1) {
+    board[i] = new Array<string>(n).fill(EMPTY)
+  }
+
+  solve(0, board, result)
   return result
 }
 
-interface Input {
-  readonly nums: number[]
-  readonly k: number
-}
-
 function main (): void {
-  const inputs: Input[] = [
-    { nums: [1, 3, -1, -3, 5, 3, 6, 7], k: 3 },
-    { nums: [1], k: 1 }
+  const inputs: number[] = [
+    4, 1
   ]
 
-  for (const { nums, k } of inputs) {
-    const result = maxSlidingWindow(nums, k)
+  for (const n of inputs) {
+    const result = solveNQueens(n)
     console.log(result)
   }
 }
