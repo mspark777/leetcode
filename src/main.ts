@@ -1,64 +1,68 @@
 import '@total-typescript/ts-reset'
 
-const QUEEN = 'Q'
-const EMPTY = '.'
+function updateMatrix (mat: number[][]): number[][] {
+  const rowCount = mat.length
+  const colCount = mat[0]?.length as number
+  const result: number[][] = new Array(rowCount)
+  for (let r = 0; r < rowCount; r += 1) {
+    result[r] = new Array(colCount).fill(0)
+  }
 
-function isSafe (row: number, col: number, board: string[][]): boolean {
-  for (let r = row, c = col; (r >= 0) && (c >= 0); r -= 1, c -= 1) {
-    if (board.at(r)?.at(c) === QUEEN) {
-      return false
+  const queue: number[][] = []
+  const maxValue = rowCount * colCount
+
+  for (let r = 0; r < rowCount; r += 1) {
+    for (let c = 0; c < colCount; c += 1) {
+      if (mat.at(r)?.at(c) === 0) {
+        queue.push([r, c])
+      } else {
+        const row = result[r] as number[]
+        row[c] = maxValue
+      }
     }
   }
 
-  for (let c = col; c >= 0; c -= 1) {
-    if (board.at(row)?.at(c) === QUEEN) {
-      return false
+  const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+  for (let head = queue.shift(); head != null; head = queue.shift()) {
+    const [row, col] = head as [number, number]
+    const cell0 = (result.at(row)?.at(col) as number) + 1
+
+    for (const dir of directions) {
+      const [dr, dc] = dir as [number, number]
+      const r = row + dr
+      const c = col + dc
+      if (r < 0) {
+        continue
+      } else if (r >= rowCount) {
+        continue
+      } else if (c < 0) {
+        continue
+      } else if (c >= colCount) {
+        continue
+      }
+
+      const cell1 = result.at(r)?.at(c) as number
+      if (cell1 <= cell0) {
+        continue
+      }
+
+      queue.push([r, c])
+      const rrow = result[r] as number[]
+      rrow[c] = cell0
     }
   }
 
-  for (let r = row, c = col; (r < board.length) && (c >= 0); r += 1, c -= 1) {
-    if (board.at(r)?.at(c) === QUEEN) {
-      return false
-    }
-  }
-
-  return true
-}
-
-function solve (col: number, board: string[][], result: string[][]): void {
-  if (col >= board.length) {
-    result.push(board.map(b => b.join('')))
-    return
-  }
-
-  for (let r = 0; r < board.length; r += 1) {
-    if (isSafe(r, col, board)) {
-      const row = board[r] as string[]
-      row[col] = QUEEN
-      solve(col + 1, board, result)
-      row[col] = EMPTY
-    }
-  }
-}
-
-function solveNQueens (n: number): string[][] {
-  const result: string[][] = []
-  const board = new Array<string[]>(n)
-  for (let i = 0; i < n; i += 1) {
-    board[i] = new Array<string>(n).fill(EMPTY)
-  }
-
-  solve(0, board, result)
   return result
 }
 
 function main (): void {
-  const inputs: number[] = [
-    4, 1
+  const inputs: number[][][] = [
+    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+    [[0, 0, 0], [0, 1, 0], [1, 1, 1]]
   ]
 
-  for (const n of inputs) {
-    const result = solveNQueens(n)
+  for (const mat of inputs) {
+    const result = updateMatrix(mat)
     console.log(result)
   }
 }

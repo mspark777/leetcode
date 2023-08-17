@@ -1,82 +1,72 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-const QUEEN = 'Q'
-const EMPTY = '.'
-
 /**
-  * @param {number} row
-  * @param {number} col
-  * @param {string[][]} board
-  * @returns {boolean}
+  * @param {number[][]} mat
+  * @returns {number[][]}
   */
-function isSafe (row, col, board) {
-  for (let r = row, c = col; (r >= 0) && (c >= 0); r -= 1, c -= 1) {
-    if (board.at(r)?.at(c) === QUEEN) {
-      return false
+function updateMatrix (mat) {
+  const rowCount = mat.length
+  const colCount = mat[0].length
+  /** @type {number[][]} */
+  const result = new Array(rowCount)
+  for (let r = 0; r < rowCount; r += 1) {
+    result[r] = new Array(colCount).fill(0)
+  }
+
+  /** @type {number[][]} */
+  const queue = []
+  const maxValue = rowCount * colCount
+
+  for (let r = 0; r < rowCount; r += 1) {
+    for (let c = 0; c < colCount; c += 1) {
+      if (mat.at(r)?.at(c) === 0) {
+        queue.push([r, c])
+      } else {
+        result[r][c] = maxValue
+      }
     }
   }
 
-  for (let c = col; c >= 0; c -= 1) {
-    if (board.at(row)?.at(c) === QUEEN) {
-      return false
+  const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+  for (let head = queue.shift(); head != null; head = queue.shift()) {
+    const [row, col] = head
+    const cell0 = result[row][col] + 1
+
+    for (const [dr, dc] of directions) {
+      const r = row + dr
+      const c = col + dc
+      if (r < 0) {
+        continue
+      } else if (r >= rowCount) {
+        continue
+      } else if (c < 0) {
+        continue
+      } else if (c >= colCount) {
+        continue
+      }
+
+      const cell1 = result[r][c]
+      if (cell1 <= cell0) {
+        continue
+      }
+
+      queue.push([r, c])
+      result[r][c] = cell0
     }
   }
 
-  for (let r = row, c = col; (r < board.length) && (c >= 0); r += 1, c -= 1) {
-    if (board.at(r)?.at(c) === QUEEN) {
-      return false
-    }
-  }
-
-  return true
-}
-
-/**
-  * @param {number} col
-  * @param {string[][]} board
-  * @param {string[][]} result
-  * @returns {undefined}
-  */
-function solve (col, board, result) {
-  if (col >= board.length) {
-    result.push(board.map(b => b.join('')))
-    return
-  }
-
-  for (let r = 0; r < board.length; r += 1) {
-    if (isSafe(r, col, board)) {
-      board[r][col] = QUEEN
-      solve(col + 1, board, result)
-      board[r][col] = EMPTY
-    }
-  }
-}
-
-/**
-  * @param {number} n
-  * @returns {string[][]}
-  */
-function solveNQueens (n) {
-  /** @type {string[][]} */
-  const result = []
-  /** @type {string[][]} */
-  const board = new Array(n)
-  for (let i = 0; i < n; i += 1) {
-    board[i] = new Array(n).fill(EMPTY)
-  }
-
-  solve(0, board, result)
   return result
 }
 
 function main () {
   const inputs = [
-    4, 1
+    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+    [[0, 0, 0], [0, 1, 0], [1, 1, 1]]
   ]
 
-  for (const n of inputs) {
-    const result = solveNQueens(n)
+  for (const mat of inputs) {
+    const result = updateMatrix(mat)
     console.log(result)
   }
 }

@@ -1,59 +1,57 @@
 from __future__ import annotations
 from typing import List
-
-QUEEN = "Q"
-EMPTY = "."
+from queue import Queue
 
 
 class Solution:
-    def solveNQueens(self, n: int) -> List[List[str]]:
-        result: list[list[str]] = []
-        board = [[EMPTY for c in range(n)] for r in range(n)]
-        self.solve(0, board, result)
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        row_count = len(mat)
+        col_count = len(mat[0])
+        result = [[0 for _ in range(col_count)] for _ in range(row_count)]
+
+        queue: Queue[tuple[int, int]] = Queue()
+        max_value = row_count * col_count
+
+        for r in range(row_count):
+            for c in range(col_count):
+                if mat[r][c] == 0:
+                    queue.put((r, c))
+                else:
+                    result[r][c] = max_value
+
+        directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        while not queue.empty():
+            row, col = queue.get()
+            cell0 = result[row][col] + 1
+
+            for dr, dc in directions:
+                r = row + dr
+                c = col + dc
+                if r < 0:
+                    continue
+                elif r >= row_count:
+                    continue
+                elif c < 0:
+                    continue
+                elif c >= col_count:
+                    continue
+
+                cell1 = result[r][c]
+                if cell1 <= cell0:
+                    continue
+
+                queue.put((r, c))
+                result[r][c] = cell0
 
         return result
 
-    def solve(self, col: int, board: list[list[str]], result: list[list[str]]):
-        if col >= len(board):
-            result.append(["".join(r) for r in board])
-            return
-
-        for r in range(len(board)):
-            if self.is_safe(r, col, board):
-                board[r][col] = QUEEN
-                self.solve(col + 1, board, result)
-                board[r][col] = EMPTY
-
-    def is_safe(self, row: int, col: int, board: list[list[str]]) -> bool:
-        r = row
-        c = col
-        while (r >= 0) and (c >= 0):
-            if board[r][c] == QUEEN:
-                return False
-            r -= 1
-            c -= 1
-
-        for c in range(col, -1, -1):
-            if board[row][c] == QUEEN:
-                return False
-
-        r = row
-        c = col
-        while (r < len(board)) and (c >= 0):
-            if board[r][c] == QUEEN:
-                return False
-            r += 1
-            c -= 1
-
-        return True
-
 
 def main():
-    inputs = [4, 1]
+    inputs = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 0], [0, 1, 0], [1, 1, 1]]]
 
-    for n in inputs:
+    for mat in inputs:
         solution = Solution()
-        result = solution.solveNQueens(n)
+        result = solution.updateMatrix(mat)
         print(result)
 
 
