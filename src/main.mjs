@@ -2,57 +2,35 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
-  * @param {number[][]} mat
-  * @returns {number[][]}
+  * @param {number} n
+  * @param {number[][]} roads
+  * @returns {number}
   */
-function updateMatrix (mat) {
-  const rowCount = mat.length
-  const colCount = mat[0].length
-  /** @type {number[][]} */
-  const result = new Array(rowCount)
-  for (let r = 0; r < rowCount; r += 1) {
-    result[r] = new Array(colCount).fill(0)
+function maximalNetworkRank (n, roads) {
+  /** @type {Map<number, Set<number>>} */
+  const adjacents = new Map()
+  for (const [a, b] of roads) {
+    const aSet = adjacents.get(a) ?? new Set()
+    const bSet = adjacents.get(b) ?? new Set()
+
+    aSet.add(b)
+    bSet.add(a)
+    adjacents.set(a, aSet)
+    adjacents.set(b, bSet)
   }
 
-  /** @type {number[][]} */
-  const queue = []
-  const maxValue = rowCount * colCount
-
-  for (let r = 0; r < rowCount; r += 1) {
-    for (let c = 0; c < colCount; c += 1) {
-      if (mat.at(r)?.at(c) === 0) {
-        queue.push([r, c])
-      } else {
-        result[r][c] = maxValue
-      }
-    }
-  }
-
-  const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-  for (let head = queue.shift(); head != null; head = queue.shift()) {
-    const [row, col] = head
-    const cell0 = result[row][col] + 1
-
-    for (const [dr, dc] of directions) {
-      const r = row + dr
-      const c = col + dc
-      if (r < 0) {
-        continue
-      } else if (r >= rowCount) {
-        continue
-      } else if (c < 0) {
-        continue
-      } else if (c >= colCount) {
-        continue
+  let result = 0
+  for (let node0 = 0; node0 < n; node0 += 1) {
+    const set0 = adjacents.get(node0) ?? new Set()
+    const rank0 = set0.size ?? 0
+    for (let node1 = node0 + 1; node1 < n; node1 += 1) {
+      const rank1 = adjacents.get(node1)?.size ?? 0
+      let rank = rank0 + rank1
+      if (set0.has(node1)) {
+        rank -= 1
       }
 
-      const cell1 = result[r][c]
-      if (cell1 <= cell0) {
-        continue
-      }
-
-      queue.push([r, c])
-      result[r][c] = cell0
+      result = Math.max(result, rank)
     }
   }
 
@@ -61,12 +39,13 @@ function updateMatrix (mat) {
 
 function main () {
   const inputs = [
-    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-    [[0, 0, 0], [0, 1, 0], [1, 1, 1]]
+    { n: 4, roads: [[0, 1], [0, 3], [1, 2], [1, 3]] },
+    { n: 5, roads: [[0, 1], [0, 3], [1, 2], [1, 3], [2, 3], [2, 4]] },
+    { n: 8, roads: [[0, 1], [1, 2], [2, 3], [2, 4], [5, 6], [5, 7]] }
   ]
 
-  for (const mat of inputs) {
-    const result = updateMatrix(mat)
+  for (const { n, roads } of inputs) {
+    const result = maximalNetworkRank(n, roads)
     console.log(result)
   }
 }

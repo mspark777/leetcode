@@ -4,72 +4,71 @@ import (
 	"fmt"
 )
 
-func updateMatrix(mat [][]int) [][]int {
-	rowCount := len(mat)
-	colCount := len(mat[0])
-	result := make([][]int, rowCount)
-	for r := 0; r < rowCount; r += 1 {
-		result[r] = make([]int, colCount)
-	}
+func maximalNetworkRank(n int, roads [][]int) int {
+	adjacents := map[int]map[int]bool{}
+	for _, road := range roads {
+		a := road[0]
+		b := road[1]
+		if set, ok := adjacents[a]; ok {
+			set[b] = true
+		} else {
+			set := map[int]bool{}
+			set[b] = true
+			adjacents[a] = set
+		}
 
-	queue := [][]int{}
-	maxValue := rowCount * colCount
-
-	for r := 0; r < rowCount; r += 1 {
-		for c := 0; c < colCount; c += 1 {
-			if mat[r][c] == 0 {
-				queue = append(queue, []int{r, c})
-			} else {
-				result[r][c] = maxValue
-			}
+		if set, ok := adjacents[b]; ok {
+			set[a] = true
+		} else {
+			set := map[int]bool{}
+			set[a] = true
+			adjacents[b] = set
 		}
 	}
 
-	directions := [][]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
-	for len(queue) > 0 {
-		head := queue[0]
-		queue = queue[1:]
+	result := 0
+	for node0 := 0; node0 < n; node0 += 1 {
+		set0, ok := adjacents[node0]
+		if !ok {
+			set0 = map[int]bool{}
+		}
 
-		row := head[0]
-		col := head[1]
-		cell0 := result[row][col] + 1
-
-		for _, dir := range directions {
-			dr := dir[0]
-			dc := dir[1]
-			r := row + dr
-			c := col + dc
-			if r < 0 {
-				continue
-			} else if r >= rowCount {
-				continue
-			} else if c < 0 {
-				continue
-			} else if c >= colCount {
-				continue
+		rank0 := len(set0)
+		for node1 := node0 + 1; node1 < n; node1 += 1 {
+			set1, ok := adjacents[node1]
+			rank1 := 0
+			if ok {
+				rank1 = len(set1)
 			}
 
-			cell1 := result[r][c]
-			if cell1 <= cell0 {
-				continue
+			rank := rank0 + rank1
+			if _, ok := set0[node1]; ok {
+				rank -= 1
 			}
 
-			queue = append(queue, []int{r, c})
-			result[r][c] = cell0
+			if result < rank {
+				result = rank
+			}
 		}
 	}
 
 	return result
 }
 
+type input struct {
+	n     int
+	roads [][]int
+}
+
 func main() {
-	inputs := [][][]int{
-		{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}},
-		{{0, 0, 0}, {0, 1, 0}, {1, 1, 1}},
+	inputs := []input{
+		{n: 4, roads: [][]int{{0, 1}, {0, 3}, {1, 2}, {1, 3}}},
+		{n: 5, roads: [][]int{{0, 1}, {0, 3}, {1, 2}, {1, 3}, {2, 3}, {2, 4}}},
+		{n: 8, roads: [][]int{{0, 1}, {1, 2}, {2, 3}, {2, 4}, {5, 6}, {5, 7}}},
 	}
 
-	for _, mat := range inputs {
-		result := updateMatrix(mat)
+	for _, input := range inputs {
+		result := maximalNetworkRank(input.n, input.roads)
 		fmt.Println(result)
 	}
 }
