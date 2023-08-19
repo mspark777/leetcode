@@ -1,55 +1,79 @@
 import '@total-typescript/ts-reset'
 
-function isNumber (s: string): boolean {
-  const DOT = '.'
-  const E = 'e'
-  const DASH = '-'
-  const PLUS = '+'
-  let pointSeen = false
-  let eSeen = false
-  let numberSeen = false
-  let numberAfterE = true
-  const nums = new Set<string>(new Array(10).fill(0).map((_, i) => i.toString()))
+function div (a: number, b: number): number {
+  return Number(BigInt(a) / BigInt(b))
+}
 
-  const chars = s.split('')
-  for (const [i, ch] of chars.entries()) {
-    if (nums.has(ch)) {
-      numberSeen = true
-      numberAfterE = true
-    } else if (ch === DOT) {
-      if (eSeen || pointSeen) {
-        return false
-      }
+function mod (a: number, b: number): number {
+  return Number(BigInt(a) % BigInt(b))
+}
 
-      pointSeen = true
-    } else if (ch.toLowerCase() === E) {
-      if (eSeen || !numberSeen) {
-        return false
-      }
-
-      numberAfterE = false
-      eSeen = true
-    } else if ([DASH, PLUS].includes(ch)) {
-      if (i === 0) {
-        continue
-      } else if (chars.at(i - 1)?.toLowerCase() !== E) {
-        return false
-      }
-    } else {
-      return false
+function getWords (i: number, words: string[], maxWidth: number): string[] {
+  const line: string[] = []
+  let lineLength = 0
+  while (i < words.length) {
+    const word = words.at(i) as string
+    const len = lineLength + word.length
+    if (len > maxWidth) {
+      break
     }
+
+    line.push(word)
+    lineLength += word.length + 1
+    i += 1
   }
 
-  return numberSeen && numberAfterE
+  return line
+}
+
+function createLine (line: string[], i: number, words: string[], maxWidth: number): string {
+  let baseLength = -1
+  for (const word of line) {
+    baseLength += word.length + 1
+  }
+
+  const extraSpaces = maxWidth - baseLength
+  if ((line.length === 1) || (words.length === i)) {
+    return line.join(' ') + ' '.repeat(extraSpaces)
+  }
+
+  const wordCount = line.length - 1
+  const spacesPerWord = div(extraSpaces, wordCount)
+  const needsExtraSpace = mod(extraSpaces, wordCount)
+  for (let j = 0; j < needsExtraSpace; j += 1) {
+    const w = line[j] as string
+    line[j] = w + ' '
+  }
+
+  for (let j = 0; j < wordCount; j += 1) {
+    const w = line[j] as string
+    line[j] = w + ' '.repeat(spacesPerWord)
+  }
+
+  return line.join(' ')
+}
+
+function fullJustify (words: string[], maxWidth: number): string[] {
+  const result: string[] = []
+  let i = 0
+  while (i < words.length) {
+    const line = getWords(i, words, maxWidth)
+    i += line.length
+    result.push(createLine(line, i, words, maxWidth))
+  }
+
+  return result
 }
 
 function main (): void {
-  const inputs: string[] = [
-    '0', 'e', '.', '1E9'
+  const inputs: Array<[string[], number]> = [
+    [['This', 'is', 'an', 'example', 'of', 'text', 'justification.'], 16],
+    [['What', 'must', 'be', 'acknowledgment', 'shall', 'be'], 16],
+    [['Science', 'is', 'what', 'we', 'understand', 'well', 'enough', 'to', 'explain', 'to', 'a', 'computer.', 'Art', 'is', 'everything', 'else', 'we', 'do'], 20]
   ]
 
-  for (const s of inputs) {
-    const result = isNumber(s)
+  for (const [words, maxWidth] of inputs) {
+    const result = fullJustify(words, maxWidth)
     console.log(result)
   }
 }
