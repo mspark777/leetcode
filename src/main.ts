@@ -1,52 +1,55 @@
 import '@total-typescript/ts-reset'
 
-class ListNode {
-  val: number
-  next: ListNode | null
-  constructor (val?: number, next?: ListNode | null) {
-    this.val = (val === undefined ? 0 : val)
-    this.next = (next === undefined ? null : next)
+function isNumber (s: string): boolean {
+  const DOT = '.'
+  const E = 'e'
+  const DASH = '-'
+  const PLUS = '+'
+  let pointSeen = false
+  let eSeen = false
+  let numberSeen = false
+  let numberAfterE = true
+  const nums = new Set<string>(new Array(10).fill(0).map((_, i) => i.toString()))
+
+  const chars = s.split('')
+  for (const [i, ch] of chars.entries()) {
+    if (nums.has(ch)) {
+      numberSeen = true
+      numberAfterE = true
+    } else if (ch === DOT) {
+      if (eSeen || pointSeen) {
+        return false
+      }
+
+      pointSeen = true
+    } else if (ch.toLowerCase() === E) {
+      if (eSeen || !numberSeen) {
+        return false
+      }
+
+      numberAfterE = false
+      eSeen = true
+    } else if ([DASH, PLUS].includes(ch)) {
+      if (i === 0) {
+        continue
+      } else if (chars.at(i - 1)?.toLowerCase() !== E) {
+        return false
+      }
+    } else {
+      return false
+    }
   }
-}
 
-function mod (left: number, right: number): number {
-  return Number(BigInt(left) % BigInt(right))
-}
-
-function rotateRight (head: ListNode | null, k: number): ListNode | null {
-  if (head?.next == null) {
-    return head
-  } else if (k < 1) {
-    return head
-  }
-
-  let cur = head
-  let len = 1
-  while (cur.next != null) {
-    len += 1
-    cur = cur.next
-  }
-
-  cur.next = head
-  k = mod(k, len)
-  for (let i = len - k; i > 0; i -= 1) {
-    cur = cur?.next as ListNode
-  }
-
-  head = cur.next
-  cur.next = null
-
-  return head
+  return numberSeen && numberAfterE
 }
 
 function main (): void {
-  const inputs: Array<[number[], number]> = [
-    [[1, 2, 3, 4, 5], 2],
-    [[0, 1, 2], 4]
+  const inputs: string[] = [
+    '0', 'e', '.', '1E9'
   ]
 
-  for (const [head, k] of inputs) {
-    const result = rotateRight(null, 0)
+  for (const s of inputs) {
+    const result = isNumber(s)
     console.log(result)
   }
 }
