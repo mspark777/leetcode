@@ -1,51 +1,81 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
+const QUEEN = 'Q'
+const EMPTY = '.'
+
 /**
-  * @param {number} n
-  * @param {number[][]} roads
-  * @returns {number}
+  * @param {number} row
+  * @param {number} col
+  * @param {string[][]} board
+  * @returns {boolean}
   */
-function maximalNetworkRank (n, roads) {
-  /** @type {Map<number, Set<number>>} */
-  const adjacents = new Map()
-  for (const [a, b] of roads) {
-    const aSet = adjacents.get(a) ?? new Set()
-    const bSet = adjacents.get(b) ?? new Set()
-
-    aSet.add(b)
-    bSet.add(a)
-    adjacents.set(a, aSet)
-    adjacents.set(b, bSet)
-  }
-
-  let result = 0
-  for (let node0 = 0; node0 < n; node0 += 1) {
-    const set0 = adjacents.get(node0) ?? new Set()
-    const rank0 = set0.size ?? 0
-    for (let node1 = node0 + 1; node1 < n; node1 += 1) {
-      const rank1 = adjacents.get(node1)?.size ?? 0
-      let rank = rank0 + rank1
-      if (set0.has(node1)) {
-        rank -= 1
-      }
-
-      result = Math.max(result, rank)
+function isSafe (row, col, board) {
+  for (let r = row, c = col; (r >= 0) && (c >= 0); r -= 1, c -= 1) {
+    if (board.at(r)?.at(c) === QUEEN) {
+      return false
     }
   }
 
-  return result
+  for (let c = col; c >= 0; c -= 1) {
+    if (board.at(row)?.at(c) === QUEEN) {
+      return false
+    }
+  }
+
+  for (let r = row, c = col; (r < board.length) && (c >= 0); r += 1, c -= 1) {
+    if (board.at(r)?.at(c) === QUEEN) {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+  * @param {number} col
+  * @param {string[][]} board
+  * @returns {number}
+  */
+function solve (col, board) {
+  if (col >= board.length) {
+    return 1
+  }
+
+  let count = 0
+  for (let r = 0; r < board.length; r += 1) {
+    if (isSafe(r, col, board)) {
+      const row = board[r]
+      row[col] = QUEEN
+      count += solve(col + 1, board)
+      row[col] = EMPTY
+    }
+  }
+
+  return count
+}
+
+/**
+  * @param {number} n
+  * @returns {number}
+  */
+function totalNQueens (n) {
+  /** @type {string[][]} */
+  const board = new Array(n)
+  for (let i = 0; i < n; i += 1) {
+    board[i] = new Array(n).fill(EMPTY)
+  }
+
+  return solve(0, board)
 }
 
 function main () {
   const inputs = [
-    { n: 4, roads: [[0, 1], [0, 3], [1, 2], [1, 3]] },
-    { n: 5, roads: [[0, 1], [0, 3], [1, 2], [1, 3], [2, 3], [2, 4]] },
-    { n: 8, roads: [[0, 1], [1, 2], [2, 3], [2, 4], [5, 6], [5, 7]] }
+    4, 1
   ]
 
-  for (const { n, roads } of inputs) {
-    const result = maximalNetworkRank(n, roads)
+  for (const n of inputs) {
+    const result = totalNQueens(n)
     console.log(result)
   }
 }
