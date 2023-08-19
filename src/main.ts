@@ -1,64 +1,52 @@
 import '@total-typescript/ts-reset'
 
-const QUEEN = 'Q'
-const EMPTY = '.'
-
-function isSafe (row: number, col: number, board: string[][]): boolean {
-  for (let r = row, c = col; (r >= 0) && (c >= 0); r -= 1, c -= 1) {
-    if (board.at(r)?.at(c) === QUEEN) {
-      return false
-    }
-  }
-
-  for (let c = col; c >= 0; c -= 1) {
-    if (board.at(row)?.at(c) === QUEEN) {
-      return false
-    }
-  }
-
-  for (let r = row, c = col; (r < board.length) && (c >= 0); r += 1, c -= 1) {
-    if (board.at(r)?.at(c) === QUEEN) {
-      return false
-    }
-  }
-
-  return true
+function div (left: number, right: number): number {
+  return Number(BigInt(left) / BigInt(right))
 }
 
-function solve (col: number, board: string[][]): number {
-  if (col >= board.length) {
-    return 1
-  }
-
-  let count = 0
-  for (let r = 0; r < board.length; r += 1) {
-    if (isSafe(r, col, board)) {
-      const row = board[r] as string[]
-      row[col] = QUEEN
-      count += solve(col + 1, board)
-      row[col] = EMPTY
-    }
-  }
-
-  return count
+function mod (left: number, right: number): number {
+  return Number(BigInt(left) % BigInt(right))
 }
 
-function totalNQueens (n: number): number {
-  const board = new Array<string[]>(n)
-  for (let i = 0; i < n; i += 1) {
-    board[i] = new Array<string>(n).fill(EMPTY)
+function getPermutation (n: number, k: number): string {
+  if ([0, 1].includes(n)) {
+    return n.toString()
   }
 
-  return solve(0, board)
+  const nums = new Array<number>(n)
+  let fact = 1
+  for (let i = 1; i < n; i += 1) {
+    nums[i - 1] = i
+    fact *= i
+  }
+  nums[n - 1] = n
+
+  k -= 1
+  const result: number[] = []
+  while (nums.length > 0) {
+    const pos = div(k, fact)
+    result.push(nums[pos] as number)
+    nums.splice(pos, 1)
+    if (nums.length < 1) {
+      break
+    }
+
+    k = mod(k, fact)
+    fact = div(fact, nums.length)
+  }
+
+  return result.join('')
 }
 
 function main (): void {
-  const inputs: number[] = [
-    4, 1
+  const inputs: Array<[number, number]> = [
+    [3, 3],
+    [4, 9],
+    [3, 1]
   ]
 
-  for (const n of inputs) {
-    const result = totalNQueens(n)
+  for (const [n, k] of inputs) {
+    const result = getPermutation(n, k)
     console.log(result)
   }
 }
