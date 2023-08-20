@@ -1,62 +1,92 @@
 import '@total-typescript/ts-reset'
 
-function get (dp: number[][], r: number, c: number): number {
-  const row = dp[r] as number[]
-  return row[c] as number
-}
-
-function set (dp: number[][], r: number, c: number, v: number): void {
-  const row = dp[r] as number[]
-  row[c] = v
-}
-
-function minDistance (word1: string, word2: string): number {
-  const len1 = word1.length
-  const len2 = word2.length
-  const dp = new Array<number[]>(len1 + 1)
-  for (let i = 0; i <= len1; i += 1) {
-    dp[i] = new Array(len2 + 1).fill(0)
+function topologicalSort (graph: Map<number, number[]>, indegree: number[]): number[] {
+  const visited: number[] = []
+  const stack: number[] = []
+  for (const key of graph.keys()) {
+    if (indegree.at(key) === 0) {
+      stack.push(key)
+    }
   }
 
-  for (let i = 0; i <= len1; i += 1) {
-    const row = dp[i] as number[]
-    row[0] = i
-  }
+  for (let key = stack.pop(); key != null; key = stack.pop()) {
+    visited.push(key)
 
-  for (let i = 0; i <= len2; i += 1) {
-    const row = dp[0] as number[]
-    row[i] = i
-  }
-
-  for (let i = 1; i <= len1; i += 1) {
-    const ch1 = word1.at(i - 1) as string
-    for (let j = 1; j <= len2; j += 1) {
-      if (ch1 === word2.at(j - 1)) {
-        set(dp, i, j, get(dp, i - 1, j - 1))
-      } else {
-        const memo = Math.min(
-          get(dp, i - 1, j - 1),
-          Math.min(
-            get(dp, i - 1, j),
-            get(dp, i, j - 1)
-          )
-        )
-        set(dp, i, j, memo + 1)
+    for (const prev of graph.get(key) ?? []) {
+      const degree = indegree.at(prev) as number
+      indegree[prev] = degree - 1
+      if (degree === 1) {
+        stack.push(prev)
       }
     }
   }
 
-  return get(dp, len1, len2)
+  return visited.length === graph.size ? visited : []
+}
+
+function sortItems (n: number, m: number, group: number[], beforeItems: number[][]): number[] {
+  let groupID = m
+  const itemGraph = new Map<number, number[]>()
+  for (let i = 0; i < n; i += 1) {
+    itemGraph.set(i, [])
+    if (group[i] === -1) {
+      group[i] = groupID
+      groupID += 1
+    }
+  }
+
+  const itemIndegree = new Array<number>(n).fill(0)
+  const groupGraph = new Map<number, number[]>()
+  const groupIndegree = new Array<number>(groupID).fill(0)
+  for (let i = 0; i < groupID; i += 1) {
+    groupGraph.set(i, [])
+  }
+
+  for (let curr = 0; curr < n; curr += 1) {
+    for (const prev of beforeItems.at(curr) ?? []) {
+      itemGraph.get(prev)?.push(curr)
+      itemIndegree[curr] += 1
+      if (group.at(curr) !== group.at(prev)) {
+        groupGraph.get(group[prev] as number)?.push(group.at(curr) as number)
+        groupIndegree[group.at(curr) as number] += 1
+      }
+    }
+  }
+
+  const itemOrder = topologicalSort(itemGraph, itemIndegree)
+  const groupOrder = topologicalSort(groupGraph, groupIndegree)
+
+  if (itemOrder.length < 1) {
+    return []
+  } else if (groupOrder.length < 1) {
+    return []
+  }
+
+  const orderedGroups = new Map<number, number[]>()
+  for (const item of itemOrder) {
+    const key = group[item] as number
+    const ordered = orderedGroups.get(key) ?? []
+    ordered.push(item)
+    orderedGroups.set(key, ordered)
+  }
+
+  const result: number[] = []
+  for (const groupIndex of groupOrder) {
+    const ordered = orderedGroups.get(groupIndex) ?? []
+    result.push(...ordered)
+  }
+
+  return result
 }
 
 function main (): void {
-  const inputs: Array<[string, string]> = [
-    ['horse', 'ros'],
-    ['intention', 'execution']
+  const inputs: Array<[number, number, number[], number[][]]> = [
+    [8, 2, [-1, -1, 1, 0, 0, 1, 0, -1], [[], [6], [5], [6], [3, 6], [], [], []]],
+    [8, 2, [-1, -1, 1, 0, 0, 1, 0, -1], [[], [6], [5], [6], [3], [], [4], []]]
   ]
 
-  for (const [word1, word2] of inputs) {
-    const result = minDistance(word1, word2)
+  for (const [n, m, group, beforeItems] of inputs) {
+    const result = sortItems(n, m, group, beforeItems)
     console.log(result)
   }
 }
