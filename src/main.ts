@@ -1,65 +1,45 @@
 import '@total-typescript/ts-reset'
 
-function get (m: number[][], r: number, c: number): number {
-  return m.at(r)?.at(c) as number
+function div (a: number, b: number): number {
+  return Number(BigInt(a) / BigInt(b))
 }
 
-function set (m: number[][], r: number, c: number, v: number): void {
-  const row = m.at(r) as number[]
-  row[c] = v
+function mod (a: number, b: number): number {
+  return Number(BigInt(a) % BigInt(b))
 }
 
-/**
- Do not return anything, modify matrix in-place instead.
- */
-function setZeroes (matrix: number[][]): void {
+function searchMatrix (matrix: number[][], target: number): boolean {
   const rowCount = matrix.length
   const colCount = matrix.at(0)?.length as number
-  let fr = false
-  let fc = false
-  for (let r = 0; r < rowCount; r += 1) {
-    for (let c = 0; c < colCount; c += 1) {
-      if (get(matrix, r, c) === 0) {
-        fr ||= r === 0
-        fc ||= c === 0
-        set(matrix, 0, c, 0)
-        set(matrix, r, 0, 0)
-      }
+  let left = 0
+  let right = (rowCount * colCount) - 1
+
+  while (left <= right) {
+    const mid = div(left + right, 2)
+    const row = div(mid, colCount)
+    const col = mod(mid, colCount)
+    const guess = matrix.at(row)?.at(col) as number
+    if (guess < target) {
+      left = mid + 1
+    } else if (guess > target) {
+      right = mid - 1
+    } else {
+      return true
     }
   }
 
-  for (let r = 1; r < rowCount; r += 1) {
-    for (let c = 1; c < colCount; c += 1) {
-      if (get(matrix, r, 0) === 0) {
-        set(matrix, r, c, 0)
-      } else if (get(matrix, 0, c) === 0) {
-        set(matrix, r, c, 0)
-      }
-    }
-  }
-
-  if (fr) {
-    for (let c = 0; c < colCount; c += 1) {
-      set(matrix, 0, c, 0)
-    }
-  }
-
-  if (fc) {
-    for (let r = 0; r < rowCount; r += 1) {
-      set(matrix, r, 0, 0)
-    }
-  }
+  return false
 }
 
 function main (): void {
-  const inputs: number[][][] = [
-    [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
-    [[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]
+  const inputs: Array<[number[][], number]> = [
+    [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 3],
+    [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13]
   ]
 
-  for (const matrix of inputs) {
-    setZeroes(matrix)
-    console.log(matrix)
+  for (const [matrix, target] of inputs) {
+    const result = searchMatrix(matrix, target)
+    console.log(result)
   }
 }
 main()
