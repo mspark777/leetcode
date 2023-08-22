@@ -1,37 +1,31 @@
 import '@total-typescript/ts-reset'
 
-function div (a: number, b: number): number {
-  return Number(BigInt(a) / BigInt(b))
-}
+function convertToTitle (columnNumber: number): string {
+  let n = BigInt(columnNumber)
+  const result: string[] = []
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+  const size = BigInt(chars.length)
 
-function mod (a: number, b: number): number {
-  return Number(BigInt(a) % BigInt(b))
-}
+  while (n > 0n) {
+    n -= 1n
 
-function repeatedSubstringPattern (s: string): boolean {
-  for (let i = 1; i <= div(s.length, 2); i += 1) {
-    if (mod(s.length, i) !== 0) {
-      continue
-    }
+    const i = Number(n % size)
+    const ch = chars[i] as string
+    result.push(ch)
 
-    const pattern = s.substring(0, i).repeat(div(s.length, i))
-    if (pattern === s) {
-      return true
-    }
+    n /= size
   }
 
-  return false
+  return result.reverse().join('')
 }
 
 function main (): void {
-  const inputs: string[] = [
-    'abab',
-    'aba',
-    'abcabcabcabc'
+  const inputs: number[] = [
+    1, 28, 701
   ]
 
-  for (const s of inputs) {
-    const result = repeatedSubstringPattern(s)
+  for (const columnNumber of inputs) {
+    const result = convertToTitle(columnNumber)
     console.log(result)
   }
 }
