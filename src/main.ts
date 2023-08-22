@@ -1,31 +1,27 @@
 import '@total-typescript/ts-reset'
 
-function convertToTitle (columnNumber: number): string {
-  let n = BigInt(columnNumber)
-  const result: string[] = []
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-  const size = BigInt(chars.length)
-
-  while (n > 0n) {
-    n -= 1n
-
-    const i = Number(n % size)
-    const ch = chars[i] as string
-    result.push(ch)
-
-    n /= size
+function ncr (n: bigint, r: bigint): bigint {
+  let result = 1n
+  for (let i = 0n; i < r; i += 1n) {
+    result *= n - i
+    result /= i + 1n
   }
 
-  return result.reverse().join('')
+  return result
+}
+
+function numTrees (n: number): number {
+  const num = BigInt(n)
+  return Number(ncr(2n * num, num) / (num + 1n))
 }
 
 function main (): void {
   const inputs: number[] = [
-    1, 28, 701
+    3, 1, 4
   ]
 
-  for (const columnNumber of inputs) {
-    const result = convertToTitle(columnNumber)
+  for (const n of inputs) {
+    const result = numTrees(n)
     console.log(result)
   }
 }
