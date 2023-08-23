@@ -1,40 +1,43 @@
 from __future__ import annotations
-from typing import List
-from collections import defaultdict
+from queue import PriorityQueue
+from collections import Counter
 
 
 class Solution:
-    def maximalNetworkRank(self, n: int, roads: List[List[int]]) -> int:
-        adjacents: dict[int, set[int]] = defaultdict(set)
-        for [a, b] in roads:
-            adjacents[a].add(b)
-            adjacents[b].add(a)
+    def reorganizeString(self, s: str) -> str:
+        queue: PriorityQueue[tuple[int, str]] = PriorityQueue()
 
-        result = 0
-        for node0 in range(n):
-            set0 = adjacents[node0]
-            rank0 = len(set0)
-            for node1 in range(node0 + 1, n):
-                rank1 = len(adjacents[node1])
-                rank = rank0 + rank1
-                if node1 in set0:
-                    rank -= 1
+        for ch, count in Counter(s).items():
+            queue.put((-count, ch))
 
-                result = max(result, rank)
+        result: list[str] = []
+        while not queue.empty():
+            count0, ch0 = queue.get()
+            if not result or (ch0 != result[-1]):
+                result.append(ch0)
+                count0 += 1
+                if count0 < 0:
+                    queue.put((count0, ch0))
+            else:
+                if queue.empty():
+                    return ""
 
-        return result
+                count1, ch1 = queue.get()
+                result.append(ch1)
+                count1 += 1
+                if count1 < 0:
+                    queue.put((count1, ch1))
+                queue.put((count0, ch0))
+
+        return "".join(result)
 
 
 def main():
-    inputs = [
-        (4, [[0, 1], [0, 3], [1, 2], [1, 3]]),
-        (5, [[0, 1], [0, 3], [1, 2], [1, 3], [2, 3], [2, 4]]),
-        (8, [[0, 1], [1, 2], [2, 3], [2, 4], [5, 6], [5, 7]]),
-    ]
+    inputs = ["aab", "aaab"]
 
-    for n, roads in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.maximalNetworkRank(n, roads)
+        result = solution.reorganizeString(s)
         print(result)
 
 
