@@ -1,43 +1,89 @@
 from __future__ import annotations
-from queue import PriorityQueue
-from collections import Counter
+from typing import List
 
 
 class Solution:
-    def reorganizeString(self, s: str) -> str:
-        queue: PriorityQueue[tuple[int, str]] = PriorityQueue()
-
-        for ch, count in Counter(s).items():
-            queue.put((-count, ch))
-
+    def fullJustify(self, words: List[str], max_width: int) -> List[str]:
         result: list[str] = []
-        while not queue.empty():
-            count0, ch0 = queue.get()
-            if not result or (ch0 != result[-1]):
-                result.append(ch0)
-                count0 += 1
-                if count0 < 0:
-                    queue.put((count0, ch0))
-            else:
-                if queue.empty():
-                    return ""
+        i = 0
+        while i < len(words):
+            line = self.get_words(i, words, max_width)
+            i += len(line)
+            result.append(self.create_line(line, i, words, max_width))
 
-                count1, ch1 = queue.get()
-                result.append(ch1)
-                count1 += 1
-                if count1 < 0:
-                    queue.put((count1, ch1))
-                queue.put((count0, ch0))
+        return result
 
-        return "".join(result)
+    def get_words(self, i: int, words: list[str], max_width: int) -> list[str]:
+        line: list[str] = []
+        line_len = 0
+
+        while i < len(words):
+            word = words[i]
+            width = line_len + len(word)
+            if width > max_width:
+                break
+
+            line.append(word)
+            line_len += len(word) + 1
+            i += 1
+
+        return line
+
+    def create_line(
+        self, line: list[str], i: int, words: list[str], max_width: int
+    ) -> str:
+        base_length = -1
+        for word in line:
+            base_length += len(word) + 1
+
+        extra_spaces = max_width - base_length
+        if (len(line) == 1) or (len(words) == i):
+            return " ".join(line) + (" " * extra_spaces)
+
+        word_count = len(line) - 1
+        spaces_per_word = extra_spaces // word_count
+        needs_extra_space = extra_spaces % word_count
+        for j in range(needs_extra_space):
+            line[j] += " "
+
+        for j in range(word_count):
+            line[j] += " " * spaces_per_word
+
+        return " ".join(line)
 
 
 def main():
-    inputs = ["aab", "aaab"]
+    inputs = [
+        (["This", "is", "an", "example", "of", "text", "justification."], 16),
+        (["What", "must", "be", "acknowledgment", "shall", "be"], 16),
+        (
+            [
+                "Science",
+                "is",
+                "what",
+                "we",
+                "understand",
+                "well",
+                "enough",
+                "to",
+                "explain",
+                "to",
+                "a",
+                "computer.",
+                "Art",
+                "is",
+                "everything",
+                "else",
+                "we",
+                "do",
+            ],
+            20,
+        ),
+    ]
 
-    for s in inputs:
+    for words, max_width in inputs:
         solution = Solution()
-        result = solution.reorganizeString(s)
+        result = solution.fullJustify(words, max_width)
         print(result)
 
 
