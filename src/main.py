@@ -3,28 +3,35 @@ from typing import List
 
 
 class Solution:
-    def minimumReplacement(self, nums: List[int]) -> int:
-        result = 0
+    def minTaps(self, n: int, ranges: List[int]) -> int:
+        max_reach = [0 for _ in range(n + 1)]
+        for i, r in enumerate(ranges):
+            start = max(0, i - r)
+            end = min(n, i + r)
+            max_reach[start] = max(max_reach[start], end)
 
-        for i in range(len(nums) - 2, -1, -1):
-            n0 = nums[i]
-            n1 = nums[i + 1]
-            if n0 <= n1:
-                continue
+        taps = 0
+        curr_end = 0
+        next_end = 0
+        for i in range(n + 1):
+            if i > next_end:
+                return -1
 
-            num_elements = (n0 + n1 - 1) // n1
-            result += num_elements - 1
-            nums[i] = n0 // num_elements
+            if i > curr_end:
+                taps += 1
+                curr_end = next_end
 
-        return result
+            next_end = max(next_end, max_reach[i])
+
+        return taps
 
 
 def main():
-    inputs = [[3, 9, 3], [1, 2, 3, 4, 5]]
+    inputs = [(5, [3, 4, 1, 1, 0, 0]), (3, [0, 0, 0, 0])]
 
-    for nums in inputs:
+    for n, ranges in inputs:
         solution = Solution()
-        result = solution.minimumReplacement(nums)
+        result = solution.minTaps(n, ranges)
         print(result)
 
 
