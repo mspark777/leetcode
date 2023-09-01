@@ -3,21 +3,35 @@ from typing import List
 
 
 class Solution:
-    def countBits(self, n: int) -> List[int]:
-        result = [0 for _ in range(n + 1)]
-        for i in range(1, n + 1):
-            result[i] = result[i >> 1] + (i & 1)
-
-        return result
+    def sortColors(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        RED = 0
+        WHITE = 1
+        low = 0
+        mid = 0
+        high = len(nums) - 1
+        while mid <= high:
+            num = nums[mid]
+            if num == RED:
+                nums[low], nums[mid] = nums[mid], nums[low]
+                low += 1
+                mid += 1
+            elif num == WHITE:
+                mid += 1
+            else:
+                nums[mid], nums[high] = nums[high], nums[mid]
+                high -= 1
 
 
 def main():
-    inputs = [2, 5]
+    inputs = [[2, 0, 2, 1, 1, 0], [2, 0, 1]]
 
-    for n in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.countBits(n)
-        print(result)
+        solution.sortColors(nums)
+        print(nums)
 
 
 if __name__ == "__main__":
