@@ -2,36 +2,54 @@ from __future__ import annotations
 from typing import List
 
 
+class TrieNode:
+    children: dict[str, TrieNode]
+    is_word: bool
+
+    def __init__(self):
+        self.children = {}
+        self.is_word = False
+
+
 class Solution:
-    def sortColors(self, nums: List[int]) -> None:
-        """
-        Do not return anything, modify nums in-place instead.
-        """
-        RED = 0
-        WHITE = 1
-        low = 0
-        mid = 0
-        high = len(nums) - 1
-        while mid <= high:
-            num = nums[mid]
-            if num == RED:
-                nums[low], nums[mid] = nums[mid], nums[low]
-                low += 1
-                mid += 1
-            elif num == WHITE:
-                mid += 1
-            else:
-                nums[mid], nums[high] = nums[high], nums[mid]
-                high -= 1
+    def minExtraChar(self, s: str, dictionary: List[str]) -> int:
+        slen = len(s)
+        root = self.build(dictionary)
+        dp = [0 for _ in range(slen + 1)]
+
+        for start in range(slen - 1, -1, -1):
+            dp[start] = dp[start + 1] + 1
+            node = root
+            for end in range(start, slen):
+                if s[end] not in node.children:
+                    break
+                node = node.children[s[end]]
+                if node.is_word:
+                    dp[start] = min(dp[start], dp[end + 1])
+        return dp[0]
+
+    def build(self, dictionary: list[str]):
+        root = TrieNode()
+        for word in dictionary:
+            node = root
+            for ch in word:
+                if ch not in node.children:
+                    node.children[ch] = TrieNode()
+                node = node.children[ch]
+            node.is_word = True
+        return root
 
 
 def main():
-    inputs = [[2, 0, 2, 1, 1, 0], [2, 0, 1]]
+    inputs = [
+        ("leetscode", ["leet", "code", "leetcode"]),
+        ("sayhelloworld", ["hello", "world"]),
+    ]
 
-    for nums in inputs:
+    for s, dictionary in inputs:
         solution = Solution()
-        solution.sortColors(nums)
-        print(nums)
+        result = solution.minExtraChar(s, dictionary)
+        print(result)
 
 
 if __name__ == "__main__":
