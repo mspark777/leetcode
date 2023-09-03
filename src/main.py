@@ -1,54 +1,23 @@
 from __future__ import annotations
-from typing import List
-
-
-class TrieNode:
-    children: dict[str, TrieNode]
-    is_word: bool
-
-    def __init__(self):
-        self.children = {}
-        self.is_word = False
 
 
 class Solution:
-    def minExtraChar(self, s: str, dictionary: List[str]) -> int:
-        slen = len(s)
-        root = self.build(dictionary)
-        dp = [0 for _ in range(slen + 1)]
+    def uniquePaths(self, m: int, n: int) -> int:
+        dp = [[1 if (r == 0) or (c == 0) else 0 for c in range(n)] for r in range(m)]
 
-        for start in range(slen - 1, -1, -1):
-            dp[start] = dp[start + 1] + 1
-            node = root
-            for end in range(start, slen):
-                if s[end] not in node.children:
-                    break
-                node = node.children[s[end]]
-                if node.is_word:
-                    dp[start] = min(dp[start], dp[end + 1])
-        return dp[0]
+        for r in range(1, m):
+            for c in range(1, n):
+                dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
 
-    def build(self, dictionary: list[str]):
-        root = TrieNode()
-        for word in dictionary:
-            node = root
-            for ch in word:
-                if ch not in node.children:
-                    node.children[ch] = TrieNode()
-                node = node.children[ch]
-            node.is_word = True
-        return root
+        return dp[-1][-1]
 
 
 def main():
-    inputs = [
-        ("leetscode", ["leet", "code", "leetcode"]),
-        ("sayhelloworld", ["hello", "world"]),
-    ]
+    inputs = [(3, 7), (3, 2)]
 
-    for s, dictionary in inputs:
+    for m, n in inputs:
         solution = Solution()
-        result = solution.minExtraChar(s, dictionary)
+        result = solution.uniquePaths(m, n)
         print(result)
 
 
