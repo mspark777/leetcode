@@ -1,23 +1,55 @@
 from __future__ import annotations
+from typing import Optional
+
+
+class ListNode:
+    val: int
+    next: Optional[ListNode]
+
+    def __init__(self, x: int):
+        self.val = x
+        self.next = None
 
 
 class Solution:
-    def uniquePaths(self, m: int, n: int) -> int:
-        dp = [[1 if (r == 0) or (c == 0) else 0 for c in range(n)] for r in range(m)]
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        fast = head
+        slow = head
 
-        for r in range(1, m):
-            for c in range(1, n):
-                dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
+        while (fast is not None) and (fast.next is not None) and (slow is not None):
+            fast = fast.next.next
+            slow = slow.next
 
-        return dp[-1][-1]
+            if fast is slow:
+                return True
+
+        return False
+
+
+def arrtolist(nums: list[int], pos: int) -> Optional[ListNode]:
+    dummy = ListNode(0)
+    tail = dummy
+    cycle: Optional[ListNode] = None
+    for i, num in enumerate(nums):
+        node = ListNode(num)
+        tail.next = node
+        tail = node
+        if pos == i:
+            cycle = node
+
+    if cycle is not None:
+        tail.next = cycle
+
+    return dummy.next
 
 
 def main():
-    inputs = [(3, 7), (3, 2)]
+    inputs = [([3, 2, 0, -4], 1), ([1, 2], 0), ([1], -1)]
 
-    for m, n in inputs:
+    for nums, pos in inputs:
+        head = arrtolist(nums, pos)
         solution = Solution()
-        result = solution.uniquePaths(m, n)
+        result = solution.hasCycle(head)
         print(result)
 
 
