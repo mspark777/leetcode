@@ -1,55 +1,29 @@
 from __future__ import annotations
-from typing import Optional
-
-
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, x: int):
-        self.val = x
-        self.next = None
+from typing import List
 
 
 class Solution:
-    def hasCycle(self, head: Optional[ListNode]) -> bool:
-        fast = head
-        slow = head
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        result: list[list[int]] = []
+        self.solve(0, nums, [], result)
 
-        while (fast is not None) and (fast.next is not None) and (slow is not None):
-            fast = fast.next.next
-            slow = slow.next
+        return result
 
-            if fast is slow:
-                return True
+    def solve(self, i: int, nums: list[int], temp: list[int], result: list[list[int]]):
+        result.append(temp.copy())
 
-        return False
-
-
-def arrtolist(nums: list[int], pos: int) -> Optional[ListNode]:
-    dummy = ListNode(0)
-    tail = dummy
-    cycle: Optional[ListNode] = None
-    for i, num in enumerate(nums):
-        node = ListNode(num)
-        tail.next = node
-        tail = node
-        if pos == i:
-            cycle = node
-
-    if cycle is not None:
-        tail.next = cycle
-
-    return dummy.next
+        for j in range(i, len(nums)):
+            temp.append(nums[j])
+            self.solve(j + 1, nums, temp, result)
+            temp.pop()
 
 
 def main():
-    inputs = [([3, 2, 0, -4], 1), ([1, 2], 0), ([1], -1)]
+    inputs = [[1, 2, 3], [0]]
 
-    for nums, pos in inputs:
-        head = arrtolist(nums, pos)
+    for nums in inputs:
         solution = Solution()
-        result = solution.hasCycle(head)
+        result = solution.subsets(nums)
         print(result)
 
 
