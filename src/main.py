@@ -1,63 +1,25 @@
 from __future__ import annotations
-from typing import Optional
-from copy import deepcopy
-
-
-class Node:
-    val: int
-    next: Optional[Node]
-    random: Optional[Node]
-
-    def __init__(
-        self, x: int, next: Optional[Node] = None, random: Optional[Node] = None
-    ):
-        self.val = int(x)
-        self.next = next
-        self.random = random
+from typing import List
 
 
 class Solution:
-    def copyRandomList(self, head: Optional[Node]) -> Optional[Node]:
-        return deepcopy(head)
+    def removeDuplicates(self, nums: List[int]) -> int:
+        j = 1
+        for i in range(2, len(nums)):
+            if nums[i] != nums[j - 1]:
+                j += 1
+                nums[j] = nums[i]
 
-
-def arrtolist(pairs: list[tuple[int, Optional[int]]]) -> Optional[Node]:
-    nodes: dict[int, Node] = {}
-
-    dummy = Node(0)
-    tail = dummy
-    for i, (val, _) in enumerate(pairs):
-        next = Node(val)
-        tail.next = next
-        tail = next
-        nodes[i] = next
-
-    for i, (_, r) in enumerate(pairs):
-        if r is None:
-            continue
-        node = nodes[i]
-        node.random = nodes[r]
-
-    return dummy.next
-
-
-def listtoarr(node: Optional[Node]) -> list[int]:
-    pairs: list[int] = []
-    while node is not None:
-        pairs.append(node.val)
-        node = node.next
-
-    return pairs
+        return j + 1
 
 
 def main():
-    inputs = [[(7, None), (13, 0), (11, 4), (10, 2), (1, 0)], [(1, 1), (2, 1)]]
+    inputs = [[1, 1, 1, 2, 2, 3], [0, 0, 1, 1, 1, 1, 2, 3, 3]]
 
-    for pairs in inputs:
-        head = arrtolist(pairs)
+    for nums in inputs:
         solution = Solution()
-        result = solution.copyRandomList(head)
-        print(listtoarr(result))
+        result = solution.removeDuplicates(nums)
+        print(result)
 
 
 if __name__ == "__main__":
