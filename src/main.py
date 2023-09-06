@@ -1,74 +1,29 @@
 from __future__ import annotations
-from typing import Optional, List
-
-
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
-        self.val = val
-        self.next = next
+from typing import List
 
 
 class Solution:
-    def splitListToParts(
-        self, head: Optional[ListNode], k: int
-    ) -> List[Optional[ListNode]]:
-        cur = head
-        node_count = 0
-        while cur is not None:
-            cur = cur.next
-            node_count += 1
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        stack: list[int] = []
+        result = 0
 
-        width, rem = divmod(node_count, k)
-
-        cur = head
-        result: list[Optional[ListNode]] = []
-        for i in range(k):
-            root = cur
-            for _ in range(width + (0 if i < rem else -1)):
-                if cur is not None:
-                    cur = cur.next
-
-            if cur is not None:
-                prev = cur
-                cur = cur.next
-                prev.next = None
-
-            result.append(root)
+        for i, h in enumerate(heights + [0]):
+            while stack and (heights[stack[-1]] >= h):
+                idx = stack.pop()
+                w = i if not stack else i - stack[-1] - 1
+                result = max(result, heights[idx] * w)
+            stack.append(i)
 
         return result
 
 
-def arrtolist(nums: list[int]) -> Optional[ListNode]:
-    dummy = ListNode()
-    tail = dummy
-    for num in nums:
-        next = ListNode(num)
-        tail.next = next
-        tail = next
-
-    return dummy.next
-
-
-def listtoarr(node: Optional[ListNode]) -> list[int]:
-    nums: list[int] = []
-
-    while node is not None:
-        nums.append(node.val)
-        node = node.next
-
-    return nums
-
-
 def main():
-    inputs = [([1, 2, 3], 5), ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3)]
+    inputs = [[2, 1, 5, 6, 2, 3], [2, 4]]
 
-    for nums, k in inputs:
+    for heights in inputs:
         solution = Solution()
-        result = solution.splitListToParts(arrtolist(nums), k)
-        print([listtoarr(n) for n in result])
+        result = solution.largestRectangleArea(heights)
+        print(result)
 
 
 if __name__ == "__main__":
