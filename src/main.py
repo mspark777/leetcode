@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, List
 
 
 class ListNode:
@@ -12,23 +12,33 @@ class ListNode:
 
 
 class Solution:
-    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        dummy = ListNode(0, head)
-        node = dummy
+    def splitListToParts(
+        self, head: Optional[ListNode], k: int
+    ) -> List[Optional[ListNode]]:
+        cur = head
+        node_count = 0
+        while cur is not None:
+            cur = cur.next
+            node_count += 1
 
-        while (node.next is not None) and (node.next.next is not None):
-            if node.next.val == node.next.next.val:
-                while (
-                    (node.next is not None)
-                    and (node.next.next is not None)
-                    and (node.next.val == node.next.next.val)
-                ):
-                    node.next = node.next.next
-                node.next = node.next.next
-            else:
-                node = node.next
+        width, rem = divmod(node_count, k)
 
-        return dummy.next
+        cur = head
+        result: list[Optional[ListNode]] = []
+        for i in range(k):
+            root = cur
+            for _ in range(width + (0 if i < rem else -1)):
+                if cur is not None:
+                    cur = cur.next
+
+            if cur is not None:
+                prev = cur
+                cur = cur.next
+                prev.next = None
+
+            result.append(root)
+
+        return result
 
 
 def arrtolist(nums: list[int]) -> Optional[ListNode]:
@@ -53,12 +63,12 @@ def listtoarr(node: Optional[ListNode]) -> list[int]:
 
 
 def main():
-    inputs = [[1, 2, 3, 3, 4, 4, 5], [1, 1, 1, 2, 3]]
+    inputs = [([1, 2, 3], 5), ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3)]
 
-    for nums in inputs:
+    for nums, k in inputs:
         solution = Solution()
-        result = solution.deleteDuplicates(arrtolist(nums))
-        print(listtoarr(result))
+        result = solution.splitListToParts(arrtolist(nums), k)
+        print([listtoarr(n) for n in result])
 
 
 if __name__ == "__main__":
