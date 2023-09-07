@@ -1,78 +1,48 @@
 from __future__ import annotations
-from typing import Optional
-
-
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
-        self.val = val
-        self.next = next
+from typing import List
 
 
 class Solution:
-    def reverseBetween(
-        self, head: Optional[ListNode], left: int, right: int
-    ) -> Optional[ListNode]:
-        if head is None:
-            return None
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        col_count = len(matrix[0])
+        heights = [0 for _ in range(col_count + 1)]
+        result = 0
 
-        cur = head
-        prev: Optional[ListNode] = None
-        while (left > 1) and (cur is not None):
-            prev = cur
-            cur = cur.next
-            left -= 1
-            right -= 1
+        for row in matrix:
+            for col in range(col_count):
+                if row[col] == "1":
+                    heights[col] += 1
+                else:
+                    heights[col] = 0
 
-        tail = cur
-        con = prev
-        while (right > 0) and (cur is not None):
-            third = cur.next
-            cur.next = prev
-            prev = cur
-            cur = third
-            right -= 1
+            stack: list[int] = [-1]
+            for col in range(col_count + 1):
+                while heights[col] < heights[stack[-1]]:
+                    h = heights[stack.pop()]
+                    w = col - stack[-1] - 1
+                    result = max(result, w * h)
+                stack.append(col)
 
-        if con is not None:
-            con.next = prev
-        else:
-            head = prev
-
-        if tail is not None:
-            tail.next = cur
-
-        return head
-
-
-def arrtolist(nums: list[int]) -> Optional[ListNode]:
-    dummy = ListNode()
-    tail = dummy
-    for num in nums:
-        next = ListNode(num)
-        tail.next = next
-        tail = next
-
-    return dummy.next
-
-
-def listtoarr(node: Optional[ListNode]) -> list[int]:
-    nums: list[int] = []
-    while node is not None:
-        nums.append(node.val)
-        node = node.next
-
-    return nums
+        return result
 
 
 def main():
-    inputs = [([1, 2, 3, 4, 5], 2, 4), ([5], 1, 1)]
+    inputs = [
+        [
+            ["1", "0", "1", "0", "0"],
+            ["1", "0", "1", "1", "1"],
+            ["1", "1", "1", "1", "1"],
+            ["1", "0", "0", "1", "0"],
+        ],
+        [["0"]],
+        [["1"]],
+        [["0", "1"], ["1", "0"]],
+    ]
 
-    for nums, left, right in inputs:
+    for matrix in inputs:
         solution = Solution()
-        result = solution.reverseBetween(arrtolist(nums), left, right)
-        print(listtoarr(result))
+        result = solution.maximalRectangle(matrix)
+        print(result)
 
 
 if __name__ == "__main__":
