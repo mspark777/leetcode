@@ -3,45 +3,28 @@ from typing import List
 
 
 class Solution:
-    def maximalRectangle(self, matrix: List[List[str]]) -> int:
-        col_count = len(matrix[0])
-        heights = [0 for _ in range(col_count + 1)]
-        result = 0
+    def generate(self, num_rows: int) -> List[List[int]]:
+        result: list[list[int]] = []
 
-        for row in matrix:
-            for col in range(col_count):
-                if row[col] == "1":
-                    heights[col] += 1
-                else:
-                    heights[col] = 0
+        for num_cols in range(num_rows):
+            row = [0 for _ in range(num_cols + 1)]
+            row[0] = 1
+            row[-1] = 1
+            prev = num_cols - 1
+            for c in range(1, num_cols):
+                row[c] = result[prev][c - 1] + result[prev][c]
 
-            stack: list[int] = [-1]
-            for col in range(col_count + 1):
-                while heights[col] < heights[stack[-1]]:
-                    h = heights[stack.pop()]
-                    w = col - stack[-1] - 1
-                    result = max(result, w * h)
-                stack.append(col)
+            result.append(row)
 
         return result
 
 
 def main():
-    inputs = [
-        [
-            ["1", "0", "1", "0", "0"],
-            ["1", "0", "1", "1", "1"],
-            ["1", "1", "1", "1", "1"],
-            ["1", "0", "0", "1", "0"],
-        ],
-        [["0"]],
-        [["1"]],
-        [["0", "1"], ["1", "0"]],
-    ]
+    inputs = [4, 1]
 
-    for matrix in inputs:
+    for numRows in inputs:
         solution = Solution()
-        result = solution.maximalRectangle(matrix)
+        result = solution.generate(numRows)
         print(result)
 
 
