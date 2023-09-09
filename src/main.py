@@ -3,28 +3,23 @@ from typing import List
 
 
 class Solution:
-    def generate(self, num_rows: int) -> List[List[int]]:
-        result: list[list[int]] = []
+    def combinationSum4(self, nums: List[int], target: int) -> int:
+        result = [0 for _ in range(target + 1)]
+        result[0] = 1
+        for i in range(target + 1):
+            for num in nums:
+                if i >= num:
+                    result[i] += result[i - num]
 
-        for num_cols in range(num_rows):
-            row = [0 for _ in range(num_cols + 1)]
-            row[0] = 1
-            row[-1] = 1
-            prev = num_cols - 1
-            for c in range(1, num_cols):
-                row[c] = result[prev][c - 1] + result[prev][c]
-
-            result.append(row)
-
-        return result
+        return result[-1]
 
 
 def main():
-    inputs = [4, 1]
+    inputs = [([1, 2, 3], 4), ([9], 3)]
 
-    for numRows in inputs:
+    for nums, target in inputs:
         solution = Solution()
-        result = solution.generate(numRows)
+        result = solution.combinationSum4(nums, target)
         print(result)
 
 
