@@ -1,25 +1,22 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def combinationSum4(self, nums: List[int], target: int) -> int:
-        result = [0 for _ in range(target + 1)]
-        result[0] = 1
-        for i in range(target + 1):
-            for num in nums:
-                if i >= num:
-                    result[i] += result[i - num]
+    def countOrders(self, n: int) -> int:
+        result = 1
+        MOD = (10**9) + 7
+        for i in range(2, n + 1):
+            result = (result * (2 * i - 1) * i) % MOD
 
-        return result[-1]
+        return result
 
 
 def main():
-    inputs = [([1, 2, 3], 4), ([9], 3)]
+    inputs = [1, 2, 3]
 
-    for nums, target in inputs:
+    for n in inputs:
         solution = Solution()
-        result = solution.combinationSum4(nums, target)
+        result = solution.countOrders(n)
         print(result)
 
 
