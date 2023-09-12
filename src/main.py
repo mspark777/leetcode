@@ -1,27 +1,32 @@
 from __future__ import annotations
-from collections import Counter
 
 
 class Solution:
-    def minDeletions(self, s: str) -> int:
-        counts = Counter(s)
-        result = 0
-        seen: set[int] = set()
-        for count in counts.values():
-            while count > 0 and count in seen:
-                result += 1
-                count -= 1
-            seen.add(count)
+    def subsetsWithDup(self, nums: list[int]) -> list[list[int]]:
+        result: list[list[int]] = []
+        nums.sort()
+        self.solve(0, nums, [], result)
 
         return result
 
+    def solve(self, i: int, nums: list[int], temp: list[int], result: list[list[int]]):
+        result.append(temp.copy())
+
+        for j in range(i, len(nums)):
+            if (j > i) and (nums[j] == nums[j - 1]):
+                continue
+
+            temp.append(nums[j])
+            self.solve(j + 1, nums, temp, result)
+            temp.pop()
+
 
 def main():
-    inputs = ["aab", "aaabbbcc", "ceabaacb"]
+    inputs = [[1, 2, 2], [0], [4, 4, 4, 1, 4]]
 
-    for s in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.minDeletions(s)
+        result = solution.subsetsWithDup(nums)
         print(result)
 
 
