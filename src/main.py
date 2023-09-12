@@ -1,23 +1,27 @@
 from __future__ import annotations
-from typing import List
+from collections import Counter
 
 
 class Solution:
-    def grayCode(self, n: int) -> List[int]:
-        result: list[int] = []
-        p = 1 << n
-        for i in range(p):
-            result.append(i ^ (i >> 1))
+    def minDeletions(self, s: str) -> int:
+        counts = Counter(s)
+        result = 0
+        seen: set[int] = set()
+        for count in counts.values():
+            while count > 0 and count in seen:
+                result += 1
+                count -= 1
+            seen.add(count)
 
         return result
 
 
 def main():
-    inputs = [2, 1]
+    inputs = ["aab", "aaabbbcc", "ceabaacb"]
 
-    for n in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.grayCode(n)
+        result = solution.minDeletions(s)
         print(result)
 
 
