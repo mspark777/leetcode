@@ -2,31 +2,45 @@ from __future__ import annotations
 
 
 class Solution:
-    def subsetsWithDup(self, nums: list[int]) -> list[list[int]]:
-        result: list[list[int]] = []
-        nums.sort()
-        self.solve(0, nums, [], result)
+    def candy(self, ratings: list[int]) -> int:
+        if not ratings:
+            return 0
+
+        result = 1
+        up = 0
+        down = 0
+        peak = 0
+
+        for i in range(len(ratings) - 1):
+            prev = ratings[i]
+            cur = ratings[i + 1]
+
+            if prev < cur:
+                up += 1
+                down = 0
+                peak = up
+                result += 1 + up
+            elif prev == cur:
+                up = 0
+                down = 0
+                peak = 0
+                result += 1
+            else:
+                up = 0
+                down += 1
+                result += 1 + down
+                if peak >= down:
+                    result -= 1
 
         return result
 
-    def solve(self, i: int, nums: list[int], temp: list[int], result: list[list[int]]):
-        result.append(temp.copy())
-
-        for j in range(i, len(nums)):
-            if (j > i) and (nums[j] == nums[j - 1]):
-                continue
-
-            temp.append(nums[j])
-            self.solve(j + 1, nums, temp, result)
-            temp.pop()
-
 
 def main():
-    inputs = [[1, 2, 2], [0], [4, 4, 4, 1, 4]]
+    inputs = [[1, 0, 2], [1, 2, 2]]
 
-    for nums in inputs:
+    for ratings in inputs:
         solution = Solution()
-        result = solution.subsetsWithDup(nums)
+        result = solution.candy(ratings)
         print(result)
 
 
