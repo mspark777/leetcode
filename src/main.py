@@ -1,46 +1,40 @@
 from __future__ import annotations
+from collections import defaultdict
 
 
 class Solution:
-    def candy(self, ratings: list[int]) -> int:
-        if not ratings:
-            return 0
+    def findItinerary(self, tickets: list[list[str]]) -> list[str]:
+        graph: dict[str, list[str]] = defaultdict(list)
 
-        result = 1
-        up = 0
-        down = 0
-        peak = 0
+        for src, dst in sorted(tickets, reverse=True):
+            graph[src].append(dst)
 
-        for i in range(len(ratings) - 1):
-            prev = ratings[i]
-            cur = ratings[i + 1]
+        stack: list[str] = ["JFK"]
+        itinerary: list[str] = []
 
-            if prev < cur:
-                up += 1
-                down = 0
-                peak = up
-                result += 1 + up
-            elif prev == cur:
-                up = 0
-                down = 0
-                peak = 0
-                result += 1
-            else:
-                up = 0
-                down += 1
-                result += 1 + down
-                if peak >= down:
-                    result -= 1
+        while stack:
+            while graph[stack[-1]]:
+                stack.append(graph[stack[-1]].pop())
+            itinerary.append(stack.pop())
 
-        return result
+        return itinerary[::-1]
 
 
 def main():
-    inputs = [[1, 0, 2], [1, 2, 2]]
+    inputs = [
+        [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]],
+        [
+            ["JFK", "SFO"],
+            ["JFK", "ATL"],
+            ["SFO", "ATL"],
+            ["ATL", "JFK"],
+            ["ATL", "SFO"],
+        ],
+    ]
 
-    for ratings in inputs:
+    for tickets in inputs:
         solution = Solution()
-        result = solution.candy(ratings)
+        result = solution.findItinerary(tickets)
         print(result)
 
 
