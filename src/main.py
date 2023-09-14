@@ -1,40 +1,48 @@
 from __future__ import annotations
-from collections import defaultdict
 
 
 class Solution:
-    def findItinerary(self, tickets: list[list[str]]) -> list[str]:
-        graph: dict[str, list[str]] = defaultdict(list)
+    def restoreIpAddresses(self, s: str) -> list[str]:
+        result: list[str] = []
 
-        for src, dst in sorted(tickets, reverse=True):
-            graph[src].append(dst)
+        for len1 in range(max(1, len(s) - 9), min(4, len(s) - 2)):
+            if not self.is_valid(s, 0, len1):
+                continue
 
-        stack: list[str] = ["JFK"]
-        itinerary: list[str] = []
+            for len2 in range(max(1, len(s) - (len1 + 6)), min(4, len(s) - (len1 + 1))):
+                if not self.is_valid(s, len1, len2):
+                    continue
 
-        while stack:
-            while graph[stack[-1]]:
-                stack.append(graph[stack[-1]].pop())
-            itinerary.append(stack.pop())
+                for len3 in range(
+                    max(1, len(s) - (len1 + len2 + 3)),
+                    min(4, len(s) - (len1 + len2)),
+                ):
+                    if self.is_valid(s, len1 + len2, len3) and self.is_valid(
+                        s, len1 + len2 + len3, len(s) - (len1 + len2 + len3)
+                    ):
+                        result.append(
+                            ".".join(
+                                [
+                                    s[0:len1],
+                                    s[len1 : len1 + len2],
+                                    s[len1 + len2 : len1 + len2 + len3],
+                                    s[len1 + len2 + len3 :],
+                                ]
+                            )
+                        )
 
-        return itinerary[::-1]
+        return result
+
+    def is_valid(self, s: str, b: int, l: int) -> bool:
+        return (l == 1) or (s[b] != "0" and (l < 3 or int(s[b : b + l]) <= 255))
 
 
 def main():
-    inputs = [
-        [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]],
-        [
-            ["JFK", "SFO"],
-            ["JFK", "ATL"],
-            ["SFO", "ATL"],
-            ["ATL", "JFK"],
-            ["ATL", "SFO"],
-        ],
-    ]
+    inputs = ["25525511135", "0000", "101023"]
 
-    for tickets in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.findItinerary(tickets)
+        result = solution.restoreIpAddresses(s)
         print(result)
 
 
