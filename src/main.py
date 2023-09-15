@@ -1,48 +1,46 @@
 from __future__ import annotations
+from queue import PriorityQueue
 
 
 class Solution:
-    def restoreIpAddresses(self, s: str) -> list[str]:
-        result: list[str] = []
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:
+        num_points = len(points)
+        visited = [False for _ in range(num_points)]
+        queue: PriorityQueue[tuple[int, int]] = PriorityQueue()
+        result = 0
+        heap_dict: dict[int, int] = {0: 0}
 
-        for len1 in range(max(1, len(s) - 9), min(4, len(s) - 2)):
-            if not self.is_valid(s, 0, len1):
+        queue.put((0, 0))
+
+        while not queue.empty():
+            w, u = queue.get()
+
+            if visited[u] or (heap_dict.get(u, float("inf")) < w):
                 continue
 
-            for len2 in range(max(1, len(s) - (len1 + 6)), min(4, len(s) - (len1 + 1))):
-                if not self.is_valid(s, len1, len2):
-                    continue
+            visited[u] = True
+            result += w
 
-                for len3 in range(
-                    max(1, len(s) - (len1 + len2 + 3)),
-                    min(4, len(s) - (len1 + len2)),
-                ):
-                    if self.is_valid(s, len1 + len2, len3) and self.is_valid(
-                        s, len1 + len2 + len3, len(s) - (len1 + len2 + len3)
-                    ):
-                        result.append(
-                            ".".join(
-                                [
-                                    s[0:len1],
-                                    s[len1 : len1 + len2],
-                                    s[len1 + len2 : len1 + len2 + len3],
-                                    s[len1 + len2 + len3 :],
-                                ]
-                            )
-                        )
+            for v in range(num_points):
+                if not visited[v]:
+                    new_distance = self.distance(points[u], points[v])
+
+                    if new_distance < heap_dict.get(v, float("inf")):
+                        heap_dict[v] = new_distance
+                        queue.put((new_distance, v))
 
         return result
 
-    def is_valid(self, s: str, b: int, l: int) -> bool:
-        return (l == 1) or (s[b] != "0" and (l < 3 or int(s[b : b + l]) <= 255))
+    def distance(self, p1: list[int], p2: list[int]) -> int:
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
 
 def main():
-    inputs = ["25525511135", "0000", "101023"]
+    inputs = [[[0, 0], [2, 2], [3, 10], [5, 2], [7, 0]], [[3, 12], [-2, 5], [-4, 1]]]
 
-    for s in inputs:
+    for points in inputs:
         solution = Solution()
-        result = solution.restoreIpAddresses(s)
+        result = solution.minCostConnectPoints(points)
         print(result)
 
 
