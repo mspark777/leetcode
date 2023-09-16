@@ -3,44 +3,66 @@ from queue import PriorityQueue
 
 
 class Solution:
-    def minCostConnectPoints(self, points: list[list[int]]) -> int:
-        num_points = len(points)
-        visited = [False for _ in range(num_points)]
-        queue: PriorityQueue[tuple[int, int]] = PriorityQueue()
-        result = 0
-        heap_dict: dict[int, int] = {0: 0}
+    def minimumEffortPath(self, heights: list[list[int]]) -> int:
+        efforts = [[2**31 for _ in row] for row in heights]
+        efforts[0][0] = 0
 
-        queue.put((0, 0))
+        return self.dijkstra(heights, efforts)
+
+    def dijkstra(self, heights: list[list[int]], efforts: list[list[int]]) -> int:
+        row_count = len(heights)
+        col_count = len(heights[0])
+
+        queue = PriorityQueue[tuple[int, tuple[int, int]]]()
+        queue.put((0, (0, 0)))
+
+        dirs: list[tuple[int, int]] = [(0, 1), (1, 0), (-1, 0), (0, -1)]
 
         while not queue.empty():
-            w, u = queue.get()
+            (cost, (r, c)) = queue.get()
 
-            if visited[u] or (heap_dict.get(u, float("inf")) < w):
+            if cost > efforts[r][c]:
                 continue
 
-            visited[u] = True
-            result += w
+            if ((r + 1) == row_count) and ((c + 1) == col_count):
+                return cost
 
-            for v in range(num_points):
-                if not visited[v]:
-                    new_distance = self.distance(points[u], points[v])
+            for dr, dc in dirs:
+                new_r = r + dr
+                new_c = c + dc
 
-                    if new_distance < heap_dict.get(v, float("inf")):
-                        heap_dict[v] = new_distance
-                        queue.put((new_distance, v))
+                if (new_r < 0) or (new_c < 0):
+                    continue
+                elif (new_r >= row_count) or (new_c >= col_count):
+                    continue
 
-        return result
+                new_effort = max(
+                    efforts[r][c], abs(heights[r][c] - heights[new_r][new_c])
+                )
 
-    def distance(self, p1: list[int], p2: list[int]) -> int:
-        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+                if new_effort < efforts[new_r][new_c]:
+                    efforts[new_r][new_c] = new_effort
+                    queue.put((new_effort, (new_r, new_c)))
+
+        return efforts[-1][-1]
 
 
 def main():
-    inputs = [[[0, 0], [2, 2], [3, 10], [5, 2], [7, 0]], [[3, 12], [-2, 5], [-4, 1]]]
+    inputs = [
+        [[1, 2, 2], [3, 8, 2], [5, 3, 5]],
+        [[1, 2, 3], [3, 8, 4], [5, 3, 5]],
+        [
+            [1, 2, 1, 1, 1],
+            [1, 2, 1, 2, 1],
+            [1, 2, 1, 2, 1],
+            [1, 2, 1, 2, 1],
+            [1, 1, 1, 2, 1],
+        ],
+    ]
 
-    for points in inputs:
+    for heights in inputs:
         solution = Solution()
-        result = solution.minCostConnectPoints(points)
+        result = solution.minimumEffortPath(heights)
         print(result)
 
 
