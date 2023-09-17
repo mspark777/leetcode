@@ -1,52 +1,69 @@
 from __future__ import annotations
+from typing import Optional
 from collections import deque
 
 
-class Node:
-    node: int
-    mask: int
-    cost: int
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
 
-    def __init__(self, node: int, mask: int, cost: int):
-        self.node = node
-        self.mask = mask
-        self.cost = cost
+    def __init__(
+        self,
+        val: int = 0,
+        left: Optional[TreeNode] = None,
+        right: Optional[TreeNode] = None,
+    ):
+        self.val = val
+        self.left = left
+        self.right = right
 
 
 class Solution:
-    def shortestPathLength(self, graph: list[list[int]]) -> int:
-        node_count = len(graph)
-        visited = set[tuple[int, int]]()
-        all = (1 << node_count) - 1
-        queue = deque[Node]()
+    def zigzagLevelOrder(self, root: Optional[TreeNode]) -> list[list[int]]:
+        if root is None:
+            return []
 
-        for i in range(node_count):
-            mask = 1 << i
-            queue.append(Node(i, mask, 1))
-            visited.add((i, mask))
+        result: list[list[int]] = []
+        node_queue = deque[tuple[TreeNode, int]]([(root, 0)])
+        prev_level: Optional[int] = None
+        level_nodes = deque[int]()
 
-        while queue:
-            curr = queue.popleft()
-            if curr.mask == all:
-                return curr.cost - 1
+        while node_queue:
+            node, level = node_queue.popleft()
+            if prev_level is not None:
+                if prev_level != level:
+                    result.append(list(level_nodes))
+                    level_nodes = deque()
 
-            for adj in graph[curr.node]:
-                visited_mask = curr.mask | (1 << adj)
-                this_node = Node(adj, visited_mask, curr.cost + 1)
+            if (level & 1) == 0:
+                level_nodes.append(node.val)
+            else:
+                level_nodes.appendleft(node.val)
+            prev_level = level
 
-                if (adj, visited_mask) not in visited:
-                    visited.add((adj, visited_mask))
-                    queue.append(this_node)
+            if node.left is not None:
+                node_queue.append((node.left, level + 1))
 
-        return -1
+            if node.right is not None:
+                node_queue.append((node.right, level + 1))
+
+        if level_nodes:
+            result.append(list(level_nodes))
+
+        return result
 
 
 def main():
-    inputs = [[[1, 2, 3], [0], [0], [0]], [[1], [0, 2, 4], [1, 3, 4], [2], [1, 2]]]
+    inputs = [
+        TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7))),
+        TreeNode(1),
+        None,
+    ]
 
-    for graph in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.shortestPathLength(graph)
+        result = solution.zigzagLevelOrder(root)
         print(result)
 
 
