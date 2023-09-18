@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Optional
-from collections import deque
 
 
 class TreeNode:
@@ -20,50 +19,45 @@ class TreeNode:
 
 
 class Solution:
-    def zigzagLevelOrder(self, root: Optional[TreeNode]) -> list[list[int]]:
-        if root is None:
-            return []
+    def buildTree(self, inorder: list[int], postorder: list[int]) -> Optional[TreeNode]:
+        return self.build(
+            inorder, postorder, 0, len(inorder) - 1, 0, len(postorder) - 1
+        )
 
-        result: list[list[int]] = []
-        node_queue = deque[tuple[TreeNode, int]]([(root, 0)])
-        prev_level: Optional[int] = None
-        level_nodes = deque[int]()
+    def build(
+        self,
+        inorder: list[int],
+        postorder: list[int],
+        inLeft: int,
+        inRight: int,
+        postLeft: int,
+        postRight: int,
+    ) -> Optional[TreeNode]:
+        if (inLeft > inRight) or (postLeft > postRight):
+            return None
 
-        while node_queue:
-            node, level = node_queue.popleft()
-            if prev_level is not None:
-                if prev_level != level:
-                    result.append(list(level_nodes))
-                    level_nodes = deque()
+        val = postorder[postRight]
+        node = TreeNode(val)
+        idx = inorder.index(val)
 
-            if (level & 1) == 0:
-                level_nodes.append(node.val)
-            else:
-                level_nodes.appendleft(node.val)
-            prev_level = level
+        leftSize = idx - inLeft
+        rightSize = inRight - idx
+        node.left = self.build(
+            inorder, postorder, inLeft, idx - 1, postLeft, postLeft + leftSize - 1
+        )
+        node.right = self.build(
+            inorder, postorder, idx + 1, inRight, postRight - rightSize, postRight - 1
+        )
 
-            if node.left is not None:
-                node_queue.append((node.left, level + 1))
-
-            if node.right is not None:
-                node_queue.append((node.right, level + 1))
-
-        if level_nodes:
-            result.append(list(level_nodes))
-
-        return result
+        return node
 
 
 def main():
-    inputs = [
-        TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7))),
-        TreeNode(1),
-        None,
-    ]
+    inputs = [([9, 3, 15, 20, 7], [9, 15, 7, 20, 3]), ([-1], [-1])]
 
-    for root in inputs:
+    for inorder, postorder in inputs:
         solution = Solution()
-        result = solution.zigzagLevelOrder(root)
+        result = solution.buildTree(inorder, postorder)
         print(result)
 
 
