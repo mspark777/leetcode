@@ -1,31 +1,59 @@
 from __future__ import annotations
+from typing import Optional, List
+
+
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+
+    def __init__(
+        self,
+        val: int = 0,
+        left: Optional[TreeNode] = None,
+        right: Optional[TreeNode] = None,
+    ):
+        self.val = val
+        self.left = left
+        self.right = right
 
 
 class Solution:
-    def findDuplicate(self, nums: list[int]) -> int:
-        slow = nums[0]
-        fast = nums[0]
+    def levelOrderBottom(self, root: Optional[TreeNode]) -> List[List[int]]:
+        result: list[list[int]] = []
+        if root is None:
+            return result
 
-        while True:
-            slow = nums[slow]
-            fast = nums[nums[fast]]
-            if slow == fast:
-                break
+        queue: list[TreeNode] = [root]
+        while queue:
+            node_count = len(queue)
+            current: list[int] = []
+            for i in range(node_count):
+                node = queue[i]
+                current.append(node.val)
+                if node.left is not None:
+                    queue.append(node.left)
 
-        slow = nums[0]
-        while slow != fast:
-            slow = nums[slow]
-            fast = nums[fast]
+                if node.right is not None:
+                    queue.append(node.right)
 
-        return slow
+            result.append(current)
+            queue = queue[node_count:]
+
+        result.reverse()
+        return result
 
 
 def main():
-    inputs = [[1, 3, 4, 2, 2], [3, 1, 3, 4, 2]]
+    inputs = [
+        TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7))),
+        TreeNode(1),
+        None,
+    ]
 
-    for nums in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.findDuplicate(nums)
+        result = solution.levelOrderBottom(root)
         print(result)
 
 
