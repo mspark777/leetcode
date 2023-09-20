@@ -2,37 +2,96 @@ from __future__ import annotations
 from typing import Optional, List
 
 
+class ListNode:
+    val: int
+    next: Optional[ListNode]
+
+    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
+        self.val = val
+        self.next = next
+
+
+class TreeNode:
+    val: int
+    left: Optional[TreeNode]
+    right: Optional[TreeNode]
+
+    def __init__(
+        self,
+        val: int = 0,
+        left: Optional[TreeNode] = None,
+        right: Optional[TreeNode] = None,
+    ):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
 class Solution:
-    def minOperations(self, nums: List[int], x: int) -> int:
-        target = sum(nums) - x
-        n = len(nums)
+    def sortedListToBST(self, head: Optional[ListNode]) -> Optional[TreeNode]:
+        if head is None:
+            return None
+        elif head.next is None:
+            return TreeNode(head.val)
 
-        if target == 0:
-            return n
+        slow = head
+        fast = head
+        prev = head
 
-        max_len = 0
-        cur_sum = 0
-        left = 0
+        while (fast is not None) and (fast.next is not None) and (slow is not None):
+            fast = fast.next.next
+            prev = slow
+            slow = slow.next
 
-        for right, val in enumerate(nums):
-            cur_sum += val
-            while (left <= right) and (cur_sum > target):
-                cur_sum -= nums[left]
-                left += 1
+        prev.next = None
 
-            if cur_sum == target:
-                max_len = max(max_len, right - left + 1)
+        if slow is None:
+            return None
 
-        return n - max_len if max_len != 0 else -1
+        node = TreeNode(
+            slow.val, self.sortedListToBST(head), self.sortedListToBST(slow.next)
+        )
+
+        return node
+
+
+def arrtolist(nums: list[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    for num in nums:
+        next = ListNode(num)
+        tail.next = next
+        tail = next
+
+    return dummy.next
+
+
+def treetoarr(node: Optional[TreeNode]) -> list[int]:
+    nums: list[int] = []
+
+    def travel(n: Optional[TreeNode], l: list[int]):
+        if n is None:
+            return
+
+        if n.left is not None:
+            travel(n.left, l)
+
+        l.append(n.val)
+
+        if n.right is not None:
+            travel(n.right, l)
+
+    travel(node, nums)
+    return nums
 
 
 def main():
-    inputs = [([1, 1, 4, 2, 3], 5), ([5, 6, 7, 8, 9], 4), ([3, 2, 20, 1, 1, 3], 10)]
+    inputs = [[-10, -3, 0, 5, 9], []]
 
-    for nums, x in inputs:
+    for head in inputs:
         solution = Solution()
-        result = solution.minOperations(nums, x)
-        print(result)
+        result = solution.sortedListToBST(arrtolist(head))
+        print(treetoarr(result))
 
 
 if __name__ == "__main__":
