@@ -2,58 +2,36 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
-
-    def __init__(
-        self,
-        val: int = 0,
-        left: Optional[TreeNode] = None,
-        right: Optional[TreeNode] = None,
-    ):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
 class Solution:
-    def levelOrderBottom(self, root: Optional[TreeNode]) -> List[List[int]]:
-        result: list[list[int]] = []
-        if root is None:
-            return result
+    def minOperations(self, nums: List[int], x: int) -> int:
+        target = sum(nums) - x
+        n = len(nums)
 
-        queue: list[TreeNode] = [root]
-        while queue:
-            node_count = len(queue)
-            current: list[int] = []
-            for i in range(node_count):
-                node = queue[i]
-                current.append(node.val)
-                if node.left is not None:
-                    queue.append(node.left)
+        if target == 0:
+            return n
 
-                if node.right is not None:
-                    queue.append(node.right)
+        max_len = 0
+        cur_sum = 0
+        left = 0
 
-            result.append(current)
-            queue = queue[node_count:]
+        for right, val in enumerate(nums):
+            cur_sum += val
+            while (left <= right) and (cur_sum > target):
+                cur_sum -= nums[left]
+                left += 1
 
-        result.reverse()
-        return result
+            if cur_sum == target:
+                max_len = max(max_len, right - left + 1)
+
+        return n - max_len if max_len != 0 else -1
 
 
 def main():
-    inputs = [
-        TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7))),
-        TreeNode(1),
-        None,
-    ]
+    inputs = [([1, 1, 4, 2, 3], 5), ([5, 6, 7, 8, 9], 4), ([3, 2, 20, 1, 1, 3], 10)]
 
-    for root in inputs:
+    for nums, x in inputs:
         solution = Solution()
-        result = solution.levelOrderBottom(root)
+        result = solution.minOperations(nums, x)
         print(result)
 
 
