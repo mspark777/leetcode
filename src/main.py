@@ -3,43 +3,28 @@ from typing import Optional, List
 
 
 class Solution:
-    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
-        if len(nums1) > len(nums2):
-            return self.findMedianSortedArrays(nums2, nums1)
+    def numDistinct(self, s: str, t: str) -> int:
+        slen = len(s)
+        tlen = len(t)
 
-        m, n = len(nums1), len(nums2)
-        left, right = 0, m
+        dp = [[0 if i != 0 else 1 for i in range(tlen + 1)] for _ in range(slen + 1)]
 
-        while left <= right:
-            parition_a = (left + right) // 2
-            parition_b = ((m + n + 1) // 2) - parition_a
-
-            max_left_a = float("-inf") if parition_a == 0 else nums1[parition_a - 1]
-            max_left_b = float("-inf") if parition_b == 0 else nums2[parition_b - 1]
-            min_right_a = float("inf") if parition_a == m else nums1[parition_a]
-            min_right_b = float("inf") if parition_b == n else nums2[parition_b]
-
-            if (max_left_a <= min_right_b) and (max_left_b <= min_right_a):
-                if ((m + n) % 2) == 0:
-                    return (
-                        max(max_left_a, max_left_b) + min(min_right_a, min_right_b)
-                    ) / 2
+        for i in range(1, slen + 1):
+            for j in range(1, tlen + 1):
+                if s[i - 1] == t[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]
                 else:
-                    return max(max_left_a, max_left_b)
-            elif max_left_a > min_right_b:
-                right = parition_a - 1
-            else:
-                left = parition_a + 1
+                    dp[i][j] = dp[i - 1][j]
 
-        return float("inf")
+        return dp[slen][tlen]
 
 
 def main():
-    inputs = [([1, 3], [2]), ([1, 2], [3, 4])]
+    inputs = [("rabbbit", "rabbit"), ("babgbag", "bag")]
 
-    for nums1, nums2 in inputs:
+    for s, t in inputs:
         solution = Solution()
-        result = solution.findMedianSortedArrays(nums1, nums2)
+        result = solution.numDistinct(s, t)
         print(result)
 
 
