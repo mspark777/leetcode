@@ -2,96 +2,45 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
-        self.val = val
-        self.next = next
-
-
-class TreeNode:
-    val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
-
-    def __init__(
-        self,
-        val: int = 0,
-        left: Optional[TreeNode] = None,
-        right: Optional[TreeNode] = None,
-    ):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
 class Solution:
-    def sortedListToBST(self, head: Optional[ListNode]) -> Optional[TreeNode]:
-        if head is None:
-            return None
-        elif head.next is None:
-            return TreeNode(head.val)
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        if len(nums1) > len(nums2):
+            return self.findMedianSortedArrays(nums2, nums1)
 
-        slow = head
-        fast = head
-        prev = head
+        m, n = len(nums1), len(nums2)
+        left, right = 0, m
 
-        while (fast is not None) and (fast.next is not None) and (slow is not None):
-            fast = fast.next.next
-            prev = slow
-            slow = slow.next
+        while left <= right:
+            parition_a = (left + right) // 2
+            parition_b = ((m + n + 1) // 2) - parition_a
 
-        prev.next = None
+            max_left_a = float("-inf") if parition_a == 0 else nums1[parition_a - 1]
+            max_left_b = float("-inf") if parition_b == 0 else nums2[parition_b - 1]
+            min_right_a = float("inf") if parition_a == m else nums1[parition_a]
+            min_right_b = float("inf") if parition_b == n else nums2[parition_b]
 
-        if slow is None:
-            return None
+            if (max_left_a <= min_right_b) and (max_left_b <= min_right_a):
+                if ((m + n) % 2) == 0:
+                    return (
+                        max(max_left_a, max_left_b) + min(min_right_a, min_right_b)
+                    ) / 2
+                else:
+                    return max(max_left_a, max_left_b)
+            elif max_left_a > min_right_b:
+                right = parition_a - 1
+            else:
+                left = parition_a + 1
 
-        node = TreeNode(
-            slow.val, self.sortedListToBST(head), self.sortedListToBST(slow.next)
-        )
-
-        return node
-
-
-def arrtolist(nums: list[int]) -> Optional[ListNode]:
-    dummy = ListNode()
-    tail = dummy
-    for num in nums:
-        next = ListNode(num)
-        tail.next = next
-        tail = next
-
-    return dummy.next
-
-
-def treetoarr(node: Optional[TreeNode]) -> list[int]:
-    nums: list[int] = []
-
-    def travel(n: Optional[TreeNode], l: list[int]):
-        if n is None:
-            return
-
-        if n.left is not None:
-            travel(n.left, l)
-
-        l.append(n.val)
-
-        if n.right is not None:
-            travel(n.right, l)
-
-    travel(node, nums)
-    return nums
+        return float("inf")
 
 
 def main():
-    inputs = [[-10, -3, 0, 5, 9], []]
+    inputs = [([1, 3], [2]), ([1, 2], [3, 4])]
 
-    for head in inputs:
+    for nums1, nums2 in inputs:
         solution = Solution()
-        result = solution.sortedListToBST(arrtolist(head))
-        print(treetoarr(result))
+        result = solution.findMedianSortedArrays(nums1, nums2)
+        print(result)
 
 
 if __name__ == "__main__":
