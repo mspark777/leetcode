@@ -3,24 +3,35 @@ from typing import Optional, List
 
 
 class Solution:
-    def isSubsequence(self, s: str, t: str) -> bool:
-        if s == "":
-            return True
-        elif t == "":
-            return False
+    def longestStrChain(self, words: List[str]) -> int:
+        words.sort(key=lambda x: len(x))
+        result = 0
 
-        if s[0] == t[0]:
-            return self.isSubsequence(s[1:], t[1:])
+        dp = dict[str, int]()
+        for word in words:
+            cur_len = 1
+            for i in range(len(word)):
+                pre = word[0:i] + word[i + 1 :]
+                if pre in dp:
+                    cur_len = max(cur_len, dp[pre] + 1)
 
-        return self.isSubsequence(s, t[1:])
+            dp[word] = cur_len
+            result = max(result, cur_len)
+
+        return result
 
 
 def main():
-    inputs = [("abc", "ahbgdc"), ("axc", "ahbgdc")]
+    inputs = [
+        ["a", "b", "ba", "bca", "bda", "bdca"],
+        ["xbc", "pcxbcf", "xb", "cxbc", "pcxbc"],
+        ["abcd", "dbqca"],
+        ["bdca", "bda", "ca", "dca", "a"],
+    ]
 
-    for s, t in inputs:
+    for words in inputs:
         solution = Solution()
-        result = solution.isSubsequence(s, t)
+        result = solution.longestStrChain(words)
         print(result)
 
 
