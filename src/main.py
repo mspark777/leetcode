@@ -2,26 +2,48 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class Solution:
-    def champagneTower(self, poured: int, query_row: int, query_glass: int) -> float:
-        rows = [[0.0] * k for k in range(1, 102)]
-        rows[0][0] = poured
-        for r in range(query_row + 1):
-            for c in range(r + 1):
-                q = (rows[r][c] - 1.0) / 2.0
-                if q > 0:
-                    rows[r + 1][c] += q
-                    rows[r + 1][c + 1] += q
+class Node:
+    val: int
+    left: Optional[Node]
+    right: Optional[Node]
+    next: Optional[Node]
 
-        return min(1, rows[query_row][query_glass])
+    def __init__(
+        self,
+        val: int = 0,
+        left: Optional[Node] = None,
+        right: Optional[Node] = None,
+        next: Optional[Node] = None,
+    ):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+
+
+class Solution:
+    def connect(self, root: Optional[Node]) -> Optional[Node]:
+        if root is None:
+            return None
+        left = root.left
+        right = root.right
+        next = root.next
+        if left is not None:
+            left.next = right
+            if (next is not None) and (right is not None):
+                right.next = next.left
+            self.connect(left)
+            self.connect(right)
+
+        return root
 
 
 def main():
-    inputs = [(1, 1, 1), (2, 1, 1), (100000009, 33, 17)]
+    inputs = [Node(1, Node(2, Node(4), Node(5)), Node(3, Node(6), Node(7))), None]
 
-    for poured, query_row, query_glass in inputs:
+    for root in inputs:
         solution = Solution()
-        result = solution.champagneTower(poured, query_row, query_glass)
+        result = solution.connect(root)
         print(result)
 
 
