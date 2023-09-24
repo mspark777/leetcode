@@ -3,35 +3,25 @@ from typing import Optional, List
 
 
 class Solution:
-    def longestStrChain(self, words: List[str]) -> int:
-        words.sort(key=lambda x: len(x))
-        result = 0
+    def champagneTower(self, poured: int, query_row: int, query_glass: int) -> float:
+        rows = [[0.0] * k for k in range(1, 102)]
+        rows[0][0] = poured
+        for r in range(query_row + 1):
+            for c in range(r + 1):
+                q = (rows[r][c] - 1.0) / 2.0
+                if q > 0:
+                    rows[r + 1][c] += q
+                    rows[r + 1][c + 1] += q
 
-        dp = dict[str, int]()
-        for word in words:
-            cur_len = 1
-            for i in range(len(word)):
-                pre = word[0:i] + word[i + 1 :]
-                if pre in dp:
-                    cur_len = max(cur_len, dp[pre] + 1)
-
-            dp[word] = cur_len
-            result = max(result, cur_len)
-
-        return result
+        return min(1, rows[query_row][query_glass])
 
 
 def main():
-    inputs = [
-        ["a", "b", "ba", "bca", "bda", "bdca"],
-        ["xbc", "pcxbcf", "xb", "cxbc", "pcxbc"],
-        ["abcd", "dbqca"],
-        ["bdca", "bda", "ca", "dca", "a"],
-    ]
+    inputs = [(1, 1, 1), (2, 1, 1), (100000009, 33, 17)]
 
-    for words in inputs:
+    for poured, query_row, query_glass in inputs:
         solution = Solution()
-        result = solution.longestStrChain(words)
+        result = solution.champagneTower(poured, query_row, query_glass)
         print(result)
 
 
