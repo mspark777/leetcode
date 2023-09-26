@@ -1,26 +1,33 @@
 from __future__ import annotations
+from collections import Counter
 from typing import Optional, List
 
 
 class Solution:
-    def maxProfit(self, prices: List[int]) -> int:
-        result = 0
+    def removeDuplicateLetters(self, s: str) -> str:
+        counts = Counter(s)
+        result = list[str]()
+        visited = set[str]()
 
-        for i in range(len(prices) - 1):
-            cur = prices[i]
-            next = prices[i + 1]
-            if cur < next:
-                result += next - cur
+        for ch in s:
+            counts[ch] -= 1
+            if ch in visited:
+                continue
+            while result and (ch < result[-1]) and (counts[result[-1]] > 0):
+                visited.remove(result.pop())
 
-        return result
+            visited.add(ch)
+            result.append(ch)
+
+        return "".join(result)
 
 
 def main():
-    inputs = [[7, 1, 5, 3, 6, 4], [1, 2, 3, 4, 5], [7, 6, 4, 3, 1]]
+    inputs = ["bcabc", "cbacdcbc"]
 
-    for prices in inputs:
+    for s in inputs:
         solution = Solution()
-        result = solution.maxProfit(prices)
+        result = solution.removeDuplicateLetters(s)
         print(result)
 
 
