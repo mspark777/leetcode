@@ -1,39 +1,38 @@
 from __future__ import annotations
-from collections import Counter
 from typing import Optional, List
 
 
 class Solution:
-    def maxProfit(self, prices: List[int]) -> int:
-        n = len(prices)
-        cur = [[0] * 3 for _ in range(2)]
-        next = [[0] * 3 for _ in range(2)]
+    def decodeAtIndex(self, s: str, k: int) -> str:
+        l = 0
+        i = 0
 
-        for idx in range(n - 1, -1, -1):
-            for buy in range(2):
-                for limits in range(1, 3):
-                    profit = 0
-                    if buy == 0:
-                        buy_profit = prices[idx] + next[1][limits - 1]
-                        skip_profit = next[0][limits]
-                        profit = max(buy_profit, skip_profit)
-                    else:
-                        sell_profit = next[0][limits] - prices[idx]
-                        skip_profit = next[1][limits]
-                        profit = max(sell_profit, skip_profit)
+        while l < k:
+            if s[i].isdigit():
+                l *= int(s[i])
+            else:
+                l += 1
+            i += 1
 
-                    cur[buy][limits] = profit
-            next = cur.copy()
+        for j in range(i - 1, -1, -1):
+            ch = s[j]
+            if ch.isdigit():
+                l //= int(ch)
+                k %= l
+            else:
+                if (k == 0) or (k == l):
+                    return ch
+                l -= 1
 
-        return next[1][2]
+        return ""
 
 
 def main():
-    inputs = [[3, 3, 5, 0, 0, 3, 1, 4], [1, 2, 3, 4, 5], [7, 6, 4, 3, 1]]
+    inputs = [("leet2code3", 10), ("ha22", 5), ("a2345678999999999999999", 1)]
 
-    for prices in inputs:
+    for s, k in inputs:
         solution = Solution()
-        result = solution.maxProfit(prices)
+        result = solution.decodeAtIndex(s, k)
         print(result)
 
 
