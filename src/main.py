@@ -1,38 +1,26 @@
 from __future__ import annotations
 from typing import Optional, List
+from collections import defaultdict
 
 
 class Solution:
-    def decodeAtIndex(self, s: str, k: int) -> str:
-        l = 0
-        i = 0
+    def numIdenticalPairs(self, nums: List[int]) -> int:
+        counts = defaultdict[int, int](int)
+        result = 0
+        for num in nums:
+            cnt = counts[num]
+            result += cnt
+            counts[num] += 1
 
-        while l < k:
-            if s[i].isdigit():
-                l *= int(s[i])
-            else:
-                l += 1
-            i += 1
-
-        for j in range(i - 1, -1, -1):
-            ch = s[j]
-            if ch.isdigit():
-                l //= int(ch)
-                k %= l
-            else:
-                if (k == 0) or (k == l):
-                    return ch
-                l -= 1
-
-        return ""
+        return result
 
 
 def main():
-    inputs = [("leet2code3", 10), ("ha22", 5), ("a2345678999999999999999", 1)]
+    inputs = [[1, 2, 3, 1, 1, 3], [1, 1, 1, 1], [1, 2, 3]]
 
-    for s, k in inputs:
+    for nums in inputs:
         solution = Solution()
-        result = solution.decodeAtIndex(s, k)
+        result = solution.numIdenticalPairs(nums)
         print(result)
 
 
