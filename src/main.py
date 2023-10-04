@@ -1,27 +1,33 @@
 from __future__ import annotations
 from typing import Optional, List
-from collections import defaultdict
 
 
-class Solution:
-    def numIdenticalPairs(self, nums: List[int]) -> int:
-        counts = defaultdict[int, int](int)
-        result = 0
-        for num in nums:
-            cnt = counts[num]
-            result += cnt
-            counts[num] += 1
+class MyHashMap:
+    nums: list[int]
 
-        return result
+    def __init__(self):
+        self.nums = [-1] * 1000001
+
+    def put(self, key: int, value: int) -> None:
+        self.nums[key] = value
+
+    def get(self, key: int) -> int:
+        return self.nums[key]
+
+    def remove(self, key: int) -> None:
+        self.nums[key] = -1
 
 
 def main():
-    inputs = [[1, 2, 3, 1, 1, 3], [1, 1, 1, 1], [1, 2, 3]]
-
-    for nums in inputs:
-        solution = Solution()
-        result = solution.numIdenticalPairs(nums)
-        print(result)
+    obj = MyHashMap()
+    obj.put(1, 1)
+    obj.put(2, 2)
+    print(obj.get(1))
+    print(obj.get(3))
+    obj.put(2, 1)
+    print(obj.get(2))
+    obj.remove(2)
+    print(obj.get(2))
 
 
 if __name__ == "__main__":
