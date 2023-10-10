@@ -3,40 +3,26 @@ from typing import Optional, List
 
 
 class Solution:
-    def searchRange(self, nums: List[int], target: int) -> List[int]:
-        first = self.search(nums, -1, 0, len(nums) - 1, target, True)
-        second = self.search(nums, -1, 0, len(nums) - 1, target, False)
-        return [first, second]
+    def minOperations(self, nums: List[int]) -> int:
+        n = len(nums)
+        result = n
+        new_nums = sorted(set(nums))
+        j = 0
 
-    def search(
-        self,
-        nums: list[int],
-        result: int,
-        left: int,
-        right: int,
-        target: int,
-        first: bool,
-    ) -> int:
-        if left > right:
-            return result
+        for i in range(len(new_nums)):
+            while (j < len(new_nums)) and (new_nums[j] < (new_nums[i] + n)):
+                j += 1
 
-        mid = (left + right) // 2
-        num = nums[mid]
-        if num > target:
-            return self.search(nums, result, left, mid - 1, target, first)
-        elif num < target:
-            return self.search(nums, result, mid + 1, right, target, first)
-        elif first:
-            return self.search(nums, mid, left, mid - 1, target, first)
+            result = min(result, n - j + i)
 
-        return self.search(nums, mid, mid + 1, right, target, first)
+        return result
 
 
 def main():
-    inputs = (([5, 7, 7, 8, 8, 10], 8), ([5, 7, 7, 8, 8, 10], 6), ([], 0))
+    inputs = ([4, 2, 5, 3], [1, 2, 3, 5, 6], [1, 10, 100, 1000])
 
-    for nums, target in inputs:
-        result = Solution().searchRange(nums, target)
+    for nums in inputs:
+        result = Solution().minOperations(nums)
         print(result)
 
 
