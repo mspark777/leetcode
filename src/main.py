@@ -3,27 +3,62 @@ from typing import Optional, List
 
 
 class Solution:
-    def minOperations(self, nums: List[int]) -> int:
-        n = len(nums)
-        result = n
-        new_nums = sorted(set(nums))
-        j = 0
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        row = len(board)
+        col = len(board[0])
 
-        for i in range(len(new_nums)):
-            while (j < len(new_nums)) and (new_nums[j] < (new_nums[i] + n)):
-                j += 1
+        for r in range(row):
+            if board[r][0] == "O":
+                self.dfs(board, r, 0, row, col)
+            if board[r][col - 1] == "O":
+                self.dfs(board, r, col - 1, row, col)
 
-            result = min(result, n - j + i)
+        for c in range(col):
+            if board[0][c] == "O":
+                self.dfs(board, 0, c, row, col)
+            if board[row - 1][c] == "O":
+                self.dfs(board, row - 1, c, row, col)
 
-        return result
+        for r in range(row):
+            for c in range(col):
+                if board[r][c] == "O":
+                    board[r][c] = "X"
+                elif board[r][c] == "#":
+                    board[r][c] = "O"
+
+    def dfs(self, board: list[list[str]], r: int, c: int, row: int, col: int) -> None:
+        if (r < 0) or (c < 0):
+            return
+        elif (r >= row) or (c >= col):
+            return
+        elif board[r][c] != "O":
+            return
+
+        board[r][c] = "#"
+        self.dfs(board, r - 1, c, row, col)
+        self.dfs(board, r + 1, c, row, col)
+        self.dfs(board, r, c - 1, row, col)
+        self.dfs(board, r, c + 1, row, col)
 
 
 def main():
-    inputs = ([4, 2, 5, 3], [1, 2, 3, 5, 6], [1, 10, 100, 1000])
+    inputs = (
+        [
+            ["X", "X", "X", "X"],
+            ["X", "O", "O", "X"],
+            ["X", "X", "O", "X"],
+            ["X", "O", "X", "X"],
+        ],
+        [["X"]],
+        [["X", "O", "X"], ["O", "X", "O"], ["X", "O", "X"]],
+    )
 
-    for nums in inputs:
-        result = Solution().minOperations(nums)
-        print(result)
+    for board in inputs:
+        Solution().solve(board)
+        print(board)
 
 
 if __name__ == "__main__":
