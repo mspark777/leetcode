@@ -2,63 +2,72 @@ from __future__ import annotations
 from typing import Optional, List
 
 
+# """
+# This is MountainArray's API interface.
+# You should not implement it, or speculate about its implementation
+# """
+# class MountainArray:
+#    def get(self, index: int) -> int:
+#    def length(self) -> int:
+
+
 class Solution:
-    def solve(self, board: List[List[str]]) -> None:
-        """
-        Do not return anything, modify board in-place instead.
-        """
-        row = len(board)
-        col = len(board[0])
+    def findInMountainArray(self, target: int, mountain_arr: "MountainArray") -> int:
+        # I don't like this problem.
+        length = mountain_arr.length()
+        low = 1
+        high = length - 2
+        while low != high:
+            test_index = (low + high) >> 1
+            curr = mountain_arr.get(test_index)
+            next = mountain_arr.get(test_index + 1)
 
-        for r in range(row):
-            if board[r][0] == "O":
-                self.dfs(board, r, 0, row, col)
-            if board[r][col - 1] == "O":
-                self.dfs(board, r, col - 1, row, col)
+            if curr < next:
+                if curr == target:
+                    return test_index
+                if next == target:
+                    return test_index + 1
+                low = test_index + 1
+            else:
+                high = test_index
 
-        for c in range(col):
-            if board[0][c] == "O":
-                self.dfs(board, 0, c, row, col)
-            if board[row - 1][c] == "O":
-                self.dfs(board, row - 1, c, row, col)
+        peak_index = low
 
-        for r in range(row):
-            for c in range(col):
-                if board[r][c] == "O":
-                    board[r][c] = "X"
-                elif board[r][c] == "#":
-                    board[r][c] = "O"
+        low = 0
+        high = peak_index
+        while low <= high:
+            test_index = (low + high) >> 1
+            curr = mountain_arr.get(test_index)
 
-    def dfs(self, board: list[list[str]], r: int, c: int, row: int, col: int) -> None:
-        if (r < 0) or (c < 0):
-            return
-        elif (r >= row) or (c >= col):
-            return
-        elif board[r][c] != "O":
-            return
+            if curr == target:
+                return test_index
+            elif curr < target:
+                low = test_index + 1
+            else:
+                high = test_index - 1
 
-        board[r][c] = "#"
-        self.dfs(board, r - 1, c, row, col)
-        self.dfs(board, r + 1, c, row, col)
-        self.dfs(board, r, c - 1, row, col)
-        self.dfs(board, r, c + 1, row, col)
+        low = peak_index + 1
+        high = length - 1
+        while low <= high:
+            test_index = (low + high) >> 1
+            curr = mountain_arr.get(test_index)
+
+            if curr == target:
+                return test_index
+            elif curr > target:
+                low = test_index + 1
+            else:
+                high = test_index - 1
+
+        return -1
 
 
 def main():
-    inputs = (
-        [
-            ["X", "X", "X", "X"],
-            ["X", "O", "O", "X"],
-            ["X", "X", "O", "X"],
-            ["X", "O", "X", "X"],
-        ],
-        [["X"]],
-        [["X", "O", "X"], ["O", "X", "O"], ["X", "O", "X"]],
-    )
+    inputs = (([1, 2, 3, 4, 5, 3, 1], 3), ([0, 1, 2, 4, 2, 1], 3))
 
-    for board in inputs:
-        Solution().solve(board)
-        print(board)
+    for target, mountain_arr in inputs:
+        result = Solution().findInMountainArray(target, mountain_arr)
+        print(result)
 
 
 if __name__ == "__main__":
