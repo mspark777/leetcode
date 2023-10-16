@@ -3,22 +3,21 @@ from typing import Optional, List
 
 
 class Solution:
-    def minCostClimbingStairs(self, cost: List[int]) -> int:
-        step0 = cost[0]
-        step1 = cost[1]
-        for step in cost[2:]:
-            cur = step + min(step0, step1)
-            step0 = step1
-            step1 = cur
+    def getRow(self, row_index: int) -> List[int]:
+        result = [1] * (row_index + 1)
 
-        return min(step0, step1)
+        for i in range(len(result)):
+            for j in range(i - 1, 0, -1):
+                result[j] += result[j - 1]
+
+        return result
 
 
 def main():
-    inputs = ([10, 15, 20], [1, 100, 1, 1, 1, 100, 1, 1, 100, 1])
+    inputs = (3, 0, 1)
 
-    for cost in inputs:
-        result = Solution().minCostClimbingStairs(cost)
+    for row in inputs:
+        result = Solution().getRow(row)
         print(result)
 
 
