@@ -3,21 +3,29 @@ from typing import Optional, List
 
 
 class Solution:
-    def getRow(self, row_index: int) -> List[int]:
-        result = [1] * (row_index + 1)
+    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+        n = len(gas)
+        total = 0
+        surplus = 0
+        start = 0
 
-        for i in range(len(result)):
-            for j in range(i - 1, 0, -1):
-                result[j] += result[j - 1]
+        for i in range(n):
+            diff = gas[i] - cost[i]
+            total += diff
+            surplus += diff
 
-        return result
+            if surplus < 0:
+                surplus = 0
+                start = i + 1
+
+        return start if total >= 0 else -1
 
 
 def main():
-    inputs = (3, 0, 1)
+    inputs = (([1, 2, 3, 4, 5], [3, 4, 5, 1, 2]), ([2, 3, 4], [3, 4, 3]))
 
-    for row in inputs:
-        result = Solution().getRow(row)
+    for gas, cost in inputs:
+        result = Solution().canCompleteCircuit(gas, cost)
         print(result)
 
 
