@@ -3,29 +3,49 @@ from typing import Optional, List
 
 
 class Solution:
-    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
-        n = len(gas)
-        total = 0
-        surplus = 0
-        start = 0
+    def validateBinaryTreeNodes(
+        self, n: int, left: List[int], right: List[int]
+    ) -> bool:
+        root = self.find_root(n, left, right)
+        if root == -1:
+            return False
+
+        seen = set[int]([root])
+        stack: list[int] = [root]
+
+        while stack:
+            node = stack.pop()
+            for child in (left[node], right[node]):
+                if child == -1:
+                    continue
+
+                if child in seen:
+                    return False
+
+                stack.append(child)
+                seen.add(child)
+
+        return len(seen) == n
+
+    def find_root(self, n: int, left: list[int], right: list[int]) -> int:
+        children = set(left) | set(right)
 
         for i in range(n):
-            diff = gas[i] - cost[i]
-            total += diff
-            surplus += diff
+            if i not in children:
+                return i
 
-            if surplus < 0:
-                surplus = 0
-                start = i + 1
-
-        return start if total >= 0 else -1
+        return -1
 
 
 def main():
-    inputs = (([1, 2, 3, 4, 5], [3, 4, 5, 1, 2]), ([2, 3, 4], [3, 4, 3]))
+    inputs = (
+        (4, [1, -1, 3, -1], [2, -1, -1, -1]),
+        (4, [1, -1, 3, -1], [2, 3, -1, -1]),
+        (2, [1, 0], [-1, -1]),
+    )
 
-    for gas, cost in inputs:
-        result = Solution().canCompleteCircuit(gas, cost)
+    for n, left, right in inputs:
+        result = Solution().validateBinaryTreeNodes(n, left, right)
         print(result)
 
 
