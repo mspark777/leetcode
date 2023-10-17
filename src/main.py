@@ -2,49 +2,45 @@ from __future__ import annotations
 from typing import Optional, List
 
 
+class Node:
+    val: int
+    neighbors: list[Node]
+
+    def __init__(self, val: int = 0, neighbors: Optional[list[Node]] = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+
 class Solution:
-    def validateBinaryTreeNodes(
-        self, n: int, left: List[int], right: List[int]
-    ) -> bool:
-        root = self.find_root(n, left, right)
-        if root == -1:
-            return False
+    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
+        if node is None:
+            return None
 
-        seen = set[int]([root])
-        stack: list[int] = [root]
+        queue: list[Node] = [node]
+        clones: dict[int, Node] = {node.val: Node(node.val, [])}
 
-        while stack:
-            node = stack.pop()
-            for child in (left[node], right[node]):
-                if child == -1:
-                    continue
+        while queue:
+            cur = queue.pop(0)
+            cur_clone = clones[cur.val]
 
-                if child in seen:
-                    return False
+            for ngbr in cur.neighbors:
+                if ngbr.val not in clones:
+                    clones[ngbr.val] = Node(ngbr.val, [])
+                    queue.append(ngbr)
 
-                stack.append(child)
-                seen.add(child)
+                cur_clone.neighbors.append(clones[ngbr.val])
 
-        return len(seen) == n
-
-    def find_root(self, n: int, left: list[int], right: list[int]) -> int:
-        children = set(left) | set(right)
-
-        for i in range(n):
-            if i not in children:
-                return i
-
-        return -1
+        return clones[node.val]
 
 
 def main():
     inputs = (
-        (4, [1, -1, 3, -1], [2, -1, -1, -1]),
-        (4, [1, -1, 3, -1], [2, 3, -1, -1]),
-        (2, [1, 0], [-1, -1]),
+        [[2, 4], [1, 3], [2, 4], [1, 3]],
+        [[]],
+        [],
     )
 
-    for n, left, right in inputs:
+    for node in inputs:
         result = Solution().validateBinaryTreeNodes(n, left, right)
         print(result)
 
