@@ -1,47 +1,44 @@
 from __future__ import annotations
 from typing import Optional, List
-
-
-class Node:
-    val: int
-    neighbors: list[Node]
-
-    def __init__(self, val: int = 0, neighbors: Optional[list[Node]] = None):
-        self.val = val
-        self.neighbors = neighbors if neighbors is not None else []
+from collections import defaultdict
 
 
 class Solution:
-    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
-        if node is None:
-            return None
+    def minimumTime(self, n: int, relations: List[List[int]], time: List[int]) -> int:
+        graph = defaultdict[int, list[int]](list)
+        indegress = [0] * n
 
-        queue: list[Node] = [node]
-        clones: dict[int, Node] = {node.val: Node(node.val, [])}
+        for x, y in relations:
+            graph[x - 1].append(y - 1)
+            indegress[y - 1] += 1
+
+        queue: list[int] = []
+        max_time = [0] * n
+
+        for node in range(n):
+            if indegress[node] == 0:
+                queue.append(node)
+                max_time[node] = time[node]
 
         while queue:
-            cur = queue.pop(0)
-            cur_clone = clones[cur.val]
+            node = queue.pop(0)
+            for neighbor in graph[node]:
+                max_time[neighbor] = max(max_time[neighbor], max_time[node] + time[neighbor])
+                indegress[neighbor] -= 1
+                if indegress[neighbor] == 0:
+                    queue.append(neighbor)
 
-            for ngbr in cur.neighbors:
-                if ngbr.val not in clones:
-                    clones[ngbr.val] = Node(ngbr.val, [])
-                    queue.append(ngbr)
-
-                cur_clone.neighbors.append(clones[ngbr.val])
-
-        return clones[node.val]
+        return max(max_time)
 
 
 def main():
     inputs = (
-        [[2, 4], [1, 3], [2, 4], [1, 3]],
-        [[]],
-        [],
+        (3, [[1, 3], [2, 3]], [3, 2, 5]),
+        (5, [[1, 5], [2, 5], [3, 5], [3, 4], [4, 5]], [1, 2, 3, 4, 5]),
     )
 
-    for node in inputs:
-        result = Solution().validateBinaryTreeNodes(n, left, right)
+    for n, relations, time in inputs:
+        result = Solution().minimumTime(n, relations, time)
         print(result)
 
 
