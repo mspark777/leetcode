@@ -1,44 +1,56 @@
 from __future__ import annotations
 from typing import Optional, List
-from collections import defaultdict
 
 
 class Solution:
-    def minimumTime(self, n: int, relations: List[List[int]], time: List[int]) -> int:
-        graph = defaultdict[int, list[int]](list)
-        indegress = [0] * n
+    def backspaceCompare(self, s: str, t: str) -> bool:
+        slist = list(s)
+        tlist = list(t)
 
-        for x, y in relations:
-            graph[x - 1].append(y - 1)
-            indegress[y - 1] += 1
+        si = len(slist) - 1
+        ti = len(tlist) - 1
 
-        queue: list[int] = []
-        max_time = [0] * n
+        while si >= 0 and ti >= 0:
+            si = self.next(slist, si)
+            ti = self.next(tlist, ti)
 
-        for node in range(n):
-            if indegress[node] == 0:
-                queue.append(node)
-                max_time[node] = time[node]
+            if si < 0 or ti < 0:
+                break
 
-        while queue:
-            node = queue.pop(0)
-            for neighbor in graph[node]:
-                max_time[neighbor] = max(max_time[neighbor], max_time[node] + time[neighbor])
-                indegress[neighbor] -= 1
-                if indegress[neighbor] == 0:
-                    queue.append(neighbor)
+            if slist[si] != tlist[ti]:
+                return False
 
-        return max(max_time)
+            si -= 1
+            ti -= 1
+
+        if si >= 0:
+            si = self.next(slist, si)
+
+        if ti >= 0:
+            ti = self.next(tlist, ti)
+
+        return si < 0 and ti < 0
+
+    def next(self, s: list[str], i: int) -> int:
+        skip = 0
+        while i >= 0:
+            if s[i] == "#":
+                skip += 1
+                i -= 1
+            elif skip > 0:
+                skip -= 1
+                i -= 1
+            else:
+                break
+
+        return i
 
 
 def main():
-    inputs = (
-        (3, [[1, 3], [2, 3]], [3, 2, 5]),
-        (5, [[1, 5], [2, 5], [3, 5], [3, 4], [4, 5]], [1, 2, 3, 4, 5]),
-    )
+    inputs = (("ab#c", "ad#c"), ("ab##", "c#d#"), ("a#c", "b"))
 
-    for n, relations, time in inputs:
-        result = Solution().minimumTime(n, relations, time)
+    for s, t in inputs:
+        result = Solution().backspaceCompare(s, t)
         print(result)
 
 
