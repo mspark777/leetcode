@@ -3,54 +3,31 @@ from typing import Optional, List
 
 
 class Solution:
-    def backspaceCompare(self, s: str, t: str) -> bool:
-        slist = list(s)
-        tlist = list(t)
+    def wordBreak(self, s: str, words: List[str]) -> List[str]:
+        word_set = set(words)
+        n = len(s)
+        dp: list[list[str]] = [[] for _ in range(n + 1)]
+        dp[0].append("")
 
-        si = len(slist) - 1
-        ti = len(tlist) - 1
+        for i in range(n):
+            for j in range(i + 1, n + 1):
+                temp = s[i:j]
+                if temp in word_set:
+                    for t in dp[i]:
+                        dp[j].append(t + (" " if t != "" else t) + temp)
 
-        while si >= 0 and ti >= 0:
-            si = self.next(slist, si)
-            ti = self.next(tlist, ti)
-
-            if si < 0 or ti < 0:
-                break
-
-            if slist[si] != tlist[ti]:
-                return False
-
-            si -= 1
-            ti -= 1
-
-        if si >= 0:
-            si = self.next(slist, si)
-
-        if ti >= 0:
-            ti = self.next(tlist, ti)
-
-        return si < 0 and ti < 0
-
-    def next(self, s: list[str], i: int) -> int:
-        skip = 0
-        while i >= 0:
-            if s[i] == "#":
-                skip += 1
-                i -= 1
-            elif skip > 0:
-                skip -= 1
-                i -= 1
-            else:
-                break
-
-        return i
+        return dp[n]
 
 
 def main():
-    inputs = (("ab#c", "ad#c"), ("ab##", "c#d#"), ("a#c", "b"))
+    inputs = (
+        ("catsanddog", ["cat", "cats", "and", "sand", "dog"]),
+        ("pineapplepenapple", ["apple", "pen", "applepen", "pine", "pineapple"]),
+        ("catsandog", ["cats", "dog", "sand", "and", "cat"]),
+    )
 
-    for s, t in inputs:
-        result = Solution().backspaceCompare(s, t)
+    for s, words in inputs:
+        result = Solution().wordBreak(s, words)
         print(result)
 
 
