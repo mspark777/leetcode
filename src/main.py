@@ -2,58 +2,34 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class NestedInteger:
-    def isInteger(self) -> bool:
-        """
-        @return True if this NestedInteger holds a single integer, rather than a nested list.
-        """
-        return False
+class Solution:
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        left = k
+        right = k
+        result = nums[k]
+        curmin = nums[k]
 
-    def getInteger(self) -> int:
-        """
-        @return the single integer that this NestedInteger holds, if it holds a single integer
-        Return None if this NestedInteger holds a nested list
-        """
-        return 0
+        while left > 0 or right < (n - 1):
+            l = nums[left - 1] if left > 0 else 0
+            r = nums[right + 1] if right < n - 1 else 0
+            if l < r:
+                right += 1
+                curmin = min(curmin, nums[right])
+            else:
+                left -= 1
+                curmin = min(curmin, nums[left])
 
-    def getList(self) -> list[NestedInteger]:
-        """
-        @return the nested list that this NestedInteger holds, if it holds a nested list
-        Return None if this NestedInteger holds a single integer
-        """
-        return []
+            result = max(result, curmin * (right - left + 1))
 
-
-class NestedIterator:
-    stack: list[NestedInteger]
-
-    def __init__(self, nestedList: list[NestedInteger]):
-        self.stack = nestedList[::-1]
-
-    def next(self) -> int:
-        return self.stack.pop().getInteger()
-
-    def hasNext(self) -> bool:
-        while self.stack:
-            top = self.stack[-1]
-            if top.isInteger():
-                return True
-
-            self.stack = self.stack[:-1] + top.getList()[::-1]
-
-        return False
-
-
-# Your NestedIterator object will be instantiated and called as such:
-# i, v = NestedIterator(nestedList), []
-# while i.hasNext(): v.append(i.next())
+        return result
 
 
 def main():
-    inputs = ([[1, 1], 2, [1, 1]], [1, [4, [6]]])
+    inputs = (([1, 4, 3, 7, 4, 5], 3), ([5, 5, 4, 5, 4, 1, 1, 1], 0))
 
-    for s, words in inputs:
-        result = Solution().wordBreak(s, words)
+    for nums, k in inputs:
+        result = Solution().maximumScore(nums, k)
         print(result)
 
 
