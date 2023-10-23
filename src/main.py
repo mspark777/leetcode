@@ -3,33 +3,22 @@ from typing import Optional, List
 
 
 class Solution:
-    def maximumScore(self, nums: List[int], k: int) -> int:
-        n = len(nums)
-        left = k
-        right = k
-        result = nums[k]
-        curmin = nums[k]
+    def isPowerOfFour(self, n: int) -> bool:
+        if n == 1:
+            return True
+        elif n == 0:
+            return False
+        elif n % 4 != 0:
+            return False
 
-        while left > 0 or right < (n - 1):
-            l = nums[left - 1] if left > 0 else 0
-            r = nums[right + 1] if right < n - 1 else 0
-            if l < r:
-                right += 1
-                curmin = min(curmin, nums[right])
-            else:
-                left -= 1
-                curmin = min(curmin, nums[left])
-
-            result = max(result, curmin * (right - left + 1))
-
-        return result
+        return self.isPowerOfFour(n // 4)
 
 
 def main():
-    inputs = (([1, 4, 3, 7, 4, 5], 3), ([5, 5, 4, 5, 4, 1, 1, 1], 0))
+    inputs = (16, 5, 1)
 
-    for nums, k in inputs:
-        result = Solution().maximumScore(nums, k)
+    for n in inputs:
+        result = Solution().isPowerOfFour(n)
         print(result)
 
 
