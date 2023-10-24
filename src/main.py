@@ -2,56 +2,90 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class TreeNode:
+class ListNode:
     val: int
-    left: Optional[TreeNode]
-    right: Optional[TreeNode]
+    next: Optional[ListNode]
 
-    def __init__(
-        self,
-        val: int = 0,
-        left: Optional[TreeNode] = None,
-        right: Optional[TreeNode] = None,
-    ):
+    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
         self.val = val
-        self.left = left
-        self.right = right
+        self.next = next
 
 
 class Solution:
-    def largestValues(self, root: Optional[TreeNode]) -> List[int]:
-        if root is None:
-            return []
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        """
+        Do not return anything, modify head in-place instead.
+        """
+        if head is None:
+            return
+        elif head.next is None:
+            return
 
-        result: list[int] = []
-        stack: list[tuple[TreeNode, int]] = [(root, 0)]
+        slow: Optional[ListNode] = head
+        fast: Optional[ListNode] = head
+        while fast is not None and fast.next is not None and slow is not None:
+            slow = slow.next
+            fast = fast.next.next
 
-        while stack:
-            node, depth = stack.pop()
-            if depth == len(result):
-                result.append(node.val)
-            else:
-                result[depth] = max(result[depth], node.val)
+        new_node: Optional[ListNode] = None
+        if slow is not None:
+            new_node = self.reverse(slow.next)
+            slow.next = None
 
-            if node.left is not None:
-                stack.append((node.left, depth + 1))
-            if node.right is not None:
-                stack.append((node.right, depth + 1))
+        curr: Optional[ListNode] = head
+        dummy = new_node
 
-        return result
+        while curr is not None and dummy is not None:
+            temp = curr.next
+            curr.next = dummy
+            temp2 = dummy.next
+
+            dummy.next = temp
+            curr = temp
+            dummy = temp2
+
+    def reverse(self, node: Optional[ListNode]) -> Optional[ListNode]:
+        prev: Optional[ListNode] = None
+        curr: Optional[ListNode] = node
+        next: Optional[ListNode] = None
+
+        while curr is not None:
+            next = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next
+
+        return prev
+
+
+def atol(vals: list[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+
+    for v in vals:
+        next = ListNode(v)
+        tail.next = next
+        tail = next
+
+    return dummy.next
+
+
+def ltoa(node: Optional[ListNode]) -> list[int]:
+    vals: list[int] = []
+    while node is not None:
+        vals.append(node.val)
+        node = node.next
+
+    return vals
 
 
 def main():
-    inputs = (
-        TreeNode(
-            1, TreeNode(3, TreeNode(5), TreeNode(3)), TreeNode(2, right=TreeNode(9))
-        ),
-        TreeNode(1, TreeNode(2), TreeNode(3)),
-    )
+    inputs = ([1, 2, 3, 4], [1, 2, 3, 4, 5])
 
-    for root in inputs:
-        result = Solution().largestValues(root)
-        print(result)
+    for vals in inputs:
+        head = atol(vals)
+        Solution().reorderList(head)
+        print(ltoa(head))
 
 
 if __name__ == "__main__":
