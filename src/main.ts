@@ -12,7 +12,7 @@ function isInterleave (s1: string, s2: string, s3: string): boolean {
   const s1len = s1.length
   const s2len = s2.length
   const s3len = s3.length
-  if ((s1len + s2len) !== s3len) {
+  if (s1len + s2len !== s3len) {
     return false
   }
 
@@ -23,14 +23,15 @@ function isInterleave (s1: string, s2: string, s3: string): boolean {
   const dp = new Array<boolean>(s2len + 1).fill(false)
   dp[0] = true
   for (let i = 1; i <= s2len; i += 1) {
-    dp[i] = (sat(s2, i - 1) === sat(s3, i - 1)) && bat(dp, i - 1)
+    dp[i] = sat(s2, i - 1) === sat(s3, i - 1) && bat(dp, i - 1)
   }
 
   for (let i = 1; i <= s1len; i += 1) {
-    dp[0] = (sat(s3, i - 1) === sat(s1, i - 1)) && bat(dp, 0)
+    dp[0] = sat(s3, i - 1) === sat(s1, i - 1) && bat(dp, 0)
     for (let j = 1; j <= s2len; j += 1) {
-      dp[j] = (sat(s3, i + j - 1) === sat(s1, i - 1)) && bat(dp, j)
-      dp[j] = bat(dp, j) || ((sat(s3, i + j - 1) === sat(s2, j - 1)) && bat(dp, j - 1))
+      dp[j] = sat(s3, i + j - 1) === sat(s1, i - 1) && bat(dp, j)
+      dp[j] =
+        bat(dp, j) || (sat(s3, i + j - 1) === sat(s2, j - 1) && bat(dp, j - 1))
     }
   }
 
