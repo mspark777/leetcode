@@ -2,90 +2,54 @@ from __future__ import annotations
 from typing import Optional, List
 
 
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
-        self.val = val
-        self.next = next
-
-
 class Solution:
-    def reorderList(self, head: Optional[ListNode]) -> None:
-        """
-        Do not return anything, modify head in-place instead.
-        """
-        if head is None:
-            return
-        elif head.next is None:
-            return
+    def longestPalindrome(self, s: str) -> str:
+        if len(s) < 2:
+            return s
+        elif len(s) == 2:
+            return s if s[0] == s[1] else s[0]
 
-        slow: Optional[ListNode] = head
-        fast: Optional[ListNode] = head
-        while fast is not None and fast.next is not None and slow is not None:
-            slow = slow.next
-            fast = fast.next.next
+        slen = len(s)
+        maxlen = 0
+        start = 0
+        for i in range(1, slen - 1):
+            ch = s[i]
+            low = i - 1
 
-        new_node: Optional[ListNode] = None
-        if slow is not None:
-            new_node = self.reverse(slow.next)
-            slow.next = None
+            while low > -1:
+                if s[low] == ch:
+                    low -= 1
+                else:
+                    break
 
-        curr: Optional[ListNode] = head
-        dummy = new_node
+            high = i + 1
+            while high < slen:
+                if s[high] == ch:
+                    high += 1
+                else:
+                    break
 
-        while curr is not None and dummy is not None:
-            temp = curr.next
-            curr.next = dummy
-            temp2 = dummy.next
+            while low > -1 and high < slen:
+                if s[low] == s[high]:
+                    low -= 1
+                    high += 1
+                else:
+                    break
 
-            dummy.next = temp
-            curr = temp
-            dummy = temp2
+            l = high - low - 1
+            if maxlen < l:
+                maxlen = l
+                start = low + 1
 
-    def reverse(self, node: Optional[ListNode]) -> Optional[ListNode]:
-        prev: Optional[ListNode] = None
-        curr: Optional[ListNode] = node
-        next: Optional[ListNode] = None
-
-        while curr is not None:
-            next = curr.next
-            curr.next = prev
-            prev = curr
-            curr = next
-
-        return prev
-
-
-def atol(vals: list[int]) -> Optional[ListNode]:
-    dummy = ListNode()
-    tail = dummy
-
-    for v in vals:
-        next = ListNode(v)
-        tail.next = next
-        tail = next
-
-    return dummy.next
-
-
-def ltoa(node: Optional[ListNode]) -> list[int]:
-    vals: list[int] = []
-    while node is not None:
-        vals.append(node.val)
-        node = node.next
-
-    return vals
+        return s[start : maxlen + start]
 
 
 def main():
-    inputs = ([1, 2, 3, 4], [1, 2, 3, 4, 5])
+    inputs = ("babad", "cbbd")
 
-    for vals in inputs:
-        head = atol(vals)
-        Solution().reorderList(head)
-        print(ltoa(head))
+    for s in inputs:
+        result = Solution().longestPalindrome(s)
+        print(result)
 
 
 if __name__ == "__main__":
