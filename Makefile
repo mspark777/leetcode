@@ -15,3 +15,8 @@ py:
 
 sh:
 	@${SHELL} src/main.sh
+
+c:
+	@gcc -Wall -Wextra -Werror -fsanitize=address -o bin/c src/main.c
+	@./bin/c
+	@rm ./bin/c
