@@ -16,7 +16,7 @@ py:
 sh:
 	@${SHELL} src/main.sh
 
-c:
-	@gcc -Wall -Wextra -Werror -fsanitize=address -o bin/c src/main.c
-	@./bin/c
-	@rm ./bin/c
+cpp:
+	@g++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address -o bin/cpp src/main.cpp
+	@./bin/cpp
+	@rm ./bin/cpp
