@@ -3,52 +3,19 @@ from typing import Optional, List
 
 
 class Solution:
-    def longestPalindrome(self, s: str) -> str:
-        if len(s) < 2:
-            return s
-        elif len(s) == 2:
-            return s if s[0] == s[1] else s[0]
-
-        slen = len(s)
-        maxlen = 0
-        start = 0
-        for i in range(1, slen - 1):
-            ch = s[i]
-            low = i - 1
-
-            while low > -1:
-                if s[low] == ch:
-                    low -= 1
-                else:
-                    break
-
-            high = i + 1
-            while high < slen:
-                if s[high] == ch:
-                    high += 1
-                else:
-                    break
-
-            while low > -1 and high < slen:
-                if s[low] == s[high]:
-                    low -= 1
-                    high += 1
-                else:
-                    break
-
-            l = high - low - 1
-            if maxlen < l:
-                maxlen = l
-                start = low + 1
-
-        return s[start : maxlen + start]
+    def sortByBits(self, arr: List[int]) -> List[int]:
+        arr.sort(key=lambda n: (n.bit_count(), n))
+        return arr
 
 
 def main():
-    inputs = ("babad", "cbbd")
+    inputs = (
+        [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1],
+    )
 
-    for s in inputs:
-        result = Solution().longestPalindrome(s)
+    for arr in inputs:
+        result = Solution().sortByBits(arr)
         print(result)
 
 
