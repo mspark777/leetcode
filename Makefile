@@ -8,15 +8,15 @@ js:
 	@npm run start:js
 
 go:
-	@go run src/main.go
+	@go run src/go/main.go
 
 py:
-	@python src/main.py
+	@python src/py/main.py
 
 sh:
-	@${SHELL} src/main.sh
+	@cd src/sh && ${SHELL} main.sh
 
 cpp:
-	@g++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address -o bin/cpp src/main.cpp
+	@g++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address -o bin/cpp src/cpp/main.cpp
 	@./bin/cpp
 	@rm ./bin/cpp
