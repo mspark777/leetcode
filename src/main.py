@@ -3,19 +3,20 @@ from typing import Optional, List
 
 
 class Solution:
-    def sortByBits(self, arr: List[int]) -> List[int]:
-        arr.sort(key=lambda n: (n.bit_count(), n))
-        return arr
+    def findArray(self, pref: List[int]) -> List[int]:
+        n = len(pref)
+
+        for i in range(n - 1, 0, -1):
+            pref[i] = pref[i] ^ pref[i - 1]
+
+        return pref
 
 
 def main():
-    inputs = (
-        [0, 1, 2, 3, 4, 5, 6, 7, 8],
-        [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1],
-    )
+    inputs = ([5, 2, 0, 3, 1], [13])
 
-    for arr in inputs:
-        result = Solution().sortByBits(arr)
+    for pref in inputs:
+        result = Solution().findArray(pref)
         print(result)
 
 
