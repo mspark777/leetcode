@@ -1,61 +1,45 @@
 from __future__ import annotations
+from collections import defaultdict
 from typing import Optional, List
-
-
-class ListNode:
-    val: int
-    next: Optional[ListNode]
-
-    def __init__(self, val: int = 0, next: Optional[ListNode] = None):
-        self.val = val
-        self.next = next
+from tree_node import TreeNode
 
 
 class Solution:
-    def insertionSortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        dummy = ListNode()
-        curr = head
+    def findMode(self, root: Optional[TreeNode]) -> List[int]:
+        if root is None:
+            return []
 
-        while curr is not None:
-            prev = dummy
-            while prev.next and prev.next.val <= curr.val:
-                prev = prev.next
+        counter = defaultdict[int, int](int)
+        stack = [root]
 
-            next = curr.next
-            curr.next = prev.next
-            prev.next = curr
-            curr = next
+        while stack:
+            node = stack.pop()
+            counter[node.val] += 1
 
-        return dummy.next
+            left = node.left
+            if left is not None:
+                stack.append(left)
 
+            right = node.right
+            if right is not None:
+                stack.append(right)
 
-def atol(nums: list[int]) -> Optional[ListNode]:
-    dummy = ListNode()
-    tail = dummy
-    for num in nums:
-        next = ListNode(num)
-        tail.next = next
-        tail = next
+        max_freq = max(counter.values())
 
-    return dummy.next
+        result: list[int] = []
+        for val, freq in counter.items():
+            if freq == max_freq:
+                result.append(val)
 
-
-def ltoa(node: Optional[ListNode]) -> list[int]:
-    nums: list[int] = []
-
-    while node is not None:
-        nums.append(node.val)
-        node = node.next
-
-    return nums
+        return result
 
 
 def main():
-    inputs = ([4, 2, 1, 3], [-1, 5, 3, 4, 0])
+    inputs = (TreeNode(1, None, TreeNode(2, TreeNode(2))), TreeNode(0))
 
-    for nums in inputs:
-        result = Solution().insertionSortList(atol(nums))
-        print(ltoa(result))
+    for root in inputs:
+        result = Solution().findMode(root)
+        print(result)
 
 
 if __name__ == "__main__":
