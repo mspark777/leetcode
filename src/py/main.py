@@ -1,75 +1,39 @@
 from __future__ import annotations
 from typing import Optional
-from list_node import ListNode, atol, ltoa
+from tree_node import TreeNode
 
 
 class Solution:
-    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if head is None:
-            return head
-        elif head.next is None:
-            return head
+    def averageOfSubtree(self, root: Optional[TreeNode]) -> int:
+        result = self.travel(root)
+        return result[1]
 
-        slow: Optional[ListNode] = head
-        fast: Optional[ListNode] = head.next
+    def travel(self, node: Optional[TreeNode]) -> tuple[int, int, int]:
+        if node is None:
+            return (0, 0, 0)
 
-        while slow is not None and fast is not None and fast.next is not None:
-            slow = slow.next
-            fast = fast.next.next
+        (lsum, lres, lcnt) = self.travel(node.left)
+        (rsum, rres, rcnt) = self.travel(node.right)
 
-        head2: Optional[ListNode] = None
-        if slow is not None:
-            head2 = slow.next
-            slow.next = None
-
-        first = self.sortList(head)
-        second = self.sortList(head2)
-
-        return self.merge(first, second)
-
-    def merge(
-        self, left: Optional[ListNode], right: Optional[ListNode]
-    ) -> Optional[ListNode]:
-        if left is None:
-            return right
-        elif right is None:
-            return left
-
-        head = left if left.val <= right.val else right
-        l: Optional[ListNode] = left
-        r: Optional[ListNode] = right
-        if head == left:
-            l = l.next
-        else:
-            r = r.next
-
-        h = head
-
-        while l is not None and r is not None:
-            if l.val <= r.val:
-                h.next = l
-                h = l
-                l = l.next
-            else:
-                h.next = r
-                h = r
-                r = r.next
-
-        if l is not None:
-            h.next = l
-        elif r is not None:
-            h.next = r
-
-        return head
+        sum = lsum + rsum + node.val
+        cnt = lcnt + rcnt + 1
+        avg = sum // cnt
+        if node.val == avg:
+            return (sum, lres + rres + 1, cnt)
+        return (sum, lres + rres, cnt)
 
 
 def main():
-    inputs = ([4, 2, 1, 3], [-1, 5, 3, 4, 0])
+    inputs = (
+        TreeNode(
+            4, TreeNode(8, TreeNode(0), TreeNode(1)), TreeNode(5, None, TreeNode(6))
+        ),
+        TreeNode(1),
+    )
 
-    for nums in inputs:
-        head = atol(nums)
-        result = Solution().sortList(head)
-        print(ltoa(result))
+    for root in inputs:
+        result = Solution().averageOfSubtree(root)
+        print(result)
 
 
 if __name__ == "__main__":
