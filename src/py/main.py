@@ -1,38 +1,30 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import TreeNode
+from typing import List
 
 
 class Solution:
-    def averageOfSubtree(self, root: Optional[TreeNode]) -> int:
-        result = self.travel(root)
-        return result[1]
+    def buildArray(self, target: List[int], n: int) -> List[str]:
+        result: list[str] = []
 
-    def travel(self, node: Optional[TreeNode]) -> tuple[int, int, int]:
-        if node is None:
-            return (0, 0, 0)
+        cur = 1
 
-        (lsum, lres, lcnt) = self.travel(node.left)
-        (rsum, rres, rcnt) = self.travel(node.right)
+        for num in target:
+            while cur < num:
+                result.append("Push")
+                result.append("Pop")
+                cur += 1
 
-        sum = lsum + rsum + node.val
-        cnt = lcnt + rcnt + 1
-        avg = sum // cnt
-        if node.val == avg:
-            return (sum, lres + rres + 1, cnt)
-        return (sum, lres + rres, cnt)
+            result.append("Push")
+            cur += 1
+
+        return result
 
 
 def main():
-    inputs = (
-        TreeNode(
-            4, TreeNode(8, TreeNode(0), TreeNode(1)), TreeNode(5, None, TreeNode(6))
-        ),
-        TreeNode(1),
-    )
+    inputs = (([1, 3], 3), ([1, 2, 3], 3), ([1, 2], 4))
 
-    for root in inputs:
-        result = Solution().averageOfSubtree(root)
+    for target, n in inputs:
+        result = Solution().buildArray(target, n)
         print(result)
 
 
