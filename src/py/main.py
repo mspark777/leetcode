@@ -3,28 +3,24 @@ from typing import List
 
 
 class Solution:
-    def buildArray(self, target: List[int], n: int) -> List[str]:
-        result: list[str] = []
+    def getLastMoment(self, n: int, left: List[int], right: List[int]) -> int:
+        left.append(-1)
+        right.append(n + 1)
+        lmax = max(left)
+        rmax = max([n - r for r in right])
 
-        cur = 1
-
-        for num in target:
-            while cur < num:
-                result.append("Push")
-                result.append("Pop")
-                cur += 1
-
-            result.append("Push")
-            cur += 1
-
-        return result
+        return max(lmax, rmax)
 
 
 def main():
-    inputs = (([1, 3], 3), ([1, 2, 3], 3), ([1, 2], 4))
+    inputs = (
+        (4, [4, 3], [0, 1]),
+        (7, [], [0, 1, 2, 3, 4, 5, 6, 7]),
+        (7, [0, 1, 2, 3, 4, 5, 6, 7], []),
+    )
 
-    for target, n in inputs:
-        result = Solution().buildArray(target, n)
+    for n, left, right in inputs:
+        result = Solution().getLastMoment(n, left, right)
         print(result)
 
 
