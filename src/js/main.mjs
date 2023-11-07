@@ -5,16 +5,16 @@
  * @param {string} s
  * @returns {boolean}
  */
-function repeatedSubstringPattern (s) {
-  return s.repeat(2).slice(1, -1).includes(s)
+function repeatedSubstringPattern(s) {
+  return s.repeat(2).slice(1, -1).includes(s);
 }
 
-function main () {
-  const inputs = ['abab', 'aba', 'abcabcabcabc']
+function main() {
+  const inputs = ["abab", "aba", "abcabcabcabc"];
 
   for (const s of inputs) {
-    const result = repeatedSubstringPattern(s)
-    console.log(result)
+    const result = repeatedSubstringPattern(s);
+    console.log(result);
   }
 }
-main()
+main();

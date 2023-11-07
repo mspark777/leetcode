@@ -6,6 +6,7 @@ import (
 
 func maximalNetworkRank(n int, roads [][]int) int {
 	adjacents := map[int]map[int]bool{}
+
 	for _, road := range roads {
 		a := road[0]
 		b := road[1]
