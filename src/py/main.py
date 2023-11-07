@@ -3,24 +3,32 @@ from typing import List
 
 
 class Solution:
-    def getLastMoment(self, n: int, left: List[int], right: List[int]) -> int:
-        left.append(-1)
-        right.append(n + 1)
-        lmax = max(left)
-        rmax = max([n - r for r in right])
+    def eliminateMaximum(self, dist: List[int], speed: List[int]) -> int:
+        arrival: list[float] = []
+        for d, s in zip(dist, speed):
+            arrival.append(d / s)
 
-        return max(lmax, rmax)
+        arrival.sort()
+        result = 0
+
+        for i, val in enumerate(arrival):
+            if val <= i:
+                break
+            else:
+                result += 1
+
+        return result
 
 
 def main():
     inputs = (
-        (4, [4, 3], [0, 1]),
-        (7, [], [0, 1, 2, 3, 4, 5, 6, 7]),
-        (7, [0, 1, 2, 3, 4, 5, 6, 7], []),
+        ([1, 3, 4], [1, 1, 1]),
+        ([1, 1, 2, 3], [1, 1, 1, 1]),
+        ([3, 2, 4], [5, 3, 2]),
     )
 
-    for n, left, right in inputs:
-        result = Solution().getLastMoment(n, left, right)
+    for dist, speed in inputs:
+        result = Solution().eliminateMaximum(dist, speed)
         print(result)
 
 
