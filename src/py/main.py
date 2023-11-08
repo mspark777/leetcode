@@ -1,34 +1,22 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def eliminateMaximum(self, dist: List[int], speed: List[int]) -> int:
-        arrival: list[float] = []
-        for d, s in zip(dist, speed):
-            arrival.append(d / s)
+    def isReachableAtTime(self, sx: int, sy: int, fx: int, fy: int, t: int) -> bool:
+        w = abs(sx - fx)
+        h = abs(sy - fy)
 
-        arrival.sort()
-        result = 0
+        if w == 0 and h == 0 and t == 1:
+            return False
 
-        for i, val in enumerate(arrival):
-            if val <= i:
-                break
-            else:
-                result += 1
-
-        return result
+        return t >= max(w, h)
 
 
 def main():
-    inputs = (
-        ([1, 3, 4], [1, 1, 1]),
-        ([1, 1, 2, 3], [1, 1, 1, 1]),
-        ([3, 2, 4], [5, 3, 2]),
-    )
+    inputs = ((2, 4, 7, 7, 6), (3, 1, 7, 3, 3))
 
-    for dist, speed in inputs:
-        result = Solution().eliminateMaximum(dist, speed)
+    for sx, sy, fx, fy, t in inputs:
+        result = Solution().isReachableAtTime(sx, sy, fx, fy, t)
         print(result)
 
 
