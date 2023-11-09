@@ -2,21 +2,27 @@ from __future__ import annotations
 
 
 class Solution:
-    def isReachableAtTime(self, sx: int, sy: int, fx: int, fy: int, t: int) -> bool:
-        w = abs(sx - fx)
-        h = abs(sy - fy)
+    def countHomogenous(self, s: str) -> int:
+        result = 0
+        curr = 0
+        MOD = 10**9 + 7
 
-        if w == 0 and h == 0 and t == 1:
-            return False
+        for i in range(len(s)):
+            if i == 0 or s[i] == s[i - 1]:
+                curr += 1
+            else:
+                curr = 1
 
-        return t >= max(w, h)
+            result = (result + curr) % MOD
+
+        return result
 
 
 def main():
-    inputs = ((2, 4, 7, 7, 6), (3, 1, 7, 3, 3))
+    inputs = ("abbcccaa", "xy", "zzzzz")
 
-    for sx, sy, fx, fy, t in inputs:
-        result = Solution().isReachableAtTime(sx, sy, fx, fy, t)
+    for s in inputs:
+        result = Solution().countHomogenous(s)
         print(result)
 
 
