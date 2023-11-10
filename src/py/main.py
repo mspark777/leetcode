@@ -1,28 +1,43 @@
 from __future__ import annotations
+from typing import List, Optional
+from collections import defaultdict
 
 
 class Solution:
-    def countHomogenous(self, s: str) -> int:
-        result = 0
-        curr = 0
-        MOD = 10**9 + 7
+    def restoreArray(self, adjacentPairs: List[List[int]]) -> List[int]:
+        graph = defaultdict[int, list[int]](list)
 
-        for i in range(len(s)):
-            if i == 0 or s[i] == s[i - 1]:
-                curr += 1
-            else:
-                curr = 1
+        for x, y in adjacentPairs:
+            graph[x].append(y)
+            graph[y].append(x)
 
-            result = (result + curr) % MOD
+        cur = self.root(graph)
+        result = [cur]
+        prev: Optional[int] = None
+
+        while len(result) < len(graph):
+            for neighbor in graph[cur]:
+                if neighbor != prev:
+                    result.append(neighbor)
+                    prev = cur
+                    cur = neighbor
+                    break
 
         return result
 
+    def root(self, graph: dict[int, list[int]]) -> int:
+        for k, v in graph.items():
+            if len(v) == 1:
+                return k
+
+        return -1
+
 
 def main():
-    inputs = ("abbcccaa", "xy", "zzzzz")
+    inputs = ([[2, 1], [3, 4], [3, 2]], [[4, -2], [1, 4], [-3, 1]], [[100000, -100000]])
 
-    for s in inputs:
-        result = Solution().countHomogenous(s)
+    for adjacentPairs in inputs:
+        result = Solution().restoreArray(adjacentPairs)
         print(result)
 
 
