@@ -1,43 +1,36 @@
 from __future__ import annotations
-from typing import List, Optional
-from collections import defaultdict
 
 
 class Solution:
-    def restoreArray(self, adjacentPairs: List[List[int]]) -> List[int]:
-        graph = defaultdict[int, list[int]](list)
+    def sortVowels(self, s: str) -> str:
+        temp: list[str] = []
 
-        for x, y in adjacentPairs:
-            graph[x].append(y)
-            graph[y].append(x)
+        for c in s:
+            if self.is_vowel(c):
+                temp.append(c)
 
-        cur = self.root(graph)
-        result = [cur]
-        prev: Optional[int] = None
+        temp.sort()
 
-        while len(result) < len(graph):
-            for neighbor in graph[cur]:
-                if neighbor != prev:
-                    result.append(neighbor)
-                    prev = cur
-                    cur = neighbor
-                    break
+        result: list[str] = []
+        i = 0
+        for c in s:
+            if self.is_vowel(c):
+                result.append(temp[i])
+                i += 1
+            else:
+                result.append(c)
 
-        return result
+        return "".join(result)
 
-    def root(self, graph: dict[int, list[int]]) -> int:
-        for k, v in graph.items():
-            if len(v) == 1:
-                return k
-
-        return -1
+    def is_vowel(self, c: str) -> bool:
+        return c in "aeiouAEIOU"
 
 
 def main():
-    inputs = ([[2, 1], [3, 4], [3, 2]], [[4, -2], [1, 4], [-3, 1]], [[100000, -100000]])
+    inputs = ("lEetcOde", "lYmpH")
 
-    for adjacentPairs in inputs:
-        result = Solution().restoreArray(adjacentPairs)
+    for s in inputs:
+        result = Solution().sortVowels(s)
         print(result)
 
 
