@@ -2,35 +2,36 @@ from __future__ import annotations
 
 
 class Solution:
-    def sortVowels(self, s: str) -> str:
-        temp: list[str] = []
+    def countPalindromicSubsequence(self, s: str) -> int:
+        first = [-1] * 26
+        last = [-1] * 26
 
-        for c in s:
-            if self.is_vowel(c):
-                temp.append(c)
+        for i, c in enumerate(s):
+            curr = ord(c) - ord("a")
+            if first[curr] == -1:
+                first[curr] = i
 
-        temp.sort()
+            last[curr] = i
 
-        result: list[str] = []
-        i = 0
-        for c in s:
-            if self.is_vowel(c):
-                result.append(temp[i])
-                i += 1
-            else:
-                result.append(c)
+        result = 0
+        for i in range(26):
+            if first[i] == -1:
+                continue
 
-        return "".join(result)
+            between = set[str]()
+            for j in range(first[i] + 1, last[i]):
+                between.add(s[j])
 
-    def is_vowel(self, c: str) -> bool:
-        return c in "aeiouAEIOU"
+            result += len(between)
+
+        return result
 
 
 def main():
-    inputs = ("lEetcOde", "lYmpH")
+    inputs = ("aabca", "adc", "bbcbaba")
 
     for s in inputs:
-        result = Solution().sortVowels(s)
+        result = Solution().countPalindromicSubsequence(s)
         print(result)
 
 
