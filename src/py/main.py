@@ -1,37 +1,27 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def countPalindromicSubsequence(self, s: str) -> int:
-        first = [-1] * 26
-        last = [-1] * 26
+    def maximumElementAfterDecrementingAndRearranging(self, arr: List[int]) -> int:
+        n = len(arr)
+        counts = [0] * (n + 1)
 
-        for i, c in enumerate(s):
-            curr = ord(c) - ord("a")
-            if first[curr] == -1:
-                first[curr] = i
+        for num in arr:
+            counts[min(num, n)] += 1
 
-            last[curr] = i
-
-        result = 0
-        for i in range(26):
-            if first[i] == -1:
-                continue
-
-            between = set[str]()
-            for j in range(first[i] + 1, last[i]):
-                between.add(s[j])
-
-            result += len(between)
+        result = 1
+        for num in range(2, n + 1):
+            result = min(result + counts[num], num)
 
         return result
 
 
 def main():
-    inputs = ("aabca", "adc", "bbcbaba")
+    inputs = ([2, 2, 1, 2, 1], [100, 1, 1000], [1, 2, 3, 4, 5])
 
-    for s in inputs:
-        result = Solution().countPalindromicSubsequence(s)
+    for arr in inputs:
+        result = Solution().maximumElementAfterDecrementingAndRearranging(arr)
         print(result)
 
 
