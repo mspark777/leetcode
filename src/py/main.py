@@ -3,25 +3,20 @@ from typing import List
 
 
 class Solution:
-    def maximumElementAfterDecrementingAndRearranging(self, arr: List[int]) -> int:
-        n = len(arr)
-        counts = [0] * (n + 1)
+    def findDifferentBinaryString(self, nums: List[str]) -> str:
+        result: list[str] = []
+        for i, num in enumerate(nums):
+            cur = num[i]
+            result.append("1" if cur == "0" else "0")
 
-        for num in arr:
-            counts[min(num, n)] += 1
-
-        result = 1
-        for num in range(2, n + 1):
-            result = min(result + counts[num], num)
-
-        return result
+        return "".join(result)
 
 
 def main():
-    inputs = ([2, 2, 1, 2, 1], [100, 1, 1000], [1, 2, 3, 4, 5])
+    inputs = (["01", "10"], ["00", "01"], ["111", "011", "001"])
 
-    for arr in inputs:
-        result = Solution().maximumElementAfterDecrementingAndRearranging(arr)
+    for nums in inputs:
+        result = Solution().findDifferentBinaryString(nums)
         print(result)
 
 
