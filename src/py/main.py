@@ -3,20 +3,25 @@ from typing import List
 
 
 class Solution:
-    def findDifferentBinaryString(self, nums: List[str]) -> str:
-        result: list[str] = []
-        for i, num in enumerate(nums):
-            cur = num[i]
-            result.append("1" if cur == "0" else "0")
+    def minPairSum(self, nums: List[int]) -> int:
+        nums.sort()
 
-        return "".join(result)
+        l = 0
+        r = len(nums) - 1
+        result = 0
+        while l < r:
+            result = max(result, nums[l] + nums[r])
+            l += 1
+            r -= 1
+
+        return result
 
 
 def main():
-    inputs = (["01", "10"], ["00", "01"], ["111", "011", "001"])
+    inputs = ([3, 5, 2, 3], [3, 5, 4, 2, 4, 6])
 
     for nums in inputs:
-        result = Solution().findDifferentBinaryString(nums)
+        result = Solution().minPairSum(nums)
         print(result)
 
 
