@@ -3,25 +3,30 @@ from typing import List
 
 
 class Solution:
-    def minPairSum(self, nums: List[int]) -> int:
+    def maxFrequency(self, nums: List[int], k: int) -> int:
         nums.sort()
-
-        l = 0
-        r = len(nums) - 1
+        left = 0
         result = 0
-        while l < r:
-            result = max(result, nums[l] + nums[r])
-            l += 1
-            r -= 1
+        curr = 0
+
+        for right in range(len(nums)):
+            target = nums[right]
+            curr += target
+
+            while (right - left + 1) * target - curr > k:
+                curr -= nums[left]
+                left += 1
+
+            result = max(result, right - left + 1)
 
         return result
 
 
 def main():
-    inputs = ([3, 5, 2, 3], [3, 5, 4, 2, 4, 6])
+    inputs = (([1, 2, 4], 5), ([1, 4, 8, 13], 5))
 
-    for nums in inputs:
-        result = Solution().minPairSum(nums)
+    for nums, k in inputs:
+        result = Solution().maxFrequency(nums, k)
         print(result)
 
 
