@@ -3,30 +3,29 @@ from typing import List
 
 
 class Solution:
-    def maxFrequency(self, nums: List[int], k: int) -> int:
+    def reductionOperations(self, nums: List[int]) -> int:
         nums.sort()
-        left = 0
         result = 0
-        curr = 0
+        up = 0
 
-        for right in range(len(nums)):
-            target = nums[right]
-            curr += target
+        for i in range(1, len(nums)):
+            if nums[i] != nums[i - 1]:
+                up += 1
 
-            while (right - left + 1) * target - curr > k:
-                curr -= nums[left]
-                left += 1
-
-            result = max(result, right - left + 1)
+            result += up
 
         return result
 
 
 def main():
-    inputs = (([1, 2, 4], 5), ([1, 4, 8, 13], 5))
+    inputs = (
+        [5, 1, 3],
+        [1, 1, 1],
+        [1, 1, 2, 2, 3],
+    )
 
-    for nums, k in inputs:
-        result = Solution().maxFrequency(nums, k)
+    for nums in inputs:
+        result = Solution().reductionOperations(nums)
         print(result)
 
 
