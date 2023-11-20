@@ -1,31 +1,34 @@
 from __future__ import annotations
 from typing import List
+from collections import defaultdict
 
 
 class Solution:
-    def reductionOperations(self, nums: List[int]) -> int:
-        nums.sort()
+    def garbageCollection(self, garbage: List[str], travel: List[int]) -> int:
+        for i in range(1, len(travel)):
+            travel[i] = travel[i - 1] + travel[i]
+
+        last_pos = defaultdict[str, int](int)
         result = 0
-        up = 0
 
-        for i in range(1, len(nums)):
-            if nums[i] != nums[i - 1]:
-                up += 1
+        for i, g in enumerate(garbage):
+            for c in g:
+                last_pos[c] = i
+            result += len(g)
 
-            result += up
+        types = "MPG"
+        for t in types:
+            if last_pos[t] != 0:
+                result += travel[last_pos[t] - 1]
 
         return result
 
 
 def main():
-    inputs = (
-        [5, 1, 3],
-        [1, 1, 1],
-        [1, 1, 2, 2, 3],
-    )
+    inputs = ((["G", "P", "GP", "GG"], [2, 4, 3]), (["MMM", "PGM", "GP"], [3, 10]))
 
-    for nums in inputs:
-        result = Solution().reductionOperations(nums)
+    for garbage, travel in inputs:
+        result = Solution().garbageCollection(garbage, travel)
         print(result)
 
 
