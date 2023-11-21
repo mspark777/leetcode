@@ -1,34 +1,36 @@
 from __future__ import annotations
-from typing import List
 from collections import defaultdict
+from typing import List
 
 
 class Solution:
-    def garbageCollection(self, garbage: List[str], travel: List[int]) -> int:
-        for i in range(1, len(travel)):
-            travel[i] = travel[i - 1] + travel[i]
+    def countNicePairs(self, nums: List[int]) -> int:
+        arr = [n - self.rev(n) for n in nums]
 
-        last_pos = defaultdict[str, int](int)
+        dic = defaultdict[int, int](int)
         result = 0
+        MOD = 10**9 + 7
 
-        for i, g in enumerate(garbage):
-            for c in g:
-                last_pos[c] = i
-            result += len(g)
+        for num in arr:
+            result = (result + dic[num]) % MOD
+            dic[num] += 1
 
-        types = "MPG"
-        for t in types:
-            if last_pos[t] != 0:
-                result += travel[last_pos[t] - 1]
+        return result
+
+    def rev(self, num: int) -> int:
+        result = 0
+        while num > 0:
+            result = result * 10 + num % 10
+            num //= 10
 
         return result
 
 
 def main():
-    inputs = ((["G", "P", "GP", "GG"], [2, 4, 3]), (["MMM", "PGM", "GP"], [3, 10]))
+    inputs = ([42, 11, 1, 97], [13, 10, 35, 24, 76])
 
-    for garbage, travel in inputs:
-        result = Solution().garbageCollection(garbage, travel)
+    for nums in inputs:
+        result = Solution().countNicePairs(nums)
         print(result)
 
 
