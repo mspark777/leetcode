@@ -1,34 +1,53 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def getSumAbsoluteDifferences(self, nums: List[int]) -> List[int]:
-        n = len(nums)
-        total_sum = sum(nums)
-        left_sum = 0
-        result: list[int] = []
+    def knightDialer(self, n: int) -> int:
+        if n == 1:
+            return 10
 
-        for i, num in enumerate(nums):
-            right_sum = total_sum - left_sum - num
+        A = [
+            [0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+        ]
 
-            left_count = i
-            right_count = n - i - 1
+        v = [[1] * 10]
+        MOD = 10**9 + 7
 
-            left_total = left_count * num - left_sum
-            right_total = right_sum - right_count * num
+        n -= 1
+        while n:
+            if n & 1:
+                v = self.multiply(v, A)
 
-            result.append(left_total + right_total)
-            left_sum += num
+            A = self.multiply(A, A)
+            n >>= 1
+
+        return sum(v[0]) % MOD
+
+    def multiply(self, a: list[list[int]], b: list[list[int]]) -> list[list[int]]:
+        MOD = 10**9 + 7
+        result = [[0] * len(b[0]) for _ in range(len(a))]
+        for i in range(len(a)):
+            for j in range(len(b[0])):
+                for k in range(len(b)):
+                    result[i][j] = (result[i][j] + a[i][k] * b[k][j]) % MOD
 
         return result
 
 
 def main():
-    inputs = ([2, 3, 5], [1, 4, 6, 8, 10])
+    inputs = (1, 2, 3131)
 
-    for nums in inputs:
-        result = Solution().getSumAbsoluteDifferences(nums)
+    for n in inputs:
+        result = Solution().knightDialer(n)
         print(result)
 
 
