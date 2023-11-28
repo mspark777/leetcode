@@ -1,53 +1,38 @@
 from __future__ import annotations
+from typing import Optional
 
 
 class Solution:
-    def knightDialer(self, n: int) -> int:
-        if n == 1:
-            return 10
+    def numberOfWays(self, corridor: str) -> int:
+        MOD = 1_000_000_007
 
-        A = [
-            [0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-        ]
+        count = 1
+        seats = 0
 
-        v = [[1] * 10]
-        MOD = 10**9 + 7
+        prevoius_pair_last: Optional[int] = None
 
-        n -= 1
-        while n:
-            if n & 1:
-                v = self.multiply(v, A)
+        for i, thing in enumerate(corridor):
+            if thing == "S":
+                seats += 1
 
-            A = self.multiply(A, A)
-            n >>= 1
+                if seats == 2:
+                    prevoius_pair_last = i
+                    seats = 0
+                elif seats == 1 and prevoius_pair_last is not None:
+                    count *= i - prevoius_pair_last
+                    count %= MOD
 
-        return sum(v[0]) % MOD
+        if seats == 1 or prevoius_pair_last is None:
+            return 0
 
-    def multiply(self, a: list[list[int]], b: list[list[int]]) -> list[list[int]]:
-        MOD = 10**9 + 7
-        result = [[0] * len(b[0]) for _ in range(len(a))]
-        for i in range(len(a)):
-            for j in range(len(b[0])):
-                for k in range(len(b)):
-                    result[i][j] = (result[i][j] + a[i][k] * b[k][j]) % MOD
-
-        return result
+        return count
 
 
 def main():
-    inputs = (1, 2, 3131)
+    inputs = ("SSPPSPS", "PPSPSP", "S")
 
-    for n in inputs:
-        result = Solution().knightDialer(n)
+    for corridor in inputs:
+        result = Solution().numberOfWays(corridor)
         print(result)
 
 
