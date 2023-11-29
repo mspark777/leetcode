@@ -1,38 +1,21 @@
 from __future__ import annotations
-from typing import Optional
 
 
 class Solution:
-    def numberOfWays(self, corridor: str) -> int:
-        MOD = 1_000_000_007
+    def hammingWeight(self, n: int) -> int:
+        result = 0
+        while n != 0:
+            n &= n - 1
+            result += 1
 
-        count = 1
-        seats = 0
-
-        prevoius_pair_last: Optional[int] = None
-
-        for i, thing in enumerate(corridor):
-            if thing == "S":
-                seats += 1
-
-                if seats == 2:
-                    prevoius_pair_last = i
-                    seats = 0
-                elif seats == 1 and prevoius_pair_last is not None:
-                    count *= i - prevoius_pair_last
-                    count %= MOD
-
-        if seats == 1 or prevoius_pair_last is None:
-            return 0
-
-        return count
+        return result
 
 
 def main():
-    inputs = ("SSPPSPS", "PPSPSP", "S")
+    inputs = (0b1011, 0b10000000, 0b11111111111111111111111111111101)
 
-    for corridor in inputs:
-        result = Solution().numberOfWays(corridor)
+    for n in inputs:
+        result = Solution().hammingWeight(n)
         print(result)
 
 
