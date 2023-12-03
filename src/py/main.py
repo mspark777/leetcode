@@ -1,42 +1,24 @@
 from __future__ import annotations
 from typing import List
-from collections import defaultdict
 
 
 class Solution:
-    def countCharacters(self, words: List[str], chars: str) -> int:
-        counts = defaultdict[str, int](int)
-
-        for ch in chars:
-            counts[ch] += 1
-
+    def minTimeToVisitAllPoints(self, points: List[List[int]]) -> int:
         result = 0
 
-        for word in words:
-            wcounts = defaultdict[str, int](int)
-            for w in word:
-                wcounts[w] += 1
-
-            good = True
-            for c, freq in wcounts.items():
-                if counts[c] < freq:
-                    good = False
-                    break
-
-            if good:
-                result += len(word)
+        for i in range(len(points) - 1):
+            cx, cy = points[i]
+            tx, ty = points[i + 1]
+            result += max(abs(tx - cx), abs(ty - cy))
 
         return result
 
 
 def main():
-    inputs = (
-        (["cat", "bt", "hat", "tree"], "atach"),
-        (["hello", "world", "leetcode"], "welldonehoneyr"),
-    )
+    inputs = ([[1, 1], [3, 4], [-1, 0]], [[3, 2], [-2, 2]])
 
-    for words, chars in inputs:
-        result = Solution().countCharacters(words, chars)
+    for points in inputs:
+        result = Solution().minTimeToVisitAllPoints(points)
         print(result)
 
 
