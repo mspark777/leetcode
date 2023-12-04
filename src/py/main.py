@@ -1,24 +1,23 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def minTimeToVisitAllPoints(self, points: List[List[int]]) -> int:
-        result = 0
+    def largestGoodInteger(self, num: str) -> str:
+        result = -1
 
-        for i in range(len(points) - 1):
-            cx, cy = points[i]
-            tx, ty = points[i + 1]
-            result += max(abs(tx - cx), abs(ty - cy))
+        for i in range(len(num) - 2):
+            if num[i] == num[i + 1] == num[i + 2]:
+                n = int(num[i])
+                result = max(n, result)
 
-        return result
+        return str(result) * 3 if result >= 0 else ""
 
 
 def main():
-    inputs = ([[1, 1], [3, 4], [-1, 0]], [[3, 2], [-2, 2]])
+    inputs = ("6777133339", "2300019", "42352338")
 
-    for points in inputs:
-        result = Solution().minTimeToVisitAllPoints(points)
+    for num in inputs:
+        result = Solution().largestGoodInteger(num)
         print(result)
 
 
