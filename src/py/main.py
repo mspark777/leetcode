@@ -1,44 +1,25 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def evalRPN(self, tokens: List[str]) -> int:
-        stack: list[int] = []
+    def totalMoney(self, n: int) -> int:
+        weeks = n // 7
+        first = 28
+        last = first + (weeks - 1) * 7
+        arithmetic_sum = weeks * (first + last) // 2
+        monday = 1 + weeks
+        final_week = 0
+        for day in range(n % 7):
+            final_week += monday + day
 
-        for token in tokens:
-            if token == "+":
-                left, right = self.pop(stack)
-                stack.append(left + right)
-            elif token == "-":
-                left, right = self.pop(stack)
-                stack.append(left - right)
-            elif token == "*":
-                left, right = self.pop(stack)
-                stack.append(left * right)
-            elif token == "/":
-                left, right = self.pop(stack)
-                stack.append(int(left / right))
-            else:
-                stack.append(int(token))
-
-        return stack[0]
-
-    def pop(self, stack: list[int]) -> tuple[int, int]:
-        right = stack.pop()
-        left = stack.pop()
-        return (left, right)
+        return arithmetic_sum + final_week
 
 
 def main():
-    inputs = (
-        ["2", "1", "+", "3", "*"],
-        ["4", "13", "5", "/", "+"],
-        ["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"],
-    )
+    inputs = (4, 10, 20)
 
-    for tokens in inputs:
-        result = Solution().evalRPN(tokens)
+    for n in inputs:
+        result = Solution().totalMoney(n)
         print(result)
 
 
