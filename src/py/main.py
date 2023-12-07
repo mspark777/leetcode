@@ -2,24 +2,20 @@ from __future__ import annotations
 
 
 class Solution:
-    def totalMoney(self, n: int) -> int:
-        weeks = n // 7
-        first = 28
-        last = first + (weeks - 1) * 7
-        arithmetic_sum = weeks * (first + last) // 2
-        monday = 1 + weeks
-        final_week = 0
-        for day in range(n % 7):
-            final_week += monday + day
+    def largestOddNumber(self, num: str) -> str:
+        odds = set[str](("1", "3", "5", "7", "9"))
+        for i in range(len(num) - 1, -1, -1):
+            if num[i] in odds:
+                return num[: i + 1]
 
-        return arithmetic_sum + final_week
+        return ""
 
 
 def main():
-    inputs = (4, 10, 20)
+    inputs = ("52", "4206", "35427")
 
-    for n in inputs:
-        result = Solution().totalMoney(n)
+    for num in inputs:
+        result = Solution().largestOddNumber(num)
         print(result)
 
 
