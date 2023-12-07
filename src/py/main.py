@@ -2,20 +2,23 @@ from __future__ import annotations
 
 
 class Solution:
-    def largestOddNumber(self, num: str) -> str:
-        odds = set[str](("1", "3", "5", "7", "9"))
-        for i in range(len(num) - 1, -1, -1):
-            if num[i] in odds:
-                return num[: i + 1]
+    def reverseWords(self, s: str) -> str:
+        result: list[str] = []
+        for s in s.split(" "):
+            if s == "":
+                continue
 
-        return ""
+            result.append(s)
+
+        result.reverse()
+        return " ".join(result)
 
 
 def main():
-    inputs = ("52", "4206", "35427")
+    inputs = ("the sky is blue", "  hello world  ", "a good   example")
 
-    for num in inputs:
-        result = Solution().largestOddNumber(num)
+    for s in inputs:
+        result = Solution().reverseWords(s)
         print(result)
 
 
