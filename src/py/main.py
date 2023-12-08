@@ -1,24 +1,36 @@
 from __future__ import annotations
+from typing import Optional
+from tree_node import TreeNode
 
 
 class Solution:
-    def reverseWords(self, s: str) -> str:
-        result: list[str] = []
-        for s in s.split(" "):
-            if s == "":
-                continue
+    def tree2str(self, root: Optional[TreeNode]) -> str:
+        if root is None:
+            return ""
 
-            result.append(s)
+        left = self.tree2str(root.left)
+        right = self.tree2str(root.right)
+        val = str(root.val)
 
-        result.reverse()
-        return " ".join(result)
+        if left == "":
+            if right == "":
+                return val
+            else:
+                return f"{val}()({right})"
+        elif right == "":
+            return f"{val}({left})"
+
+        return f"{val}({left})({right})"
 
 
 def main():
-    inputs = ("the sky is blue", "  hello world  ", "a good   example")
+    inputs = (
+        TreeNode(1, TreeNode(2, TreeNode(4)), TreeNode(3)),
+        TreeNode(1, TreeNode(2, None, TreeNode(4)), TreeNode(3)),
+    )
 
-    for s in inputs:
-        result = Solution().reverseWords(s)
+    for root in inputs:
+        result = Solution().tree2str(root)
         print(result)
 
 
