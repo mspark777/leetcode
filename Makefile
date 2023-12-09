@@ -17,7 +17,7 @@ sh:
 	@cd src/sh && ${SHELL} main.sh
 
 cpp:
-	@g++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address -o bin/cpp src/cpp/main.cpp
+	@g++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address -o bin/cpp src/cpp/main.cpp src/cpp/tree_node.cpp
 	@./bin/cpp
 	@rm ./bin/cpp
 
