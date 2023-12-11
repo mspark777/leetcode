@@ -1,36 +1,48 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import TreeNode
+from typing import List, Callable
 
 
 class Solution:
-    def tree2str(self, root: Optional[TreeNode]) -> str:
-        if root is None:
-            return ""
+    def findSpecialInteger(self, arr: List[int]) -> int:
+        n = len(arr)
+        candidates = (arr[n // 4], arr[n // 2], arr[(3 * n) // 4])
+        target = n // 4
 
-        left = self.tree2str(root.left)
-        right = self.tree2str(root.right)
-        val = str(root.val)
+        for candidate in candidates:
+            left = self.search(arr, candidate, self.lower_bound)
+            right = self.search(arr, candidate, self.upper_bound)
+            l = right - left
+            if l > target:
+                return candidate
 
-        if left == "":
-            if right == "":
-                return val
+        return -1
+
+    def search(
+        self, arr: list[int], target: int, check: Callable[[int, int], bool]
+    ) -> int:
+        left = 0
+        right = len(arr)
+        while left < right:
+            mid = (left + right) // 2
+            if check(arr[mid], target):
+                right = mid
             else:
-                return f"{val}()({right})"
-        elif right == "":
-            return f"{val}({left})"
+                left = mid + 1
 
-        return f"{val}({left})({right})"
+        return left
+
+    def upper_bound(self, mid: int, target: int) -> bool:
+        return mid > target
+
+    def lower_bound(self, mid: int, target: int) -> bool:
+        return mid >= target
 
 
 def main():
-    inputs = (
-        TreeNode(1, TreeNode(2, TreeNode(4)), TreeNode(3)),
-        TreeNode(1, TreeNode(2, None, TreeNode(4)), TreeNode(3)),
-    )
+    inputs = ([1, 2, 2, 6, 6, 6, 6, 7, 10], [1, 1])
 
-    for root in inputs:
-        result = Solution().tree2str(root)
+    for arr in inputs:
+        result = Solution().findSpecialInteger(arr)
         print(result)
 
 
