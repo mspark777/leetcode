@@ -1,48 +1,32 @@
 from __future__ import annotations
-from typing import List, Callable
+from typing import List
 
 
 class Solution:
-    def findSpecialInteger(self, arr: List[int]) -> int:
-        n = len(arr)
-        candidates = (arr[n // 4], arr[n // 2], arr[(3 * n) // 4])
-        target = n // 4
+    def maxProduct(self, nums: List[int]) -> int:
+        n = len(nums)
+        left = 1
+        right = 1
+        result = nums[0]
+        for i in range(n):
+            if left == 0:
+                left = 1
+            if right == 0:
+                right = 1
 
-        for candidate in candidates:
-            left = self.search(arr, candidate, self.lower_bound)
-            right = self.search(arr, candidate, self.upper_bound)
-            l = right - left
-            if l > target:
-                return candidate
+            left *= nums[i]
+            right *= nums[n - 1 - i]
 
-        return -1
+            result = max(result, left, right)
 
-    def search(
-        self, arr: list[int], target: int, check: Callable[[int, int], bool]
-    ) -> int:
-        left = 0
-        right = len(arr)
-        while left < right:
-            mid = (left + right) // 2
-            if check(arr[mid], target):
-                right = mid
-            else:
-                left = mid + 1
-
-        return left
-
-    def upper_bound(self, mid: int, target: int) -> bool:
-        return mid > target
-
-    def lower_bound(self, mid: int, target: int) -> bool:
-        return mid >= target
+        return result
 
 
 def main():
-    inputs = ([1, 2, 2, 6, 6, 6, 6, 7, 10], [1, 1])
+    inputs = ([2, 3, -2, 4], [-2, 0, -1])
 
-    for arr in inputs:
-        result = Solution().findSpecialInteger(arr)
+    for nums in inputs:
+        result = Solution().maxProduct(nums)
         print(result)
 
 
