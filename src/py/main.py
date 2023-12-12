@@ -4,26 +4,25 @@ from typing import List
 
 class Solution:
     def maxProduct(self, nums: List[int]) -> int:
-        n = len(nums)
-        left = 1
-        right = 1
-        result = nums[0]
-        for i in range(n):
-            if left == 0:
-                left = 1
-            if right == 0:
-                right = 1
+        i_num = 0
+        j_num = 0
+        for num in nums:
+            if num > i_num:
+                j_num = i_num
+                i_num = num
+            else:
+                j_num = max(j_num, num)
 
-            left *= nums[i]
-            right *= nums[n - 1 - i]
-
-            result = max(result, left, right)
-
-        return result
+        return (i_num - 1) * (j_num - 1)
 
 
 def main():
-    inputs = ([2, 3, -2, 4], [-2, 0, -1])
+    inputs = (
+        [3, 4, 5, 2],
+        [1, 5, 4, 5],
+        [3, 7],
+        [2, 2, 1, 8, 1, 5, 4, 5, 2, 10, 3, 6, 5, 2, 3],
+    )
 
     for nums in inputs:
         result = Solution().maxProduct(nums)
