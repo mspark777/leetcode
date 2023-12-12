@@ -1,27 +1,47 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def findPeakElement(self, nums: List[int]) -> int:
-        left = 0
-        right = len(nums) - 1
+    def toHex(self, num: int) -> str:
+        if num == 0:
+            return "0"
 
-        while left < right:
-            mid = (left + right) // 2
-            if nums[mid] > nums[mid + 1]:
-                right = mid
-            else:
-                left = mid + 1
+        if num < 0:
+            num += 2**32
 
-        return left
+        hexes = (
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+        )
+
+        result: list[str] = []
+        while num != 0:
+            result.append(hexes[num % 16])
+            num //= 16
+        result.reverse()
+
+        return "".join(result)
 
 
 def main():
-    inputs = ([1, 2, 3, 1], [1, 2, 1, 3, 5, 6, 4])
+    inputs = (26, -1)
 
-    for nums in inputs:
-        result = Solution().findPeakElement(nums)
+    for num in inputs:
+        result = Solution().toHex(num)
         print(result)
 
 
