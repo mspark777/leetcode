@@ -1,35 +1,26 @@
 from __future__ import annotations
-from typing import List
+from itertools import zip_longest
 
 
 class Solution:
-    def numSpecial(self, mat: List[List[int]]) -> int:
-        m = len(mat)
-        n = len(mat[0])
-        rows = [0] * m
-        cols = [0] * n
-        for r in range(m):
-            for c in range(n):
-                rows[r] += mat[r][c]
+    def compareVersion(self, version1: str, version2: str) -> int:
+        ver1 = list(map(int, version1.split(".")))
+        ver2 = list(map(int, version2.split(".")))
 
-        for c in range(n):
-            for r in range(m):
-                cols[c] += mat[r][c]
+        for v1, v2 in zip_longest(ver1, ver2, fillvalue=0):
+            if v1 < v2:
+                return -1
+            elif v1 > v2:
+                return 1
 
-        result = 0
-        for r, row in enumerate(mat):
-            for c, col in enumerate(row):
-                if col == 1 and rows[r] == 1 and cols[c] == 1:
-                    result += 1
-
-        return result
+        return 0
 
 
 def main():
-    inputs = ([[1, 0, 0], [0, 0, 1], [1, 0, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    inputs = (("1.01", "1.001"), ("1.0", "1.0.0"), ("0.1", "1.1"))
 
-    for nums in inputs:
-        result = Solution().numSpecial(nums)
+    for version1, version2 in inputs:
+        result = Solution().compareVersion(version1, version2)
         print(result)
 
 
