@@ -1,26 +1,51 @@
 from __future__ import annotations
-from itertools import zip_longest
+from typing import List
 
 
 class Solution:
-    def compareVersion(self, version1: str, version2: str) -> int:
-        ver1 = list(map(int, version1.split(".")))
-        ver2 = list(map(int, version2.split(".")))
+    def findDiagonalOrder(self, mat: List[List[int]]) -> List[int]:
+        row_count = len(mat)
+        col_count = len(mat[0])
+        result: list[int] = []
+        is_up = True
+        row = 0
+        col = 0
 
-        for v1, v2 in zip_longest(ver1, ver2, fillvalue=0):
-            if v1 < v2:
-                return -1
-            elif v1 > v2:
-                return 1
+        while row < row_count and col < col_count:
+            result.append(mat[row][col])
+            next_row = row + (-1 if is_up else 1)
+            next_col = col + (1 if is_up else -1)
 
-        return 0
+            if (
+                next_row < 0
+                or next_row >= row_count
+                or next_col < 0
+                or next_col >= col_count
+            ):
+                if is_up:
+                    if next_col >= col_count:
+                        row += 1
+                    else:
+                        col += 1
+                else:
+                    if next_row >= row_count:
+                        col += 1
+                    else:
+                        row += 1
+
+                is_up = not is_up
+            else:
+                row = next_row
+                col = next_col
+
+        return result
 
 
 def main():
-    inputs = (("1.01", "1.001"), ("1.0", "1.0.0"), ("0.1", "1.1"))
+    inputs = ([[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[1, 2], [3, 4]])
 
-    for version1, version2 in inputs:
-        result = Solution().compareVersion(version1, version2)
+    for mat in inputs:
+        result = Solution().findDiagonalOrder(mat)
         print(result)
 
 
