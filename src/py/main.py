@@ -2,48 +2,26 @@ from __future__ import annotations
 
 
 class Solution:
-    def fractionToDecimal(self, numerator: int, denominator: int) -> str:
-        if numerator == 0:
-            return "0"
+    def trailingZeroes(self, n: int) -> int:
+        power_of_five = 5
+        result = 0
 
-        result: list[str] = []
-        if numerator > 0 and denominator < 0:
-            result.append("-")
-        elif numerator < 0 and denominator > 0:
-            result.append("-")
-
-        numerator = abs(numerator)
-        denominator = abs(denominator)
-
-        result.append(str(numerator // denominator))
-        numerator %= denominator
-        if numerator == 0:
-            return "".join(result)
-
-        result.append(".")
-        memo = dict[int, int]()
-        memo[numerator] = len(result)
-        while numerator != 0:
-            numerator *= 10
-            result.append(str(numerator // denominator))
-            numerator %= denominator
-
-            if numerator in memo:
-                idx = memo[numerator]
-                result.insert(idx, "(")
-                result.append(")")
+        while True:
+            zeros = n // power_of_five
+            if zeros == 0:
                 break
-            else:
-                memo[numerator] = len(result)
 
-        return "".join(result)
+            result += zeros
+            power_of_five *= 5
+
+        return result
 
 
 def main():
-    inputs = ((1, 2), (2, 1), (4, 333))
+    inputs = (3, 5, 0)
 
-    for numerator, denominator in inputs:
-        result = Solution().fractionToDecimal(numerator, denominator)
+    for n in inputs:
+        result = Solution().trailingZeroes(n)
         print(result)
 
 
