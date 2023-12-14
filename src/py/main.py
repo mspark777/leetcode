@@ -1,33 +1,49 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def onesMinusZeros(self, grid: List[List[int]]) -> List[List[int]]:
-        row_count = len(grid)
-        col_count = len(grid[0])
-        rows = [0 for _ in range(row_count)]
-        cols = [0 for _ in range(col_count)]
+    def fractionToDecimal(self, numerator: int, denominator: int) -> str:
+        if numerator == 0:
+            return "0"
 
-        for r in range(row_count):
-            for c in range(col_count):
-                is_one = grid[r][c] == 1
-                rows[r] += 1 if is_one else -1
-                cols[c] += 1 if is_one else -1
+        result: list[str] = []
+        if numerator > 0 and denominator < 0:
+            result.append("-")
+        elif numerator < 0 and denominator > 0:
+            result.append("-")
 
-        result = [[0 for _ in range(col_count)] for _ in range(row_count)]
-        for r in range(row_count):
-            for c in range(col_count):
-                result[r][c] = rows[r] + cols[c]
+        numerator = abs(numerator)
+        denominator = abs(denominator)
 
-        return result
+        result.append(str(numerator // denominator))
+        numerator %= denominator
+        if numerator == 0:
+            return "".join(result)
+
+        result.append(".")
+        memo = dict[int, int]()
+        memo[numerator] = len(result)
+        while numerator != 0:
+            numerator *= 10
+            result.append(str(numerator // denominator))
+            numerator %= denominator
+
+            if numerator in memo:
+                idx = memo[numerator]
+                result.insert(idx, "(")
+                result.append(")")
+                break
+            else:
+                memo[numerator] = len(result)
+
+        return "".join(result)
 
 
 def main():
-    inputs = ([[0, 1, 1], [1, 0, 1], [0, 0, 1]], [[1, 1, 1], [1, 1, 1]])
+    inputs = ((1, 2), (2, 1), (4, 333))
 
-    for mat in inputs:
-        result = Solution().onesMinusZeros(mat)
+    for numerator, denominator in inputs:
+        result = Solution().fractionToDecimal(numerator, denominator)
         print(result)
 
 
