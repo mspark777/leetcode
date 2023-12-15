@@ -3,29 +3,24 @@ from typing import List
 
 
 class Solution:
-    def destCity(self, paths: List[List[str]]) -> str:
-        city_set = set[str]()
-        for path in paths:
-            src = path[0]
-            city_set.add(src)
+    def calculateMinimumHP(self, dungeon: List[List[int]]) -> int:
+        row_count = len(dungeon)
+        col_count = len(dungeon[0])
+        dp = [2**32 for _ in range(row_count + 1)]
+        dp[row_count - 1] = 1
+        for col in range(col_count - 1, -1, -1):
+            for row in range(row_count - 1, -1, -1):
+                health = min(dp[row], dp[row + 1]) - dungeon[row][col]
+                dp[row] = max(health, 1)
 
-        for path in paths:
-            dest = path[1]
-            if dest not in city_set:
-                return dest
-
-        return ""
+        return dp[0]
 
 
 def main():
-    inputs = (
-        [["London", "New York"], ["New York", "Lima"], ["Lima", "Sao Paulo"]],
-        [["B", "C"], ["D", "B"], ["C", "A"]],
-        [["A", "Z"]],
-    )
+    inputs = ([[-2, -3, 3], [-5, -10, 1], [10, 30, -5]], [[0]])
 
-    for paths in inputs:
-        result = Solution().destCity(paths)
+    for dungeon in inputs:
+        result = Solution().calculateMinimumHP(dungeon)
         print(result)
 
 
