@@ -1,27 +1,31 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def trailingZeroes(self, n: int) -> int:
-        power_of_five = 5
-        result = 0
+    def destCity(self, paths: List[List[str]]) -> str:
+        city_set = set[str]()
+        for path in paths:
+            src = path[0]
+            city_set.add(src)
 
-        while True:
-            zeros = n // power_of_five
-            if zeros == 0:
-                break
+        for path in paths:
+            dest = path[1]
+            if dest not in city_set:
+                return dest
 
-            result += zeros
-            power_of_five *= 5
-
-        return result
+        return ""
 
 
 def main():
-    inputs = (3, 5, 0)
+    inputs = (
+        [["London", "New York"], ["New York", "Lima"], ["Lima", "Sao Paulo"]],
+        [["B", "C"], ["D", "B"], ["C", "A"]],
+        [["A", "Z"]],
+    )
 
-    for n in inputs:
-        result = Solution().trailingZeroes(n)
+    for paths in inputs:
+        result = Solution().destCity(paths)
         print(result)
 
 
