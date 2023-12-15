@@ -1,34 +1,30 @@
 from __future__ import annotations
 from typing import List
+from functools import reduce
 
 
 class Solution:
-    def rotate(self, nums: List[int], k: int) -> None:
-        """
-        Do not return anything, modify nums in-place instead.
-        """
-        l = len(nums)
-        k %= l
-        pivot = l - k
-        left = nums[pivot:]
-        right = nums[:pivot]
+    def singleNumber(self, nums: List[int]) -> List[int]:
+        diff = reduce(lambda acc, cur: acc ^ cur, nums, 0)
+        diff &= -diff
 
-        i = 0
-        for n in left:
-            nums[i] = n
-            i += 1
+        left = 0
+        right = 0
+        for num in nums:
+            if num & diff == 0:
+                left ^= num
+            else:
+                right ^= num
 
-        for n in right:
-            nums[i] = n
-            i += 1
+        return [left, right]
 
 
 def main():
-    inputs = (([1, 2, 3, 4, 5, 6, 7], 3), ([-1, -100, 3, 99], 2))
+    inputs = ([1, 2, 1, 3, 2, 5], [-1, 0], [0, 1])
 
-    for nums, k in inputs:
-        Solution().rotate(nums, k)
-        print(nums)
+    for nums in inputs:
+        result = Solution().singleNumber(nums)
+        print(result)
 
 
 if __name__ == "__main__":
