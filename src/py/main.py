@@ -1,30 +1,70 @@
 from __future__ import annotations
 from typing import List
-from functools import reduce
+from collections import defaultdict
+from heapq import heappush, heappop
 
 
-class Solution:
-    def singleNumber(self, nums: List[int]) -> List[int]:
-        diff = reduce(lambda acc, cur: acc ^ cur, nums, 0)
-        diff &= -diff
+class Food:
+    rating: int
+    food: str
 
-        left = 0
-        right = 0
-        for num in nums:
-            if num & diff == 0:
-                left ^= num
-            else:
-                right ^= num
+    def __init__(self, rating: int, food: str):
+        self.rating = rating
+        self.food = food
 
-        return [left, right]
+    def __lt__(self, other: Food):
+        if self.rating == other.rating:
+            return self.food < other.food
+        return self.rating > other.rating
+
+
+class FoodRatings:
+    food_rating_map: dict[str, int]
+    food_cuisine_map: dict[str, str]
+    cuisine_food_map: dict[str, list[Food]]
+
+    def __init__(self, foods: List[str], cuisines: List[str], ratings: List[int]):
+        self.food_rating_map = {}
+        self.food_cuisine_map = {}
+        self.cuisine_food_map = defaultdict(list)
+
+        for food, cuisine, rating in zip(foods, cuisines, ratings):
+            self.food_rating_map[food] = rating
+            self.food_cuisine_map[food] = cuisine
+            heappush(self.cuisine_food_map[cuisine], Food(rating, food))
+
+    def changeRating(self, food: str, newRating: int) -> None:
+        self.food_rating_map[food] = newRating
+        cuisineName = self.food_cuisine_map[food]
+        heappush(self.cuisine_food_map[cuisineName], Food(newRating, food))
+
+    def highestRated(self, cuisine: str) -> str:
+        highest_rated = self.cuisine_food_map[cuisine][0]
+
+        while self.food_rating_map[highest_rated.food] != highest_rated.rating:
+            heappop(self.cuisine_food_map[cuisine])
+            highest_rated = self.cuisine_food_map[cuisine][0]
+
+        return highest_rated.food
 
 
 def main():
-    inputs = ([1, 2, 1, 3, 2, 5], [-1, 0], [0, 1])
+    inputs = (
+        (
+            ["kimchi", "miso", "sushi", "moussaka", "ramen", "bulgogi"],
+            ["korean", "japanese", "japanese", "greek", "japanese", "korean"],
+            [9, 12, 8, 15, 14, 7],
+        ),
+    )
 
-    for nums in inputs:
-        result = Solution().singleNumber(nums)
-        print(result)
+    for foods, cuisines, ratings in inputs:
+        ratings = FoodRatings(foods, cuisines, ratings)
+        print(ratings.highestRated("korean"))
+        print(ratings.highestRated("japanese"))
+        ratings.changeRating("sushi", 16)
+        print(ratings.highestRated("japanese"))
+        ratings.changeRating("ramen", 16)
+        print(ratings.highestRated("japanese"))
 
 
 if __name__ == "__main__":
