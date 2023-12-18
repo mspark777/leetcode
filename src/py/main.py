@@ -3,25 +3,36 @@ from typing import List
 
 
 class Solution:
-    def productExceptSelf(self, nums: List[int]) -> List[int]:
-        num_count = len(nums)
-        result = [1] * num_count
-        for i in range(0, num_count - 1):
-            result[i + 1] = result[i] * nums[i]
+    def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        n = len(nums)
+        prev: list[list[int]] = [[] for _ in range(n + 1)]
+        for i in range(1, n + 1):
+            curr: list[list[int]] = [[] for _ in range(n + 1)]
+            for j in range(1, n + 1):
+                x: list[int] = []
+                if j == 1:
+                    x = prev[i] + [nums[i - 1]]
+                elif nums[j - 1] % nums[i - 1] == 0:
+                    x = prev[i] + [nums[i - 1]]
+                elif nums[i - 1] % nums[j - 1] == 0:
+                    x = prev[i] + [nums[i - 1]]
 
-        right = nums[-1]
-        for i in range(num_count - 2, -1, -1):
-            result[i] *= right
-            right *= nums[i]
+                y = prev[j]
+                if len(y) > len(x):
+                    curr[j] = y[:]
+                else:
+                    curr[j] = x[:]
+            prev = curr[:]
 
-        return result
+        return prev[1]
 
 
 def main():
-    inputs = ([1, 2, 3, 4], [-1, 1, 0, -3, 3])
+    inputs = ([1, 2, 3], [1, 2, 4, 8])
 
     for nums in inputs:
-        result = Solution().productExceptSelf(nums)
+        result = Solution().largestDivisibleSubset(nums)
         print(result)
 
 
