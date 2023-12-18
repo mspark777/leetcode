@@ -1,35 +1,44 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def maxProductDifference(self, nums: List[int]) -> int:
-        w = 0
-        x = 0
-        y = 10**5
-        z = 10**5
+    def countPrimes(self, n: int) -> int:
+        if n <= 2:
+            return 0
 
-        for num in nums:
-            if num > w:
-                x = w
-                w = num
-            elif num > x:
-                x = num
+        dp = [i & 1 == 1 for i in range(n)]
+        dp[1] = False
+        dp[2] = True
 
-            if num < y:
-                z = y
-                y = num
-            elif num < z:
-                z = num
+        i = 3
+        while True:
+            j = i * i
+            if j >= n:
+                break
 
-        return (w * x) - (y * z)
+            if not dp[i]:
+                i += 2
+                continue
+
+            k = j
+            for k in range(j, n, i * 2):
+                dp[k] = False
+
+            i += 2
+
+        result = 0
+        for is_prime in dp[2:]:
+            if is_prime:
+                result += 1
+
+        return result
 
 
 def main():
-    inputs = ([5, 6, 2, 7, 4], [4, 2, 5, 9, 7, 4, 8])
+    inputs = (10, 0, 1, 10000)
 
-    for nums in inputs:
-        result = Solution().maxProductDifference(nums)
+    for n in inputs:
+        result = Solution().countPrimes(n)
         print(result)
 
 
