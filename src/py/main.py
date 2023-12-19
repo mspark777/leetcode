@@ -3,23 +3,47 @@ from typing import List
 
 
 class Solution:
-    def vowelStrings(self, words: List[str], left: int, right: int) -> int:
-        vowels = set(["a", "e", "i", "o", "u"])
+    def imageSmoother(self, img: List[List[int]]) -> List[List[int]]:
+        row_count = len(img)
+        col_count = len(img[0])
+        result = [[0] * col_count for _ in range(row_count)]
 
-        result = 0
-        for i in range(left, right + 1):
-            word = words[i]
-            if word[0] in vowels and word[-1] in vowels:
-                result += 1
+        for r in range(row_count):
+            for c in range(col_count):
+                result[r][c] = self.average(img, r, c)
 
         return result
 
+    def average(self, img: list[list[int]], row: int, col: int) -> int:
+        row_count = len(img)
+        col_count = len(img[0])
+        total = 0
+        cell_count = 0
+        offsets = [(r, c) for c in range(-1, 2) for r in range(-1, 2)]
+
+        for offset_r, offset_c in offsets:
+            r = row + offset_r
+            c = col + offset_c
+
+            if r < 0 or c < 0:
+                continue
+            elif r >= row_count or c >= col_count:
+                continue
+
+            total += img[r][c]
+            cell_count += 1
+
+        return total // cell_count
+
 
 def main():
-    inputs = ((["are", "amy", "u"], 0, 2), (["hey", "aeo", "mu", "ooo", "artro"], 1, 4))
+    inputs = (
+        [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
+        [[100, 200, 100], [200, 50, 200], [100, 200, 100]],
+    )
 
-    for words, left, right in inputs:
-        result = Solution().vowelStrings(words, left, right)
+    for img in inputs:
+        result = Solution().imageSmoother(img)
         print(result)
 
 
