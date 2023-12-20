@@ -3,47 +3,29 @@ from typing import List
 
 
 class Solution:
-    def imageSmoother(self, img: List[List[int]]) -> List[List[int]]:
-        row_count = len(img)
-        col_count = len(img[0])
-        result = [[0] * col_count for _ in range(row_count)]
+    def buyChoco(self, prices: List[int], money: int) -> int:
+        first = min(prices[0], prices[1])
+        second = max(prices[0], prices[1])
 
-        for r in range(row_count):
-            for c in range(col_count):
-                result[r][c] = self.average(img, r, c)
+        for price in prices[2:]:
+            if first > price:
+                second = first
+                first = price
+            elif second > price:
+                second = price
 
-        return result
+        total = first + second
+        if total > money:
+            return money
 
-    def average(self, img: list[list[int]], row: int, col: int) -> int:
-        row_count = len(img)
-        col_count = len(img[0])
-        total = 0
-        cell_count = 0
-        offsets = [(r, c) for c in range(-1, 2) for r in range(-1, 2)]
-
-        for offset_r, offset_c in offsets:
-            r = row + offset_r
-            c = col + offset_c
-
-            if r < 0 or c < 0:
-                continue
-            elif r >= row_count or c >= col_count:
-                continue
-
-            total += img[r][c]
-            cell_count += 1
-
-        return total // cell_count
+        return money - total
 
 
 def main():
-    inputs = (
-        [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
-        [[100, 200, 100], [200, 50, 200], [100, 200, 100]],
-    )
+    inputs = (([1, 2, 2], 3), ([3, 2, 3], 3))
 
-    for img in inputs:
-        result = Solution().imageSmoother(img)
+    for prices, money in inputs:
+        result = Solution().buyChoco(prices, money)
         print(result)
 
 
