@@ -3,29 +3,42 @@ from typing import List
 
 
 class Solution:
-    def isMonotonic(self, nums: List[int]) -> bool:
-        increasing = False
-        decreasing = False
+    def largestSubmatrix(self, matrix: List[List[int]]) -> int:
+        row_count = len(matrix)
+        col_count = len(matrix[0])
+        prev_heights: list[tuple[int, int]] = []
+        result = 0
 
-        for i in range(1, len(nums)):
-            left = nums[i - 1]
-            right = nums[i]
-            if left < right:
-                increasing = True
-            elif left > right:
-                decreasing = True
+        for row in range(row_count):
+            heights: list[tuple[int, int]] = []
+            seen: list[bool] = [False] * col_count
 
-            if increasing and decreasing:
-                return False
+            for height, col in prev_heights:
+                if matrix[row][col] == 1:
+                    heights.append((height + 1, col))
+                    seen[col] = True
 
-        return True
+            for col in range(col_count):
+                if not seen[col] and matrix[row][col] == 1:
+                    heights.append((1, col))
+
+            for i, (height, _) in enumerate(heights):
+                result = max(result, height * (i + 1))
+
+            prev_heights = heights
+
+        return result
 
 
 def main():
-    input = ([1, 2, 2, 3], [6, 5, 4, 4], [1, 3, 2])
+    input = (
+        [[0, 0, 1], [1, 1, 1], [1, 0, 1]],
+        [[1, 0, 1, 0, 1]],
+        [[1, 1, 0], [1, 0, 1]],
+    )
 
-    for nums in input:
-        result = Solution().isMonotonic(nums)
+    for matrix in input:
+        result = Solution().largestSubmatrix(matrix)
         print(result)
 
 
