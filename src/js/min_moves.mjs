@@ -2,6 +2,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
+ * Usually, when finding the shortest distance,
+ * it is helpful to proceed from the destination point to the starting point (Reversely).
+ * This problem it is.
  * @param {bigint} target
  * @param {bigint} maxDoubles
  * @return {bigint}
@@ -10,6 +13,8 @@ function solve(target, maxDoubles) {
   let moves = 0n;
   while (target > 1n && maxDoubles > 0n) {
     if (target % 2n === 1n) {
+      // if target is odd, Need increment and dobule.
+      // Example: 17 = 8 * 2 + 1
       moves += 2n;
     } else {
       moves += 1n;
@@ -19,6 +24,7 @@ function solve(target, maxDoubles) {
     target /= 2n;
   }
 
+  // If no more double move, Need increment move (target - 1) times.
   return moves + target - 1n;
 }
 
@@ -28,6 +34,7 @@ function solve(target, maxDoubles) {
  * @return {number}
  */
 function minMoves(target, maxDoubles) {
+  // If need div operation with integers, I think that I should use bigint.
   const moves = solve(BigInt(target), BigInt(maxDoubles));
   return Number(moves);
 }
