@@ -2,31 +2,40 @@ from __future__ import annotations
 
 
 class Solution:
-    def maxScore(self, s: str) -> int:
-        ones = 0
-        zeros = 0
-        score = -1000
-        s_len = len(s)
+    def isPathCrossing(self, path: str) -> bool:
+        x = 0
+        y = 0
+        visit = set[tuple[int, int]]([(x, y)])
 
-        for ch in s[: s_len - 1]:
-            if ch == "1":
-                ones += 1
-            else:
-                zeros += 1
+        for dir in path:
+            next_x = x - 1
+            next_y = y
+            if dir == "N":
+                next_x = x
+                next_y = y + 1
+            elif dir == "E":
+                next_x = x + 1
+                next_y = y
+            elif dir == "S":
+                next_x = x
+                next_y = y - 1
 
-            score = max(score, zeros - ones)
+            next_pos = (next_x, next_y)
+            if next_pos in visit:
+                return True
 
-        if s[-1] == "1":
-            ones += 1
+            visit.add(next_pos)
+            x = next_x
+            y = next_y
 
-        return score + ones
+        return False
 
 
 def main():
-    input = ("011101", "00111", "1111")
+    input = ("NES", "NESWW")
 
-    for s in input:
-        result = Solution().maxScore(s)
+    for path in input:
+        result = Solution().isPathCrossing(path)
         print(result)
 
 
