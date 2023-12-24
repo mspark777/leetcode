@@ -3,7 +3,7 @@
 
 /**
  * Usually, when finding the shortest distance,
- * it is helpful to proceed from the destination point to the starting point (Reversely).
+ * it is helpful to proceed from the destination to the starting (Reversely).
  * This problem it is.
  * @param {bigint} target
  * @param {bigint} maxDoubles
