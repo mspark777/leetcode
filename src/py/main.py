@@ -2,40 +2,24 @@ from __future__ import annotations
 
 
 class Solution:
-    def isPathCrossing(self, path: str) -> bool:
-        x = 0
-        y = 0
-        visit = set[tuple[int, int]]([(x, y)])
+    def minOperations(self, s: str) -> int:
+        start0 = 0
 
-        for dir in path:
-            next_x = x - 1
-            next_y = y
-            if dir == "N":
-                next_x = x
-                next_y = y + 1
-            elif dir == "E":
-                next_x = x + 1
-                next_y = y
-            elif dir == "S":
-                next_x = x
-                next_y = y - 1
+        for i, ch in enumerate(s):
+            if i % 2 == 0:
+                if ch == "1":
+                    start0 += 1
+            elif ch == "0":
+                start0 += 1
 
-            next_pos = (next_x, next_y)
-            if next_pos in visit:
-                return True
-
-            visit.add(next_pos)
-            x = next_x
-            y = next_y
-
-        return False
+        return min(start0, len(s) - start0)
 
 
 def main():
-    input = ("NES", "NESWW")
+    input = ("0100", "10", "1111")
 
-    for path in input:
-        result = Solution().isPathCrossing(path)
+    for s in input:
+        result = Solution().minOperations(s)
         print(result)
 
 
