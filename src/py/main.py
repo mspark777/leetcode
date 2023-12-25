@@ -1,30 +1,69 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def numOfArrays(self, n: int, m: int, k: int) -> int:
-        MOD = 10**9 + 7
-        dp = [[[0] * (k + 1) for _ in range(m + 1)] for _ in range(n + 1)]
-        dp[0][0][0] = 1
+    def maximumScoreAfterOperations(
+        self, edges: List[List[int]], values: List[int]
+    ) -> int:
+        node_count = len(values)
+        adj = [[] for _ in range(node_count)]
 
-        for i in range(1, n + 1):
-            for j in range(1, m + 1):
-                for cost in range(1, k + 1):
-                    dp[i][j][cost] = (dp[i][j][cost] + dp[i - 1][j][cost] * j) % MOD
-                    for prev in range(j):
-                        dp[i][j][cost] = (
-                            dp[i][j][cost] + dp[i - 1][prev][cost - 1]
-                        ) % MOD
-        total_ways = sum(dp[n][j][k] for j in range(1, m + 1)) % MOD
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
 
-        return total_ways
+        subtree = [n for n in values]
+        self.pre(adj, 0, -1, subtree, values)
+
+        dp = [-1 for _ in range(node_count)]
+        self.dfs(adj, 0, -1, dp, subtree, values)
+        return dp[0]
+
+    def pre(
+        self,
+        adj: list[list[int]],
+        node: int,
+        parent: int,
+        subtree: list[int],
+        values: list[int],
+    ):
+        for child in adj[node]:
+            if child != parent:
+                self.pre(adj, child, node, subtree, values)
+                subtree[node] += subtree[child]
+
+    def dfs(
+        self,
+        adj: list[list[int]],
+        node: int,
+        parent: int,
+        dp: list[int],
+        subtree: list[int],
+        values: list[int],
+    ):
+        dp[node] = subtree[node] - values[node]
+        sum = 0
+        cnt = 0
+
+        for child in adj[node]:
+            if child != parent:
+                self.dfs(adj, child, node, dp, subtree, values)
+                cnt += 1
+                sum += dp[child]
+
+        if cnt > 0:
+            dp[node] = max(dp[node], values[node] + sum)
 
 
 def main():
-    input = ((2, 3, 1), (5, 2, 3), (9, 1, 1))
+    input = (
+        ([[0, 1], [0, 2], [0, 3], [2, 4], [4, 5]], [5, 2, 5, 2, 1, 1]),
+        ([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]], [20, 10, 9, 7, 4, 3, 5]),
+    )
 
-    for n, m, k in input:
-        result = Solution().numOfArrays(n, m, k)
+    for edges, values in input:
+        result = Solution().maximumScoreAfterOperations(edges, values)
         print(result)
 
 
