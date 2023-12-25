@@ -1,33 +1,32 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import TreeNode
+from collections import Counter
 
 
 class Solution:
-    def sumOfLeftLeaves(self, root: Optional[TreeNode]) -> int:
-        if root is None:
-            return 0
+    def longestPalindrome(self, s: str) -> int:
+        counts = Counter(s)
+        result = 0
 
-        s = 0
-        if root.left is not None:
-            left = root.left
-            if left.left is None and left.right is None:
-                s += left.val
+        for count in counts.values():
+            is_result_odd = result % 2 == 1
+            is_count_odd = count % 2 == 1
+            if is_result_odd and is_count_odd:
+                result -= 1
 
-        s += self.sumOfLeftLeaves(root.left)
-        s += self.sumOfLeftLeaves(root.right)
+            result += count
 
-        return s
+        return result
 
 
 def main():
     input = (
-        TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7))),
-        TreeNode(1),
+        "abccccdd",
+        "a",
+        "civilwartestingwhetherthatnaptionoranynartionsoconceivedandsodedicatedcanlongendureWeareqmetonagreatbattlefiemldoftzhatwarWehavecometodedicpateaportionofthatfieldasafinalrestingplaceforthosewhoheregavetheirlivesthatthatnationmightliveItisaltogetherfangandproperthatweshoulddothisButinalargersensewecannotdedicatewecannotconsecratewecannothallowthisgroundThebravelmenlivinganddeadwhostruggledherehaveconsecrateditfaraboveourpoorponwertoaddordetractTgheworldadswfilllittlenotlenorlongrememberwhatwesayherebutitcanneverforgetwhattheydidhereItisforusthelivingrathertobededicatedheretotheulnfinishedworkwhichtheywhofoughtherehavethusfarsonoblyadvancedItisratherforustobeherededicatedtothegreattdafskremainingbeforeusthatfromthesehonoreddeadwetakeincreaseddevotiontothatcauseforwhichtheygavethelastpfullmeasureofdevotionthatweherehighlyresolvethatthesedeadshallnothavediedinvainthatthisnationunsderGodshallhaveanewbirthoffreedomandthatgovernmentofthepeoplebythepeopleforthepeopleshallnotperishfromtheearth",
     )
 
-    for root in input:
-        result = Solution().sumOfLeftLeaves(root)
+    for s in input:
+        result = Solution().longestPalindrome(s)
         print(result)
 
 
