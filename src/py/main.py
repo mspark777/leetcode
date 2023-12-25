@@ -2,24 +2,29 @@ from __future__ import annotations
 
 
 class Solution:
-    def minOperations(self, s: str) -> int:
-        start0 = 0
+    def numOfArrays(self, n: int, m: int, k: int) -> int:
+        MOD = 10**9 + 7
+        dp = [[[0] * (k + 1) for _ in range(m + 1)] for _ in range(n + 1)]
+        dp[0][0][0] = 1
 
-        for i, ch in enumerate(s):
-            if i % 2 == 0:
-                if ch == "1":
-                    start0 += 1
-            elif ch == "0":
-                start0 += 1
+        for i in range(1, n + 1):
+            for j in range(1, m + 1):
+                for cost in range(1, k + 1):
+                    dp[i][j][cost] = (dp[i][j][cost] + dp[i - 1][j][cost] * j) % MOD
+                    for prev in range(j):
+                        dp[i][j][cost] = (
+                            dp[i][j][cost] + dp[i - 1][prev][cost - 1]
+                        ) % MOD
+        total_ways = sum(dp[n][j][k] for j in range(1, m + 1)) % MOD
 
-        return min(start0, len(s) - start0)
+        return total_ways
 
 
 def main():
-    input = ("0100", "10", "1111")
+    input = ((2, 3, 1), (5, 2, 3), (9, 1, 1))
 
-    for s in input:
-        result = Solution().minOperations(s)
+    for n, m, k in input:
+        result = Solution().numOfArrays(n, m, k)
         print(result)
 
 
