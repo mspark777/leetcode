@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
+ * If it needs div operation with integers, I think that should use bigint.
+ *
  * Usually, when finding the shortest distance,
  * it is helpful to proceed from the destination to the starting (Reversely).
  * This problem it is.
@@ -24,7 +26,7 @@ function solve(target, maxDoubles) {
     target /= 2n;
   }
 
-  // If no more double move, Need increment move (target - 1) times.
+  // If there is no more double move, (target - 1) times need increment move .
   return moves + target - 1n;
 }
 
@@ -34,7 +36,6 @@ function solve(target, maxDoubles) {
  * @return {number}
  */
 function minMoves(target, maxDoubles) {
-  // If need div operation with integers, I think that I should use bigint.
   const moves = solve(BigInt(target), BigInt(maxDoubles));
   return Number(moves);
 }
