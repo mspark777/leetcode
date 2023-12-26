@@ -1,32 +1,36 @@
 from __future__ import annotations
-from collections import Counter
+from typing import List
 
 
 class Solution:
-    def longestPalindrome(self, s: str) -> int:
-        counts = Counter(s)
-        result = 0
+    def thirdMax(self, nums: List[int]) -> int:
+        min_value = -(2**32)
+        first = min_value
+        second = min_value
+        third = min_value
 
-        for count in counts.values():
-            is_result_odd = result % 2 == 1
-            is_count_odd = count % 2 == 1
-            if is_result_odd and is_count_odd:
-                result -= 1
+        for num in nums:
+            if num == first or num == second or num == third:
+                continue
 
-            result += count
+            if num > first:
+                third = second
+                second = first
+                first = num
+            elif num > second:
+                third = second
+                second = num
+            elif num > third:
+                third = num
 
-        return result
+        return third if third != min_value else first
 
 
 def main():
-    input = (
-        "abccccdd",
-        "a",
-        "civilwartestingwhetherthatnaptionoranynartionsoconceivedandsodedicatedcanlongendureWeareqmetonagreatbattlefiemldoftzhatwarWehavecometodedicpateaportionofthatfieldasafinalrestingplaceforthosewhoheregavetheirlivesthatthatnationmightliveItisaltogetherfangandproperthatweshoulddothisButinalargersensewecannotdedicatewecannotconsecratewecannothallowthisgroundThebravelmenlivinganddeadwhostruggledherehaveconsecrateditfaraboveourpoorponwertoaddordetractTgheworldadswfilllittlenotlenorlongrememberwhatwesayherebutitcanneverforgetwhattheydidhereItisforusthelivingrathertobededicatedheretotheulnfinishedworkwhichtheywhofoughtherehavethusfarsonoblyadvancedItisratherforustobeherededicatedtothegreattdafskremainingbeforeusthatfromthesehonoreddeadwetakeincreaseddevotiontothatcauseforwhichtheygavethelastpfullmeasureofdevotionthatweherehighlyresolvethatthesedeadshallnothavediedinvainthatthisnationunsderGodshallhaveanewbirthoffreedomandthatgovernmentofthepeoplebythepeopleforthepeopleshallnotperishfromtheearth",
-    )
+    input = ([3, 2, 1], [1, 2], [2, 2, 3, 1])
 
-    for s in input:
-        result = Solution().longestPalindrome(s)
+    for nums in input:
+        result = Solution().thirdMax(nums)
         print(result)
 
 
