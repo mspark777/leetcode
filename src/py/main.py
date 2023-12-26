@@ -1,36 +1,34 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def thirdMax(self, nums: List[int]) -> int:
-        min_value = -(2**32)
-        first = min_value
-        second = min_value
-        third = min_value
+    def addStrings(self, num1: str, num2: str) -> str:
+        ZERO = ord("0")
+        carry = 0
+        pos1 = len(num1) - 1
+        pos2 = len(num2) - 1
+        result: list[str] = []
+        while pos1 >= 0 or pos2 >= 0 or carry > 0:
+            s1 = num1[pos1] if pos1 >= 0 else "0"
+            s2 = num2[pos2] if pos2 >= 0 else "0"
+            n1 = ord(s1) - ZERO
+            n2 = ord(s2) - ZERO
+            s = n1 + n2 + carry
+            carry = s // 10
+            result.append(chr(s % 10 + ZERO))
 
-        for num in nums:
-            if num == first or num == second or num == third:
-                continue
+            pos1 -= 1
+            pos2 -= 1
 
-            if num > first:
-                third = second
-                second = first
-                first = num
-            elif num > second:
-                third = second
-                second = num
-            elif num > third:
-                third = num
-
-        return third if third != min_value else first
+        result.reverse()
+        return "".join(result)
 
 
 def main():
-    input = ([3, 2, 1], [1, 2], [2, 2, 3, 1])
+    input = (("11", "123"), ("456", "77"), ("0", "0"))
 
-    for nums in input:
-        result = Solution().thirdMax(nums)
+    for num1, num2 in input:
+        result = Solution().addStrings(num1, num2)
         print(result)
 
 
