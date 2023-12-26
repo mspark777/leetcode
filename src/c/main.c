@@ -1,48 +1,49 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 
 #define bool int
 
-int numDecodings(char *s) {
-  const int slen = strlen(s);
-  if (slen == 0) {
-    return 0;
-  } else if (s[0] == '0') {
-    return 0;
-  } else if (slen == 1) {
-    return 1;
+int numRollsToTarget(int n, int k, int target) {
+  const int MOD = 1000000007;
+  int *dp = calloc(target + 1, sizeof(int));
+
+  dp[0] = 1;
+
+  for (int i = 1; i <= n; i += 1) {
+    for (int j = target; j >= 0; j -= 1) {
+      dp[j] = 0;
+
+      for (int p = 1; p <= k; p += 1) {
+        if (j < p) {
+          break;
+        }
+
+        dp[j] = (dp[j] + dp[j - p]) % MOD;
+      }
+    }
   }
 
-  const int ZERO = (int)'0';
-
-  int result = 1;
-  int memo = 1;
-
-  for (int i = 1; i < slen; i += 1) {
-    const int code1 = ((int)s[i]) - ZERO;
-    const int code10 = ((((int)s[i - 1]) - ZERO) * 10) + code1;
-
-    int cnt = 0;
-    if (code1 != 0) {
-      cnt += result;
-    }
-
-    if ((code10 >= 10) && (code10 <= 26)) {
-      cnt += memo;
-    }
-
-    memo = result;
-    result = cnt;
-  }
-
+  const int result = dp[target];
+  free(dp);
   return result;
 }
 
-int main() {
-  char *input[] = {"12", "226", "06"};
+struct input {
+  int n;
+  int k;
+  int target;
+};
 
-  for (unsigned long i = 0; i < sizeof(input) / sizeof(input[0]); i += 2) {
-    const bool result = numDecodings(input[i]);
+int main() {
+  struct input inputs[] = {
+      {.n = 1, .k = 6, .target = 3},
+      {.n = 2, .k = 6, .target = 7},
+      {.n = 30, .k = 30, .target = 500},
+  };
+
+  for (unsigned long i = 0; i < sizeof(inputs) / sizeof(struct input); i += 1) {
+    struct input *input = &inputs[i];
+    const bool result = numRollsToTarget(input->n, input->k, input->target);
     printf("%d\n", result);
   }
 
