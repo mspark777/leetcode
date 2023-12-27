@@ -3,21 +3,27 @@ from typing import List
 
 
 class Solution:
-    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:
-        n = len(nums)
-        dis_list = [i + 1 for i in range(n)]
+    def findContentChildren(self, g: List[int], s: List[int]) -> int:
+        g.sort()
+        s.sort()
 
-        for num in nums:
-            dis_list[num - 1] = -1
+        child = 0
+        cookie = 0
 
-        return [i for i in dis_list if i >= 0]
+        while child < len(g) and cookie < len(s):
+            if g[child] <= s[cookie]:
+                child += 1
+
+            cookie += 1
+
+        return child
 
 
 def main():
-    input = ([4, 3, 2, 7, 8, 2, 3, 1], [1, 1])
+    input = (([1, 2, 3], [1, 1]), ([1, 2], [1, 2, 3]))
 
-    for nums in input:
-        result = Solution().findDisappearedNumbers(nums)
+    for g, s in input:
+        result = Solution().findContentChildren(g, s)
         print(result)
 
 
