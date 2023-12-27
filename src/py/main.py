@@ -1,22 +1,18 @@
 from __future__ import annotations
+from math import sqrt
 
 
 class Solution:
-    def countSegments(self, s: str) -> int:
-        n = len(s)
-        result = 0
-        for i in range(n):
-            if (i == 0 or s[i - 1] == " ") and s[i] != " ":
-                result += 1
-
-        return result
+    def arrangeCoins(self, n: int) -> int:
+        result = sqrt(2 * n + 0.25) - 0.5
+        return int(result)
 
 
 def main():
-    input = ("Hello, my name is John", "Hello", "", "                ")
+    input = (5, 8)
 
-    for s in input:
-        result = Solution().countSegments(s)
+    for n in input:
+        result = Solution().arrangeCoins(n)
         print(result)
 
 
