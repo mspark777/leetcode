@@ -1,51 +1,40 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #define bool int
 
-int numRollsToTarget(int n, int k, int target) {
-  const int MOD = 1000000007;
-  int *dp = calloc(target + 1, sizeof(int));
+int minCost(char *colors, int *needed_time, int needed_time_size) {
+  int total = 0;
+  int cur = needed_time[0];
 
-  dp[0] = 1;
+  for (int i = 1; i < needed_time_size; i += 1) {
+    if (colors[i] != colors[i - 1]) {
+      cur = 0;
+    }
 
-  for (int i = 1; i <= n; i += 1) {
-    for (int j = target; j >= 0; j -= 1) {
-      dp[j] = 0;
-
-      for (int p = 1; p <= k; p += 1) {
-        if (j < p) {
-          break;
-        }
-
-        dp[j] = (dp[j] + dp[j - p]) % MOD;
-      }
+    int needed = needed_time[i];
+    if (cur < needed) {
+      total += cur;
+      cur = needed;
+    } else {
+      total += needed;
     }
   }
 
-  const int result = dp[target];
-  free(dp);
-  return result;
+  return total;
 }
 
-struct input {
-  int n;
-  int k;
-  int target;
-};
-
 int main() {
-  struct input inputs[] = {
-      {.n = 1, .k = 6, .target = 3},
-      {.n = 2, .k = 6, .target = 7},
-      {.n = 30, .k = 30, .target = 500},
-  };
+  int needed_time0[] = {1, 2, 3, 4, 5};
+  printf("%d\n",
+         minCost("abaac", needed_time0, sizeof(needed_time0) / sizeof(int)));
 
-  for (unsigned long i = 0; i < sizeof(inputs) / sizeof(struct input); i += 1) {
-    struct input *input = &inputs[i];
-    const bool result = numRollsToTarget(input->n, input->k, input->target);
-    printf("%d\n", result);
-  }
+  int needed_time1[] = {1, 2, 3};
+  printf("%d\n",
+         minCost("abc", needed_time1, sizeof(needed_time1) / sizeof(int)));
+
+  int needed_time2[] = {1, 2, 3, 4, 1};
+  printf("%d\n",
+         minCost("aabaa", needed_time2, sizeof(needed_time2) / sizeof(int)));
 
   return 0;
 }
