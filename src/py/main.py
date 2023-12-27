@@ -1,18 +1,23 @@
 from __future__ import annotations
-from math import sqrt
+from typing import List
 
 
 class Solution:
-    def arrangeCoins(self, n: int) -> int:
-        result = sqrt(2 * n + 0.25) - 0.5
-        return int(result)
+    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        dis_list = [i + 1 for i in range(n)]
+
+        for num in nums:
+            dis_list[num - 1] = -1
+
+        return [i for i in dis_list if i >= 0]
 
 
 def main():
-    input = (5, 8)
+    input = ([4, 3, 2, 7, 8, 2, 3, 1], [1, 1])
 
-    for n in input:
-        result = Solution().arrangeCoins(n)
+    for nums in input:
+        result = Solution().findDisappearedNumbers(nums)
         print(result)
 
 
