@@ -2,46 +2,23 @@ from __future__ import annotations
 
 
 class Solution:
-    def getLengthOfOptimalCompression(self, s: str, k: int) -> int:
-        n = len(s)
-        m = k
+    def hammingDistance(self, x: int, y: int) -> int:
+        xor = x ^ y
+        result = 0
 
-        dp = [[0] * 110 for _ in range(110)]
+        while xor != 0:
+            if xor & 1 == 1:
+                result += 1
+            xor >>= 1
 
-        for i in range(1, n + 1):
-            for j in range(min(n, m) + 1):
-                need_remove = 0
-                group_count = 0
-                dp[i][j] = 2**31
-                if j > 0:
-                    dp[i][j] = dp[i - 1][j - 1]
-
-                for k in range(i, 0, -1):
-                    if s[k - 1] != s[i - 1]:
-                        need_remove += 1
-                    else:
-                        group_count += 1
-
-                    if need_remove > j:
-                        break
-
-                    if group_count == 1:
-                        dp[i][j] = min(dp[i][j], dp[k - 1][j - need_remove] + 1)
-                    elif group_count < 10:
-                        dp[i][j] = min(dp[i][j], dp[k - 1][j - need_remove] + 2)
-                    elif group_count < 100:
-                        dp[i][j] = min(dp[i][j], dp[k - 1][j - need_remove] + 3)
-                    else:
-                        dp[i][j] = min(dp[i][j], dp[k - 1][j - need_remove] + 4)
-
-        return dp[n][m]
+        return result
 
 
 def main():
-    input = (("aaabcccd", 2), ("aabbaa", 2), ("aaaaaaaaaaa", 0))
+    input = ((1, 4), (3, 1))
 
-    for s, k in input:
-        result = Solution().getLengthOfOptimalCompression(s, k)
+    for x, y in input:
+        result = Solution().hammingDistance(x, y)
         print(result)
 
 
