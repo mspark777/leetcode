@@ -12,7 +12,6 @@ class Solution:
 
         dp = [0] * job_count
         dp[0] = job_difficulty[0]
-
         for i in range(job_count):
             dp[i] = max(job_difficulty[i], dp[i - 1])
 
