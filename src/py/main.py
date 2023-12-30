@@ -1,29 +1,28 @@
 from __future__ import annotations
 from typing import List
-from collections import defaultdict
 
 
 class Solution:
-    def makeEqual(self, words: List[str]) -> bool:
-        counts = defaultdict[str, int](int)
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        result = 0
+        count = 0
 
-        for word in words:
-            for ch in word:
-                counts[ch] += 1
+        for num in nums:
+            if num == 0:
+                result = max(result, count)
+                count = 0
+            else:
+                count += 1
 
-        word_count = len(words)
-        for count in counts.values():
-            if count % word_count != 0:
-                return False
-
-        return True
+        result = max(result, count)
+        return result
 
 
 def main():
-    input = (["abc", "aabc", "bc"], ["ab", "a"])
+    input = ([1, 1, 0, 1, 1, 1], [1, 0, 1, 1, 0, 1])
 
-    for words in input:
-        result = Solution().makeEqual(words)
+    for nums in input:
+        result = Solution().findMaxConsecutiveOnes(nums)
         print(result)
 
 
