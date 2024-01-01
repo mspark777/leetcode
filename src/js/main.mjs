@@ -2,45 +2,42 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {bigint} target
- * @param {bigint} maxDoubles
- * @return {bigint}
- */
-function solve(target, maxDoubles) {
-  let moves = 0n;
-  while (target > 1n && maxDoubles > 0n) {
-    if (target % 2n === 1n) {
-      moves += 2n;
-    } else {
-      moves += 1n;
-    }
-
-    maxDoubles -= 1n;
-    target /= 2n;
-  }
-
-  return moves + target - 1n;
-}
-
-/**
- * @param {number} target
- * @param {number} maxDoubles
+ * @param {number[]} g
+ * @param {number[]} s
  * @return {number}
  */
-function minMoves(target, maxDoubles) {
-  const moves = solve(BigInt(target), BigInt(maxDoubles));
-  return Number(moves);
+function findContentChildren(g, s) {
+  g.sort((l, r) => l - r);
+  s.sort((l, r) => l - r);
+
+  let result = 0;
+  for (const content of s) {
+    if (content >= g[result]) {
+      result += 1;
+    }
+
+    if (result >= g.length) {
+      break;
+    }
+  }
+
+  return result;
 }
 
 function main() {
   const inputs = [
-    [5, 0],
-    [19, 2],
-    [10, 4],
+    [
+      [1, 2, 3],
+      [1, 1],
+    ],
+    [
+      [1, 2],
+      [1, 2, 3],
+    ],
   ];
 
-  for (const [target, maxDouble] of inputs) {
-    const result = minMoves(target, maxDouble);
+  for (const [g, s] of inputs) {
+    const result = findContentChildren(g, s);
     console.log(result);
   }
 }
