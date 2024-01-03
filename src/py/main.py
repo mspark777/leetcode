@@ -1,22 +1,30 @@
 from __future__ import annotations
 from typing import List
-from math import sqrt
 
 
 class Solution:
-    def constructRectangle(self, area: int) -> List[int]:
-        w = int(sqrt(area))
-        while area % w != 0:
-            w -= 1
+    def numberOfBeams(self, bank: List[str]) -> int:
+        result = 0
+        prev_count = 0
 
-        return [area // w, w]
+        for row in bank:
+            count = 0
+            for device in row:
+                if device == "1":
+                    count += 1
+
+            if count > 0:
+                result += count * prev_count
+                prev_count = count
+
+        return result
 
 
 def main():
-    input = (4, 37, 122122)
+    input = (["011001", "000000", "010100", "001000"], ["000", "111", "000"])
 
-    for area in input:
-        result = Solution().constructRectangle(area)
+    for bank in input:
+        result = Solution().numberOfBeams(bank)
         print(result)
 
 
