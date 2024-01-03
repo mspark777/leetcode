@@ -3,26 +3,35 @@ from typing import List
 
 
 class Solution:
-    def findPoisonedDuration(self, time_series: List[int], duration: int) -> int:
-        n = len(time_series)
-        if n < 1:
-            return 0
+    def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        stack: list[int] = []
+        nums3 = dict[int, int]()
 
-        result = 0
-        for i in range(n - 1):
-            diff = time_series[i + 1] - time_series[i]
-            result += min(diff, duration)
+        for i in range(len(nums2)):
+            while stack and nums2[stack[-1]] < nums2[i]:
+                nums3[nums2[stack[-1]]] = nums2[i]
+                stack.pop()
+            stack.append(i)
 
-        result += duration
+        result: list[int] = []
+
+        for num in nums1:
+            if num in nums3:
+                result.append(nums3[num])
+            else:
+                result.append(-1)
 
         return result
 
 
 def main():
-    input = (([1, 4], 2), ([1, 2], 2))
+    input = (([4, 1, 2], [1, 3, 4, 2]), ([2, 4], [1, 2, 3, 4]))
 
-    for time_series, duration in input:
-        result = Solution().findPoisonedDuration(time_series, duration)
+    for (
+        nums1,
+        nums2,
+    ) in input:
+        result = Solution().nextGreaterElement(nums1, nums2)
         print(result)
 
 
