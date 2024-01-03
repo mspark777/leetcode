@@ -3,28 +3,26 @@ from typing import List
 
 
 class Solution:
-    def numberOfBeams(self, bank: List[str]) -> int:
+    def findPoisonedDuration(self, time_series: List[int], duration: int) -> int:
+        n = len(time_series)
+        if n < 1:
+            return 0
+
         result = 0
-        prev_count = 0
+        for i in range(n - 1):
+            diff = time_series[i + 1] - time_series[i]
+            result += min(diff, duration)
 
-        for row in bank:
-            count = 0
-            for device in row:
-                if device == "1":
-                    count += 1
-
-            if count > 0:
-                result += count * prev_count
-                prev_count = count
+        result += duration
 
         return result
 
 
 def main():
-    input = (["011001", "000000", "010100", "001000"], ["000", "111", "000"])
+    input = (([1, 4], 2), ([1, 2], 2))
 
-    for bank in input:
-        result = Solution().numberOfBeams(bank)
+    for time_series, duration in input:
+        result = Solution().findPoisonedDuration(time_series, duration)
         print(result)
 
 
