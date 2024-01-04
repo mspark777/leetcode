@@ -1,37 +1,31 @@
 from __future__ import annotations
 from typing import List
+from collections import Counter
 
 
 class Solution:
-    def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
-        stack: list[int] = []
-        nums3 = dict[int, int]()
+    def minOperations(self, nums: List[int]) -> int:
+        counts = Counter(nums)
 
-        for i in range(len(nums2)):
-            while stack and nums2[stack[-1]] < nums2[i]:
-                nums3[nums2[stack[-1]]] = nums2[i]
-                stack.pop()
-            stack.append(i)
+        result = 0
+        for count in counts.values():
+            if count == 1:
+                return -1
 
-        result: list[int] = []
-
-        for num in nums1:
-            if num in nums3:
-                result.append(nums3[num])
-            else:
-                result.append(-1)
+            result += int((count + 2) / 3)
 
         return result
 
 
 def main():
-    input = (([4, 1, 2], [1, 3, 4, 2]), ([2, 4], [1, 2, 3, 4]))
+    input = (
+        [2, 3, 3, 2, 2, 4, 2, 3, 4],
+        [2, 1, 2, 2, 3, 3],
+        [14, 12, 14, 14, 12, 14, 14, 12, 12, 12, 12, 14, 14, 12, 14, 14, 14, 12, 12],
+    )
 
-    for (
-        nums1,
-        nums2,
-    ) in input:
-        result = Solution().nextGreaterElement(nums1, nums2)
+    for nums in input:
+        result = Solution().minOperations(nums)
         print(result)
 
 
