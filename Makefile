@@ -25,3 +25,7 @@ c:
 	@gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address -o bin/c src/c/main.c
 	@./bin/c
 	@rm ./bin/c
+
+ex:
+	mix run
+	mix clean

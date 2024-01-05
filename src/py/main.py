@@ -1,31 +1,33 @@
 from __future__ import annotations
-from typing import List
-from collections import Counter
 
 
 class Solution:
-    def minOperations(self, nums: List[int]) -> int:
-        counts = Counter(nums)
+    def convertToBase7(self, num: int) -> str:
+        if num == 0:
+            return "0"
 
-        result = 0
-        for count in counts.values():
-            if count == 1:
-                return -1
+        sign = False
+        if num < 0:
+            sign = True
+            num = -num
+        nums: list[str] = []
 
-            result += int((count + 2) / 3)
+        while num > 0:
+            nums.append(str(num % 7))
+            num //= 7
 
-        return result
+        if sign:
+            nums.append("-")
+
+        nums.reverse()
+        return "".join(nums)
 
 
 def main():
-    input = (
-        [2, 3, 3, 2, 2, 4, 2, 3, 4],
-        [2, 1, 2, 2, 3, 3],
-        [14, 12, 14, 14, 12, 14, 14, 12, 12, 12, 12, 14, 14, 12, 14, 14, 14, 12, 12],
-    )
+    input = (100, -7, 0)
 
-    for nums in input:
-        result = Solution().minOperations(nums)
+    for num in input:
+        result = Solution().convertToBase7(num)
         print(result)
 
 
