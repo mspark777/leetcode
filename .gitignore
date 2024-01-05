@@ -7,4 +7,16 @@ __pycache__
 /dist
 temp/*
 
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+leetcode-*.tar
+/tmp/
+
+
 !.keep
+
