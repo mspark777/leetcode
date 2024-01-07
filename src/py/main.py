@@ -1,33 +1,30 @@
 from __future__ import annotations
+from typing import List
+from collections import defaultdict
 
 
 class Solution:
-    def convertToBase7(self, num: int) -> str:
-        if num == 0:
-            return "0"
+    def numberOfArithmeticSlices(self, nums: List[int]) -> int:
+        n = len(nums)
+        result = 0
+        dp = [defaultdict[int, int](int) for _ in range(n)]
 
-        sign = False
-        if num < 0:
-            sign = True
-            num = -num
-        nums: list[str] = []
+        for i in range(1, n):
+            for j in range(i):
+                diff = nums[i] - nums[j]
+                dp[i][diff] += 1
+                if diff in dp[j]:
+                    dp[i][diff] += dp[j][diff]
+                    result += dp[j][diff]
 
-        while num > 0:
-            nums.append(str(num % 7))
-            num //= 7
-
-        if sign:
-            nums.append("-")
-
-        nums.reverse()
-        return "".join(nums)
+        return result
 
 
 def main():
-    input = (100, -7, 0)
+    input = ([2, 4, 6, 8, 10], [7, 7, 7, 7, 7])
 
-    for num in input:
-        result = Solution().convertToBase7(num)
+    for nums in input:
+        result = Solution().numberOfArithmeticSlices(nums)
         print(result)
 
 
