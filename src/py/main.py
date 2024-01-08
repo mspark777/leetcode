@@ -1,52 +1,43 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import TreeNode
+from typing import List
 
 
 class Solution:
-    def rangeSumBST(self, root: Optional[TreeNode], low: int, high: int) -> int:
-        if root is None:
-            return 0
+    def findWords(self, words: List[str]) -> List[str]:
+        keyboard = dict[str, int]()
 
-        val = root.val
-        result = 0
-        if low <= val <= high:
-            result += val
+        first_row = "qwertyuiop"
+        for ch in first_row:
+            keyboard[ch] = 1
 
-        result += self.rangeSumBST(root.left, low, high)
-        result += self.rangeSumBST(root.right, low, high)
+        second_row = "asdfghjkl"
+        for ch in second_row:
+            keyboard[ch] = 2
+
+        third_row = "zxcvbnm"
+        for ch in third_row:
+            keyboard[ch] = 3
+
+        result: list[str] = []
+        for word in words:
+            row = keyboard[word[0].lower()]
+            ok = True
+            for ch in word[1:]:
+                if keyboard[ch] != row:
+                    ok = False
+                    break
+
+            if ok:
+                result.append(word)
 
         return result
 
 
 def main():
-    input = (
-        (
-            TreeNode(
-                10,
-                TreeNode(5, TreeNode(3), TreeNode(7)),
-                TreeNode(15, None, TreeNode(18)),
-            ),
-            7,
-            15,
-        ),
-        (
-            TreeNode(
-                10,
-                TreeNode(
-                    5,
-                    TreeNode(3, TreeNode(1)),
-                    TreeNode(7, TreeNode(6)),
-                ),
-                TreeNode(15, TreeNode(13), TreeNode(18)),
-            ),
-            6,
-            10,
-        ),
-    )
+    input = (["Hello", "Alaska", "Dad", "Peace"], ["omk"], ["adsdf", "sfd"])
 
-    for root, low, high in input:
-        result = Solution().rangeSumBST(root, low, high)
+    for words in input:
+        result = Solution().findWords(words)
         print(result)
 
 
