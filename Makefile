@@ -15,7 +15,3 @@ py:
 
 sh:
 	@cd src/sh && bash main.sh
-
-ex:
-	mix run
-	mix clean
