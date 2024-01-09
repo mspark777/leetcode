@@ -1,43 +1,32 @@
 from __future__ import annotations
-from typing import List
+from typing import Optional
+from tree_node import TreeNode
 
 
 class Solution:
-    def findWords(self, words: List[str]) -> List[str]:
-        keyboard = dict[str, int]()
+    def leafSimilar(self, root1: Optional[TreeNode], root2: Optional[TreeNode]) -> bool:
+        list1 = self.to_list(root1, [])
+        list2 = self.to_list(root2, [])
 
-        first_row = "qwertyuiop"
-        for ch in first_row:
-            keyboard[ch] = 1
+        return list1 == list2
 
-        second_row = "asdfghjkl"
-        for ch in second_row:
-            keyboard[ch] = 2
+    def to_list(self, node: Optional[TreeNode], result: list[int]) -> list[int]:
+        if node is None:
+            return result
 
-        third_row = "zxcvbnm"
-        for ch in third_row:
-            keyboard[ch] = 3
-
-        result: list[str] = []
-        for word in words:
-            row = keyboard[word[0].lower()]
-            ok = True
-            for ch in word[1:]:
-                if keyboard[ch] != row:
-                    ok = False
-                    break
-
-            if ok:
-                result.append(word)
+        self.to_list(node.left, result)
+        self.to_list(node.right, result)
+        if node.left is None and node.right is None:
+            result.append(node.val)
 
         return result
 
 
 def main():
-    input = (["Hello", "Alaska", "Dad", "Peace"], ["omk"], ["adsdf", "sfd"])
+    input = ()
 
-    for words in input:
-        result = Solution().findWords(words)
+    for root1, root2 in input:
+        result = Solution().leafSimilar(root1, root2)
         print(result)
 
 
