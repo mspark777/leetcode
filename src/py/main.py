@@ -1,58 +1,31 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import (
-    TreeNode,
-    new_tree_val,
-    new_tree_node,
-    new_tree_right,
-)
+from typing import List
 
 
 class Solution:
-    max_distance: int
+    def findRelativeRanks(self, score: List[int]) -> List[str]:
+        ranks = [(i, score) for i, score in enumerate(score)]
+        ranks.sort(key=lambda x: -x[1])
 
-    def __init__(self):
-        self.max_distance = 0
+        result = ["" for _ in score]
+        for rank, (ith, _) in enumerate(ranks):
+            if rank == 0:
+                result[ith] = "Gold Medal"
+            elif rank == 1:
+                result[ith] = "Silver Medal"
+            elif rank == 2:
+                result[ith] = "Bronze Medal"
+            else:
+                result[ith] = str(rank + 1)
 
-    def amountOfTime(self, root: Optional[TreeNode], start: int) -> int:
-        self.travel(root, start)
-        return self.max_distance
-
-    def travel(self, node: Optional[TreeNode], start: int) -> int:
-        if node is None:
-            return 0
-
-        depth = 0
-        left_depth = self.travel(node.left, start)
-        right_depth = self.travel(node.right, start)
-        if node.val == start:
-            self.max_distance = max(left_depth, right_depth)
-            depth = -1
-        elif left_depth >= 0 and right_depth >= 0:
-            depth = max(left_depth, right_depth) + 1
-        else:
-            distance = abs(left_depth) + abs(right_depth)
-            self.max_distance = max(self.max_distance, distance)
-            depth = min(left_depth, right_depth) - 1
-
-        return depth
+        return result
 
 
 def main():
-    input = (
-        (
-            new_tree_node(
-                1,
-                new_tree_right(5, new_tree_node(4, new_tree_val(9), new_tree_val(2))),
-                new_tree_node(3, new_tree_val(10), new_tree_val(6)),
-            ),
-            3,
-        ),
-        (new_tree_val(1), 1),
-    )
+    input = ([5, 4, 3, 2, 1], [10, 3, 8, 9, 4])
 
-    for root, start in input:
-        result = Solution().amountOfTime(root, start)
+    for score in input:
+        result = Solution().findRelativeRanks(score)
         print(result)
 
 
