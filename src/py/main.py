@@ -1,31 +1,40 @@
 from __future__ import annotations
-from typing import List
+from typing import Optional
+from tree_node import TreeNode
 
 
 class Solution:
-    def findRelativeRanks(self, score: List[int]) -> List[str]:
-        ranks = [(i, score) for i, score in enumerate(score)]
-        ranks.sort(key=lambda x: -x[1])
+    def maxAncestorDiff(self, root: Optional[TreeNode]) -> int:
+        return self.travel(root, root.val, root.val) if root is not None else 0
 
-        result = ["" for _ in score]
-        for rank, (ith, _) in enumerate(ranks):
-            if rank == 0:
-                result[ith] = "Gold Medal"
-            elif rank == 1:
-                result[ith] = "Silver Medal"
-            elif rank == 2:
-                result[ith] = "Bronze Medal"
-            else:
-                result[ith] = str(rank + 1)
+    def travel(self, node: Optional[TreeNode], curmax: int, curmin: int) -> int:
+        if node is None:
+            return curmax - curmin
 
-        return result
+        val = node.val
+        left = node.left
+        right = node.right
+        curmax = max(curmax, val)
+        curmin = min(curmin, val)
+
+        l = self.travel(left, curmax, curmin)
+        r = self.travel(right, curmax, curmin)
+
+        return max(l, r)
 
 
 def main():
-    input = ([5, 4, 3, 2, 1], [10, 3, 8, 9, 4])
+    input = (
+        TreeNode(
+            8,
+            TreeNode(3, TreeNode(1), TreeNode(6, TreeNode(4), TreeNode(7))),
+            TreeNode(10, None, TreeNode(14, TreeNode(13))),
+        ),
+        TreeNode(1, None, TreeNode(2, None, TreeNode(0, TreeNode(3)))),
+    )
 
-    for score in input:
-        result = Solution().findRelativeRanks(score)
+    for root in input:
+        result = Solution().maxAncestorDiff(root)
         print(result)
 
 
