@@ -2,37 +2,24 @@ from __future__ import annotations
 
 
 class Solution:
-    def closeStrings(self, word1: str, word2: str) -> bool:
-        frequency1 = [0] * 26
-        for ch in word1:
-            i = ord(ch) - ord("a")
-            frequency1[i] += 1
+    def checkPerfectNumber(self, num: int) -> bool:
+        primes = [2, 3, 5, 7, 13, 17, 19, 31]
 
-        frequency2 = [0] * 26
-        for ch in word2:
-            i = ord(ch) - ord("a")
-            frequency2[i] += 1
+        for prime in primes:
+            if self.euclid_euler(prime) == num:
+                return True
 
-        for freq1, freq2 in zip(frequency1, frequency2):
-            if freq1 == 0 and freq2 != 0:
-                return False
-            elif freq1 != 0 and freq2 == 0:
-                return False
+        return False
 
-        frequency1.sort()
-        frequency2.sort()
-        for freq1, freq2 in zip(frequency1, frequency2):
-            if freq1 != freq2:
-                return False
-
-        return True
+    def euclid_euler(self, prime) -> int:
+        return (2 ** (prime - 1)) * (2**prime - 1)
 
 
 def main():
-    input = (("abc", "bca"), ("a", "aa"), ("cabbba", "abbccc"))
+    input = (28, 7)
 
-    for word1, word2 in input:
-        result = Solution().closeStrings(word1, word2)
+    for num in input:
+        result = Solution().checkPerfectNumber(num)
         print(result)
 
 
