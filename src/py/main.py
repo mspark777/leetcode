@@ -2,30 +2,37 @@ from __future__ import annotations
 
 
 class Solution:
-    def halvesAreAlike(self, s: str) -> bool:
-        n = len(s)
-        halves = n // 2
-        a = s[0:halves]
-        b = s[halves:n]
+    def closeStrings(self, word1: str, word2: str) -> bool:
+        frequency1 = [0] * 26
+        for ch in word1:
+            i = ord(ch) - ord("a")
+            frequency1[i] += 1
 
-        vowels = set[str](["a", "e", "i", "o", "u"])
-        acount = 0
-        bcount = 0
-        for i in range(halves):
-            if a[i].lower() in vowels:
-                acount += 1
+        frequency2 = [0] * 26
+        for ch in word2:
+            i = ord(ch) - ord("a")
+            frequency2[i] += 1
 
-            if b[i].lower() in vowels:
-                bcount += 1
+        for freq1, freq2 in zip(frequency1, frequency2):
+            if freq1 == 0 and freq2 != 0:
+                return False
+            elif freq1 != 0 and freq2 == 0:
+                return False
 
-        return acount == bcount
+        frequency1.sort()
+        frequency2.sort()
+        for freq1, freq2 in zip(frequency1, frequency2):
+            if freq1 != freq2:
+                return False
+
+        return True
 
 
 def main():
-    input = ("book", "textbook")
+    input = (("abc", "bca"), ("a", "aa"), ("cabbba", "abbccc"))
 
-    for s in input:
-        result = Solution().halvesAreAlike(s)
+    for word1, word2 in input:
+        result = Solution().closeStrings(word1, word2)
         print(result)
 
 
