@@ -1,25 +1,41 @@
 from __future__ import annotations
+from typing import List
+from collections import Counter
 
 
 class Solution:
-    def checkPerfectNumber(self, num: int) -> bool:
-        primes = [2, 3, 5, 7, 13, 17, 19, 31]
+    def findWinners(self, matches: List[List[int]]) -> List[List[int]]:
+        winers = set([m[0] for m in matches])
+        losers = Counter([m[1] for m in matches])
 
-        for prime in primes:
-            if self.euclid_euler(prime) == num:
-                return True
+        filtered_winers = [w for w in winers if w not in losers]
+        filtered_losers = [l for l, c in losers.items() if c == 1]
 
-        return False
+        filtered_winers.sort()
+        filtered_losers.sort()
 
-    def euclid_euler(self, prime) -> int:
-        return (2 ** (prime - 1)) * (2**prime - 1)
+        return [filtered_winers, filtered_losers]
 
 
 def main():
-    input = (28, 7)
+    input = (
+        [
+            [1, 3],
+            [2, 3],
+            [3, 6],
+            [5, 6],
+            [5, 7],
+            [4, 5],
+            [4, 8],
+            [4, 9],
+            [10, 4],
+            [10, 9],
+        ],
+        [[2, 3], [1, 3], [5, 4], [6, 4]],
+    )
 
-    for num in input:
-        result = Solution().checkPerfectNumber(num)
+    for matches in input:
+        result = Solution().findWinners(matches)
         print(result)
 
 
