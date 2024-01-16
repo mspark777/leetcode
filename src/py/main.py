@@ -1,20 +1,41 @@
 from __future__ import annotations
-from typing import List
-from collections import Counter
+from random import randrange
 
 
-class Solution:
-    def findWinners(self, matches: List[List[int]]) -> List[List[int]]:
-        winers = set([m[0] for m in matches])
-        losers = Counter([m[1] for m in matches])
+class RandomizedSet:
+    nums: list[int]
+    indexes: dict[int, int]
 
-        filtered_winers = [w for w in winers if w not in losers]
-        filtered_losers = [l for l, c in losers.items() if c == 1]
+    def __init__(self):
+        self.nums = []
+        self.indexes = {}
 
-        filtered_winers.sort()
-        filtered_losers.sort()
+    def insert(self, val: int) -> bool:
+        if val in self.indexes:
+            return False
 
-        return [filtered_winers, filtered_losers]
+        self.indexes[val] = len(self.nums)
+        self.nums.append(val)
+        return True
+
+    def remove(self, val: int) -> bool:
+        if val not in self.indexes:
+            return False
+
+        last = self.nums[-1]
+        pos = self.indexes[val]
+
+        self.indexes[last] = pos
+        self.nums[pos] = last
+
+        self.indexes.pop(val)
+        self.nums.pop()
+
+        return True
+
+    def getRandom(self) -> int:
+        index = randrange(0, len(self.nums))
+        return self.nums[index]
 
 
 def main():
