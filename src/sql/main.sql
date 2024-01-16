@@ -1,1 +1,1 @@
-SELECT score, dense_rank() over(ORDER BY Scores.score DESC) AS rank FROM Scores
+SELECT player_id, MIN(event_date) as first_login FROM Activity GROUP BY player_id;
