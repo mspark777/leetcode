@@ -1,22 +1,19 @@
 from __future__ import annotations
+from typing import List
+from collections import Counter
 
 
 class Solution:
-    def findLUSlength(self, a: str, b: str) -> int:
-        alen = len(a)
-        blen = len(b)
-        return max(alen, blen) if a != b else -1
+    def uniqueOccurrences(self, arr: List[int]) -> bool:
+        counts = Counter(arr)
+        return len(set(counts.values())) == len(counts)
 
 
 def main():
-    input = (
-        ("aba", "cdc"),
-        ("aaa", "bbb"),
-        ("aaa", "aaa"),
-    )
+    input = ([1, 2, 2, 1, 1, 3], [1, 2], [-3, 0, 1, -3, 1, 1, 1, -3, 10, 0])
 
-    for a, b in input:
-        result = Solution().findLUSlength(a, b)
+    for arr in input:
+        result = Solution().uniqueOccurrences(arr)
         print(result)
 
 
