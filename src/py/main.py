@@ -2,23 +2,28 @@ from __future__ import annotations
 
 
 class Solution:
-    def climbStairs(self, n: int) -> int:
-        n0 = 1
-        n1 = 1
+    def reverseStr(self, s: str, k: int) -> str:
+        chs = list(s)
+        for begin in range(0, len(chs), 2 * k):
+            end = begin + k
+            chs[begin:end] = reversed(chs[begin:end])
 
-        for _ in range(1, n):
-            sum = n0 + n1
-            n0 = n1
-            n1 = sum
-
-        return n1
+        return "".join(chs)
 
 
 def main():
-    input = (2, 3)
+    input = (
+        ("abcdefg", 2),
+        ("abcd", 2),
+        ("abcdefg", 3),
+        (
+            "hyzqyljrnigxvdtneasepfahmtyhlohwxmkqcdfehybknvdmfrfvtbsovjbdhevlfxpdaovjgunjqlimjkfnqcqnajmebeddqsgl",
+            39,
+        ),
+    )
 
-    for n in input:
-        result = Solution().climbStairs(n)
+    for s, k in input:
+        result = Solution().reverseStr(s, k)
         print(result)
 
 
