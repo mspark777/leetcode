@@ -1,29 +1,33 @@
 from __future__ import annotations
+from typing import Optional
+from tree_node import TreeNode
 
 
 class Solution:
-    def reverseStr(self, s: str, k: int) -> str:
-        chs = list(s)
-        for begin in range(0, len(chs), 2 * k):
-            end = begin + k
-            chs[begin:end] = reversed(chs[begin:end])
+    result: int
 
-        return "".join(chs)
+    def __init__(self):
+        self.result = 0
+
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        self.resolve(root)
+        return self.result
+
+    def resolve(self, node: Optional[TreeNode]) -> int:
+        if node is None:
+            return 0
+
+        ldepth = self.resolve(node.left)
+        rdepth = self.resolve(node.right)
+        self.result = max(self.result, ldepth + rdepth)
+        return 1 + max(ldepth, rdepth)
 
 
 def main():
-    input = (
-        ("abcdefg", 2),
-        ("abcd", 2),
-        ("abcdefg", 3),
-        (
-            "hyzqyljrnigxvdtneasepfahmtyhlohwxmkqcdfehybknvdmfrfvtbsovjbdhevlfxpdaovjgunjqlimjkfnqcqnajmebeddqsgl",
-            39,
-        ),
-    )
+    input = (TreeNode(1, TreeNode(2)), TreeNode(1, TreeNode(2), TreeNode(3)))
 
-    for s, k in input:
-        result = Solution().reverseStr(s, k)
+    for root in input:
+        result = Solution().diameterOfBinaryTree(root)
         print(result)
 
 
