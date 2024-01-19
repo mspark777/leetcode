@@ -1,33 +1,44 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import TreeNode
+from typing import List
 
 
 class Solution:
-    result: int
+    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
+        row_count = len(matrix)
+        col_count = len(matrix[0])
+        last_row_idx = row_count - 1
+        last_col_idx = col_count - 1
 
-    def __init__(self):
-        self.result = 0
+        dp = [[0 for _ in range(col_count)] for _ in range(row_count)]
 
-    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
-        self.resolve(root)
-        return self.result
+        for i in range(col_count):
+            dp[last_row_idx][i] = matrix[last_row_idx][i]
 
-    def resolve(self, node: Optional[TreeNode]) -> int:
-        if node is None:
-            return 0
+        for i in range(row_count - 2, -1, -1):
+            for j in range(col_count):
+                next = i + 1
+                min_val = 2**31
+                if j < last_col_idx:
+                    min_val = min(dp[next][j + 1], min_val)
 
-        ldepth = self.resolve(node.left)
-        rdepth = self.resolve(node.right)
-        self.result = max(self.result, ldepth + rdepth)
-        return 1 + max(ldepth, rdepth)
+                if j > 0:
+                    min_val = min(dp[next][j - 1], min_val)
+
+                min_val = min(dp[next][j], min_val)
+                dp[i][j] = matrix[i][j] + min_val
+
+        min_val = 2**31
+        for i in range(col_count):
+            min_val = min(dp[0][i], min_val)
+
+        return min_val
 
 
 def main():
-    input = (TreeNode(1, TreeNode(2)), TreeNode(1, TreeNode(2), TreeNode(3)))
+    input = ([[2, 1, 3], [6, 5, 4], [7, 8, 9]], [[-19, 57], [-40, -5]])
 
-    for root in input:
-        result = Solution().diameterOfBinaryTree(root)
+    for matrix in input:
+        result = Solution().minFallingPathSum(matrix)
         print(result)
 
 
