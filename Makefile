@@ -15,6 +15,3 @@ py:
 
 sh:
 	@cd src/sh && bash main.sh
-
-rs:
-	cargo +1.74.1 run src/rs/main.rs
