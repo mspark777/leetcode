@@ -1,25 +1,31 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def rob(self, nums: List[int]) -> int:
-        rob = 0
-        norob = 0
+    def checkRecord(self, s: str) -> bool:
+        a = 0
+        l = 0
 
-        for num in nums:
-            gorob = norob + num
-            norob = max(norob, rob)
-            rob = gorob
+        for ch in s:
+            if ch == "A":
+                l = 0
+                a += 1
+            elif ch == "L":
+                l += 1
+            else:
+                l = 0
 
-        return max(rob, norob)
+            if a >= 2 or l >= 3:
+                return False
+
+        return True
 
 
 def main():
-    input = ([1, 2, 3, 1], [2, 7, 9, 3, 1])
+    input = ("PPALLP", "PPALLL", "LPLPLPLPLPL")
 
-    for nums in input:
-        result = Solution().rob(nums)
+    for s in input:
+        result = Solution().checkRecord(s)
         print(result)
 
 
