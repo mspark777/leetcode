@@ -1,31 +1,34 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def checkRecord(self, s: str) -> bool:
-        a = 0
-        l = 0
+    def findErrorNums(self, nums: List[int]) -> List[int]:
+        nums_len = len(nums)
+        checksums = [0] * nums_len
+        for num in nums:
+            checksums[num - 1] += 1
 
-        for ch in s:
-            if ch == "A":
-                l = 0
-                a += 1
-            elif ch == "L":
-                l += 1
-            else:
-                l = 0
+        missing = -1
+        dup = -1
 
-            if a >= 2 or l >= 3:
-                return False
+        for i, check in enumerate(checksums):
+            if check == 0:
+                missing = i + 1
+            elif check > 1:
+                dup = i + 1
 
-        return True
+            if missing > 0 and dup > 0:
+                break
+
+        return [dup, missing]
 
 
 def main():
-    input = ("PPALLP", "PPALLL", "LPLPLPLPLPL")
+    input = ([1, 2, 2, 4], [1, 1])
 
-    for s in input:
-        result = Solution().checkRecord(s)
+    for nums in input:
+        result = Solution().findErrorNums(nums)
         print(result)
 
 
