@@ -1,27 +1,21 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def findErrorNums(self, nums: List[int]) -> List[int]:
-        nums_len = len(nums)
-        checksums = [0] * nums_len
-        for num in nums:
-            checksums[num - 1] += 1
+    def maxDepth(self, root) -> int:
+        return self.inorder(root, 0)
 
-        missing = -1
-        dup = -1
+    def inorder(self, node, depth) -> int:
+        if node is None:
+            return depth
+        elif node.children is None:
+            return depth + 1
 
-        for i, check in enumerate(checksums):
-            if check == 0:
-                missing = i + 1
-            elif check > 1:
-                dup = i + 1
+        d = depth + 1
+        for child in node.children:
+            d = max(d, self.inorder(child, depth + 1))
 
-            if missing > 0 and dup > 0:
-                break
-
-        return [dup, missing]
+        return d
 
 
 def main():
