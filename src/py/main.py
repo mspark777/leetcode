@@ -3,25 +3,31 @@ from typing import List
 
 
 class Solution:
-    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
-        result: list[int] = [0] * len(temperatures)
-        stack: list[int] = []
+    def maxSumAfterPartitioning(self, arr: List[int], k: int) -> int:
+        n = len(arr)
 
-        for i, temp in enumerate(temperatures):
-            while stack and temperatures[stack[-1]] < temp:
-                top = stack.pop()
-                result[top] = i - top
+        dp = [0 for _ in range(n + 1)]
 
-            stack.append(i)
+        for start in range(n - 1, -1, -1):
+            curr_max = 0
+            end = min(n, start + k)
 
-        return result
+            for i in range(start, end):
+                curr_max = max(curr_max, arr[i])
+                dp[start] = max(dp[start], dp[i + 1] + curr_max * (i - start + 1))
+
+        return dp[0]
 
 
 def main():
-    input = ([73, 74, 75, 71, 69, 72, 76, 73], [30, 40, 50, 60], [30, 60, 90])
+    input = (
+        ([1, 15, 7, 9, 2, 5, 10], 3),
+        ([1, 4, 1, 5, 7, 3, 6, 1, 9, 9, 3], 4),
+        ([1], 1),
+    )
 
-    for temperatures in input:
-        result = Solution().dailyTemperatures(temperatures)
+    for arr, k in input:
+        result = Solution().maxSumAfterPartitioning(arr, k)
         print(result)
 
 
