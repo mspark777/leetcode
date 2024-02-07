@@ -1,25 +1,18 @@
 from __future__ import annotations
-from collections import Counter
+from typing import List
 
 
 class Solution:
-    def frequencySort(self, s: str) -> str:
-        counts = Counter(s)
-        keys = list(counts.keys())
-        keys.sort(key=lambda k: -counts[k])
-        result: list[str] = []
-        for key in keys:
-            for _ in range(counts[key]):
-                result.append(key)
-
-        return "".join(result)
+    def arrayPairSum(self, nums: List[int]) -> int:
+        nums.sort()
+        return sum([n for i, n in enumerate(nums) if i % 2 == 0])
 
 
 def main():
-    input = ("tree", "cccaaa", "Aabb", "loveleetcode")
+    input = ([1, 4, 3, 2], [6, 2, 6, 5, 1, 2])
 
-    for s in input:
-        result = Solution().frequencySort(s)
+    for nums in input:
+        result = Solution().arrayPairSum(nums)
         print(result)
 
 
