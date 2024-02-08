@@ -1,18 +1,23 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def arrayPairSum(self, nums: List[int]) -> int:
-        nums.sort()
-        return sum([n for i, n in enumerate(nums) if i % 2 == 0])
+    def numSquares(self, n: int) -> int:
+        memo = [0xFFFFFFFF for _ in range(n + 1)]
+        memo[0] = 0
+
+        for i in range(1, n + 1):
+            for j in range(1, int(i**0.5) + 1):
+                memo[i] = min(memo[i], 1 + memo[i - (j * j)])
+
+        return memo[n]
 
 
 def main():
-    input = ([1, 4, 3, 2], [6, 2, 6, 5, 1, 2])
+    input = (12, 13)
 
-    for nums in input:
-        result = Solution().arrayPairSum(nums)
+    for n in input:
+        result = Solution().numSquares(n)
         print(result)
 
 
