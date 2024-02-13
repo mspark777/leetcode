@@ -1,23 +1,37 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def numSquares(self, n: int) -> int:
-        memo = [0xFFFFFFFF for _ in range(n + 1)]
-        memo[0] = 0
+    def firstPalindrome(self, words: List[str]) -> str:
+        for word in words:
+            if self.palindrome(word):
+                return word
 
-        for i in range(1, n + 1):
-            for j in range(1, int(i**0.5) + 1):
-                memo[i] = min(memo[i], 1 + memo[i - (j * j)])
+        return ""
 
-        return memo[n]
+    def palindrome(self, word: str) -> bool:
+        left = 0
+        right = len(word) - 1
+        while left < right:
+            if word[left] != word[right]:
+                return False
+            else:
+                left += 1
+                right -= 1
+
+        return True
 
 
 def main():
-    input = (12, 13)
+    input = (
+        ["abc", "car", "ada", "racecar", "cool"],
+        ["notapalindrome", "racecar"],
+        ["def", "ghi"],
+    )
 
-    for n in input:
-        result = Solution().numSquares(n)
+    for words in input:
+        result = Solution().firstPalindrome(words)
         print(result)
 
 
