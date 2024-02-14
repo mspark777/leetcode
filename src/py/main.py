@@ -3,35 +3,27 @@ from typing import List
 
 
 class Solution:
-    def firstPalindrome(self, words: List[str]) -> str:
-        for word in words:
-            if self.palindrome(word):
-                return word
+    def rearrangeArray(self, nums: List[int]) -> List[int]:
+        positive_index = 0
+        negative_index = 1
 
-        return ""
-
-    def palindrome(self, word: str) -> bool:
-        left = 0
-        right = len(word) - 1
-        while left < right:
-            if word[left] != word[right]:
-                return False
+        result = [0] * len(nums)
+        for num in nums:
+            if num > 0:
+                result[positive_index] = num
+                positive_index += 2
             else:
-                left += 1
-                right -= 1
+                result[negative_index] = num
+                negative_index += 2
 
-        return True
+        return result
 
 
 def main():
-    input = (
-        ["abc", "car", "ada", "racecar", "cool"],
-        ["notapalindrome", "racecar"],
-        ["def", "ghi"],
-    )
+    input = ([3, 1, -2, -5, 2, -4], [-1, 1])
 
-    for words in input:
-        result = Solution().firstPalindrome(words)
+    for nums in input:
+        result = Solution().rearrangeArray(nums)
         print(result)
 
 
