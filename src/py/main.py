@@ -3,27 +3,19 @@ from typing import List
 
 
 class Solution:
-    def rearrangeArray(self, nums: List[int]) -> List[int]:
-        positive_index = 0
-        negative_index = 1
+    def missingNumber(self, nums: List[int]) -> int:
+        result = 0
+        for i, num in enumerate(nums):
+            result ^= i ^ num
 
-        result = [0] * len(nums)
-        for num in nums:
-            if num > 0:
-                result[positive_index] = num
-                positive_index += 2
-            else:
-                result[negative_index] = num
-                negative_index += 2
-
-        return result
+        return result ^ len(nums)
 
 
 def main():
-    input = ([3, 1, -2, -5, 2, -4], [-1, 1])
+    input = ([3, 0, 1], [0, 1], [9, 6, 4, 2, 3, 5, 7, 0, 1])
 
     for nums in input:
-        result = Solution().rearrangeArray(nums)
+        result = Solution().missingNumber(nums)
         print(result)
 
 
