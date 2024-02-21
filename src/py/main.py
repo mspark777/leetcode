@@ -1,21 +1,22 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def missingNumber(self, nums: List[int]) -> int:
-        result = 0
-        for i, num in enumerate(nums):
-            result ^= i ^ num
+    def rangeBitwiseAnd(self, left: int, right: int) -> int:
+        cnt = 0
+        while left != right:
+            left >>= 1
+            right >>= 1
+            cnt += 1
 
-        return result ^ len(nums)
+        return left << cnt
 
 
 def main():
-    input = ([3, 0, 1], [0, 1], [9, 6, 4, 2, 3, 5, 7, 0, 1])
+    input = ((5, 7), (0, 0), (1, 214783647))
 
-    for nums in input:
-        result = Solution().missingNumber(nums)
+    for left, right in input:
+        result = Solution().rangeBitwiseAnd(left, right)
         print(result)
 
 
