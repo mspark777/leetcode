@@ -1,44 +1,32 @@
 from __future__ import annotations
-from tree_node import TreeNode
-from typing import Optional
+from typing import List
 
 
 class Solution:
-    result: int
+    def matrixReshape(self, mat: List[List[int]], r: int, c: int) -> List[List[int]]:
+        if len(mat) * len(mat[0]) != r * c:
+            return mat
 
-    def __init__(self):
-        self.result = 0
+        result = [([0] * c) for _ in range(r)]
 
-    def findTilt(self, root: Optional[TreeNode]) -> int:
-        self.postorder(root)
-        return self.result
+        dr = 0
+        dc = 0
+        for row in mat:
+            for col in row:
+                result[dr][dc] = col
+                dc += 1
+                if dc == c:
+                    dc = 0
+                    dr += 1
 
-    def postorder(self, node: Optional[TreeNode]) -> int:
-        if node is None:
-            return 0
-
-        left_total = self.postorder(node.left)
-        right_total = self.postorder(node.right)
-        self.result += abs(left_total - right_total)
-
-        return node.val + left_total + right_total
+        return result
 
 
 def main():
-    input = (
-        TreeNode(1, TreeNode(2), TreeNode(3)),
-        TreeNode(
-            4, TreeNode(2, TreeNode(3), TreeNode(5)), TreeNode(9, None, TreeNode(7))
-        ),
-        TreeNode(
-            21,
-            TreeNode(7, TreeNode(1, TreeNode(3), TreeNode(3)), TreeNode(1)),
-            TreeNode(14, TreeNode(2), TreeNode(2)),
-        ),
-    )
+    input = (([[1, 2], [3, 4]], 1, 4), ([[1, 2], [3, 4]], 2, 4))
 
-    for root in input:
-        result = Solution().findTilt(root)
+    for mat, r, c in input:
+        result = Solution().matrixReshape(mat, r, c)
         print(result)
 
 
