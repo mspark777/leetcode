@@ -1,18 +1,44 @@
 from __future__ import annotations
-from typing import List
+from tree_node import TreeNode
+from typing import Optional
 
 
 class Solution:
-    def maximumProduct(self, nums: List[int]) -> int:
-        nums.sort()
-        return max(nums[-1] * nums[-2] * nums[-3], nums[0] * nums[1] * nums[-1])
+    result: int
+
+    def __init__(self):
+        self.result = 0
+
+    def findTilt(self, root: Optional[TreeNode]) -> int:
+        self.postorder(root)
+        return self.result
+
+    def postorder(self, node: Optional[TreeNode]) -> int:
+        if node is None:
+            return 0
+
+        left_total = self.postorder(node.left)
+        right_total = self.postorder(node.right)
+        self.result += abs(left_total - right_total)
+
+        return node.val + left_total + right_total
 
 
 def main():
-    input = ([1, 2, 3], [1, 2, 3, 4], [-1, -2, -3])
+    input = (
+        TreeNode(1, TreeNode(2), TreeNode(3)),
+        TreeNode(
+            4, TreeNode(2, TreeNode(3), TreeNode(5)), TreeNode(9, None, TreeNode(7))
+        ),
+        TreeNode(
+            21,
+            TreeNode(7, TreeNode(1, TreeNode(3), TreeNode(3)), TreeNode(1)),
+            TreeNode(14, TreeNode(2), TreeNode(2)),
+        ),
+    )
 
-    for nums in input:
-        result = Solution().maximumProduct(nums)
+    for root in input:
+        result = Solution().findTilt(root)
         print(result)
 
 
