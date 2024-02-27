@@ -1,43 +1,60 @@
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-/**
- * @param {number[]} g
- * @param {number[]} s
- * @return {number}
- */
-function findContentChildren(g, s) {
-  g.sort((l, r) => l - r);
-  s.sort((l, r) => l - r);
+import { TreeNode } from "./tree_node.mjs";
 
-  let result = 0;
-  for (const content of s) {
-    if (content >= g[result]) {
-      result += 1;
-    }
-
-    if (result >= g.length) {
-      break;
-    }
+class Solution {
+  /** @type {number} */
+  result;
+  constructor() {
+    this.result = 0;
   }
 
-  return result;
+  /**
+   * @param {TreeNode|null} node
+   * @return {number}
+   */
+  resolve(node) {
+    if (node == null) {
+      return 0;
+    }
+
+    const ldepth = this.resolve(node.left);
+    const rdepth = this.resolve(node.right);
+    this.result = Math.max(this.result, ldepth + rdepth);
+    return 1 + Math.max(ldepth, rdepth);
+  }
+
+  /**
+   * @param {TreeNode|null} root
+   * @return {number}
+   */
+  diameterOfBinaryTree(root) {
+    this.resolve(root);
+    return this.result;
+  }
+}
+
+/**
+ * @param {TreeNode|null} [root]
+ * @return {number}
+ */
+function diameterOfBinaryTree(root) {
+  const solution = new Solution();
+  return solution.diameterOfBinaryTree(root);
 }
 
 function main() {
   const inputs = [
-    [
-      [1, 2, 3],
-      [1, 1],
-    ],
-    [
-      [1, 2],
-      [1, 2, 3],
-    ],
+    new TreeNode(
+      1,
+      new TreeNode(2, new TreeNode(4), new TreeNode(5)),
+      new TreeNode(3),
+    ),
+    new TreeNode(1, new TreeNode(2)),
   ];
 
-  for (const [g, s] of inputs) {
-    const result = findContentChildren(g, s);
+  for (const root of inputs) {
+    const result = diameterOfBinaryTree(root);
     console.log(result);
   }
 }
