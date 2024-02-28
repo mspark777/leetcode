@@ -1,32 +1,35 @@
 from __future__ import annotations
-from typing import List
+from typing import Optional
+from tree_node import TreeNode, to_tree
+from collections import deque
 
 
 class Solution:
-    def matrixReshape(self, mat: List[List[int]], r: int, c: int) -> List[List[int]]:
-        if len(mat) * len(mat[0]) != r * c:
-            return mat
+    def findBottomLeftValue(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
 
-        result = [([0] * c) for _ in range(r)]
+        queue = deque[TreeNode]()
+        current = root
+        queue.append(current)
+        while queue:
+            current = queue.popleft()
+            if current.right is not None:
+                queue.append(current.right)
+            if current.left is not None:
+                queue.append(current.left)
 
-        dr = 0
-        dc = 0
-        for row in mat:
-            for col in row:
-                result[dr][dc] = col
-                dc += 1
-                if dc == c:
-                    dc = 0
-                    dr += 1
-
-        return result
+        return current.val
 
 
 def main():
-    input = (([[1, 2], [3, 4]], 1, 4), ([[1, 2], [3, 4]], 2, 4))
+    input: list[list[Optional[int]]] = [
+        [2, 1, 3],
+        [1, 2, 3, 4, None, 5, 6, None, None, 7],
+    ]
 
-    for mat, r, c in input:
-        result = Solution().matrixReshape(mat, r, c)
+    for vals in input:
+        result = Solution().findBottomLeftValue(to_tree(vals))
         print(result)
 
 

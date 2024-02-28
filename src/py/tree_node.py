@@ -34,3 +34,26 @@ def new_tree_right(val: int, right: TreeNode) -> TreeNode:
 
 def new_tree_val(val: int) -> TreeNode:
     return new_tree_node(val, None, None)
+
+
+def to_tree(items: list[Optional[int]]) -> Optional[TreeNode]:
+    if not items:
+        return None
+
+    it = iter(items)
+    val = next(it)
+    if val is None:
+        return None
+
+    root = TreeNode(val)
+    q = [root]
+    for node in q:
+        val = next(it, None)
+        if val is not None:
+            node.left = TreeNode(val)
+            q.append(node.left)
+        val = next(it, None)
+        if val is not None:
+            node.right = TreeNode(val)
+            q.append(node.right)
+    return root
