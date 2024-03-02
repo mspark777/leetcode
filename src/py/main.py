@@ -1,42 +1,32 @@
 from __future__ import annotations
-from typing import Optional
-from tree_node import TreeNode, to_tree
+from typing import List
 
 
 class Solution:
-    def isSubtree(self, root: Optional[TreeNode], sub_root: Optional[TreeNode]) -> bool:
-        if root is None:
-            return False
-        if self.dfs(root, sub_root):
-            return True
+    def sortedSquares(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        l = 0
+        r = n - 1
+        i = n - 1
+        result = [0] * n
+        while i >= 0:
+            left = nums[l] * nums[l]
+            right = nums[r] * nums[r]
+            if left > right:
+                result[i] = left
+                l += 1
+            else:
+                result[i] = right
+                r -= 1
+            i -= 1
 
-        return self.isSubtree(root.left, sub_root) or self.isSubtree(
-            root.right, sub_root
-        )
-
-    def dfs(
-        self,
-        node: Optional[TreeNode],
-        sub: Optional[TreeNode],
-    ) -> bool:
-        if node is None and sub is None:
-            return True
-        elif node is None or sub is None:
-            return False
-        elif node.val != sub.val:
-            return False
-
-        return self.dfs(node.left, sub.left) and self.dfs(node.right, sub.right)
+        return result
 
 
 def main():
-    input = [
-        ([[3, 4, 5, 1, 2], [4, 1, 2]]),
-        ([3, 4, 5, 1, 2, None, None, None, None, 0], [4, 1, 2]),
-        ([1, 1], [1]),
-    ]
-    for root, sub_root in input:
-        result = Solution().isSubtree(to_tree(root), to_tree(sub_root))
+    input = [[-4, -1, 0, 3, 10], [-7, -3, 2, 3, 11]]
+    for nums in input:
+        result = Solution().sortedSquares(nums)
         print(result)
 
 
