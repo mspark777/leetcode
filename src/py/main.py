@@ -1,31 +1,28 @@
 from __future__ import annotations
+from typing import List
 
 
 class Solution:
-    def minimumLength(self, s: str) -> int:
-        left = 0
-        right = len(s) - 1
-        while left < right and s[left] == s[right]:
-            ch = s[left]
+    def maxFrequencyElements(self, nums: List[int]) -> int:
+        frequencies = [0] * 101
+        max_frequency = 0
+        result = 0
+        for num in nums:
+            frequencies[num] += 1
+            frequency = frequencies[num]
+            if frequency > max_frequency:
+                result = frequency
+                max_frequency = frequency
+            elif frequency == max_frequency:
+                result += frequency
 
-            while left <= right and s[left] == ch:
-                left += 1
-
-            while right > left and s[right] == ch:
-                right -= 1
-
-        return right - left + 1
+        return result
 
 
 def main():
-    input = [
-        "ca",
-        "cabaabac",
-        "aabccabba",
-        "bbbbbbbbbbbbbbbbbbbbbbbbbbbabbbbbbbbbbbbbbbccbcbcbccbbabbb",
-    ]
-    for s in input:
-        result = Solution().minimumLength(s)
+    input = [[1, 2, 2, 3, 1, 4], [1, 2, 3, 4, 5]]
+    for nums in input:
+        result = Solution().maxFrequencyElements(nums)
         print(result)
 
 
