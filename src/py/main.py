@@ -3,26 +3,28 @@ from typing import List
 
 
 class Solution:
-    def maxFrequencyElements(self, nums: List[int]) -> int:
-        frequencies = [0] * 101
-        max_frequency = 0
-        result = 0
-        for num in nums:
-            frequencies[num] += 1
-            frequency = frequencies[num]
-            if frequency > max_frequency:
-                result = frequency
-                max_frequency = frequency
-            elif frequency == max_frequency:
-                result += frequency
+    def getCommon(self, nums1: List[int], nums2: List[int]) -> int:
+        i1 = 0
+        i2 = 0
 
-        return result
+        while i1 < len(nums1) and i2 < len(nums2):
+            n1 = nums1[i1]
+            n2 = nums2[i2]
+
+            if n1 < n2:
+                i1 += 1
+            elif n1 > n2:
+                i2 += 1
+            else:
+                return n1
+
+        return -1
 
 
 def main():
-    input = [[1, 2, 2, 3, 1, 4], [1, 2, 3, 4, 5]]
-    for nums in input:
-        result = Solution().maxFrequencyElements(nums)
+    input = [([1, 2, 3], [2, 4]), ([1, 2, 3, 6], [2, 3, 4, 5])]
+    for nums1, nums2 in input:
+        result = Solution().getCommon(nums1, nums2)
         print(result)
 
 
