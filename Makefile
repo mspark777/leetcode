@@ -15,3 +15,9 @@ py:
 
 sh:
 	@cd src/sh && bash main.sh
+
+cpp:
+	rm -f ./bin/cpp
+	clang++ --std=c++20 -xc++ -Wall -Wextra -Werror -o bin/cpp src/cpp/main.cpp
+	./bin/cpp
+	rm ./bin/cpp

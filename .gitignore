@@ -16,6 +16,7 @@ erl_crash.dump
 *.ez
 leetcode-*.tar
 /tmp/
+.cache
 
 
 !.keep
