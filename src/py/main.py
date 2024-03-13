@@ -1,20 +1,19 @@
 from __future__ import annotations
+from math import sqrt
 
 
 class Solution:
-    def customSortString(self, order: str, s: str) -> str:
-        orders = list(order)
-        chars = list(s)
-        chars.sort(key=lambda x: orders.index(x) if x in orders else len(orders))
-
-        return "".join(chars)
+    def pivotInteger(self, n: int) -> int:
+        sum = n * (n + 1) // 2
+        pivot = int(sqrt(sum))
+        return pivot if pivot * pivot == sum else -1
 
 
 def main():
-    input = [("cba", "abcd"), ("bcafg", "abcd")]
+    input = [8, 1, 4]
 
-    for order, s in input:
-        result = Solution().customSortString(order, s)
+    for n in input:
+        result = Solution().pivotInteger(n)
         print(result)
 
 
