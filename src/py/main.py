@@ -1,19 +1,17 @@
 from __future__ import annotations
-from math import sqrt
+from typing import List
 
 
 class Solution:
-    def pivotInteger(self, n: int) -> int:
-        sum = n * (n + 1) // 2
-        pivot = int(sqrt(sum))
-        return pivot if pivot * pivot == sum else -1
+    def distributeCandies(self, candyType: List[int]) -> int:
+        return min(len(set(candyType)), len(candyType) // 2)
 
 
 def main():
-    input = [8, 1, 4]
+    input = [[1, 1, 2, 2, 3, 3], [1, 1, 2, 3], [6, 6, 6, 6]]
 
-    for n in input:
-        result = Solution().pivotInteger(n)
+    for candyType in input:
+        result = Solution().distributeCandies(candyType)
         print(result)
 
 
