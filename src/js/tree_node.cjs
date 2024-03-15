@@ -1,4 +1,4 @@
-export class TreeNode {
+class TreeNode {
   /** @type {number} */
   val;
   /** @type {TreeNode|null} */
@@ -17,3 +17,4 @@ export class TreeNode {
     this.right = right ?? null;
   }
 }
+module.exports = TreeNode;

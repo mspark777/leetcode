@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:ts": "ts-node --files src/ts/main.ts",
-    "start:js": "node src/js/main.mjs"
+    "start:js": "node src/js/main.cjs"
   },
   "keywords": [],
   "author": "",
