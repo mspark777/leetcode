@@ -3,15 +3,24 @@ from typing import List
 
 
 class Solution:
-    def distributeCandies(self, candyType: List[int]) -> int:
-        return min(len(set(candyType)), len(candyType) // 2)
+    def findMaxLength(self, nums: List[int]) -> int:
+        count = 0
+        maxlen = 0
+        map = {0: -1}
+        for i, num in enumerate(nums):
+            count = count + (1 if num == 1 else -1)
+            if count in map:
+                maxlen = max(maxlen, i - map[count])
+            else:
+                map[count] = i
+        return maxlen
 
 
 def main():
-    input = [[1, 1, 2, 2, 3, 3], [1, 1, 2, 3], [6, 6, 6, 6]]
+    input = [[0, 1], [0, 1, 0]]
 
-    for candyType in input:
-        result = Solution().distributeCandies(candyType)
+    for nums in input:
+        result = Solution().findMaxLength(nums)
         print(result)
 
 
