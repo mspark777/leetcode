@@ -3,24 +3,33 @@ from typing import List
 
 
 class Solution:
-    def findMaxLength(self, nums: List[int]) -> int:
-        count = 0
-        maxlen = 0
-        map = {0: -1}
-        for i, num in enumerate(nums):
-            count = count + (1 if num == 1 else -1)
-            if count in map:
-                maxlen = max(maxlen, i - map[count])
-            else:
-                map[count] = i
-        return maxlen
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        frequencies = [0] * 26
+        max_count = 0
+
+        for task in tasks:
+            i = ord(task) - ord("A")
+            frequencies[i] += 1
+            max_count = max(max_count, frequencies[i])
+
+        time = (max_count - 1) * (n + 1)
+
+        for f in frequencies:
+            if f == max_count:
+                time += 1
+
+        return max(len(tasks), time)
 
 
 def main():
-    input = [[0, 1], [0, 1, 0]]
+    input = [
+        (["A", "A", "A", "B", "B", "B"], 2),
+        (["A", "C", "A", "B", "D", "B"], 1),
+        (["A", "A", "A", "B", "B", "B"], 3),
+    ]
 
-    for nums in input:
-        result = Solution().findMaxLength(nums)
+    for tasks, n in input:
+        result = Solution().leastInterval(tasks, n)
         print(result)
 
 
