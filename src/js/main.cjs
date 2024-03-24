@@ -2,31 +2,36 @@
 
 /**
  * @param {number[]} nums
- * @return {number[]}
+ * @return {number}
  */
-function productExceptSelf(nums) {
-  const result = new Array(nums.length).fill(1);
-  let left = 1;
-  let right = 1;
-  for (let i = 0; i < nums.length; i++) {
-    r = nums.length - 1;
-    result[i] *= left;
-    result[r - i] *= right;
-    left *= nums[i];
-    right *= nums[r - i];
+function findDuplicate(nums) {
+  let slow = nums[0];
+  let fast = nums[0];
+
+  do {
+    slow = nums[slow];
+    fast = nums[nums[fast]];
+  } while (slow !== fast);
+
+  slow = nums[0];
+  while (slow !== fast) {
+    slow = nums[slow];
+    fast = nums[fast];
   }
 
-  return result;
+  return slow;
 }
 
 function main() {
   const inputs = [
-    [1, 2, 3, 4],
-    [-1, 1, 0, -3, 3],
+    [1, 3, 4, 2, 2],
+    [3, 1, 3, 4, 2],
+    [3, 3, 3, 3, 3],
+    [2, 5, 9, 6, 9, 3, 8, 9, 7, 1],
   ];
 
   for (const nums of inputs) {
-    const result = productExceptSelf(nums);
+    const result = findDuplicate(nums);
     console.log(result);
   }
 }
