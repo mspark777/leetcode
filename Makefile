@@ -16,8 +16,8 @@ py:
 sh:
 	@cd src/sh && bash main.sh
 
-c:
-	@rm -f ./bin/c
-	@clang++ --std=c11 -xc -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer -g -o bin/c src/c/main.c
-	@./bin/c
-	@rm ./bin/c
+cpp:
+	@rm -f ./bin/cpp
+	@clang++ --std=c++20 -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer -g -o bin/cpp src/cpp/main.cpp
+	@./bin/cpp
+	@rm ./bin/cpp
