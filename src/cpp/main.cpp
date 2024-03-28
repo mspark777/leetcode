@@ -1,40 +1,33 @@
-#include <cmath>
-#include <cstddef>
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
 class Solution {
  public:
-  int numSubarrayProductLessThanK(std::vector<int>& nums, int k) {
-    if (k == 0) {
-      return 0;
-    }
+  int maxSubarrayLength(std::vector<int>& nums, int k) {
+    const int n = static_cast<int>(nums.size());
+    std::unordered_map<int, int> frequencies;
+    int start = 0;
+    int charsWithFreqOverK = 0;
 
-    const std::size_t m = nums.size() + 1;
-    std::vector<double> logsPrefixSum(m);
-
-    for (std::size_t i = 0; i < nums.size(); i += 1) {
-      logsPrefixSum[i + 1] =
-          logsPrefixSum[i] + log(static_cast<double>(nums[i]));
-    }
-
-    const double logK = log(k);
-    int result = 0;
-    for (int currIdx = 0; currIdx < static_cast<int>(m); currIdx += 1) {
-      int low = currIdx + 1;
-      int high = m;
-      while (low < high) {
-        const int mid = (low + high) / 2;
-        if (logsPrefixSum[mid] < logsPrefixSum[currIdx] + logK - 1e-9) {
-          low = mid + 1;
-        } else {
-          high = mid;
-        }
+    for (int end = 0; end < n; end += 1) {
+      const int n = nums[end];
+      frequencies[n] += 1;
+      if (frequencies[n] == k + 1) {
+        charsWithFreqOverK += 1;
       }
-      result += low - currIdx - 1;
+
+      if (charsWithFreqOverK > 0) {
+        const int s = nums[start];
+        frequencies[s] -= 1;
+        if (frequencies[s] == k) {
+          charsWithFreqOverK -= 1;
+        }
+        start += 1;
+      }
     }
 
-    return result;
+    return n - start;
   }
 };
 
@@ -44,15 +37,13 @@ struct Input {
 };
 
 int main() {
-  const Input inputs[] = {
-      {{10, 5, 2, 6}, 100},
-      {{1, 2, 3}, 0},
-  };
+  const Input inputs[] = {{{1, 2, 3, 1, 2, 3, 1, 2}, 2},
+                          {{1, 2, 1, 2, 1, 2, 1, 2}, 1},
+                          {{5, 5, 5, 5, 5, 5, 5}, 4}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.numSubarrayProductLessThanK(input.nums, input.k)
-              << std::endl;
+    std::cout << s.maxSubarrayLength(input.nums, input.k) << std::endl;
   }
   return 0;
 }
