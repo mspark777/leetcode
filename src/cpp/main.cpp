@@ -1,33 +1,30 @@
+#include <algorithm>
 #include <iostream>
-#include <unordered_map>
 #include <vector>
 
 class Solution {
  public:
-  int maxSubarrayLength(std::vector<int>& nums, int k) {
-    const int n = static_cast<int>(nums.size());
-    std::unordered_map<int, int> frequencies;
+  long long countSubarrays(std::vector<int>& nums, int k) {
+    const int maxNum = *std::max_element(nums.begin(), nums.end());
+    long long result = 0;
     int start = 0;
-    int charsWithFreqOverK = 0;
 
-    for (int end = 0; end < n; end += 1) {
-      const int n = nums[end];
-      frequencies[n] += 1;
-      if (frequencies[n] == k + 1) {
-        charsWithFreqOverK += 1;
+    for (int end = 0; end < static_cast<int>(nums.size()); end += 1) {
+      if (nums[end] == maxNum) {
+        k -= 1;
       }
 
-      if (charsWithFreqOverK > 0) {
-        const int s = nums[start];
-        frequencies[s] -= 1;
-        if (frequencies[s] == k) {
-          charsWithFreqOverK -= 1;
+      while (k == 0) {
+        if (nums[start] == maxNum) {
+          k = +1;
         }
+
         start += 1;
       }
+      result += start;
     }
 
-    return n - start;
+    return result;
   }
 };
 
@@ -37,13 +34,11 @@ struct Input {
 };
 
 int main() {
-  const Input inputs[] = {{{1, 2, 3, 1, 2, 3, 1, 2}, 2},
-                          {{1, 2, 1, 2, 1, 2, 1, 2}, 1},
-                          {{5, 5, 5, 5, 5, 5, 5}, 4}};
+  const Input inputs[] = {{{1, 3, 2, 3, 3}, 2}, {{1, 4, 2, 1}, 3}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.maxSubarrayLength(input.nums, input.k) << std::endl;
+    std::cout << s.countSubarrays(input.nums, input.k) << std::endl;
   }
   return 0;
 }
