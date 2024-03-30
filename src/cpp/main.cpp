@@ -1,27 +1,39 @@
-#include <algorithm>
 #include <iostream>
 #include <vector>
 
 class Solution {
  public:
-  long long countSubarrays(std::vector<int>& nums, int k) {
-    const int maxNum = *std::max_element(nums.begin(), nums.end());
-    long long result = 0;
-    int start = 0;
+  int subarraysWithKDistinct(std::vector<int>& nums, int k) {
+    std::vector<int> distinctCounts(nums.size() + 1, 0);
 
-    for (int end = 0; end < static_cast<int>(nums.size()); end += 1) {
-      if (nums[end] == maxNum) {
+    int result = 0;
+    int left = 0;
+    int right = 0;
+    int currCount = 0;
+
+    while (right < static_cast<int>(nums.size())) {
+      const int r = nums[right];
+      right += 1;
+      distinctCounts[r] += 1;
+      if (distinctCounts[r] == 1) {
         k -= 1;
       }
 
-      while (k == 0) {
-        if (nums[start] == maxNum) {
-          k = +1;
-        }
-
-        start += 1;
+      if (k < 0) {
+        distinctCounts[nums[left]] -= 1;
+        left += 1;
+        k += 1;
+        currCount = 0;
       }
-      result += start;
+
+      if (k == 0) {
+        while (distinctCounts[nums[left]] > 1) {
+          distinctCounts[nums[left]] -= 1;
+          left += 1;
+          currCount += 1;
+        }
+        result += currCount + 1;
+      }
     }
 
     return result;
@@ -34,11 +46,11 @@ struct Input {
 };
 
 int main() {
-  const Input inputs[] = {{{1, 3, 2, 3, 3}, 2}, {{1, 4, 2, 1}, 3}};
+  const Input inputs[] = {{{1, 2, 1, 2, 3}, 2}, {{1, 2, 1, 3, 4}, 3}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.countSubarrays(input.nums, input.k) << std::endl;
+    std::cout << s.subarraysWithKDistinct(input.nums, input.k) << std::endl;
   }
   return 0;
 }
