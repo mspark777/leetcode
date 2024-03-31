@@ -1,39 +1,30 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
 class Solution {
  public:
-  int subarraysWithKDistinct(std::vector<int>& nums, int k) {
-    std::vector<int> distinctCounts(nums.size() + 1, 0);
+  long long countSubarrays(std::vector<int>& nums, int minK, int maxK) {
+    long long result = 0;
+    int badIdx = -1;
+    int leftIdx = -1;
+    int rightIdx = -1;
 
-    int result = 0;
-    int left = 0;
-    int right = 0;
-    int currCount = 0;
-
-    while (right < static_cast<int>(nums.size())) {
-      const int r = nums[right];
-      right += 1;
-      distinctCounts[r] += 1;
-      if (distinctCounts[r] == 1) {
-        k -= 1;
+    for (int i = 0; i < static_cast<int>(nums.size()); i += 1) {
+      const int num = nums[i];
+      if ((num < minK) || (num > maxK)) {
+        badIdx = i;
       }
 
-      if (k < 0) {
-        distinctCounts[nums[left]] -= 1;
-        left += 1;
-        k += 1;
-        currCount = 0;
+      if (num == minK) {
+        leftIdx = i;
       }
 
-      if (k == 0) {
-        while (distinctCounts[nums[left]] > 1) {
-          distinctCounts[nums[left]] -= 1;
-          left += 1;
-          currCount += 1;
-        }
-        result += currCount + 1;
+      if (num == maxK) {
+        rightIdx = i;
       }
+
+      result += std::max(0, std::min(leftIdx, rightIdx) - badIdx);
     }
 
     return result;
@@ -42,15 +33,17 @@ class Solution {
 
 struct Input {
   std::vector<int> nums;
-  int k;
+  int minK;
+  int maxK;
 };
 
 int main() {
-  const Input inputs[] = {{{1, 2, 1, 2, 3}, 2}, {{1, 2, 1, 3, 4}, 3}};
+  const Input inputs[] = {{{1, 3, 5, 2, 7, 5}, 1, 5}, {{1, 1, 1, 1}, 1, 1}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.subarraysWithKDistinct(input.nums, input.k) << std::endl;
+    std::cout << s.countSubarrays(input.nums, input.minK, input.maxK)
+              << std::endl;
   }
   return 0;
 }

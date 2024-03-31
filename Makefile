@@ -16,6 +16,9 @@ py:
 sh:
 	@cd src/sh && bash main.sh
 
+rs:
+	@cargo run
+
 cpp:
 	@rm -f ./bin/cpp
 	@clang++ --std=c++20 -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer -g -o bin/cpp src/cpp/main.cpp
