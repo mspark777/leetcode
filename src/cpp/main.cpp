@@ -1,30 +1,21 @@
-#include <algorithm>
 #include <iostream>
-#include <vector>
+#include <string>
 
 class Solution {
  public:
-  long long countSubarrays(std::vector<int>& nums, int minK, int maxK) {
-    long long result = 0;
-    int badIdx = -1;
-    int leftIdx = -1;
-    int rightIdx = -1;
-
-    for (int i = 0; i < static_cast<int>(nums.size()); i += 1) {
-      const int num = nums[i];
-      if ((num < minK) || (num > maxK)) {
-        badIdx = i;
+  int lengthOfLastWord(std::string s) {
+    int result = 0;
+    for (auto iter = s.rbegin(); iter != s.rend(); ++iter) {
+      const char ch = *iter;
+      if (ch == ' ') {
+        if (result > 0) {
+          return result;
+        } else {
+          continue;
+        }
+      } else {
+        result += 1;
       }
-
-      if (num == minK) {
-        leftIdx = i;
-      }
-
-      if (num == maxK) {
-        rightIdx = i;
-      }
-
-      result += std::max(0, std::min(leftIdx, rightIdx) - badIdx);
     }
 
     return result;
@@ -32,18 +23,17 @@ class Solution {
 };
 
 struct Input {
-  std::vector<int> nums;
-  int minK;
-  int maxK;
+  std::string s;
 };
 
 int main() {
-  const Input inputs[] = {{{1, 3, 5, 2, 7, 5}, 1, 5}, {{1, 1, 1, 1}, 1, 1}};
+  const Input inputs[] = {{"Hello World"},
+                          {"   fly me   to   the moon  "},
+                          {"luffy is still joyboy"}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.countSubarrays(input.nums, input.minK, input.maxK)
-              << std::endl;
+    std::cout << s.lengthOfLastWord(input.s) << std::endl;
   }
   return 0;
 }
