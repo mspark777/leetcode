@@ -1,44 +1,73 @@
 #include <iostream>
-#include <map>
 #include <string>
+#include <vector>
 
 class Solution {
  public:
-  bool isIsomorphic(std::string s, std::string t) {
-    std::map<char, int> sIdxMap;
-    std::map<char, int> tIdxMap;
-    for (int i = 0; i < static_cast<int>(s.size()); i += 1) {
-      const char sch = s[i];
-      const char tch = t[i];
+  bool exist(std::vector<std::vector<char>>& board, std::string word) {
+    const int r = board.size();
+    const int c = board[0].size();
 
-      if (sIdxMap.find(sch) == sIdxMap.end()) {
-        sIdxMap[sch] = i;
-      }
-      if (tIdxMap.find(tch) == tIdxMap.end()) {
-        tIdxMap[tch] = i;
-      }
-
-      if (sIdxMap[sch] != tIdxMap[tch]) {
-        return false;
+    for (int i = 0; i < r; i += 1) {
+      for (int j = 0; j < c; j += 1) {
+        if (board[i][j] == word[0] && this->dfs(i, j, 0, board, word)) {
+          return true;
+        }
       }
     }
 
-    return true;
+    return false;
+  }
+
+ protected:
+  bool dfs(int r, int c, int count, std::vector<std::vector<char>>& board,
+           std::string& word) {
+    if (static_cast<int>(word.length()) == count) {
+      return true;
+    } else if (r < 0) {
+      return false;
+    } else if (r >= static_cast<int>(board.size())) {
+      return false;
+    } else if (c < 0) {
+      return false;
+    } else if (c >= static_cast<int>(board[0].size())) {
+      return false;
+    } else if (board[r][c] != word[count]) {
+      return false;
+    }
+
+    const char temp = board[r][c];
+    board[r][c] = ' ';
+
+    const bool result = dfs(r - 1, c, count + 1, board, word) ||
+                        dfs(r + 1, c, count + 1, board, word) ||
+                        dfs(r, c - 1, count + 1, board, word) ||
+                        dfs(r, c + 1, count + 1, board, word);
+
+    board[r][c] = temp;
+
+    return result;
   }
 };
 
 struct Input {
-  std::string s;
-  std::string t;
+  std::vector<std::vector<char>> board;
+  std::string word;
 };
 
 int main() {
   const Input inputs[] = {
-      {"egg", "add"}, {"foo", "bar"}, {"paper", "title"}, {"badc", "baba"}};
+      {{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
+       "ABCCED"},
+      {{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
+       "SEE"},
+      {{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
+       "ABCB"},
+  };
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.isIsomorphic(input.s, input.t) << std::endl;
+    std::cout << s.exist(input.board, input.word) << std::endl;
   }
   return 0;
 }
