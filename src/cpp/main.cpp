@@ -1,73 +1,37 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
-#include <vector>
 
 class Solution {
  public:
-  bool exist(std::vector<std::vector<char>>& board, std::string word) {
-    const int r = board.size();
-    const int c = board[0].size();
+  int maxDepth(std::string s) {
+    int result = 0;
+    int depth = 0;
 
-    for (int i = 0; i < r; i += 1) {
-      for (int j = 0; j < c; j += 1) {
-        if (board[i][j] == word[0] && this->dfs(i, j, 0, board, word)) {
-          return true;
-        }
+    for (char ch : s) {
+      if (ch == '(') {
+        depth += 1;
+      } else if (ch == ')') {
+        depth -= 1;
       }
+
+      result = std::max(result, depth);
     }
-
-    return false;
-  }
-
- protected:
-  bool dfs(int r, int c, int count, std::vector<std::vector<char>>& board,
-           std::string& word) {
-    if (static_cast<int>(word.length()) == count) {
-      return true;
-    } else if (r < 0) {
-      return false;
-    } else if (r >= static_cast<int>(board.size())) {
-      return false;
-    } else if (c < 0) {
-      return false;
-    } else if (c >= static_cast<int>(board[0].size())) {
-      return false;
-    } else if (board[r][c] != word[count]) {
-      return false;
-    }
-
-    const char temp = board[r][c];
-    board[r][c] = ' ';
-
-    const bool result = dfs(r - 1, c, count + 1, board, word) ||
-                        dfs(r + 1, c, count + 1, board, word) ||
-                        dfs(r, c - 1, count + 1, board, word) ||
-                        dfs(r, c + 1, count + 1, board, word);
-
-    board[r][c] = temp;
 
     return result;
   }
 };
 
 struct Input {
-  std::vector<std::vector<char>> board;
-  std::string word;
+  std::string s;
 };
 
 int main() {
-  const Input inputs[] = {
-      {{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
-       "ABCCED"},
-      {{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
-       "SEE"},
-      {{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}},
-       "ABCB"},
-  };
+  const Input inputs[] = {{"(1+(2*3)+((8)/4))+1"}, {"(1)+((2))+(((3)))"}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.exist(input.board, input.word) << std::endl;
+    std::cout << s.maxDepth(input.s) << std::endl;
   }
   return 0;
 }
