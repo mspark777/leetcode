@@ -1,21 +1,24 @@
-#include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
 class Solution {
  public:
-  int maxDepth(std::string s) {
-    int result = 0;
-    int depth = 0;
+  std::string makeGood(std::string s) {
+    std::string result;
+    result.reserve(s.size());
 
     for (char ch : s) {
-      if (ch == '(') {
-        depth += 1;
-      } else if (ch == ')') {
-        depth -= 1;
+      if (!result.empty()) {
+        const char next = *result.rbegin();
+        const int diff = static_cast<int>(std::abs(ch - next));
+        if (diff == 32) {
+          result.pop_back();
+          continue;
+        }
       }
 
-      result = std::max(result, depth);
+      result.push_back(ch);
     }
 
     return result;
@@ -27,11 +30,11 @@ struct Input {
 };
 
 int main() {
-  const Input inputs[] = {{"(1+(2*3)+((8)/4))+1"}, {"(1)+((2))+(((3)))"}};
+  const Input inputs[] = {{"leEeetcode"}, {"abBAcC"}, {"s"}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.maxDepth(input.s) << std::endl;
+    std::cout << s.makeGood(input.s) << std::endl;
   }
   return 0;
 }
