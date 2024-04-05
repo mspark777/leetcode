@@ -1,12 +1,7 @@
 SELECT
-  name,
-  bonus
+  name
 FROM
-  employee
-LEFT JOIN
-  bonus
-ON
-  employee.empid = bonus.empid
+  Customer
 WHERE
-  bonus IS NULL OR
-  bonus < 1000;
+  referee_id IS NULL OR
+  referee_id != 2;
