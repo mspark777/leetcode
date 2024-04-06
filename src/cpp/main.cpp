@@ -1,27 +1,39 @@
-#include <cstdlib>
 #include <iostream>
+#include <stack>
 #include <string>
 
 class Solution {
  public:
-  std::string makeGood(std::string s) {
+  std::string minRemoveToMakeValid(std::string s) {
+    int leftCount = 0;
+    int rightCount = 0;
+    std::stack<char> stack;
+
+    for (char ch : s) {
+      leftCount += ch == '(';
+      rightCount += ch == ')';
+
+      if (rightCount > leftCount) {
+        rightCount -= 1;
+      } else {
+        stack.push(ch);
+      }
+    }
+
     std::string result;
     result.reserve(s.size());
 
-    for (char ch : s) {
-      if (!result.empty()) {
-        const char next = *result.rbegin();
-        const int diff = static_cast<int>(std::abs(ch - next));
-        if (diff == 32) {
-          result.pop_back();
-          continue;
-        }
+    while (!stack.empty()) {
+      const char ch = stack.top();
+      stack.pop();
+      if (leftCount > rightCount && ch == '(') {
+        leftCount -= 1;
+      } else {
+        result += ch;
       }
-
-      result.push_back(ch);
     }
 
-    return result;
+    return std::string(result.rbegin(), result.rend());
   }
 };
 
@@ -30,11 +42,11 @@ struct Input {
 };
 
 int main() {
-  const Input inputs[] = {{"leEeetcode"}, {"abBAcC"}, {"s"}};
+  const Input inputs[] = {{"lee(t(c)o)de)"}, {"a)b(c)d"}, {"))(("}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.makeGood(input.s) << std::endl;
+    std::cout << s.minRemoveToMakeValid(input.s) << std::endl;
   }
   return 0;
 }
