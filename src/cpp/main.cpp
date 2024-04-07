@@ -1,39 +1,33 @@
 #include <iostream>
-#include <stack>
 #include <string>
 
 class Solution {
  public:
-  std::string minRemoveToMakeValid(std::string s) {
+  bool checkValidString(std::string s) {
     int leftCount = 0;
     int rightCount = 0;
-    std::stack<char> stack;
+    for (int i = 0; i < static_cast<int>(s.length()); i += 1) {
+      const char left = s.at(i);
+      const char right = s.at(s.length() - i - 1);
 
-    for (char ch : s) {
-      leftCount += ch == '(';
-      rightCount += ch == ')';
-
-      if (rightCount > leftCount) {
-        rightCount -= 1;
+      if ((left == '(') || (left == '*')) {
+        leftCount += 1;
       } else {
-        stack.push(ch);
-      }
-    }
-
-    std::string result;
-    result.reserve(s.size());
-
-    while (!stack.empty()) {
-      const char ch = stack.top();
-      stack.pop();
-      if (leftCount > rightCount && ch == '(') {
         leftCount -= 1;
+      }
+
+      if ((right == ')') || (right == '*')) {
+        rightCount += 1;
       } else {
-        result += ch;
+        rightCount -= 1;
+      }
+
+      if ((leftCount < 0) || (rightCount < 0)) {
+        return false;
       }
     }
 
-    return std::string(result.rbegin(), result.rend());
+    return true;
   }
 };
 
@@ -42,11 +36,11 @@ struct Input {
 };
 
 int main() {
-  const Input inputs[] = {{"lee(t(c)o)de)"}, {"a)b(c)d"}, {"))(("}};
+  const Input inputs[] = {{"()"}, {"(*)"}, {"(*))"}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.minRemoveToMakeValid(input.s) << std::endl;
+    std::cout << s.checkValidString(input.s) << std::endl;
   }
   return 0;
 }
