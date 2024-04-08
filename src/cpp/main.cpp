@@ -1,46 +1,53 @@
 #include <iostream>
-#include <string>
+#include <vector>
 
 class Solution {
  public:
-  bool checkValidString(std::string s) {
-    int leftCount = 0;
-    int rightCount = 0;
-    for (int i = 0; i < static_cast<int>(s.length()); i += 1) {
-      const char left = s.at(i);
-      const char right = s.at(s.length() - i - 1);
+  int countStudents(std::vector<int>& students, std::vector<int>& sandwiches) {
+    const int CIRCLE = 0;
+    const int SQUARE = 1;
+    int circleStudentCount = 0;
+    int squareStudentCount = 0;
 
-      if ((left == '(') || (left == '*')) {
-        leftCount += 1;
-      } else {
-        leftCount -= 1;
-      }
+    for (int student : students) {
+      circleStudentCount += student == CIRCLE;
+      squareStudentCount += student == SQUARE;
+    }
 
-      if ((right == ')') || (right == '*')) {
-        rightCount += 1;
-      } else {
-        rightCount -= 1;
-      }
-
-      if ((leftCount < 0) || (rightCount < 0)) {
-        return false;
+    for (int sandwich : sandwiches) {
+      if (sandwich == CIRCLE) {
+        if (circleStudentCount < 1) {
+          return squareStudentCount;
+        } else {
+          circleStudentCount -= 1;
+        }
+      } else if (sandwich == SQUARE) {
+        if (squareStudentCount < 1) {
+          return circleStudentCount;
+        } else {
+          squareStudentCount -= 1;
+        }
       }
     }
 
-    return true;
+    return 0;
   }
 };
 
 struct Input {
-  std::string s;
+  std::vector<int> students;
+  std::vector<int> sandwiches;
 };
 
 int main() {
-  const Input inputs[] = {{"()"}, {"(*)"}, {"(*))"}};
+  const Input inputs[] = {
+      {{1, 1, 0, 0}, {0, 1, 0, 1}}, {{1, 1, 1, 0, 0, 1}, {1, 0, 0, 0, 1, 1}}
+
+  };
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.checkValidString(input.s) << std::endl;
+    std::cout << s.countStudents(input.students, input.sandwiches) << std::endl;
   }
   return 0;
 }
