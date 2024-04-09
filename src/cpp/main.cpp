@@ -1,53 +1,35 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
 class Solution {
  public:
-  int countStudents(std::vector<int>& students, std::vector<int>& sandwiches) {
-    const int CIRCLE = 0;
-    const int SQUARE = 1;
-    int circleStudentCount = 0;
-    int squareStudentCount = 0;
-
-    for (int student : students) {
-      circleStudentCount += student == CIRCLE;
-      squareStudentCount += student == SQUARE;
-    }
-
-    for (int sandwich : sandwiches) {
-      if (sandwich == CIRCLE) {
-        if (circleStudentCount < 1) {
-          return squareStudentCount;
-        } else {
-          circleStudentCount -= 1;
-        }
-      } else if (sandwich == SQUARE) {
-        if (squareStudentCount < 1) {
-          return circleStudentCount;
-        } else {
-          squareStudentCount -= 1;
-        }
+  int timeRequiredToBuy(std::vector<int>& tickets, int k) {
+    int result = 0;
+    for (int i = 0; i < static_cast<int>(tickets.size()); i += 1) {
+      if (i <= k) {
+        result += std::min(tickets[k], tickets[i]);
+      } else {
+        result += std::min(tickets[k] - 1, tickets[i]);
       }
     }
 
-    return 0;
+    return result;
   }
 };
 
 struct Input {
-  std::vector<int> students;
-  std::vector<int> sandwiches;
+  std::vector<int> tickets;
+  int k;
 };
 
 int main() {
   const Input inputs[] = {
-      {{1, 1, 0, 0}, {0, 1, 0, 1}}, {{1, 1, 1, 0, 0, 1}, {1, 0, 0, 0, 1, 1}}
-
-  };
+      {{2, 3, 2}, 2}, {{5, 1, 1, 1}, 0}, {{84, 49, 5, 24, 70, 77, 87, 8}, 3}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.countStudents(input.students, input.sandwiches) << std::endl;
+    std::cout << s.timeRequiredToBuy(input.tickets, input.k) << std::endl;
   }
   return 0;
 }
