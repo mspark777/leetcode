@@ -1,17 +1,30 @@
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 class Solution {
  public:
-  int timeRequiredToBuy(std::vector<int>& tickets, int k) {
-    int result = 0;
-    for (int i = 0; i < static_cast<int>(tickets.size()); i += 1) {
-      if (i <= k) {
-        result += std::min(tickets[k], tickets[i]);
-      } else {
-        result += std::min(tickets[k] - 1, tickets[i]);
+  std::vector<int> deckRevealedIncreasing(std::vector<int>& deck) {
+    const int deckSize = deck.size();
+    std::vector<int> result(deckSize);
+    bool skip = false;
+    int deckIdx = 0;
+    int resIdx = 0;
+
+    std::sort(deck.begin(), deck.end());
+
+    while (deckIdx < deckSize) {
+      if (result[resIdx] == 0) {
+        if (!skip) {
+          result[resIdx] = deck[deckIdx];
+          deckIdx += 1;
+        }
+
+        skip = !skip;
       }
+
+      resIdx = (resIdx + 1) % deckSize;
     }
 
     return result;
@@ -19,17 +32,19 @@ class Solution {
 };
 
 struct Input {
-  std::vector<int> tickets;
-  int k;
+  std::vector<int> deck;
 };
 
 int main() {
-  const Input inputs[] = {
-      {{2, 3, 2}, 2}, {{5, 1, 1, 1}, 0}, {{84, 49, 5, 24, 70, 77, 87, 8}, 3}};
+  const Input inputs[] = {{{17, 13, 11, 2, 3, 5, 7}}, {{1, 1000}}};
 
   for (auto input : inputs) {
     Solution s;
-    std::cout << s.timeRequiredToBuy(input.tickets, input.k) << std::endl;
+    const std::vector<int> result = s.deckRevealedIncreasing(input.deck);
+    std::copy(result.begin(), result.end(),
+              std::ostream_iterator<int>(std::cout, " "));
+    std::cout << std::endl;
   }
+
   return 0;
 }
