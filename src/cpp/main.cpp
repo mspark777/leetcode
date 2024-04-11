@@ -1,49 +1,53 @@
-#include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <vector>
 
 class Solution {
  public:
-  std::vector<int> deckRevealedIncreasing(std::vector<int>& deck) {
-    const int deckSize = deck.size();
-    std::vector<int> result(deckSize);
-    bool skip = false;
-    int deckIdx = 0;
-    int resIdx = 0;
+  std::string removeKdigits(std::string num, int k) {
+    std::vector<char> stack;
+    stack.reserve(num.length());
 
-    std::sort(deck.begin(), deck.end());
-
-    while (deckIdx < deckSize) {
-      if (result[resIdx] == 0) {
-        if (!skip) {
-          result[resIdx] = deck[deckIdx];
-          deckIdx += 1;
-        }
-
-        skip = !skip;
+    for (const char ch : num) {
+      while (k > 0 && !stack.empty() && stack.back() > ch) {
+        stack.pop_back();
+        k -= 1;
       }
 
-      resIdx = (resIdx + 1) % deckSize;
+      stack.push_back(ch);
     }
 
-    return result;
+    while (k > 0) {
+      stack.pop_back();
+      k -= 1;
+    }
+
+    std::string result;
+    result.reserve(stack.size());
+
+    for (const char ch : stack) {
+      if (result.empty() && ch == '0') {
+        continue;
+      }
+
+      result.push_back(ch);
+    }
+
+    return result.empty() ? "0" : result;
   }
 };
 
 struct Input {
-  std::vector<int> deck;
+  std::string num;
+  int k;
 };
 
 int main() {
-  const Input inputs[] = {{{17, 13, 11, 2, 3, 5, 7}}, {{1, 1000}}};
+  const Input inputs[] = {{"1432219", 3}, {"10200", 1}, {"10", 2}};
 
   for (auto input : inputs) {
     Solution s;
-    const std::vector<int> result = s.deckRevealedIncreasing(input.deck);
-    std::copy(result.begin(), result.end(),
-              std::ostream_iterator<int>(std::cout, " "));
-    std::cout << std::endl;
+    const auto result = s.removeKdigits(input.num, input.k);
+    std::cout << result << std::endl;
   }
 
   return 0;
