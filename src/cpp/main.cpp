@@ -1,32 +1,23 @@
+#include <algorithm>
 #include <iostream>
+#include <map>
 #include <vector>
 
 class Solution {
  public:
-  int trap(std::vector<int>& height) {
-    int left = 0;
-    int right = static_cast<int>(height.size()) - 1;
-    int leftMax = 0;
-    int rightMax = 0;
+  int findLHS(std::vector<int>& nums) {
     int result = 0;
+    std::map<int, int> counts;
 
-    while (left < right) {
-      const int lheight = height[left];
-      const int rheight = height[right];
-      if (lheight < rheight) {
-        left += 1;
-        if (lheight >= leftMax) {
-          leftMax = lheight;
-        } else {
-          result += leftMax - lheight;
-        }
-      } else {
-        right -= 1;
-        if (rheight >= rightMax) {
-          rightMax = rheight;
-        } else {
-          result += rightMax - rheight;
-        }
+    for (int n : nums) {
+      counts[n] += 1;
+    }
+
+    for (int i : nums) {
+      const int j = i + 1;
+      if (counts.find(j) != counts.end()) {
+        const int count = counts[i] + counts[j];
+        result = std::max(count, result);
       }
     }
 
@@ -35,16 +26,18 @@ class Solution {
 };
 
 struct Input {
-  std::vector<int> height;
+  std::vector<int> nums;
 };
 
 int main() {
-  const Input inputs[] = {{{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1}},
-                          {{4, 2, 0, 3, 2, 5}}};
+  const Input inputs[] = {
+      {{1, 3, 2, 2, 5, 2, 3, 7}}, {{1, 2, 3, 4}}, {{1, 1, 1, 1}}
+
+  };
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.trap(input.height);
+    const auto result = s.findLHS(input.nums);
     std::cout << result << std::endl;
   }
 
