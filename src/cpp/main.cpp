@@ -1,23 +1,34 @@
 #include <algorithm>
 #include <iostream>
-#include <map>
 #include <vector>
 
 class Solution {
  public:
-  int findLHS(std::vector<int>& nums) {
+  int maximalRectangle(std::vector<std::vector<char>>& matrix) {
+    const int colCount = matrix[0].size();
+    std::vector<int> heights(colCount + 1, 0);
     int result = 0;
-    std::map<int, int> counts;
 
-    for (int n : nums) {
-      counts[n] += 1;
-    }
+    for (const std::vector<char>& row : matrix) {
+      for (int col = 0; col < colCount; col += 1) {
+        if (row[col] == '1') {
+          heights[col] += 1;
+        } else {
+          heights[col] = 0;
+        }
+      }
 
-    for (int i : nums) {
-      const int j = i + 1;
-      if (counts.find(j) != counts.end()) {
-        const int count = counts[i] + counts[j];
-        result = std::max(count, result);
+      std::vector<int> stack;
+      stack.reserve(colCount + 1);
+      for (int col = 0; col <= colCount; col += 1) {
+        while (!stack.empty() &&
+               heights.at(col) < heights.at(*stack.rbegin())) {
+          const int h = heights.at(*stack.rbegin());
+          stack.pop_back();
+          const int w = stack.empty() ? col : col - *stack.rbegin() - 1;
+          result = std::max(result, w * h);
+        }
+        stack.push_back(col);
       }
     }
 
@@ -26,18 +37,22 @@ class Solution {
 };
 
 struct Input {
-  std::vector<int> nums;
+  std::vector<std::vector<char>> matrix;
 };
 
 int main() {
-  const Input inputs[] = {
-      {{1, 3, 2, 2, 5, 2, 3, 7}}, {{1, 2, 3, 4}}, {{1, 1, 1, 1}}
+  const Input inputs[] = {{{{{'1', '0', '1', '0', '0'},
+                             {'1', '0', '1', '1', '1'},
+                             {'1', '1', '1', '1', '1'},
+                             {'1', '0', '0', '1', '0'}}}},
+                          {{{'0'}}},
+                          {{{'1'}}}
 
   };
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.findLHS(input.nums);
+    const auto result = s.maximalRectangle(input.matrix);
     std::cout << result << std::endl;
   }
 
