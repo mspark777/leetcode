@@ -1,38 +1,24 @@
-#include <algorithm>
+#include "./main.h"
+
 #include <iostream>
 #include <vector>
 
 class Solution {
  public:
-  int maximalRectangle(std::vector<std::vector<char>>& matrix) {
-    const int colCount = matrix[0].size();
-    std::vector<int> heights(colCount + 1, 0);
-    int result = 0;
+  int sumNumbers(TreeNode* root) { return this->sum(root, 0); }
 
-    for (const std::vector<char>& row : matrix) {
-      for (int col = 0; col < colCount; col += 1) {
-        if (row[col] == '1') {
-          heights[col] += 1;
-        } else {
-          heights[col] = 0;
-        }
-      }
-
-      std::vector<int> stack;
-      stack.reserve(colCount + 1);
-      for (int col = 0; col <= colCount; col += 1) {
-        while (!stack.empty() &&
-               heights.at(col) < heights.at(*stack.rbegin())) {
-          const int h = heights.at(*stack.rbegin());
-          stack.pop_back();
-          const int w = stack.empty() ? col : col - *stack.rbegin() - 1;
-          result = std::max(result, w * h);
-        }
-        stack.push_back(col);
-      }
+ private:
+  int sum(TreeNode* node, int s) {
+    if (node == nullptr) {
+      return 0;
     }
 
-    return result;
+    const int news = (s * 10) + node->val;
+    if (node->left == nullptr && node->right == nullptr) {
+      return news;
+    }
+
+    return this->sum(node->left, news) + this->sum(node->right, news);
   }
 };
 
