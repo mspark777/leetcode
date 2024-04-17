@@ -1,64 +1,71 @@
 #include "./main.h"
 
+#include <algorithm>
 #include <iostream>
-#include <vector>
+#include <queue>
+#include <string>
+#include <utility>
 
 class Solution {
  public:
-  TreeNode* addOneRow(TreeNode* root, int val, int depth) {
-    if (depth < 2) {
-      return new TreeNode(val, root, nullptr);
+  std::string smallestFromLeaf(TreeNode* root) {
+    if (root == nullptr) {
+      return std::string();
     }
 
-    this->travel(root, nullptr, val, depth, true);
-    return root;
-  }
+    std::string result;
+    std::queue<std::pair<TreeNode*, std::string>> queue;
 
- private:
-  void travel(TreeNode* node, TreeNode* parent, int val, int depth,
-              bool leftSide) {
-    if (node == nullptr && depth > 1 && parent == nullptr) {
-      return;
-    }
+    queue.push({root, std::string(1, root->val + 'a')});
 
-    if (depth == 1) {
-      TreeNode* root = new TreeNode(val);
-      if (leftSide) {
-        root->left = node;
-        if (parent != nullptr) {
-          parent->left = root;
+    while (!queue.empty()) {
+      std::pair<TreeNode*, std::string> node = queue.front();
+      queue.pop();
+
+      if (node.first->left == nullptr && node.first->right == nullptr) {
+        if (result.empty()) {
+          result = node.second;
+        } else {
+          result = std::min(result, node.second);
         }
-      } else {
-        root->right = node;
-        if (parent != nullptr) {
-          parent->right = root;
-        }
+        continue;
       }
-    } else if (node != nullptr) {
-      this->travel(node->left, node, val, depth - 1, true);
-      this->travel(node->right, node, val, depth - 1, false);
+
+      if (node.first->left != nullptr) {
+        queue.push(
+            {node.first->left,
+             (static_cast<char>(node.first->left->val + 'a')) + node.second});
+      }
+
+      if (node.first->right != nullptr) {
+        queue.push(
+            {node.first->right,
+             (static_cast<char>(node.first->right->val + 'a')) + node.second});
+      }
     }
+
+    return result;
   }
 };
 
 struct Input {
-  std::vector<std::vector<char>> matrix;
+  std::string root;
 };
 
 int main() {
-  const Input inputs[] = {{{{{'1', '0', '1', '0', '0'},
-                             {'1', '0', '1', '1', '1'},
-                             {'1', '1', '1', '1', '1'},
-                             {'1', '0', '0', '1', '0'}}}},
-                          {{{'0'}}},
-                          {{{'1'}}}
-
+  const Input inputs[] = {
+      {"[0,1,2,3,4,3,4]"},
+      {"[25,1,3,1,3,0,2]"},
+      {"[2,2,1,null,1,0,null,0]"},
   };
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.maximalRectangle(input.matrix);
+    TreeNode* root = nullptr;
+    parseLeetCodeBinaryTree(input.root, &root);
+    const auto result = s.smallestFromLeaf(root);
     std::cout << result << std::endl;
+    cleanTreeNode(root);
   }
 
   return 0;

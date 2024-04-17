@@ -21,6 +21,6 @@ rs:
 
 cpp:
 	@rm -f ./bin/cpp
-	@clang++ --std=c++20 -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer -g -o bin/cpp src/cpp/main.cpp
+	@clang++ --std=c++20 -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer -g -o bin/cpp src/cpp/main.cpp src/cpp/tree_node.cpp
 	@./bin/cpp
 	@rm ./bin/cpp
