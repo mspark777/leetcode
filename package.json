@@ -12,8 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
-    "@types/lodash": "^4.14.202",
-    "@types/node": "^20.11.20",
+    "@types/node": "^20.12.7",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -24,6 +23,6 @@
     "eslint-plugin-react": "^7.33.2",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
   }
 }

@@ -1,32 +1,34 @@
+#include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <set>
 #include <stack>
 #include <utility>
 #include <vector>
 
 enum Cell {
-  WATER = '0',
-  ISLAND = '1',
+  FORESTED = 0,
+  FARMLAND = 1,
 };
 
 class Solution {
  public:
-  int numIslands(const std::vector<std::vector<char>>& grid) {
-    const int rowCount = static_cast<int>(grid.size());
-    const int colCount = static_cast<int>(grid.at(0).size());
-    std::set<std::pair<int, int>> visits;
+  std::vector<std::vector<int>> findFarmland(
+      std::vector<std::vector<int>>& land) {
+    std::set<std::pair<int, int>> visit;
 
-    int result = 0;
-    for (int row = 0; row < rowCount; row += 1) {
-      for (int col = 0; col < colCount; col += 1) {
-        if (grid[row][col] == Cell::WATER) {
+    std::vector<std::vector<int>> result;
+
+    for (int row = 0; row < static_cast<int>(land.size()); row += 1) {
+      for (int col = 0; col < static_cast<int>(land.at(row).size()); col += 1) {
+        if (land[row][col] == Cell::FORESTED) {
           continue;
-        } else if (visits.find({row, col}) != visits.end()) {
+        } else if (visit.find({row, col}) != visit.end()) {
           continue;
+        } else {
+          const std::vector<int> group = this->travel(land, visit, row, col);
+          result.push_back(group);
         }
-
-        result += 1;
-        this->markVisit(grid, visits, row, col);
       }
     }
 
@@ -34,13 +36,20 @@ class Solution {
   }
 
  private:
-  void markVisit(const std::vector<std::vector<char>>& grid,
-                 std::set<std::pair<int, int>>& visits, int row, int col) {
-    const int rowCount = static_cast<int>(grid.size());
-    const int colCount = static_cast<int>(grid.at(0).size());
+  std::vector<int> travel(const std::vector<std::vector<int>>& land,
+                          std::set<std::pair<int, int>>& visit, int row,
+                          int col) {
+    const int lastRow = static_cast<int>(land.size()) - 1;
+    const int lastCol = static_cast<int>(land.at(0).size()) - 1;
 
     std::stack<std::pair<int, int>> stack;
+
     stack.push({row, col});
+
+    int left = lastCol;
+    int right = 0;
+    int top = lastRow;
+    int bottom = 0;
 
     while (!stack.empty()) {
       const std::pair<int, int> cur = stack.top();
@@ -51,45 +60,59 @@ class Solution {
 
       if ((r < 0) || (c < 0)) {
         continue;
-      } else if ((r >= rowCount) || (c >= colCount)) {
+      } else if ((r > lastRow) || (c > lastCol)) {
         continue;
-      } else if (grid[r][c] == Cell::WATER) {
+      } else if (visit.find(cur) != visit.end()) {
         continue;
-      } else if (visits.find(cur) != visits.end()) {
+      } else if (land[r][c] == Cell::FORESTED) {
         continue;
       }
 
-      visits.insert(cur);
+      if ((c < left) || (r < top)) {
+        left = c;
+        top = r;
+      }
+
+      if ((c > right) || (r > bottom)) {
+        right = c;
+        bottom = r;
+      }
+
+      visit.insert(cur);
       stack.push({r - 1, c});
       stack.push({r + 1, c});
       stack.push({r, c - 1});
       stack.push({r, c + 1});
     }
+
+    return {top, left, bottom, right};
   }
 };
 
 struct Input {
-  std::vector<std::vector<char>> grid;
+  std::vector<std::vector<int>> land;
 };
 
 int main() {
-  const Input inputs[] = {{{{'1', '1', '1', '1', '0'},
-                            {'1', '1', '0', '1', '0'},
-                            {'1', '1', '0', '0', '0'},
-                            {'0', '0', '0', '0', '0'}}},
-                          {
-
-                              {{'1', '1', '0', '0', '0'},
-                               {'1', '1', '0', '0', '0'},
-                               {'0', '0', '1', '0', '0'},
-                               {'0', '0', '0', '1', '1'}}
-
-                          }};
+  const Input inputs[] = {
+      {
+          {{1, 0, 0}, {0, 1, 1}, {0, 1, 1}},
+      },
+      {{{1, 1}, {1, 1}}},
+      {{{0}}},
+      {{{1, 1}, {0, 0}}},
+  };
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.numIslands(input.grid);
-    std::cout << result << std::endl;
+    const auto result = s.findFarmland(input.land);
+
+    for (auto row : result) {
+      std::copy(row.begin(), row.end(),
+                std::ostream_iterator<int>(std::cout, " "));
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
   }
 
   return 0;

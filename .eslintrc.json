@@ -1,5 +1,6 @@
 {
   "env": {
+    "commonjs": true,
     "es2022": true,
     "node": true
   },
