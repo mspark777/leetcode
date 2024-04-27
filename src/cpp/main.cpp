@@ -1,61 +1,73 @@
+#include <algorithm>
 #include <iostream>
+#include <queue>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 class Solution {
  public:
-  int minFallingPathSum(std::vector<std::vector<int>>& grid) {
-    const int N = grid.size();
-    int nextMin1C = -1;
-    int nextMin1 = -1;
-    int nextMin2 = -1;
-
-    for (int col = 0; col < N; col += 1) {
-      const int c = grid[N - 1][col];
-      if (nextMin1 == -1 || c <= nextMin1) {
-        nextMin2 = nextMin1;
-        nextMin1 = c;
-        nextMin1C = col;
-      } else if (nextMin2 == -1 || c <= nextMin2) {
-        nextMin2 = c;
-      }
+  int findRotateSteps(std::string ring, std::string key) {
+    const int ringLen = std::size(ring);
+    const int keyLen = std::size(key);
+    std::unordered_map<char, std::vector<int>> indexMap;
+    for (int i = 0; i < ringLen; i += 1) {
+      const char ch = ring[i];
+      indexMap[ch].push_back(i);
     }
 
-    for (int row = N - 2; row >= 0; row -= 1) {
-      int min1C = -1;
-      int min1 = -1;
-      int min2 = -1;
-      for (int col = 0; col < N; col += 1) {
-        int value = grid[row][col] + (col != nextMin1C ? nextMin1 : nextMin2);
-        if (min1 == -1 || value < min1) {
-          min2 = min1;
-          min1 = value;
-          min1C = col;
-        } else if (min2 == -1 || value < min2) {
-          min2 = value;
-        }
+    std::priority_queue<std::vector<int>, std::vector<std::vector<int>>,
+                        std::greater<std::vector<int>>>
+        heap;
+    heap.push({0, 0, 0});
+    std::unordered_set<std::string> seen;
+    int totalSteps = 0;
+    while (!heap.empty()) {
+      std::vector<int> state = heap.top();
+      heap.pop();
+      totalSteps = state[0];
+      int ringIndex = state[1];
+      int keyIndex = state[2];
+      if (keyIndex == keyLen) {
+        break;
+      }
+      std::string currentState =
+          std::to_string(ringIndex) + "-" + std::to_string(keyIndex);
+      if (seen.count(currentState)) {
+        continue;
       }
 
-      nextMin1C = min1C;
-      nextMin1 = min1;
-      nextMin2 = min2;
+      seen.insert(currentState);
+      for (int nextIndex : indexMap[key[keyIndex]]) {
+        heap.push({totalSteps + countSteps(ringIndex, nextIndex, ringLen),
+                   nextIndex, keyIndex + 1});
+      }
     }
+    return totalSteps + keyLen;
+  }
 
-    return nextMin1;
+ private:
+  int countSteps(int curr, int next, int ringLen) {
+    const int stepsBetween = std::abs(curr - next);
+    const int stepsAround = ringLen - stepsBetween;
+    return std::min(stepsBetween, stepsAround);
   }
 };
 
 struct Input {
-  std::vector<std::vector<int>> grid;
+  std::string ring;
+  std::string key;
 };
 
 int main() {
-  const Input inputs[] = {{{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}}, {{{7}}}
+  const Input inputs[] = {{"godding", "gd"}, {"godding", "godding"}
 
   };
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.minFallingPathSum(input.grid);
+    const auto result = s.findRotateSteps(input.ring, input.key);
 
     std::cout << result << std::endl;
   }
