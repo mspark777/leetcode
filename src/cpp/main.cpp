@@ -1,75 +1,71 @@
 #include <algorithm>
 #include <iostream>
-#include <queue>
-#include <string>
+#include <iterator>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 class Solution {
  public:
-  int findRotateSteps(std::string ring, std::string key) {
-    const int ringLen = std::size(ring);
-    const int keyLen = std::size(key);
-    std::unordered_map<char, std::vector<int>> indexMap;
-    for (int i = 0; i < ringLen; i += 1) {
-      const char ch = ring[i];
-      indexMap[ch].push_back(i);
+  std::vector<int> sumOfDistancesInTree(int n,
+                                        std::vector<std::vector<int>>& edges) {
+    this->graph.clear();
+    this->count = std::vector(n, 1);
+    this->result = std::vector(n, 0);
+
+    for (const std::vector<int>& edge : edges) {
+      const int u = edge[0];
+      const int v = edge[1];
+      this->graph[u].push_back(v);
+      this->graph[v].push_back(u);
     }
 
-    std::priority_queue<std::vector<int>, std::vector<std::vector<int>>,
-                        std::greater<std::vector<int>>>
-        heap;
-    heap.push({0, 0, 0});
-    std::unordered_set<std::string> seen;
-    int totalSteps = 0;
-    while (!heap.empty()) {
-      std::vector<int> state = heap.top();
-      heap.pop();
-      totalSteps = state[0];
-      int ringIndex = state[1];
-      int keyIndex = state[2];
-      if (keyIndex == keyLen) {
-        break;
-      }
-      std::string currentState =
-          std::to_string(ringIndex) + "-" + std::to_string(keyIndex);
-      if (seen.count(currentState)) {
-        continue;
-      }
+    this->dfs(0, -1);
+    this->dfs2(0, -1);
 
-      seen.insert(currentState);
-      for (int nextIndex : indexMap[key[keyIndex]]) {
-        heap.push({totalSteps + countSteps(ringIndex, nextIndex, ringLen),
-                   nextIndex, keyIndex + 1});
-      }
-    }
-    return totalSteps + keyLen;
+    return this->result;
   }
 
  private:
-  int countSteps(int curr, int next, int ringLen) {
-    const int stepsBetween = std::abs(curr - next);
-    const int stepsAround = ringLen - stepsBetween;
-    return std::min(stepsBetween, stepsAround);
+  void dfs(const int node, const int parent) {
+    for (const int child : this->graph[node]) {
+      if (child != parent) {
+        this->dfs(child, node);
+        this->count[node] += this->count[child];
+        this->result[node] += this->result[child] + this->count[child];
+      }
+    }
   }
+
+  void dfs2(const int node, const int parent) {
+    for (const int child : this->graph[node]) {
+      if (child != parent) {
+        this->result[child] = this->result[node] - this->count[child] +
+                              (this->count.size() - this->count[child]);
+        this->dfs2(child, node);
+      }
+    }
+  }
+
+  std::unordered_map<int, std::vector<int>> graph;
+  std::vector<int> count;
+  std::vector<int> result;
 };
 
 struct Input {
-  std::string ring;
-  std::string key;
+  int n;
+  std::vector<std::vector<int>> edges;
 };
 
 int main() {
-  const Input inputs[] = {{"godding", "gd"}, {"godding", "godding"}
-
-  };
+  const Input inputs[] = {
+      {6, {{0, 1}, {0, 2}, {2, 3}, {2, 4}, {2, 5}}}, {1, {}}, {2, {{1, 0}}}};
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.findRotateSteps(input.ring, input.key);
-
-    std::cout << result << std::endl;
+    const auto result = s.sumOfDistancesInTree(input.n, input.edges);
+    std::copy(result.begin(), result.end(),
+              std::ostream_iterator<int>(std::cout, " "));
+    std::cout << std::endl;
   }
 
   return 0;
