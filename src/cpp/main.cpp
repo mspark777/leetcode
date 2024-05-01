@@ -1,42 +1,43 @@
 #include <iostream>
-#include <map>
 #include <string>
 
 class Solution {
  public:
-  long long wonderfulSubstrings(std::string word) {
-    const int N = word.length();
-    std::map<int, int> frequencies;
-    frequencies[0] = 1;
-
-    int mask = 0;
-    long long result = 0;
-    for (int i = 0; i < N; i += 1) {
-      const char ch = word.at(i);
-      const int bit = ch - 'a';
-      mask ^= 1 << bit;
-      const int frequency = frequencies[mask];
-      result += frequency;
-      frequencies[mask] = frequency + 1;
-      for (int odd = 0; odd < 10; odd += 1) {
-        result += frequencies[mask ^ (1 << odd)];
-      }
+  std::string reversePrefix(std::string word, char ch) {
+    int right = word.find(ch);
+    if (right == static_cast<int>(std::string::npos)) {
+      return word;
     }
 
-    return result;
+    int left = 0;
+    while (left < right) {
+      const char temp = word[left];
+      word[left] = word[right];
+      word[right] = temp;
+      left += 1;
+      right -= 1;
+    }
+
+    return word;
   }
 };
 
 struct Input {
   std::string word;
+  char ch;
 };
 
 int main() {
-  const Input inputs[] = {{"aba"}, {"aabb"}, {"he"}};
+  const Input inputs[] = {
+      {"abcdefd", 'd'},
+      {"xyxzxe", 'z'},
+      {"abcd", 'z'},
+
+  };
 
   for (auto input : inputs) {
     Solution s;
-    const auto result = s.wonderfulSubstrings(input.word);
+    const auto result = s.reversePrefix(input.word, input.ch);
     std::cout << result << std::endl;
   }
 
