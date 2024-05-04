@@ -1,63 +1,73 @@
 #include <stdio.h>
 
-int compareVersion(char *version1, char *version2)
+void swap(int *left, int *right)
 {
-	int i1 = 0;
-	int i2 = 0;
-	int v1 = 0;
-	int v2 = 0;
+	const int temp_left = *left;
+	const int temp_right = *right;
+	*left = temp_right;
+	*right = temp_left;
+}
 
-	while (1) {
-		while (1) {
-			const char ch1 = version1[i1];
-			if (ch1 == 0) {
-				break;
-			} else if (ch1 == '.') {
-				i1 += 1;
-				break;
-			} else {
-				v1 = v1 * 10 + (ch1 - '0');
-				i1 += 1;
-			}
-		}
+int partition(int *arr, int left, int right)
+{
+	const int pivot = arr[right];
+	int i = left - 1;
 
-		while (1) {
-			const char ch2 = version2[i2];
-			if (ch2 == 0) {
-				break;
-			} else if (ch2 == '.') {
-				i2 += 1;
-				break;
-			} else {
-				v2 = v2 * 10 + (ch2 - '0');
-				i2 += 1;
-			}
-		}
-
-		if (v1 < v2) {
-			break;
-		} else if (v1 > v2) {
-			break;
-		} else if ((version1[i1] == 0) && (version2[i2] == 0)) {
-			break;
-		} else {
-			v1 = 0;
-			v2 = 0;
+	for (int j = left; j <= right; j += 1) {
+		if (arr[j] < pivot) {
+			i += 1;
+			swap(arr + i, arr + j);
 		}
 	}
 
-	if (v1 < v2) {
-		return -1;
-	} else if (v1 > v2) {
-		return 1;
+	swap(arr + i + 1, arr + right);
+	return i + 1;
+}
+
+void sort1(int *arr, int left, int right)
+{
+	if (left < right) {
+		const int pivot = partition(arr, left, right);
+		sort1(arr, left, pivot - 1);
+		sort1(arr, pivot + 1, right);
+	}
+}
+
+void sort(int *arr, const int size)
+{
+	sort1(arr, 0, size - 1);
+}
+
+int numRescueBoats(int *people, const int people_size, const int limit)
+{
+	sort(people, people_size);
+
+	int left = 0;
+	int right = people_size - 1;
+	int result = 0;
+
+	while (left <= right) {
+		const int light = people[left];
+		const int heavy = people[right];
+		result += 1;
+		right -= 1;
+		const int total = light + heavy;
+		if (total <= limit) {
+			left += 1;
+		}
 	}
 
-	return 0;
+	return result;
 }
 
 int main()
 {
-	printf("%d\n", compareVersion("1.01", "1.001"));
-	printf("%d\n", compareVersion("1.0", "1.0.0"));
-	printf("%d\n", compareVersion("0.1", "1.1"));
+	int people0[] = { 1, 2 };
+	printf("%d\n", numRescueBoats(people0, 2, 3));
+
+	int people1[] = { 3, 2, 2, 1 };
+	printf("%d\n", numRescueBoats(people1, 4, 3));
+
+	int people2[] = { 3, 5, 3, 4 };
+	printf("%d\n", numRescueBoats(people2, 4, 5));
 }
