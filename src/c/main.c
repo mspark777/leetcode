@@ -1,73 +1,53 @@
 #include <stdio.h>
+#include "./main.h"
 
-void swap(int *left, int *right)
+struct ListNode *reverse(struct ListNode *head)
 {
-	const int temp_left = *left;
-	const int temp_right = *right;
-	*left = temp_right;
-	*right = temp_left;
+	struct ListNode *prev = NULL;
+	struct ListNode *current = head;
+
+	while (current != NULL) {
+		struct ListNode *next = current->next;
+		current->next = prev;
+		prev = current;
+		current = next;
+	}
+
+	return prev;
 }
 
-int partition(int *arr, int left, int right)
+struct ListNode *removeNodes(struct ListNode *head)
 {
-	const int pivot = arr[right];
-	int i = left - 1;
+	head = reverse(head);
 
-	for (int j = left; j <= right; j += 1) {
-		if (arr[j] < pivot) {
-			i += 1;
-			swap(arr + i, arr + j);
+	int max = 0;
+	struct ListNode *prev = NULL;
+	struct ListNode *current = head;
+	while (current != NULL) {
+		if (current->val < max) {
+			prev->next = current->next;
+			current = current->next;
+		} else {
+			max = current->val;
+			prev = current;
+			current = current->next;
 		}
 	}
 
-	swap(arr + i + 1, arr + right);
-	return i + 1;
-}
-
-void sort1(int *arr, int left, int right)
-{
-	if (left < right) {
-		const int pivot = partition(arr, left, right);
-		sort1(arr, left, pivot - 1);
-		sort1(arr, pivot + 1, right);
-	}
-}
-
-void sort(int *arr, const int size)
-{
-	sort1(arr, 0, size - 1);
-}
-
-int numRescueBoats(int *people, const int people_size, const int limit)
-{
-	sort(people, people_size);
-
-	int left = 0;
-	int right = people_size - 1;
-	int result = 0;
-
-	while (left <= right) {
-		const int light = people[left];
-		const int heavy = people[right];
-		result += 1;
-		right -= 1;
-		const int total = light + heavy;
-		if (total <= limit) {
-			left += 1;
-		}
-	}
-
-	return result;
+	return reverse(head);
 }
 
 int main()
 {
-	int people0[] = { 1, 2 };
-	printf("%d\n", numRescueBoats(people0, 2, 3));
+	const int values0[] = { 5, 2, 13, 3, 8 };
+	struct ListNode *head0 =
+		list_node_create(values0, sizeof(values0) / sizeof(values0[0]));
+	list_node_print(removeNodes(head0));
+	head0 = list_node_delete(head0);
 
-	int people1[] = { 3, 2, 2, 1 };
-	printf("%d\n", numRescueBoats(people1, 4, 3));
-
-	int people2[] = { 3, 5, 3, 4 };
-	printf("%d\n", numRescueBoats(people2, 4, 5));
+	const int values1[] = { 1, 1, 1, 1 };
+	struct ListNode *head1 =
+		list_node_create(values1, sizeof(values1) / sizeof(values1[0]));
+	list_node_print(removeNodes(head1));
+	head1 = list_node_delete(head1);
 }

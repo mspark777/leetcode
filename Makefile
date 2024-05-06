@@ -18,6 +18,6 @@ sh:
 
 c:
 	@rm -f ./bin/c
-	@clang --std=c11 -Wall -Wextra -Werror -fsanitize=address -fno-omit-frame-pointer -g -o bin/c src/c/main.c
+	@clang -std=c11 -Wall -Wextra -Werror -xc -fsanitize=address -fno-omit-frame-pointer -g -o bin/c src/c/main.c src/c/list_node.c
 	@./bin/c
 	@rm ./bin/c
