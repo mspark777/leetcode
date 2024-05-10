@@ -1,78 +1,72 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int partition(int *arr, int left, int right)
+int *kthSmallestPrimeFraction(int *arr, int arr_size, int k, int *return_size)
 {
-	int pivot_idx = -1;
-	for (int i = left; i < right; i += 1) {
-		if (arr[i] < arr[i + 1]) {
-			pivot_idx = i;
-			break;
+	double left = 0.0;
+	double right = 1.0;
+	while (left < right) {
+		const double mid = (left + right) / 2.0;
+		double max_fraction = 0.0;
+		int numerator_idx = 0;
+		int denominator_idx = 0;
+		int kth_smaller = 0;
+		int j = 1;
+		for (int i = 0; i < arr_size - 1; i += 1) {
+			while (1) {
+				if (j >= arr_size) {
+					break;
+				}
+
+				const double ai = (double)arr[i];
+				const double aj = (double)arr[j];
+				if (ai < (mid * aj)) {
+					break;
+				} else {
+					j += 1;
+				}
+			}
+
+			kth_smaller += arr_size - j;
+			if (j == arr_size) {
+				break;
+			}
+
+			const double fraction =
+				((double)arr[i]) / ((double)arr[j]);
+			if (fraction > max_fraction) {
+				numerator_idx = i;
+				denominator_idx = j;
+				max_fraction = fraction;
+			}
 		}
-	}
 
-	if (pivot_idx < 0) {
-		return pivot_idx;
-	}
-
-	const int pivot = arr[pivot_idx];
-	arr[pivot_idx] = arr[right];
-	arr[right] = pivot;
-
-	int l = left - 1;
-	for (int r = left; r < right; r += 1) {
-		const int n = arr[r];
-		if (n > pivot) {
-			l += 1;
-			arr[r] = arr[l];
-			arr[l] = n;
-		}
-	}
-
-	const int next_pivot_idx = l + 1;
-	arr[right] = arr[next_pivot_idx];
-	arr[next_pivot_idx] = pivot;
-	return next_pivot_idx;
-}
-
-void sort(int *arr, int left, int right)
-{
-	if (left < right) {
-		const int pivot = partition(arr, left, right);
-		if (pivot >= 0) {
-			sort(arr, left, pivot - 1);
-			sort(arr, pivot + 1, right);
-		}
-	}
-}
-
-long long maximumHappinessSum(int *happiness, int happinessSize, int k)
-{
-	sort(happiness, 0, happinessSize - 1);
-
-	long long result = 0;
-	for (int turn = 0; turn < k; turn += 1) {
-		const int value = happiness[turn] - turn;
-		if (value > 0) {
-			result += value;
+		if (kth_smaller == k) {
+			int *result = malloc(sizeof(int) * 2);
+			result[0] = arr[numerator_idx];
+			result[1] = arr[denominator_idx];
+			*return_size = 2;
+			return result;
+		} else if (kth_smaller > k) {
+			right = mid;
 		} else {
-			break;
+			left = mid;
 		}
 	}
 
-	return result;
+	*return_size = 0;
+	return NULL;
 }
 
 int main()
 {
-	int happiness0[] = { 1, 2, 3 };
-	printf("%lld\n", maximumHappinessSum(happiness0, 3, 2));
+	int return_size = 0;
 
-	int happiness1[] = { 1, 1, 1, 1 };
-	printf("%lld\n", maximumHappinessSum(happiness1, 4, 2));
+	int arr0[] = { 1, 2, 3, 5 };
+	int *result0 = kthSmallestPrimeFraction(arr0, 4, 3, &return_size);
+	printf("%d %d\n", result0[0], result0[1]);
 
-	int happiness2[] = { 2, 3, 4, 5 };
-	printf("%lld\n", maximumHappinessSum(happiness2, 4, 1));
-
-	int happiness3[] = { 7, 2, 28 };
-	printf("%lld\n", maximumHappinessSum(happiness3, 3, 2));
+	int arr1[] = { 1, 7 };
+	int *result1 = kthSmallestPrimeFraction(arr1, 2, 1, &return_size);
+	printf("%d %d\n", result1[0], result1[1]);
 }
