@@ -10,5 +10,6 @@ struct ListNode *list_node_create(const int *nums, const int num_count);
 struct ListNode *list_node_delete(struct ListNode *head);
 void list_node_print(const struct ListNode *head);
 struct ListNode *list_node_reverse(struct ListNode *head);
+void sort(int *arr, int left, int right);
 
 #endif
