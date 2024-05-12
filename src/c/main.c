@@ -2,132 +2,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include <string.h>
 
-#define static_cast(t, v) ((t)v)
-
-struct wage_to_quality_ratio {
-	double ratio;
-	int quality;
-};
-
-int wage_to_quality_ratio_sort_partition(struct wage_to_quality_ratio *arr,
-					 int left, int right)
+int find_max(int **grid, int row, int col)
 {
-	int pivot_idx = -1;
-	for (int i = left; i < right; i += 1) {
-		if (arr[i].ratio > arr[i + 1].ratio) {
-			pivot_idx = i;
-			break;
+	int max = 0;
+	for (int r = row; r < row + 3; r += 1) {
+		for (int c = col; c < col + 3; c += 1) {
+			const int cell = grid[r][c];
+			if (cell > max) {
+				max = cell;
+			}
 		}
 	}
 
-	if (pivot_idx < 0) {
-		return pivot_idx;
-	}
-
-	const double pivot_ratio = arr[pivot_idx].ratio;
-	arr[pivot_idx] = arr[right];
-	arr[right] = arr[pivot_idx];
-
-	int l = left - 1;
-	for (int r = left; r < right; r += 1) {
-		const double r_ratio = arr[r].ratio;
-		if (r_ratio < pivot_ratio) {
-			l += 1;
-			arr[r] = arr[l];
-			arr[l] = arr[r];
-		}
-	}
-
-	const int next_pivot_idx = l + 1;
-	arr[right] = arr[next_pivot_idx];
-	arr[next_pivot_idx] = arr[pivot_idx];
-	return next_pivot_idx;
+	return max;
 }
 
-void wage_to_quality_sort(struct wage_to_quality_ratio *arr, int left,
-			  int right)
+int **largestLocal(int **grid, int row_count, int *col_count,
+		   int *return_row_count, int **return_col_count)
 {
-	if (left < right) {
-		const int pivot =
-			wage_to_quality_ratio_sort_partition(arr, left, right);
-		if (pivot >= 0) {
-			wage_to_quality_sort(arr, left, pivot - 1);
-			wage_to_quality_sort(arr, pivot + 1, right);
-		}
-	}
-}
+	int n = row_count - 2;
+	*col_count = row_count;
+	*return_row_count = n;
+	int *temp_return_col_count = malloc(sizeof(int) * n);
+	memset(temp_return_col_count, n, n);
+	*return_col_count = temp_return_col_count;
 
-double mincostToHireWorkers(int *quality_list, int quality_size, int *wage_list,
-			    int wage_size, int k)
-{
-	const int n = quality_size;
-	double result = DBL_MAX;
-	struct wage_to_quality_ratio *wage_to_quality_ratio_list =
-		malloc(sizeof(struct wage_to_quality_ratio));
+	int **result = malloc(n * sizeof(int *));
 	for (int i = 0; i < n; i += 1) {
-		const int quality = quality_list[i];
-		const double ratio = static_cast(double, wage_list[i]) /
-				     static_cast(double, quality);
-		wage_to_quality_ratio_list[i].ratio = ratio;
-		wage_to_quality_ratio_list[i].quality = quality;
+		result[i] = malloc(n * sizeof(int));
+		temp_return_col_count[i] = n;
 	}
-	wage_to_quality_sort(wage_to_quality_ratio_list, 0, n);
 
-	double current_total_quality = 0.0;
+	for (int r = 0; r < n; r += 1) {
+		for (int c = 0; c < n; c += 1) {
+			result[r][c] = find_max(grid, r, c);
+		}
+	}
 
-	free(wage_to_quality_ratio_list);
-	wage_to_quality_ratio_list = NULL;
 	return result;
 }
 
-/*
- double mincostToHireWorkers(vector<int>& quality, vector<int>& wage, int k) {
-        sort(wageToQualityRatio.begin(), wageToQualityRatio.end());
-
-        // Use a priority queue to keep track of the highest quality workers
-        priority_queue<int> highestQualityWorkers;
-
-        // Iterate through workers
-        for (int i = 0; i < n; i++) {
-            highestQualityWorkers.push(wageToQualityRatio[i].second);
-            currentTotalQuality += wageToQualityRatio[i].second;
-
-            // If we have more than k workers,
-            // remove the one with the highest quality
-            if (highestQualityWorkers.size() > k) {
-                currentTotalQuality -= highestQualityWorkers.top();
-                highestQualityWorkers.pop();
-            }
-
-            // If we have exactly k workers,
-            // calculate the total cost and update if it's the minimum
-            if (highestQualityWorkers.size() == k) {
-                totalCost = min(totalCost, currentTotalQuality *
-                                               wageToQualityRatio[i].first);
-            }
-        }
-        return totalCost;
-    }
- */
-
 int main()
 {
-	int quality0[] = { 10, 20, 5 };
-	int wage0[] = { 70, 50, 30 };
-	int size0 = sizeof(quality0) / sizeof(quality0[0]);
-	int k0 = 2;
-	double result0 =
-		mincostToHireWorkers(quality0, size0, wage0, size0, k0);
-	printf("%f\n", result0);
-
-	int quality1[] = { 3, 1, 10, 10, 1 };
-	int wage1[] = { 4, 8, 2, 2, 7 };
-	int size1 = sizeof(wage1) / sizeof(wage1[0]);
-	int k1 = 3;
-	double result1 =
-		mincostToHireWorkers(quality1, size1, wage1, size1, k1);
-	printf("%f\n", result1);
+	return 0;
 }
 
 struct ListNode *list_node_create(const int *nums, const int num_count)
