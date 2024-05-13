@@ -4,41 +4,27 @@
 #include <float.h>
 #include <string.h>
 
-int find_max(int **grid, int row, int col)
+int matrixScore(int **grid, int grid_size, int *grid_col_size)
 {
-	int max = 0;
-	for (int r = row; r < row + 3; r += 1) {
-		for (int c = col; c < col + 3; c += 1) {
-			const int cell = grid[r][c];
-			if (cell > max) {
-				max = cell;
+	const int m = grid_size;
+	const int n = *grid_col_size;
+
+	int result = (1 << (n - 1)) * m;
+
+	for (int j = 1; j < n; j += 1) {
+		int count_same_bits = 0;
+		for (int i = 0; i < m; i += 1) {
+			if (grid[i][j] == grid[i][0]) {
+				count_same_bits += 1;
 			}
 		}
-	}
 
-	return max;
-}
-
-int **largestLocal(int **grid, int row_count, int *col_count,
-		   int *return_row_count, int **return_col_count)
-{
-	int n = row_count - 2;
-	*col_count = row_count;
-	*return_row_count = n;
-	int *temp_return_col_count = malloc(sizeof(int) * n);
-	memset(temp_return_col_count, n, n);
-	*return_col_count = temp_return_col_count;
-
-	int **result = malloc(n * sizeof(int *));
-	for (int i = 0; i < n; i += 1) {
-		result[i] = malloc(n * sizeof(int));
-		temp_return_col_count[i] = n;
-	}
-
-	for (int r = 0; r < n; r += 1) {
-		for (int c = 0; c < n; c += 1) {
-			result[r][c] = find_max(grid, r, c);
+		const int count_none_same_bits = m - count_same_bits;
+		if (count_none_same_bits > count_same_bits) {
+			count_same_bits = count_none_same_bits;
 		}
+
+		result += (1 << (n - j - 1)) * count_same_bits;
 	}
 
 	return result;
