@@ -1,41 +1,63 @@
 from __future__ import annotations
 from typing import List
-import heapq
+from collections import deque
+from heapq import heappop, heappush
 
 
 class Solution:
-    def mincostToHireWorkers(
-        self, quality: List[int], wage: List[int], k: int
-    ) -> float:
-        n = len(quality)
-        current_total_quality = 0.0
-        wage_to_quality_ratio = [(wage[i] / q, q) for i, q in enumerate(quality)]
-        wage_to_quality_ratio.sort(key=lambda x: x[0])
-        highest_quality_workers: list[int] = []
-        result = float("inf")
+    def maximumSafenessFactor(self, grid: List[List[int]]) -> int:
+        return self.maximum_safness_factor(grid)
+
+    def maximum_safness_factor(self, grid: list[list[int]]) -> int:
+        n = len(grid)
+        multi_source_queue = deque[tuple[int, int]]()
         for i in range(n):
-            heapq.heappush(highest_quality_workers, -wage_to_quality_ratio[i][1])
-            current_total_quality += wage_to_quality_ratio[i][1]
+            for j in range(n):
+                if grid[i][j] == 1:
+                    multi_source_queue.append((i, j))
+                    grid[i][j] = 0
+                else:
+                    grid[i][j] = -1
+        dir = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        while multi_source_queue:
+            size = len(multi_source_queue)
+            for _ in range(size):
+                curr = multi_source_queue.popleft()
+                for d in dir:
+                    di, dj = curr[0] + d[0], curr[1] + d[1]
+                    val = grid[curr[0]][curr[1]]
+                    if self.is_valid_cell(n, di, dj) and grid[di][dj] == -1:
+                        grid[di][dj] = val + 1
+                        multi_source_queue.append((di, dj))
 
-            if len(highest_quality_workers) > k:
-                current_total_quality += heapq.heappop(highest_quality_workers)
+        pq = [[-grid[0][0], 0, 0]]
+        grid[0][0] = -1
+        dest = n - 1
+        while pq:
+            safeness, i, j = heappop(pq)
+            if i == dest and j == dest:
+                return -safeness
+            for d in dir:
+                di, dj = i + d[0], j + d[1]
+                if self.is_valid_cell(n, di, dj) and grid[di][dj] != -1:
+                    heappush(pq, [-min(-safeness, grid[di][dj]), di, dj])
+                    grid[di][dj] = -1
 
-            if len(highest_quality_workers) == k:
-                result = min(
-                    result, current_total_quality * wage_to_quality_ratio[i][0]
-                )
+        return -1
 
-        return result
+    def is_valid_cell(self, n: int, r: int, c: int) -> bool:
+        return 0 <= r < n and 0 <= c < n
 
 
 def main():
-    input: list[tuple[list[int], list[int], int]] = [
-        ([10, 20, 5], [70, 50, 30], 2),
-        ([3, 1, 10, 10, 1], [4, 8, 2, 2, 7], 3),
+    input = [
+        [[1, 0, 0], [0, 0, 0], [0, 0, 1]],
+        [[0, 0, 1], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0]],
     ]
 
-    for quality, wage, k in input:
-        result = Solution().mincostToHireWorkers(quality, wage, k)
+    for grid in input:
+        result = Solution().maximumSafenessFactor(grid)
         print(result)
 
 
