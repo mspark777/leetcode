@@ -12,4 +12,10 @@ void list_node_print(const struct ListNode *head);
 struct ListNode *list_node_reverse(struct ListNode *head);
 void sort(int *arr, int left, int right);
 
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+};
+
 #endif

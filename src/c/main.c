@@ -1,37 +1,18 @@
-int max(const int left, const int right)
-{
-	return left > right ? left : right;
-}
+#include <stdio.h>
+#include "./main.h"
 
-int dfs_backtrack(int **grid, const int rows, const int cols, const int row,
-		  const int col)
+const int or = 2;
+const int and = 3;
+
+int evaluateTree(struct TreeNode *node)
 {
-	if (row < 0 || col < 0 || row == rows || col == cols ||
-	    grid[row][col] == 0) {
-		return 0;
+	const int value = node->val;
+	struct TreeNode *left = node->left;
+	struct TreeNode *right = node->right;
+	if ((left == NULL) || (right == NULL)) {
+		return value;
 	}
 
-	int amount = 0;
-	int current_cell_gold = grid[row][col];
-	grid[row][col] = 0;
-	amount = max(amount, dfs_backtrack(grid, rows, cols, row, col - 1));
-	amount = max(amount, dfs_backtrack(grid, rows, cols, row, col + 1));
-	amount = max(amount, dfs_backtrack(grid, rows, cols, row - 1, col));
-	amount = max(amount, dfs_backtrack(grid, rows, cols, row + 1, col));
-	grid[row][col] = current_cell_gold;
-
-	return amount + current_cell_gold;
-}
-
-int getMaximumGold(int **grid, int grid_size, int *grid_col_size)
-{
-	const int m = grid_size;
-	const int n = *grid_col_size;
-	int result = 0;
-	for (int r = 0; r < m; r += 1) {
-		for (int c = 0; c < n; c += 1) {
-			result = max(result, dfs_backtrack(grid, m, n, r, c));
-		}
-	}
-	return result;
+	return value == or ? evaluateTree(left) || evaluateTree(right) :
+			     evaluateTree(left) && evaluateTree(right);
 }
