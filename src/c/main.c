@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include "./main.h"
 
-const int or = 2;
-const int and = 3;
-
-int evaluateTree(struct TreeNode *node)
+struct TreeNode *removeLeafNodes(struct TreeNode *node, int target)
 {
-	const int value = node->val;
-	struct TreeNode *left = node->left;
-	struct TreeNode *right = node->right;
-	if ((left == NULL) || (right == NULL)) {
-		return value;
+	if (node == NULL) {
+		return NULL;
 	}
 
-	return value == or ? evaluateTree(left) || evaluateTree(right) :
-			     evaluateTree(left) && evaluateTree(right);
+	struct TreeNode *left = removeLeafNodes(node->left, target);
+	struct TreeNode *right = removeLeafNodes(node->right, target);
+
+	node->left = left;
+	node->right = right;
+
+	const int is_leaf = (left == NULL) && (right == NULL);
+	if (is_leaf) {
+		return node->val == target ? NULL : node;
+	}
+
+	return node;
 }
