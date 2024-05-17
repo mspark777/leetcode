@@ -1,11 +1,11 @@
 import "@total-typescript/ts-reset";
 
 function bat(arr: boolean[], i: number): boolean {
-  return arr.at(i) as any;
+  return arr.at(i) as boolean;
 }
 
 function sat(s: string, i: number): string {
-  return s.at(i) as any;
+  return s.at(i) as string;
 }
 
 function isInterleave(s1: string, s2: string, s3: string): boolean {
