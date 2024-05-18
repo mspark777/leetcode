@@ -1,22 +1,28 @@
 #include <stdio.h>
 #include "./main.h"
 
-struct TreeNode *removeLeafNodes(struct TreeNode *node, int target)
+int abs(int i)
+{
+	return i >= 0 ? i : -1;
+}
+
+int dfs(struct TreeNode *node, int *move)
 {
 	if (node == NULL) {
-		return NULL;
+		return 0;
 	}
 
-	struct TreeNode *left = removeLeafNodes(node->left, target);
-	struct TreeNode *right = removeLeafNodes(node->right, target);
+	const int left = dfs(node->left, move);
+	const int right = dfs(node->right, move);
 
-	node->left = left;
-	node->right = right;
+	*move += abs(left) + abs(right);
 
-	const int is_leaf = (left == NULL) && (right == NULL);
-	if (is_leaf) {
-		return node->val == target ? NULL : node;
-	}
+	return (node->val - 1) + left + right;
+}
 
-	return node;
+int distributeCoins(struct TreeNode *root)
+{
+	int result = 0;
+	dfs(root, &result);
+	return result;
 }
