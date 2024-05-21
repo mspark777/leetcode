@@ -1,46 +1,40 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { toTree } from "./tree_node.mjs";
+/**
+ * @param {number} i
+ * @param {number[]} nums
+ * @param {number[]} temp
+ * @param {number[][]} result
+ * @returns {void}
+ */
+function solve(i, nums, temp, result) {
+  result.push([...temp]);
+
+  for (let j = i; j < nums.length; j += 1) {
+    temp.push(nums[j]);
+    solve(j + 1, nums, temp, result);
+    temp.pop();
+  }
+}
 
 /**
- * @param {TreeNode|null} root
- * @return {number}
+ * @param {number[]} nums
+ * @return {number[][]}
  */
-function sumOfLeftLeaves(root) {
-  if (root == null) {
-    return 0;
-  }
-
-  let result = 0;
-
-  const stack = [{ node: root, left: false }];
-  for (let top = stack.pop(); top != null; top = stack.pop()) {
-    let leaf = true;
-    const { node } = top;
-    if (node.left != null) {
-      leaf = false;
-      stack.push({ node: node.left, left: true });
-    }
-
-    if (node.right != null) {
-      leaf = false;
-      stack.push({ node: node.right, left: false });
-    }
-
-    if (leaf && top.left) {
-      result += node.val;
-    }
-  }
+function subsets(nums) {
+  const result = [];
+  solve(0, nums, [], result);
 
   return result;
 }
 
 function main() {
-  const inputs = [[3, 9, 20, null, null, 15, 7], [1]];
+  const inputs = [[1, 2, 3], [0]];
 
   for (const nums of inputs) {
-    const result = sumOfLeftLeaves(toTree(nums));
+    const result = subsets(nums);
     console.log(result);
   }
 }
