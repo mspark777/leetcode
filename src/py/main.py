@@ -1,63 +1,49 @@
 from __future__ import annotations
+from collections import defaultdict
 from typing import List
-from collections import deque
-from heapq import heappop, heappush
 
 
 class Solution:
-    def maximumSafenessFactor(self, grid: List[List[int]]) -> int:
-        return self.maximum_safness_factor(grid)
+    def beautifulSubsets(self, nums: List[int], k: int) -> int:
+        result = 1
 
-    def maximum_safness_factor(self, grid: list[list[int]]) -> int:
-        n = len(grid)
-        multi_source_queue = deque[tuple[int, int]]()
-        for i in range(n):
-            for j in range(n):
-                if grid[i][j] == 1:
-                    multi_source_queue.append((i, j))
-                    grid[i][j] = 0
+        frequencies_map = defaultdict[int, dict[int, int]](dict)
+        for num in nums:
+            key = num % k
+            frequencies_map[key][num] = frequencies_map[key].get(num, 0) + 1
+
+        for frequencies in frequencies_map.values():
+            prev_num = -k
+            curr = 1
+            prev1 = 1
+            prev2 = 0
+
+            for num, frequency in sorted(frequencies.items()):
+                skip = prev1
+
+                if num - prev_num == k:
+                    take = ((1 << frequency) - 1) * prev2
                 else:
-                    grid[i][j] = -1
-        dir = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        while multi_source_queue:
-            size = len(multi_source_queue)
-            for _ in range(size):
-                curr = multi_source_queue.popleft()
-                for d in dir:
-                    di, dj = curr[0] + d[0], curr[1] + d[1]
-                    val = grid[curr[0]][curr[1]]
-                    if self.is_valid_cell(n, di, dj) and grid[di][dj] == -1:
-                        grid[di][dj] = val + 1
-                        multi_source_queue.append((di, dj))
+                    take = ((1 << frequency) - 1) * prev1
 
-        pq = [[-grid[0][0], 0, 0]]
-        grid[0][0] = -1
-        dest = n - 1
-        while pq:
-            safeness, i, j = heappop(pq)
-            if i == dest and j == dest:
-                return -safeness
-            for d in dir:
-                di, dj = i + d[0], j + d[1]
-                if self.is_valid_cell(n, di, dj) and grid[di][dj] != -1:
-                    heappush(pq, [-min(-safeness, grid[di][dj]), di, dj])
-                    grid[di][dj] = -1
+                curr = skip + take
+                prev2 = prev1
+                prev1 = curr
+                prev_num = num
 
-        return -1
+            result *= curr
 
-    def is_valid_cell(self, n: int, r: int, c: int) -> bool:
-        return 0 <= r < n and 0 <= c < n
+        return result - 1
 
 
 def main():
-    input = [
-        [[1, 0, 0], [0, 0, 0], [0, 0, 1]],
-        [[0, 0, 1], [0, 0, 0], [0, 0, 0]],
-        [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0]],
+    input: list[tuple[list[int], int]] = [
+        ([2, 4, 6], 2),
+        ([1], 1),
     ]
 
-    for grid in input:
-        result = Solution().maximumSafenessFactor(grid)
+    for nums, k in input:
+        result = Solution().beautifulSubsets(nums, k)
         print(result)
 
 
