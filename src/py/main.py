@@ -1,49 +1,41 @@
 from __future__ import annotations
-from collections import defaultdict
 from typing import List
 
 
 class Solution:
-    def beautifulSubsets(self, nums: List[int], k: int) -> int:
-        result = 1
+    def find(self, nums: list[int], val: int) -> int:
+        left = 0
+        right = len(nums) - 1
+        index = right + 1
+        while left <= right:
+            mid = (left + right) // 2
 
-        frequencies_map = defaultdict[int, dict[int, int]](dict)
-        for num in nums:
-            key = num % k
-            frequencies_map[key][num] = frequencies_map[key].get(num, 0) + 1
+            if nums[mid] >= val:
+                index = mid
+                right = mid - 1
+            else:
+                left = mid + 1
 
-        for frequencies in frequencies_map.values():
-            prev_num = -k
-            curr = 1
-            prev1 = 1
-            prev2 = 0
+        return index
 
-            for num, frequency in sorted(frequencies.items()):
-                skip = prev1
+    def specialArray(self, nums: List[int]) -> int:
+        nums.sort()
 
-                if num - prev_num == k:
-                    take = ((1 << frequency) - 1) * prev2
-                else:
-                    take = ((1 << frequency) - 1) * prev1
+        n = len(nums)
+        for i in range(1, n + 1):
+            k = self.find(nums, i)
 
-                curr = skip + take
-                prev2 = prev1
-                prev1 = curr
-                prev_num = num
+            if (n - k) == i:
+                return i
 
-            result *= curr
-
-        return result - 1
+        return -1
 
 
 def main():
-    input: list[tuple[list[int], int]] = [
-        ([2, 4, 6], 2),
-        ([1], 1),
-    ]
+    input: list[list[int]] = [[3, 5], [0, 0], [0, 4, 3, 0, 4]]
 
-    for nums, k in input:
-        result = Solution().beautifulSubsets(nums, k)
+    for nums in input:
+        result = Solution().specialArray(nums)
         print(result)
 
 
