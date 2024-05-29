@@ -1,31 +1,28 @@
-#include <string.h>
-
-int abs(int i)
+int len(const char *s)
 {
-	return i >= 0 ? i : -i;
-}
-
-int max(int left, int right)
-{
-	return left < right ? right : left;
-}
-
-int equalSubstring(char *s, char *t, int max_cost)
-{
-	const int n = strlen(s);
-	int max_len = 0;
-	int start = 0;
-	int curr_cost = 0;
-
-	for (int i = 0; i < n; i += 1) {
-		curr_cost += abs(s[i] - t[i]);
-		while (curr_cost > max_cost) {
-			curr_cost -= abs(s[start] - t[start]);
-			start += 1;
-		}
-
-		max_len = max(max_len, i - start + 1);
+	int l = 0;
+	while (s[l] != 0) {
+		l += 1;
 	}
 
-	return max_len;
+	return l;
+}
+int numSteps(char *s)
+{
+	int N = len(s);
+	int operations = 0;
+	int carry = 0;
+
+	for (int i = N - 1; i > 0; i -= 1) {
+		const int n = (s[i] - '0') + carry;
+
+		if (n & 1) {
+			operations += 2;
+			carry = 1;
+		} else {
+			operations += 1;
+		}
+	}
+
+	return operations + carry;
 }
