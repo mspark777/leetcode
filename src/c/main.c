@@ -1,28 +1,29 @@
-int len(const char *s)
+#include <stdlib.h>
+
+int *singleNumber(int *nums, int nums_size, int *return_size)
 {
-	int l = 0;
-	while (s[l] != 0) {
-		l += 1;
+	long long diff = 0;
+	for (int i = 0; i < nums_size; i += 1) {
+		diff ^= nums[i];
 	}
 
-	return l;
-}
-int numSteps(char *s)
-{
-	int N = len(s);
-	int operations = 0;
-	int carry = 0;
+	diff &= -diff;
 
-	for (int i = N - 1; i > 0; i -= 1) {
-		const int n = (s[i] - '0') + carry;
-
-		if (n & 1) {
-			operations += 2;
-			carry = 1;
+	int left = 0;
+	int right = 0;
+	for (int i = 0; i < nums_size; i += 1) {
+		const int num = nums[i];
+		if (num & diff) {
+			right ^= num;
 		} else {
-			operations += 1;
+			left ^= num;
 		}
 	}
 
-	return operations + carry;
+	int *result = malloc(sizeof(int) * 2);
+	result[0] = left;
+	result[1] = right;
+	*return_size = 2;
+
+	return result;
 }
