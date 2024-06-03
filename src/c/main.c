@@ -1,29 +1,19 @@
-#include <stdlib.h>
-
-int *singleNumber(int *nums, int nums_size, int *return_size)
+int appendCharacters(char *s, char *t)
 {
-	long long diff = 0;
-	for (int i = 0; i < nums_size; i += 1) {
-		diff ^= nums[i];
-	}
-
-	diff &= -diff;
-
-	int left = 0;
-	int right = 0;
-	for (int i = 0; i < nums_size; i += 1) {
-		const int num = nums[i];
-		if (num & diff) {
-			right ^= num;
-		} else {
-			left ^= num;
+	while (*s) {
+		if (*t == *s) {
+			t += 1;
+		}
+		s += 1;
+		if (*t == 0) {
+			return 0;
 		}
 	}
 
-	int *result = malloc(sizeof(int) * 2);
-	result[0] = left;
-	result[1] = right;
-	*return_size = 2;
+	char *st = t;
+	while (*t) {
+		t += 1;
+	}
 
-	return result;
+	return t - st;
 }
