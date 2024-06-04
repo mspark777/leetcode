@@ -1,29 +1,43 @@
-#include <stdlib.h>
-
-int *singleNumber(int *nums, int nums_size, int *return_size)
+int longestPalindrome(char *s)
 {
-	long long diff = 0;
-	for (int i = 0; i < nums_size; i += 1) {
-		diff ^= nums[i];
-	}
+	int lowers[26] = {
+		0,
+	};
+	int uppers[26] = {
+		0,
+	};
 
-	diff &= -diff;
-
-	int left = 0;
-	int right = 0;
-	for (int i = 0; i < nums_size; i += 1) {
-		const int num = nums[i];
-		if (num & diff) {
-			right ^= num;
+	for (int i = 0; s[i] != 0; i += 1) {
+		const char ch = s[i];
+		if (('a' <= ch) && (ch <= 'z')) {
+			lowers[ch - 'a'] += 1;
 		} else {
-			left ^= num;
+			uppers[ch - 'A'] += 1;
 		}
 	}
 
-	int *result = malloc(sizeof(int) * 2);
-	result[0] = left;
-	result[1] = right;
-	*return_size = 2;
+	int result = 0;
+	for (int i = 0; i < 26; i += 1) {
+		const int count = lowers[i];
+		if (count < 1) {
+			continue;
+		}
+
+		const int result_odd = result & 1;
+		const int count_odd = count & 1;
+		result += count - (result_odd && count_odd);
+	}
+
+	for (int i = 0; i < 26; i += 1) {
+		const int count = uppers[i];
+		if (count < 1) {
+			continue;
+		}
+
+		const int result_odd = result & 1;
+		const int count_odd = count & 1;
+		result += count - (result_odd && count_odd);
+	}
 
 	return result;
 }
