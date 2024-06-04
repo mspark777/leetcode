@@ -1,3 +1,4 @@
+
 int longestPalindrome(char *s)
 {
 	int lowers[26] = {
