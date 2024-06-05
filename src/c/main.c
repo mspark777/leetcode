@@ -1,43 +1,52 @@
+#include <stdlib.h>
 
-int longestPalindrome(char *s)
+int min(int left, int right)
 {
-	int lowers[26] = {
-		0,
-	};
-	int uppers[26] = {
+	return left < right ? left : right;
+}
+
+char **commonChars(char **words, int words_size, int *return_size)
+{
+	int counts[26] = {
 		0,
 	};
 
-	for (int i = 0; s[i] != 0; i += 1) {
-		const char ch = s[i];
-		if (('a' <= ch) && (ch <= 'z')) {
-			lowers[ch - 'a'] += 1;
-		} else {
-			uppers[ch - 'A'] += 1;
+	for (int i = 0; words[0][i] != 0; i += 1) {
+		const char ch = words[0][i];
+		counts[ch - 'a'] += 1;
+	}
+
+	for (int i = 1; i < words_size; i += 1) {
+		int temp_counts[26] = {
+			0,
+		};
+
+		for (int j = 0; words[i][j] != 0; j += 1) {
+			const char ch = words[i][j];
+			temp_counts[ch - 'a'] += 1;
+		}
+
+		for (int j = 0; j < 26; j += 1) {
+			counts[j] = min(counts[j], temp_counts[j]);
 		}
 	}
 
-	int result = 0;
+	int result_size = 0;
 	for (int i = 0; i < 26; i += 1) {
-		const int count = lowers[i];
-		if (count < 1) {
-			continue;
-		}
-
-		const int result_odd = result & 1;
-		const int count_odd = count & 1;
-		result += count - (result_odd && count_odd);
+		result_size += counts[i];
 	}
+	*return_size = result_size;
 
+	char **result = malloc(sizeof(char *) * result_size);
+	char **pos = result;
 	for (int i = 0; i < 26; i += 1) {
-		const int count = uppers[i];
-		if (count < 1) {
-			continue;
+		const int count = counts[i];
+		for (int j = 0; j < count; j += 1) {
+			char *str = calloc(2, sizeof(char));
+			str[0] = (char)(i + 'a');
+			*pos = str;
+			pos += 1;
 		}
-
-		const int result_odd = result & 1;
-		const int count_odd = count & 1;
-		result += count - (result_odd && count_odd);
 	}
 
 	return result;
