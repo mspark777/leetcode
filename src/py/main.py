@@ -1,41 +1,40 @@
 from __future__ import annotations
 from typing import List
+from collections import Counter
 
 
 class Solution:
-    def find(self, nums: list[int], val: int) -> int:
-        left = 0
-        right = len(nums) - 1
-        index = right + 1
-        while left <= right:
-            mid = (left + right) // 2
+    def isNStraightHand(self, hand: List[int], group_size: int) -> bool:
+        if len(hand) % group_size != 0:
+            return False
 
-            if nums[mid] >= val:
-                index = mid
-                right = mid - 1
-            else:
-                left = mid + 1
+        card_counts = Counter(hand)
 
-        return index
+        for card in hand:
+            start_card = card
+            while card_counts[start_card - 1]:
+                start_card -= 1
 
-    def specialArray(self, nums: List[int]) -> int:
-        nums.sort()
+            while start_card <= card:
+                while card_counts[start_card]:
+                    for next_card in range(start_card, start_card + group_size):
+                        if not card_counts[next_card]:
+                            return False
+                        card_counts[next_card] -= 1
 
-        n = len(nums)
-        for i in range(1, n + 1):
-            k = self.find(nums, i)
+                start_card += 1
 
-            if (n - k) == i:
-                return i
-
-        return -1
+        return True
 
 
 def main():
-    input: list[list[int]] = [[3, 5], [0, 0], [0, 4, 3, 0, 4]]
+    input: list[tuple[list[int], int]] = [
+        ([1, 2, 3, 6, 2, 3, 4, 7, 8], 3),
+        ([1, 2, 3, 4, 5], 4),
+    ]
 
-    for nums in input:
-        result = Solution().specialArray(nums)
+    for hand, group_size in input:
+        result = Solution().isNStraightHand(hand, group_size)
         print(result)
 
 
