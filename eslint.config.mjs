@@ -4,10 +4,12 @@ import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 export default [
+  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
+  { files: ["**/*.cjs"], languageOptions: { sourceType: "commonjs" } },
+  { files: ["**/*.mjs"], languageOptions: { sourceType: "module" } },
   {
     languageOptions: {
       globals: {
-        ...globals.jest,
         ...globals.es2021,
         ...globals.node,
       },
@@ -17,10 +19,15 @@ export default [
         project: "./tsconfig.json",
       },
     },
-    ignores: ["dist/*", "node_modules/*", "temp/*", "src/script/local/*"],
+    ignores: ["dist/*", "node_modules/*", "temp/*"],
   },
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   pluginJs.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   eslintPluginPrettierRecommended,
+  {
+    rules: {
+      "@typescript-eslint/explicit-function-return-type": "error",
+    },
+  },
 ];

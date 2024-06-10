@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": "src/ts",
-    "outDir": "dist",
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "rootDir": "./src/ts",
+    "target": "es2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "declaration": false,
     "removeComments": true,
     "allowSyntheticDefaultImports": false,
@@ -25,7 +24,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "lib": [
-      "ES2022"
+      "es2022"
     ],
     "types": [
       "@types/node"
@@ -33,6 +32,7 @@
   },
   "exclude": [
     "node_module",
-    "dist"
+    "dist",
+    "temp"
   ]
 }
