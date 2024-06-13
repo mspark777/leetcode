@@ -2,50 +2,49 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func dfs(result *[][]string, s []rune, start int, current []string, dp [][]bool) {
-	if start >= len(s) {
-		*result = append(*result, append([]string(nil), current...))
-	}
+func minMovesToSeat(seats []int, students []int) int {
+	sort.Ints(seats)
+	sort.Ints(students)
 
-	for end := start; end < len(s); end += 1 {
-		check := (s[start] == s[end]) && (((end - start) <= 2) || dp[start+1][end-1])
-		if check {
-			dp[start][end] = true
-			current = append(current, string(s[start:end+1]))
-			dfs(result, s, end+1, current, dp)
-			current = current[0 : len(current)-1]
+	result := 0
+	for i, seat := range seats {
+		diff := seat - students[i]
+		if diff < 0 {
+			result -= diff
+		} else if diff > 0 {
+			result += diff
 		}
 	}
-}
-
-func partition(s string) [][]string {
-	l := len(s)
-	result := [][]string{}
-	current := []string{}
-	dp := make([][]bool, l)
-	for i := 0; i < l; i += 1 {
-		dp[i] = make([]bool, l)
-	}
-
-	dfs(&result, []rune(s), 0, current, dp)
 
 	return result
 }
 
 type input struct {
-	s string
+	seats    []int
+	students []int
 }
 
 func main() {
 	inputs := []input{
-		{s: "aab"},
-		{s: "a"},
+		{
+			[]int{3, 1, 5},
+			[]int{2, 7, 4},
+		},
+		{
+			[]int{4, 1, 5, 9},
+			[]int{1, 3, 2, 6},
+		},
+		{
+			[]int{2, 2, 6, 6},
+			[]int{1, 3, 2, 6},
+		},
 	}
 
 	for _, input := range inputs {
-		result := partition(input.s)
+		result := minMovesToSeat(input.seats, input.students)
 		fmt.Println(result)
 	}
 }
