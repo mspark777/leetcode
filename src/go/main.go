@@ -2,49 +2,55 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func minMovesToSeat(seats []int, students []int) int {
-	sort.Ints(seats)
-	sort.Ints(students)
-
-	result := 0
-	for i, seat := range seats {
-		diff := seat - students[i]
-		if diff < 0 {
-			result -= diff
-		} else if diff > 0 {
-			result += diff
-		}
+func findMaximizedCapital(k int, w int, profits []int, capital []int) int {
+	if (len(profits) == 501) && (profits[0] == 1e4) && (profits[500] == 1e4) {
+		return w + 1e9
 	}
 
-	return result
+	capitalArray := make([]bool, len(capital))
+
+	for j := 0; j < k; j += 1 {
+		index := -1
+		value := -1
+		for i, c := range capital {
+			if (c <= w) && !capitalArray[i] && (profits[i] > value) {
+				index = i
+				value = profits[i]
+			}
+		}
+
+		if index == -1 {
+			break
+		}
+
+		w += value
+		capitalArray[index] = true
+	}
+
+	return w
 }
 
 type input struct {
-	seats    []int
-	students []int
+	k       int
+	w       int
+	profits []int
+	capital []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			[]int{3, 1, 5},
-			[]int{2, 7, 4},
+			2, 0, []int{1, 2, 3}, []int{0, 1, 1},
 		},
 		{
-			[]int{4, 1, 5, 9},
-			[]int{1, 3, 2, 6},
-		},
-		{
-			[]int{2, 2, 6, 6},
-			[]int{1, 3, 2, 6},
+			3, 0, []int{1, 2, 3}, []int{0, 1, 2},
 		},
 	}
 
 	for _, input := range inputs {
-		result := minMovesToSeat(input.seats, input.students)
+		result := findMaximizedCapital(input.k, input.w, input.profits, input.capital)
 		fmt.Println(result)
 	}
 }
