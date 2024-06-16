@@ -1,32 +1,22 @@
-void swap(int *left, int *right)
-{
-	const int l = *left;
-	const int r = *right;
-	*left = r;
-	*right = l;
-}
+#define static_cast(t, v) ((t)v)
 
-void sortColors(int *nums, int nums_size)
+int minPatches(int *nums, int nums_size, int n)
 {
-	const int RED = 0;
-	const int WHITE = 1;
-	int left = 0;
-	int mid = 0;
-	int right = nums_size - 1;
-	while (mid <= right) {
-		const int num = nums[mid];
-		switch (num) {
-		case RED:
-			swap(nums + left, nums + mid);
-			left += 1;
-			mid += 1;
-			break;
-		case WHITE:
-			mid += 1;
-			break;
-		default:
-			swap(nums + mid, nums + right);
-			right -= 1;
+	const long long N = n;
+	long long missing = 1;
+	int result = 0;
+	int i = 0;
+
+	while (missing <= N) {
+		if (i < nums_size &&
+		    static_cast(long long, nums[i]) <= missing) {
+			missing += nums[i];
+			i += 1;
+		} else {
+			missing += missing;
+			result += 1;
 		}
 	}
+
+	return result;
 }
