@@ -1,48 +1,55 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} arr1
- * @param {number[]} arr2
- * @return {number[]}
+ * @param {number[]} difficulty
+ * @param {number[]} profit
+ * @param {number[]} worker
+ * @return {number}
  */
-function relativeSortArray(arr1, arr2) {
-  const indexMap = new Map();
-  for (const [i, n] of arr2.entries()) {
-    indexMap.set(n, i);
+function maxProfitAssignment(difficulty, profit, worker) {
+  const jobProfile = difficulty
+    .map((d, i) => [d, profit[i]])
+    .sort((a, b) => {
+      const [ad, ap] = a;
+      const [bd, bp] = b;
+      return ap !== bp ? ad - bd : ap - bp;
+    });
+  worker.sort((a, b) => a - b);
+
+  let result = 0;
+  let maxProfit = 0;
+  let index = 0;
+  for (const ability of worker) {
+    while (index < difficulty.length && ability >= jobProfile[index][0]) {
+      maxProfit = Math.max(maxProfit, jobProfile[index][1]);
+      index += 1;
+    }
+    result += maxProfit;
   }
 
-  return arr1.sort((left, right) => {
-    const left2 = indexMap.get(left);
-    const right2 = indexMap.get(right);
-    if (left2 != null && right2 != null) {
-      return left2 - right2;
-    } else if (left2 == null && right2 == null) {
-      return left - right;
-    } else if (left2 != null) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
+  return result;
 }
 
 function main() {
   const inputs = [
     [
-      [2, 3, 1, 3, 2, 4, 6, 7, 9, 2, 19],
-      [2, 1, 4, 3, 9, 6],
+      [2, 4, 6, 8, 10],
+      [10, 20, 30, 40, 50],
+      [4, 5, 6, 7],
     ],
     [
-      [28, 6, 22, 8, 44, 17],
-      [22, 28, 8, 6],
+      [85, 47, 57],
+      [24, 66, 99],
+      [40, 25, 25],
     ],
   ];
 
-  for (const [arr1, arr2] of inputs) {
-    const result = relativeSortArray(arr1, arr2);
+  for (const [difficulty, profit, worker] of inputs) {
+    const result = maxProfitAssignment(difficulty, profit, worker);
     console.log(result);
   }
 }
