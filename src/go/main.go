@@ -2,55 +2,64 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func findMaximizedCapital(k int, w int, profits []int, capital []int) int {
-	if (len(profits) == 501) && (profits[0] == 1e4) && (profits[500] == 1e4) {
-		return w + 1e9
-	}
+func canPlaceBalls(x int, position []int, m int) bool {
+	prevBallPos := position[0]
+	ballsPlaced := 1
 
-	capitalArray := make([]bool, len(capital))
-
-	for j := 0; j < k; j += 1 {
-		index := -1
-		value := -1
-		for i, c := range capital {
-			if (c <= w) && !capitalArray[i] && (profits[i] > value) {
-				index = i
-				value = profits[i]
-			}
+	for i := range position {
+		currPos := position[i]
+		if currPos-prevBallPos >= x {
+			ballsPlaced += 1
+			prevBallPos = currPos
 		}
 
-		if index == -1 {
-			break
+		if ballsPlaced == m {
+			return true
 		}
-
-		w += value
-		capitalArray[index] = true
 	}
 
-	return w
+	return false
+}
+
+func maxDistance(position []int, m int) int {
+	answer := 0
+	n := len(position)
+
+	sort.Ints(position)
+	low := 1
+	high := int(float64(position[n-1])/(float64(m)-1.0)) + 1
+	for low <= high {
+		mid := (low + high) / 2
+		if canPlaceBalls(mid, position, m) {
+			answer = mid
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+	return answer
 }
 
 type input struct {
-	k       int
-	w       int
-	profits []int
-	capital []int
+	position []int
+	m        int
 }
 
 func main() {
 	inputs := []input{
 		{
-			2, 0, []int{1, 2, 3}, []int{0, 1, 1},
+			[]int{1, 2, 3, 4, 7}, 3,
 		},
 		{
-			3, 0, []int{1, 2, 3}, []int{0, 1, 2},
+			[]int{5, 4, 3, 2, 1, 1000000000}, 2,
 		},
 	}
 
 	for _, input := range inputs {
-		result := findMaximizedCapital(input.k, input.w, input.profits, input.capital)
+		result := maxDistance(input.position, input.m)
 		fmt.Println(result)
 	}
 }
