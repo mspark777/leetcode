@@ -1,65 +1,34 @@
 #define static_cast(t, v) ((t)v)
 
-int get_num_of_bouguests(int *days, int size, int mid, int k)
+int max(int left, int right)
 {
-	int num_of_bouquests = 0;
-	int count = 0;
-
-	for (int i = 0; i < size; i += 1) {
-		int day = days[i];
-		if (day <= mid) {
-			count += 1;
-		} else {
-			count = 0;
-		}
-
-		if (count == k) {
-			num_of_bouquests += 1;
-			count = 0;
-		}
-	}
-
-	return num_of_bouquests;
+	return left > right ? left : right;
 }
 
-int max(int *days, int size)
+int maxSatisfied(int *customers, int customers_size, int *grumpy,
+		 int grumpy_size, int minutes)
 {
-	int m = 0;
-	for (int i = 0; i < size; i += 1) {
-		if (days[i] > m) {
-			m = days[i];
-		}
+	customers_size = grumpy_size;
+
+	int unrealized_customers = 0;
+
+	for (int i = 0; i < minutes; i += 1) {
+		unrealized_customers += customers[i] * grumpy[i];
 	}
 
-	return m;
-}
+	int max_unrealized_customers = unrealized_customers;
+	for (int i = minutes; i < customers_size; i += 1) {
+		unrealized_customers += customers[i] * grumpy[i];
+		unrealized_customers -=
+			customers[i - minutes] * grumpy[i - minutes];
 
-int check(int size, int m, int k)
-{
-	long long lsize = size;
-	long long lm = m;
-	long long lk = k;
-
-	return (lm * lk) > lsize;
-}
-
-int minDays(int *days, int size, int m, int k)
-{
-	if (check(size, m, k)) {
-		return -1;
+		max_unrealized_customers =
+			max(max_unrealized_customers, unrealized_customers);
 	}
 
-	int start = 0;
-	int end = max(days, size);
-	int result = -1;
-	while (start <= end) {
-		int mid = (start + end) / 2;
-		if (get_num_of_bouguests(days, size, mid, k) >= m) {
-			result = mid;
-			end = mid - 1;
-		} else {
-			start = mid + 1;
-		}
+	int result = max_unrealized_customers;
+	for (int i = 0; i < customers_size; i += 1) {
+		result += customers[i] * (1 - grumpy[i]);
 	}
 
 	return result;
