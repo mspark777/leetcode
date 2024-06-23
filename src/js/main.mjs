@@ -5,30 +5,40 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} difficulty
- * @param {number[]} profit
- * @param {number[]} worker
+ * @param {number[]} nums
+ * @param {number} limit
  * @return {number}
  */
-function maxProfitAssignment(difficulty, profit, worker) {
-  const jobProfile = difficulty
-    .map((d, i) => [d, profit[i]])
-    .sort((a, b) => {
-      const [ad, ap] = a;
-      const [bd, bp] = b;
-      return ap !== bp ? ad - bd : ap - bp;
-    });
-  worker.sort((a, b) => a - b);
-
+function longestSubarray(nums, limit) {
+  const maxDeque = [];
+  const minDeque = [];
+  let left = 0;
   let result = 0;
-  let maxProfit = 0;
-  let index = 0;
-  for (const ability of worker) {
-    while (index < difficulty.length && ability >= jobProfile[index][0]) {
-      maxProfit = Math.max(maxProfit, jobProfile[index][1]);
-      index += 1;
+
+  for (const [right, rnum] of nums.entries()) {
+    while (maxDeque.length > 0 && maxDeque.at(-1) < rnum) {
+      maxDeque.pop();
     }
-    result += maxProfit;
+    maxDeque.push(rnum);
+
+    while (minDeque.length > 0 && minDeque.at(-1) > rnum) {
+      minDeque.pop();
+    }
+    minDeque.push(rnum);
+
+    while (maxDeque[0] - minDeque[0] > limit) {
+      const lnum = nums[left];
+      if (maxDeque[0] === lnum) {
+        maxDeque.shift();
+      }
+
+      if (minDeque[0] === lnum) {
+        minDeque.shift();
+      }
+      left += 1;
+    }
+
+    result = Math.max(result, right - left + 1);
   }
 
   return result;
@@ -36,20 +46,13 @@ function maxProfitAssignment(difficulty, profit, worker) {
 
 function main() {
   const inputs = [
-    [
-      [2, 4, 6, 8, 10],
-      [10, 20, 30, 40, 50],
-      [4, 5, 6, 7],
-    ],
-    [
-      [85, 47, 57],
-      [24, 66, 99],
-      [40, 25, 25],
-    ],
+    [[8, 2, 4, 7], 4],
+    [[10, 1, 2, 4, 7, 2], 5],
+    [[4, 2, 2, 2, 4, 4, 2, 2], 0],
   ];
 
-  for (const [difficulty, profit, worker] of inputs) {
-    const result = maxProfitAssignment(difficulty, profit, worker);
+  for (const [nums, limit] of inputs) {
+    const result = longestSubarray(nums, limit);
     console.log(result);
   }
 }
