@@ -1,25 +1,38 @@
-#define static_cast(t, v) ((t)v)
+#include <stdio.h>
+#include "./main.h"
 
-int minKBitFlips(int *nums, int nums_size, int k)
+struct TreeNode *get_successor(struct TreeNode *node)
 {
-	int current_flips = 0;
-	int result = 0;
+	struct TreeNode *successor = node->right;
+	while (successor->left != NULL && successor->left != node) {
+		successor = successor->left;
+	}
+	return successor;
+}
 
-	for (int i = 0; i < nums_size; i += 1) {
-		if ((i >= k) && (nums[i - k] == 2)) {
-			current_flips -= 1;
+struct TreeNode *bstToGst(struct TreeNode *root)
+{
+	int sum = 0;
+	struct TreeNode *node = root;
+
+	while (node != NULL) {
+		if (node->right == NULL) {
+			sum += node->val;
+			node->val = sum;
+			node = node->left;
+			continue;
 		}
 
-		if ((current_flips & 1) == nums[i]) {
-			if ((i + k) > nums_size) {
-				return -1;
-			}
-
-			nums[i] = 2;
-			current_flips += 1;
-			result += 1;
+		struct TreeNode *successor = get_successor(node);
+		if (successor->left == NULL) {
+			successor->left = node;
+			node = node->right;
+		} else {
+			successor->left = NULL;
+			sum += node->val;
+			node->val = sum;
+			node = node->left;
 		}
 	}
-
-	return result;
+	return root;
 }

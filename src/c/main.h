@@ -18,4 +18,6 @@ struct TreeNode {
 	struct TreeNode *right;
 };
 
+#define static_cast(t, v) ((t)v)
+
 #endif
