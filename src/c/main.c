@@ -1,38 +1,64 @@
+#include <math.h>
 #include <stdio.h>
 #include "./main.h"
 
-struct TreeNode *get_successor(struct TreeNode *node)
+void rotate_right(struct TreeNode *parent, struct TreeNode *node)
 {
-	struct TreeNode *successor = node->right;
-	while (successor->left != NULL && successor->left != node) {
-		successor = successor->left;
-	}
-	return successor;
+	struct TreeNode *temp = node->left;
+	node->left = temp->right;
+	temp->right = node;
+	parent->right = temp;
 }
 
-struct TreeNode *bstToGst(struct TreeNode *root)
+void rotate_left(struct TreeNode *parent, struct TreeNode *node)
 {
-	int sum = 0;
-	struct TreeNode *node = root;
+	struct TreeNode *temp = node->right;
+	node->right = temp->left;
+	temp->left = node;
+	parent->right = temp;
+}
 
-	while (node != NULL) {
-		if (node->right == NULL) {
-			sum += node->val;
-			node->val = sum;
-			node = node->left;
-			continue;
-		}
+void rotate(struct TreeNode *node, int count)
+{
+	struct TreeNode *current = node;
+	for (int i = 0; i < count; i += 1) {
+		struct TreeNode *temp = current->right;
+		rotate_left(current, temp);
+		current = current->right;
+	}
+}
 
-		struct TreeNode *successor = get_successor(node);
-		if (successor->left == NULL) {
-			successor->left = node;
-			node = node->right;
+struct TreeNode *balanceBST(struct TreeNode *root)
+{
+	if (root == NULL) {
+		return root;
+	}
+
+	struct TreeNode dummy = { 0, NULL, NULL };
+	dummy.right = root;
+
+	struct TreeNode *current = &dummy;
+	while (current->right != NULL) {
+		if (current->right->left) {
+			rotate_right(current, current->right);
 		} else {
-			successor->left = NULL;
-			sum += node->val;
-			node->val = sum;
-			node = node->left;
+			current = current->right;
 		}
 	}
-	return root;
+
+	int node_count = 0;
+	current = dummy.right;
+	while (current != NULL) {
+		node_count += 1;
+		current = current->right;
+	}
+
+	int depth = ((int)(pow(2.0, floor(log2(node_count + 1))))) - 1;
+	rotate(&dummy, node_count - depth);
+	while (depth > 1) {
+		depth /= 2;
+		rotate(&dummy, depth);
+	}
+
+	return dummy.right;
 }
