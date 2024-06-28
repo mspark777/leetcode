@@ -5,61 +5,46 @@ import (
 	"sort"
 )
 
-func canPlaceBalls(x int, position []int, m int) bool {
-	prevBallPos := position[0]
-	ballsPlaced := 1
+func maximumImportance(n int, roads [][]int) int64 {
+	degree := make([]int64, n)
 
-	for i := range position {
-		currPos := position[i]
-		if currPos-prevBallPos >= x {
-			ballsPlaced += 1
-			prevBallPos = currPos
-		}
-
-		if ballsPlaced == m {
-			return true
-		}
+	for _, edge := range roads {
+		degree[edge[0]] += 1
+		degree[edge[1]] += 1
 	}
 
-	return false
-}
+	sort.Slice(degree, func(i, j int) bool {
+		return degree[i] < degree[j]
+	})
 
-func maxDistance(position []int, m int) int {
-	answer := 0
-	n := len(position)
+	value := int64(1)
+	result := int64(0)
 
-	sort.Ints(position)
-	low := 1
-	high := int(float64(position[n-1])/(float64(m)-1.0)) + 1
-	for low <= high {
-		mid := (low + high) / 2
-		if canPlaceBalls(mid, position, m) {
-			answer = mid
-			low = mid + 1
-		} else {
-			high = mid - 1
-		}
+	for _, d := range degree {
+		result += value * d
+		value += 1
 	}
-	return answer
+
+	return result
 }
 
 type input struct {
-	position []int
-	m        int
+	roads [][]int
+	n     int
 }
 
 func main() {
 	inputs := []input{
 		{
-			[]int{1, 2, 3, 4, 7}, 3,
+			[][]int{{0, 1}, {1, 2}, {2, 3}, {0, 2}, {1, 3}, {2, 4}}, 5,
 		},
 		{
-			[]int{5, 4, 3, 2, 1, 1000000000}, 2,
+			[][]int{{0, 3}, {2, 4}, {1, 3}}, 5,
 		},
 	}
 
 	for _, input := range inputs {
-		result := maxDistance(input.position, input.m)
+		result := maximumImportance(input.n, input.roads)
 		fmt.Println(result)
 	}
 }
