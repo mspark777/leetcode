@@ -19,5 +19,6 @@ struct TreeNode {
 };
 
 #define static_cast(t, v) ((t)v)
+#define bool int
 
 #endif
