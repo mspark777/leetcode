@@ -1,19 +1,28 @@
 #include "./main.h"
 
-bool threeConsecutiveOdds(int *arr, int arr_size)
+int *intersect(int *nums1, int nums1_size, int *nums2, int nums2_size,
+	       int *return_size)
 {
-	int count = 0;
-	for (int i = 0; i < arr_size; i += 1) {
-		if (arr[i] & 1) {
-			count += 1;
-		} else {
-			count = 0;
-		}
+	int *counts = calloc(1001, sizeof(int));
+	for (int i = 0; i < nums1_size; i += 1) {
+		const int num = nums1[i];
+		counts[num] += 1;
+	}
 
-		if (count == 3) {
-			break;
+	int j = 0;
+	int *result = calloc(nums1_size < nums2_size ? nums1_size : nums2_size,
+			     sizeof(int));
+
+	for (int i = 0; i < nums2_size; i += 1) {
+		const int num = nums2[i];
+		const int count = counts[num];
+		if (count > 0) {
+			counts[num] -= 1;
+			result[j] = num;
+			j += 1;
 		}
 	}
 
-	return count == 3;
+	*return_size = j;
+	return result;
 }

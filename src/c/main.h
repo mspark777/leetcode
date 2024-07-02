@@ -1,6 +1,8 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#include <stdlib.h>
+
 struct ListNode {
 	int val;
 	struct ListNode *next;
