@@ -1,28 +1,22 @@
 #include "./main.h"
 
-int *intersect(int *nums1, int nums1_size, int *nums2, int nums2_size,
-	       int *return_size)
+struct ListNode *mergeNodes(struct ListNode *head)
 {
-	int *counts = calloc(1001, sizeof(int));
-	for (int i = 0; i < nums1_size; i += 1) {
-		const int num = nums1[i];
-		counts[num] += 1;
-	}
+	struct ListNode *modify = head->next;
+	struct ListNode *next_sum = modify;
 
-	int j = 0;
-	int *result = calloc(nums1_size < nums2_size ? nums1_size : nums2_size,
-			     sizeof(int));
-
-	for (int i = 0; i < nums2_size; i += 1) {
-		const int num = nums2[i];
-		const int count = counts[num];
-		if (count > 0) {
-			counts[num] -= 1;
-			result[j] = num;
-			j += 1;
+	while (next_sum != NULL) {
+		int sum = 0;
+		while (next_sum->val != 0) {
+			sum += next_sum->val;
+			next_sum = next_sum->next;
 		}
+
+		modify->val = sum;
+		next_sum = next_sum->next;
+		modify->next = next_sum;
+		modify = modify->next;
 	}
 
-	*return_size = j;
-	return result;
+	return head->next;
 }
