@@ -1,10 +1,1 @@
-SELECT
-  customer_number
-FROM
-    Orders
-GROUP BY
-    customer_number
-ORDER BY
-    COUNT(order_number) DESC
-LIMIT
-    1;
+ SELECT "class" FROM Courses GROUP BY "class" HAVING COUNT("class") >= 5;
