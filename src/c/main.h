@@ -2,6 +2,7 @@
 #define __MAIN_H__
 
 #include <stdlib.h>
+#include <string.h>
 
 struct ListNode {
 	int val;
