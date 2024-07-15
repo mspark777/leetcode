@@ -1,65 +1,48 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Optional
+from tree_node import TreeNode
 
 
 class Solution:
-    def survivedRobotsHealths(
-        self, positions: List[int], healths: List[int], directions: str
-    ) -> List[int]:
-        n = len(positions)
-        indices = list(range(n))
-        stack: list[int] = []
+    def createBinaryTree(self, descriptions: List[List[int]]) -> Optional[TreeNode]:
+        node_map = dict[int, TreeNode]()
+        children = set[int]()
 
-        indices.sort(key=lambda x: positions[x])
+        for description in descriptions:
+            parent_value = description[0]
+            child_value = description[1]
+            children.add(child_value)
 
-        for curr in indices:
-            if directions[curr] == "R":
-                stack.append(curr)
+            parent = node_map.get(parent_value)
+            if parent is None:
+                parent = TreeNode(parent_value)
+                node_map[parent_value] = parent
+
+            if child_value not in node_map:
+                node_map[child_value] = TreeNode(child_value)
+
+            is_left = description[2] == 1
+
+            if is_left:
+                parent.left = node_map[child_value]
             else:
-                while stack and healths[curr] > 0:
-                    top = stack.pop()
+                parent.right = node_map[child_value]
 
-                    if healths[top] > healths[curr]:
-                        healths[top] -= 1
-                        healths[curr] = 0
-                        stack.append(top)
-                    elif healths[top] < healths[curr]:
-                        healths[curr] -= 1
-                        healths[top] = 0
-                    else:
-                        healths[curr] = 0
-                        healths[top] = 0
+        for node in node_map.values():
+            if node.val not in children:
+                return node
 
-        result: list[int] = []
-        for health in healths:
-            if health > 0:
-                result.append(health)
-
-        return result
-
-
-class Input:
-    positions: list[int]
-    healths: list[int]
-    directions: str
-
-    def __init__(self, positions: list[int], healths: list[int], directions: str):
-        self.positions = positions
-        self.healths = healths
-        self.directions = directions
+        return None
 
 
 def main():
-    inputs: list[Input] = [
-        Input([5, 4, 3, 2, 1], [2, 17, 9, 15, 10], "RRRRR"),
-        Input([3, 5, 2, 6], [10, 10, 15, 12], "RLRL"),
-        Input([1, 2, 5, 6], [10, 10, 11, 11], "RLRL"),
+    inputs: list[list[list[int]]] = [
+        [[20, 15, 1], [20, 17, 0], [50, 20, 1], [50, 80, 0], [80, 19, 1]],
+        [[1, 2, 1], [2, 3, 0], [3, 4, 1]],
     ]
 
     for input in inputs:
-        result = Solution().survivedRobotsHealths(
-            input.positions, input.healths, input.directions
-        )
+        result = Solution().createBinaryTree(input)
         print(result)
 
 
