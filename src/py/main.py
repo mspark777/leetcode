@@ -1,38 +1,54 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import Optional
 from tree_node import TreeNode
 
 
 class Solution:
-    def createBinaryTree(self, descriptions: List[List[int]]) -> Optional[TreeNode]:
-        node_map = dict[int, TreeNode]()
-        children = set[int]()
+    def getDirections(
+        self, root: Optional[TreeNode], start_value: int, dest_value: int
+    ) -> str:
+        start_path: list[str] = []
+        dest_path: list[str] = []
 
-        for description in descriptions:
-            parent_value = description[0]
-            child_value = description[1]
-            children.add(child_value)
+        self.find_path(root, start_value, start_path)
+        self.find_path(root, dest_value, dest_path)
 
-            parent = node_map.get(parent_value)
-            if parent is None:
-                parent = TreeNode(parent_value)
-                node_map[parent_value] = parent
+        common_path_length = 0
 
-            if child_value not in node_map:
-                node_map[child_value] = TreeNode(child_value)
-
-            is_left = description[2] == 1
-
-            if is_left:
-                parent.left = node_map[child_value]
+        while True:
+            if common_path_length >= len(start_path):
+                break
+            elif common_path_length >= len(dest_path):
+                break
+            elif start_path[common_path_length] != dest_path[common_path_length]:
+                break
             else:
-                parent.right = node_map[child_value]
+                common_path_length += 1
 
-        for node in node_map.values():
-            if node.val not in children:
-                return node
+        directions: list[str] = []
+        directions.extend("U" * (len(start_path) - common_path_length))
+        directions.extend(dest_path[common_path_length:])
 
-        return None
+        return "".join(directions)
+
+    def find_path(self, node: Optional[TreeNode], target: int, path: list[str]) -> bool:
+        if node is None:
+            return False
+
+        if node.val == target:
+            return True
+
+        path.append("L")
+        if self.find_path(node.left, target, path):
+            return True
+        path.pop()
+
+        path.append("R")
+        if self.find_path(node.right, target, path):
+            return True
+        path.pop()
+
+        return False
 
 
 def main():
