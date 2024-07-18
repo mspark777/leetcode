@@ -1,49 +1,48 @@
 #include "./main.h"
 
-int maximumGain(char *s, int x, int y)
+int *alloc_list()
 {
-	const int n = strlen(s);
-	if (x < y) {
-		int temp = x;
-		x = y;
-		y = temp;
+	return calloc(12, sizeof(int));
+}
 
-		int left = 0;
-		int right = n - 1;
-		while (left < right) {
-			const char l = s[left];
-			const char r = s[right];
-			s[right] = l;
-			s[left] = r;
-
-			left += 1;
-			right -= 1;
-		}
+int *post_order(struct TreeNode *node, int distance)
+{
+	if (node == NULL) {
+		return alloc_list();
+	} else if (node->left == NULL && node->right == NULL) {
+		int *leaf_node_count_list = alloc_list();
+		leaf_node_count_list[0] = 1;
+		return leaf_node_count_list;
 	}
 
-	int a_count = 0;
-	int b_count = 0;
-	int result = 0;
+	int *left = post_order(node->left, distance);
+	int *right = post_order(node->right, distance);
+	int *current = alloc_list();
 
-	for (int i = 0; i < n; i += 1) {
-		const char ch = s[i];
+	for (int i = 0; i < 10; i += 1) {
+		current[i + 1] = left[i] + right[i];
+	}
 
-		if (ch == 'a') {
-			a_count += 1;
-		} else if (ch == 'b') {
-			if (a_count > 0) {
-				a_count -= 1;
-				result += x;
-			} else {
-				b_count += 1;
+	current[11] += left[11] + right[11];
+	for (int d1 = 0; d1 <= distance; d1++) {
+		for (int d2 = 0; d2 <= distance; d2++) {
+			int d = d1 + d2 + 2;
+			if (d <= distance) {
+				current[11] += left[d1] * right[d2];
 			}
-		} else {
-			result += (a_count < b_count ? a_count : b_count) * y;
-			a_count = 0;
-			b_count = 0;
 		}
 	}
 
-	result += (a_count < b_count ? a_count : b_count) * y;
+	free(left);
+	free(right);
+	return current;
+}
+
+int countPairs(struct TreeNode *root, int distance)
+{
+	int *counts = post_order(root, distance);
+	int result = counts[11];
+	free(counts);
+
 	return result;
 }
