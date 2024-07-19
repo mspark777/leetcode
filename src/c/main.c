@@ -1,48 +1,47 @@
 #include "./main.h"
 
-int *alloc_list()
+int *luckyNumbers(int **matrix, int row_count, int *col_count, int *return_size)
 {
-	return calloc(12, sizeof(int));
-}
+	const int N = row_count;
+	const int M = *col_count;
 
-int *post_order(struct TreeNode *node, int distance)
-{
-	if (node == NULL) {
-		return alloc_list();
-	} else if (node->left == NULL && node->right == NULL) {
-		int *leaf_node_count_list = alloc_list();
-		leaf_node_count_list[0] = 1;
-		return leaf_node_count_list;
-	}
-
-	int *left = post_order(node->left, distance);
-	int *right = post_order(node->right, distance);
-	int *current = alloc_list();
-
-	for (int i = 0; i < 10; i += 1) {
-		current[i + 1] = left[i] + right[i];
-	}
-
-	current[11] += left[11] + right[11];
-	for (int d1 = 0; d1 <= distance; d1++) {
-		for (int d2 = 0; d2 <= distance; d2++) {
-			int d = d1 + d2 + 2;
-			if (d <= distance) {
-				current[11] += left[d1] * right[d2];
+	int row_min_max = -1;
+	for (int i = 0; i < N; i += 1) {
+		int row_min = 1000000;
+		for (int j = 0; j < M; j += 1) {
+			const int cell = matrix[i][j];
+			if (cell < row_min) {
+				row_min = cell;
 			}
+		}
+
+		if (row_min > row_min_max) {
+			row_min_max = row_min;
 		}
 	}
 
-	free(left);
-	free(right);
-	return current;
-}
+	int col_max_min = 1000000;
+	for (int i = 0; i < M; i += 1) {
+		int col_max = -1;
+		for (int j = 0; j < N; j += 1) {
+			const int cell = matrix[j][i];
+			if (cell > col_max) {
+				col_max = cell;
+			}
+		}
 
-int countPairs(struct TreeNode *root, int distance)
-{
-	int *counts = post_order(root, distance);
-	int result = counts[11];
-	free(counts);
+		if (col_max < col_max_min) {
+			col_max_min = col_max;
+		}
+	}
+
+	int *result = malloc(sizeof(int));
+	if (row_min_max == col_max_min) {
+		*result = row_min_max;
+		*return_size = 1;
+	} else {
+		*return_size = 0;
+	}
 
 	return result;
 }
