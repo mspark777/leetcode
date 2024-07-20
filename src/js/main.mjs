@@ -7,44 +7,46 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {string} s
- * @return {string}
+ * @param {number[]} rowSum
+ * @param {number[]} colSum
+ * @return {number[][]}
  */
-function reverseParentheses(s) {
-  const chars = s.split("");
-  const indices = [];
-  const pair = new Array(chars.length).fill(0);
-
-  for (const [i, ch] of chars.entries()) {
-    if (ch === "(") {
-      indices.push(i);
-    } else if (ch === ")") {
-      const j = indices.pop();
-      pair[i] = j;
-      pair[j] = i;
-    }
-  }
+function restoreMatrix(rowSum, colSum) {
+  const N = rowSum.length;
+  const M = colSum.length;
 
   const result = [];
-  let direction = 1;
-  for (let curr = 0; curr < s.length; curr += direction) {
-    const ch = chars[curr];
-    if (["(", ")"].includes(ch)) {
-      curr = pair[curr];
-      direction = -direction;
-    } else {
-      result.push(ch);
+  for (let i = 0; i < N; i += 1) {
+    const row = [];
+    for (let j = 0; j < M; j += 1) {
+      const rsum = rowSum[i];
+      const csum = colSum[j];
+
+      const cell = Math.min(rsum, csum);
+      row.push(cell);
+      rowSum[i] -= cell;
+      colSum[j] -= cell;
     }
+    result.push(row);
   }
 
-  return result.join("");
+  return result;
 }
 
 function main() {
-  const inputs = ["(abcd)", "(u(love)i)", "(ed(et(oc))el)"];
+  const inputs = [
+    [
+      [3, 8],
+      [4, 7],
+    ],
+    [
+      [5, 7, 10],
+      [8, 6, 8],
+    ],
+  ];
 
-  for (const s of inputs) {
-    const result = reverseParentheses(s);
+  for (const [rowSum, colSum] of inputs) {
+    const result = restoreMatrix(rowSum, colSum);
     console.log(result);
   }
 }
