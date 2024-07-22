@@ -5,50 +5,52 @@ import (
 	"sort"
 )
 
-func minDifference(nums []int) int {
-	n := len(nums)
-	if n <= 4 {
-		return 0
+type data struct {
+	name   string
+	height int
+}
+
+func sortPeople(names []string, heights []int) []string {
+	dataList := make([]data, 0, len(names))
+	for i, name := range names {
+		dataList = append(dataList, data{name, heights[i]})
 	}
 
-	sort.Ints(nums)
+	sort.Slice(dataList, func(l, r int) bool {
+		return dataList[r].height < dataList[l].height
+	})
 
-	result := 0x7FFFFFFFFFFFFFFF
-
-	left := 0
-	right := n - 4
-	for left < 4 {
-		diff := nums[right] - nums[left]
-		if diff < result {
-			result = diff
-		}
-
-		left += 1
-		right += 1
+	result := make([]string, 0, len(names))
+	for _, data := range dataList {
+		result = append(result, data.name)
 	}
 
 	return result
 }
 
 type input struct {
-	nums []int
+	names   []string
+	heights []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			[]int{5, 3, 2, 4},
+			[]string{"Mary", "John", "Emma"},
+			[]int{180, 165, 170},
 		},
 		{
-			[]int{1, 5, 0, 10, 14},
+			[]string{"Alice", "Bob", "Bob"},
+			[]int{155, 185, 150},
 		},
 		{
-			[]int{3, 100, 20},
+			[]string{"IEO", "Sgizfdfrims", "QTASHKQ", "Vk", "RPJOFYZUBFSIYp", "EPCFFt", "VOYGWWNCf", "WSpmqvb"},
+			[]int{17233, 32521, 14087, 42738, 46669, 65662, 43204, 8224},
 		},
 	}
 
 	for _, input := range inputs {
-		result := minDifference(input.nums)
+		result := sortPeople(input.names, input.heights)
 		fmt.Println(result)
 	}
 }
