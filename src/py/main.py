@@ -3,27 +3,51 @@ from typing import List
 
 
 class Solution:
-    def sortJumbled(self, mapping: List[int], nums: List[int]) -> List[int]:
-        store_pairs: list[tuple[int, int]] = []
+    def findTheCity(
+        self, n: int, edges: List[List[int]], distance_threshold: int
+    ) -> int:
+        INF = int(1e9 + 7)
+        distance_matrix = [[INF] * n for _ in range(n)]
 
-        for i, num in enumerate(nums):
-            if num == 0:
-                store_pairs.append((mapping[0], i))
-                continue
+        for i in range(n):
+            distance_matrix[i][i] = 0
 
-            mapped_value = 0
-            place = 1
+        for start, end, weight in edges:
+            distance_matrix[start][end] = weight
+            distance_matrix[end][start] = weight
 
-            while num != 0:
-                mapped_value = place * mapping[num % 10] + mapped_value
-                place *= 10
-                num //= 10
+        self.floyd(n, distance_matrix)
 
-            store_pairs.append((mapped_value, i))
+        return self.get_city_with_fewest_reachable(
+            n, distance_matrix, distance_threshold
+        )
 
-        store_pairs.sort()
+    def floyd(self, n: int, distance_matrix: List[List[int]]):
+        for k in range(n):
+            for i in range(n):
+                for j in range(n):
+                    distance_matrix[i][j] = min(
+                        distance_matrix[i][j],
+                        distance_matrix[i][k] + distance_matrix[k][j],
+                    )
 
-        return [nums[pair[1]] for pair in store_pairs]
+    def get_city_with_fewest_reachable(
+        self, n: int, distance_matrix: List[List[int]], distance_threshold: int
+    ) -> int:
+        city_with_fewest_reachable = -1
+        fewest_reachable_count = n
+
+        for i in range(n):
+            reachable_count = sum(
+                1
+                for j in range(n)
+                if i != j and distance_matrix[i][j] <= distance_threshold
+            )
+
+            if reachable_count <= fewest_reachable_count:
+                fewest_reachable_count = reachable_count
+                city_with_fewest_reachable = i
+        return city_with_fewest_reachable
 
 
 def main():
