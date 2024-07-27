@@ -3,51 +3,40 @@ from typing import List
 
 
 class Solution:
-    def findTheCity(
-        self, n: int, edges: List[List[int]], distance_threshold: int
+    def minimumCost(
+        self,
+        source: str,
+        target: str,
+        original: List[str],
+        changed: List[str],
+        cost: List[int],
     ) -> int:
-        INF = int(1e9 + 7)
-        distance_matrix = [[INF] * n for _ in range(n)]
+        result = 0
+        min_cost = [[float("inf")] * 26 for _ in range(26)]
 
-        for i in range(n):
-            distance_matrix[i][i] = 0
+        for orig, chg, cst in zip(original, changed, cost):
+            start_char = ord(orig) - ord("a")
+            end_char = ord(chg) - ord("a")
+            min_cost[start_char][end_char] = min(min_cost[start_char][end_char], cst)
 
-        for start, end, weight in edges:
-            distance_matrix[start][end] = weight
-            distance_matrix[end][start] = weight
-
-        self.floyd(n, distance_matrix)
-
-        return self.get_city_with_fewest_reachable(
-            n, distance_matrix, distance_threshold
-        )
-
-    def floyd(self, n: int, distance_matrix: List[List[int]]):
-        for k in range(n):
-            for i in range(n):
-                for j in range(n):
-                    distance_matrix[i][j] = min(
-                        distance_matrix[i][j],
-                        distance_matrix[i][k] + distance_matrix[k][j],
+        for k in range(26):
+            for i in range(26):
+                for j in range(26):
+                    min_cost[i][j] = min(
+                        min_cost[i][j], min_cost[i][k] + min_cost[k][j]
                     )
 
-    def get_city_with_fewest_reachable(
-        self, n: int, distance_matrix: List[List[int]], distance_threshold: int
-    ) -> int:
-        city_with_fewest_reachable = -1
-        fewest_reachable_count = n
+        for src, tgt in zip(source, target):
+            if src == tgt:
+                continue
+            source_char = ord(src) - ord("a")
+            target_char = ord(tgt) - ord("a")
 
-        for i in range(n):
-            reachable_count = sum(
-                1
-                for j in range(n)
-                if i != j and distance_matrix[i][j] <= distance_threshold
-            )
+            if min_cost[source_char][target_char] == float("inf"):
+                return -1
+            result += int(min_cost[source_char][target_char])
 
-            if reachable_count <= fewest_reachable_count:
-                fewest_reachable_count = reachable_count
-                city_with_fewest_reachable = i
-        return city_with_fewest_reachable
+        return result
 
 
 def main():
