@@ -7,30 +7,61 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} rowSum
- * @param {number[]} colSum
- * @return {number[][]}
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {number} time
+ * @param {number} change
+ * @return {number}
  */
-function restoreMatrix(rowSum, colSum) {
-  const N = rowSum.length;
-  const M = colSum.length;
+function secondMinimum(n, edges, time, change) {
+  const adjacencyMap = new Map();
+  for (const [a, b] of edges) {
+    const aList = adjacencyMap.get(a) ?? [];
+    const bList = adjacencyMap.get(b) ?? [];
 
-  const result = [];
-  for (let i = 0; i < N; i += 1) {
-    const row = [];
-    for (let j = 0; j < M; j += 1) {
-      const rsum = rowSum[i];
-      const csum = colSum[j];
+    aList.push(b);
+    bList.push(a);
 
-      const cell = Math.min(rsum, csum);
-      row.push(cell);
-      rowSum[i] -= cell;
-      colSum[j] -= cell;
-    }
-    result.push(row);
+    adjacencyMap.set(a, aList);
+    adjacencyMap.set(b, bList);
   }
 
-  return result;
+  const dist1 = [-1];
+  const dist2 = [-1];
+  for (let i = 0; i < n; i += 1) {
+    dist1.push(-1);
+    dist2.push(-1);
+  }
+
+  const queue = [[1, 1]];
+  dist1[1] = 0;
+
+  while (queue.length > 0) {
+    const [node, freq] = queue.shift();
+    let timeTaken = freq === 1 ? dist1[node] : dist2[node];
+    if ((BigInt(timeTaken) / BigInt(change)) % 2n === 1n) {
+      timeTaken =
+        change * Number(BigInt(timeTaken) / BigInt(change) + 1n) + time;
+    } else {
+      timeTaken = timeTaken + time;
+    }
+
+    for (const neighbor of adjacencyMap.get(node) ?? []) {
+      if (dist1[neighbor] === -1) {
+        dist1[neighbor] = timeTaken;
+        queue.push([neighbor, 1]);
+      } else if (dist2[neighbor] === -1 && dist1[neighbor] !== timeTaken) {
+        if (neighbor === n) {
+          return timeTaken;
+        }
+
+        dist2[neighbor] = timeTaken;
+        queue.push([neighbor, 2]);
+      }
+    }
+  }
+
+  return 0;
 }
 
 function main() {
