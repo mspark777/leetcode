@@ -7,63 +7,35 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} bits
- * @param {number} i
- * @param {number} value
- * @returns {undefined}
+ * @param {string[]} list1
+ * @param {string[]} list2
+ * @return {string[]}
  */
-function updateBits(bits, i, value) {
-  while (i < bits.length) {
-    bits[i] += value;
-    i += i & -i;
-  }
-}
-
-/**
- * @param {number[]} bits
- * @param {number} i
- * @returns {number}
- */
-function getPrefixSum(bits, i) {
-  let sum = 0;
-  while (i > 0) {
-    sum += bits[i];
-    i -= i & -i;
-  }
-  return sum;
-}
-
-/**
- * @param {number[]} rating
- * @return {number}
- */
-function numTeams(rating) {
-  const maxRating = Math.max(...rating);
-  const leftBits = [];
-  const rightBits = [];
-  for (let i = 0; i <= maxRating; i += 1) {
-    leftBits.push(0);
-    rightBits.push(0);
+function findRestaurant(list1, list2) {
+  const map1 = new Map();
+  for (const [i, name] of list1.entries()) {
+    map1.set(name, i);
   }
 
-  for (const r of rating) {
-    updateBits(rightBits, r, 1);
-  }
+  let result = [];
+  let min_sum = Number.MAX_SAFE_INTEGER;
+  for (const [i, name2] of list2.entries()) {
+    if (i > min_sum) {
+      break;
+    }
 
-  let result = 0;
-  for (const r of rating) {
-    updateBits(rightBits, r, -1);
+    const at1 = map1.get(name2);
+    if (at1 == null) {
+      continue;
+    }
 
-    const smallerRatingLeft = getPrefixSum(leftBits, r - 1);
-    const smallerRatingRight = getPrefixSum(rightBits, r - 1);
-    const largerRatingLeft =
-      getPrefixSum(leftBits, maxRating) - getPrefixSum(leftBits, r);
-    const largerRatingRight =
-      getPrefixSum(rightBits, maxRating) - getPrefixSum(rightBits, r);
-
-    result += smallerRatingLeft * largerRatingRight;
-    result += largerRatingLeft * smallerRatingRight;
-    updateBits(leftBits, r, 1);
+    const sum = i + at1;
+    if (sum < min_sum) {
+      result = [name2];
+      min_sum = sum;
+    } else if (sum == min_sum) {
+      result.push(name2);
+    }
   }
 
   return result;
@@ -71,13 +43,27 @@ function numTeams(rating) {
 
 function main() {
   const inputs = [
-    [2, 5, 3, 4, 1],
-    [2, 1, 3],
-    [1, 2, 3, 4],
+    [
+      ["Shogun", "Tapioca Express", "Burger King", "KFC"],
+      [
+        "Piatti",
+        "The Grill at Torrey Pines",
+        "Hungry Hunter Steakhouse",
+        "Shogun",
+      ],
+    ],
+    [
+      ["Shogun", "Tapioca Express", "Burger King", "KFC"],
+      ["KFC", "Shogun", "Burger King"],
+    ],
+    [
+      ["happy", "sad", "good"],
+      ["sad", "happy", "good"],
+    ],
   ];
 
-  for (const rating of inputs) {
-    const result = numTeams(rating);
+  for (const [list1, list2] of inputs) {
+    const result = findRestaurant(list1, list2);
     console.log(result);
   }
 }
