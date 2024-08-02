@@ -1,14 +1,30 @@
 #include "./main.h"
 
-int countSeniors(char **details, int details_size)
+int minSwaps(int *nums, int nums_size)
 {
-	int result = 0;
-	for (int i = 0; i < details_size; i += 1) {
-		const char *d = details[i];
-		const int left = (int)(d[11] - '0');
-		const int right = (int)(d[12] - '0');
-		const int age = left * 10 + right;
-		result += age > 60;
+	int result = INT_MAX;
+	int total_ones = 0;
+	for (int i = 0; i < nums_size; i += 1) {
+		total_ones += nums[i];
+	}
+
+	int ones_count = nums[0];
+	int end = 0;
+
+	for (int i = 0; i < nums_size; i += 1) {
+		if (i > 0) {
+			ones_count -= nums[i - 1];
+		}
+
+		while ((end - i + 1) < total_ones) {
+			end += 1;
+			ones_count += nums[end % nums_size];
+		}
+
+		const int ones = total_ones - ones_count;
+		if (ones < result) {
+			result = ones;
+		}
 	}
 
 	return result;
