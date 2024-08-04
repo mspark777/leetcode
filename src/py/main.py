@@ -3,46 +3,68 @@ from typing import List
 
 
 class Solution:
-    def minHeightShelves(self, books: List[List[int]], shelf_width: int) -> int:
-        n = len(books)
-        dp = [0] * (n + 1)
+    def rangeSum(self, nums: List[int], n: int, left: int, right: int) -> int:
+        mod = 10**9 + 7
+        sum_left = self.sum_of_first_k(nums, n, left - 1)
+        sum_right = self.sum_of_first_k(nums, n, right)
+        result = (sum_right - sum_left) % mod
+        return (result + mod) % mod
 
-        dp[0] = 0
-        dp[1] = books[0][1]
+    def count_and_sum(self, nums: list[int], n: int, target: int):
+        count = 0
+        current_sum = 0
+        total_sum = 0
+        window_sum = 0
+        i = 0
+        for j in range(n):
+            current_sum += nums[j]
+            window_sum += nums[j] * (j - i + 1)
+            while current_sum > target:
+                window_sum -= current_sum
+                current_sum -= nums[i]
+                i += 1
+            count += j - i + 1
+            total_sum += window_sum
+        return count, total_sum
 
-        for i in range(2, n + 1):
-            remaning_shelf_width = shelf_width - books[i - 1][0]
-            max_height = books[i - 1][1]
-            dp[i] = books[i - 1][1] + dp[i - 1]
+    def sum_of_first_k(self, nums: list[int], n: int, k: int):
+        min_sum = min(nums)
+        max_sum = sum(nums)
+        left = min_sum
+        right = max_sum
 
-            j = i - 1
-
-            while j > 0 and remaning_shelf_width - books[j - 1][0] >= 0:
-                max_height = max(max_height, books[j - 1][1])
-                remaning_shelf_width -= books[j - 1][0]
-                dp[i] = min(dp[i], max_height + dp[j - 1])
-                j -= 1
-
-        return dp[n]
+        while left <= right:
+            mid = left + (right - left) // 2
+            if self.count_and_sum(nums, n, mid)[0] >= k:
+                right = mid - 1
+            else:
+                left = mid + 1
+        count, total_sum = self.count_and_sum(nums, n, left)
+        return total_sum - left * (count - k)
 
 
 class Input:
-    books: list[list[int]]
-    shelf_width: int
+    nums: list[int]
+    n: int
+    left: int
+    right: int
 
-    def __init__(self, books: list[list[int]], shelf_width: int):
-        self.books = books
-        self.shelf_width = shelf_width
+    def __init__(self, nums: list[int], n: int, left: int, right: int):
+        self.nums = nums
+        self.n = n
+        self.left = left
+        self.right = right
 
 
 def main():
     inputs: list[Input] = [
-        Input([[1, 1], [2, 3], [2, 3], [1, 1], [1, 1], [1, 1], [1, 2]], 4),
-        Input([[1, 3], [2, 4], [3, 2]], 6),
+        Input([1, 2, 3, 4], 4, 1, 5),
+        Input([1, 2, 3, 4], 4, 3, 4),
+        Input([1, 2, 3, 4], 4, 1, 10),
     ]
 
     for input in inputs:
-        result = Solution().minHeightShelves(input.books, input.shelf_width)
+        result = Solution().rangeSum(input.nums, input.n, input.left, input.right)
         print(result)
 
 
