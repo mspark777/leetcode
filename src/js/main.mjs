@@ -7,40 +7,39 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} target
- * @param {number[]} arr
- * @return {boolean}
+ * @param {string[]} arr
+ * @param {number} k
+ * @return {string}
  */
-function canBeEqual(target, arr) {
-  const frequencies = new Map();
-  for (const n of target) {
-    const frequency = frequencies.get(n) ?? 0;
-    frequencies.set(n, frequency + 1);
+function kthDistinct(arr, k) {
+  const frequency_map = new Map();
+  for (const s of arr) {
+    const count = frequency_map.get(s) ?? 0;
+    frequency_map.set(s, count + 1);
   }
 
-  for (const n of arr) {
-    const frequency = frequencies.get(n) ?? 0;
-    frequencies.set(n, frequency - 1);
+  for (const s of arr) {
+    if (frequency_map.get(s) === 1) {
+      k -= 1;
+    }
+
+    if (k === 0) {
+      return s;
+    }
   }
 
-  return [...frequencies.values()].every((f) => f === 0);
+  return "";
 }
 
 function main() {
   const inputs = [
-    [
-      [1, 2, 3, 4],
-      [2, 4, 1, 3],
-    ],
-    [[7], [7]],
-    [
-      [3, 7, 9],
-      [3, 7, 11],
-    ],
+    [["d", "b", "c", "b", "c", "a"], 2],
+    [["aaa", "aa", "a"], 1],
+    [["a", "b", "a"], 3],
   ];
 
-  for (const [target, arr] of inputs) {
-    const result = canBeEqual(target, arr);
+  for (const [arr, k] of inputs) {
+    const result = kthDistinct(arr, k);
     console.log(result);
   }
 }
