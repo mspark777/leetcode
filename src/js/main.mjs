@@ -7,39 +7,36 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {string[]} arr
- * @param {number} k
- * @return {string}
+ * @param {string} word
+ * @return {number}
  */
-function kthDistinct(arr, k) {
-  const frequency_map = new Map();
-  for (const s of arr) {
-    const count = frequency_map.get(s) ?? 0;
-    frequency_map.set(s, count + 1);
+function minimumPushes(word) {
+  const frequencyMap = new Map();
+
+  for (const ch of word) {
+    const count = frequencyMap.get(ch) ?? 0;
+    frequencyMap.set(ch, count + 1);
   }
 
-  for (const s of arr) {
-    if (frequency_map.get(s) === 1) {
-      k -= 1;
-    }
+  const frequencies = [...frequencyMap.values()];
+  frequencies.sort((a, b) => b - a);
 
-    if (k === 0) {
-      return s;
-    }
+  let result = 0;
+
+  for (const [i, frequency] of frequencies.entries()) {
+    const idx = BigInt(i);
+    const count = (idx / 8n + 1n) * BigInt(frequency);
+    result += Number(count);
   }
 
-  return "";
+  return result;
 }
 
 function main() {
-  const inputs = [
-    [["d", "b", "c", "b", "c", "a"], 2],
-    [["aaa", "aa", "a"], 1],
-    [["a", "b", "a"], 3],
-  ];
+  const inputs = ["abcde", "xyzxyzxyzxyz", "aabbccddeeffgghhiiiiii"];
 
-  for (const [arr, k] of inputs) {
-    const result = kthDistinct(arr, k);
+  for (const word of inputs) {
+    const result = minimumPushes(word);
     console.log(result);
   }
 }
