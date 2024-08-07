@@ -1,70 +1,61 @@
 from __future__ import annotations
-from typing import List
+
+number_to_words_map = {
+    1000000000: "Billion",
+    1000000: "Million",
+    1000: "Thousand",
+    100: "Hundred",
+    90: "Ninety",
+    80: "Eighty",
+    70: "Seventy",
+    60: "Sixty",
+    50: "Fifty",
+    40: "Forty",
+    30: "Thirty",
+    20: "Twenty",
+    19: "Nineteen",
+    18: "Eighteen",
+    17: "Seventeen",
+    16: "Sixteen",
+    15: "Fifteen",
+    14: "Fourteen",
+    13: "Thirteen",
+    12: "Twelve",
+    11: "Eleven",
+    10: "Ten",
+    9: "Nine",
+    8: "Eight",
+    7: "Seven",
+    6: "Six",
+    5: "Five",
+    4: "Four",
+    3: "Three",
+    2: "Two",
+    1: "One",
+}
 
 
 class Solution:
-    def rangeSum(self, nums: List[int], n: int, left: int, right: int) -> int:
-        mod = 10**9 + 7
-        sum_left = self.sum_of_first_k(nums, n, left - 1)
-        sum_right = self.sum_of_first_k(nums, n, right)
-        result = (sum_right - sum_left) % mod
-        return (result + mod) % mod
+    def numberToWords(self, num: int) -> str:
+        if num == 0:
+            return "Zero"
 
-    def count_and_sum(self, nums: list[int], n: int, target: int):
-        count = 0
-        current_sum = 0
-        total_sum = 0
-        window_sum = 0
-        i = 0
-        for j in range(n):
-            current_sum += nums[j]
-            window_sum += nums[j] * (j - i + 1)
-            while current_sum > target:
-                window_sum -= current_sum
-                current_sum -= nums[i]
-                i += 1
-            count += j - i + 1
-            total_sum += window_sum
-        return count, total_sum
-
-    def sum_of_first_k(self, nums: list[int], n: int, k: int):
-        min_sum = min(nums)
-        max_sum = sum(nums)
-        left = min_sum
-        right = max_sum
-
-        while left <= right:
-            mid = left + (right - left) // 2
-            if self.count_and_sum(nums, n, mid)[0] >= k:
-                right = mid - 1
-            else:
-                left = mid + 1
-        count, total_sum = self.count_and_sum(nums, n, left)
-        return total_sum - left * (count - k)
-
-
-class Input:
-    nums: list[int]
-    n: int
-    left: int
-    right: int
-
-    def __init__(self, nums: list[int], n: int, left: int, right: int):
-        self.nums = nums
-        self.n = n
-        self.left = left
-        self.right = right
+        for value, word in number_to_words_map.items():
+            if num >= value:
+                prefix = (self.numberToWords(num // value) + " ") if num >= 100 else ""
+                unit = word
+                suffix = (
+                    "" if num % value == 0 else " " + self.numberToWords(num % value)
+                )
+                return prefix + unit + suffix
+        return ""
 
 
 def main():
-    inputs: list[Input] = [
-        Input([1, 2, 3, 4], 4, 1, 5),
-        Input([1, 2, 3, 4], 4, 3, 4),
-        Input([1, 2, 3, 4], 4, 1, 10),
-    ]
+    inputs: list[int] = [123, 12345, 1234567]
 
     for input in inputs:
-        result = Solution().rangeSum(input.nums, input.n, input.left, input.right)
+        result = Solution().numberToWords(input)
         print(result)
 
 
