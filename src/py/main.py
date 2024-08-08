@@ -1,54 +1,29 @@
 from __future__ import annotations
-
-number_to_words_map = {
-    1000000000: "Billion",
-    1000000: "Million",
-    1000: "Thousand",
-    100: "Hundred",
-    90: "Ninety",
-    80: "Eighty",
-    70: "Seventy",
-    60: "Sixty",
-    50: "Fifty",
-    40: "Forty",
-    30: "Thirty",
-    20: "Twenty",
-    19: "Nineteen",
-    18: "Eighteen",
-    17: "Seventeen",
-    16: "Sixteen",
-    15: "Fifteen",
-    14: "Fourteen",
-    13: "Thirteen",
-    12: "Twelve",
-    11: "Eleven",
-    10: "Ten",
-    9: "Nine",
-    8: "Eight",
-    7: "Seven",
-    6: "Six",
-    5: "Five",
-    4: "Four",
-    3: "Three",
-    2: "Two",
-    1: "One",
-}
+from typing import List
 
 
 class Solution:
-    def numberToWords(self, num: int) -> str:
-        if num == 0:
-            return "Zero"
+    def spiralMatrixIII(self, rows: int, cols: int, r: int, c: int) -> List[List[int]]:
+        dir = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+        result: list[list[int]] = []
+        end = rows * cols
+        step = 1
+        direction = 0
 
-        for value, word in number_to_words_map.items():
-            if num >= value:
-                prefix = (self.numberToWords(num // value) + " ") if num >= 100 else ""
-                unit = word
-                suffix = (
-                    "" if num % value == 0 else " " + self.numberToWords(num % value)
-                )
-                return prefix + unit + suffix
-        return ""
+        while len(result) < end:
+            for _ in range(2):
+                for _ in range(step):
+                    is_in = r >= 0 and r < rows and c >= 0 and c < cols
+                    if is_in:
+                        result.append([r, c])
+
+                    r += dir[direction][0]
+                    c += dir[direction][1]
+
+                direction = (direction + 1) % 4
+            step += 1
+
+        return result
 
 
 def main():
