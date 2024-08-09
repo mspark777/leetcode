@@ -3,34 +3,43 @@ from typing import List
 
 
 class Solution:
-    def spiralMatrixIII(self, rows: int, cols: int, r: int, c: int) -> List[List[int]]:
-        dir = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-        result: list[list[int]] = []
-        end = rows * cols
-        step = 1
-        direction = 0
-
-        while len(result) < end:
-            for _ in range(2):
-                for _ in range(step):
-                    is_in = r >= 0 and r < rows and c >= 0 and c < cols
-                    if is_in:
-                        result.append([r, c])
-
-                    r += dir[direction][0]
-                    c += dir[direction][1]
-
-                direction = (direction + 1) % 4
-            step += 1
+    def numMagicSquaresInside(self, grid: List[List[int]]) -> int:
+        result = 0
+        m = len(grid)
+        n = len(grid[0])
+        for row in range(m - 2):
+            for col in range(n - 2):
+                if self.is_magic_square(grid, row, col):
+                    result += 1
 
         return result
 
+    def is_magic_square(self, grid: list[list[int]], row: int, col: int) -> bool:
+        sequence = "2943816729438167"
+        sequence_reversed = "7618349276183492"
+
+        border: list[str] = []
+        border_indices = [0, 1, 2, 5, 8, 7, 6, 3]
+        for i in border_indices:
+            num = grid[row + i // 3][col + (i % 3)]
+            border.append(str(num))
+
+        border_converted = "".join(border)
+        return (
+            grid[row][col] % 2 == 0
+            and (
+                sequence.find(border_converted) != -1
+                or sequence_reversed.find(border_converted) != -1
+            )
+            and grid[row + 1][col + 1] == 5
+        )
+
 
 def main():
-    inputs: list[int] = [123, 12345, 1234567]
+    inputs: list[list[list[int]]] = [[[4, 3, 8, 4], [9, 5, 1, 9], [2, 7, 6, 2]], [[8]]]
 
     for input in inputs:
-        result = Solution().numberToWords(input)
+        result = Solution().numMagicSquaresInside(input)
         print(result)
 
 
