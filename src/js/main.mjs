@@ -6,88 +6,153 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-function isValidCell(grid, row, col) {
-  const n = grid.length;
-  return row >= 0 && col >= 0 && row < n && col < n && grid[row][col] === 0;
+function isValidLandCell(grid, row, col) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  return (
+    row >= 0 && col >= 0 && row < rows && col < cols && grid[row][col] == 1
+  );
 }
 
-function floodFill(grid, row, col) {
+function findArticulationPoints(
+  grid,
+  row,
+  col,
+  discoveryTime,
+  lowestReachable,
+  parentCell,
+  apInfo,
+) {
+  const cols = grid[0].length;
+  discoveryTime[row][col] = apInfo.time;
+  apInfo.time++;
+  lowestReachable[row][col] = discoveryTime[row][col];
+  let children = 0;
   const directions = [
     [0, 1],
-    [0, -1],
     [1, 0],
+    [0, -1],
     [-1, 0],
   ];
-  const queue = [[row, col]];
-  grid[row][col] = 1;
 
-  for (let cell = queue.shift(); cell != null; cell = queue.shift()) {
-    const [r, c] = cell;
-    for (const [dr, dc] of directions) {
-      const newRow = r + dr;
-      const newCol = c + dc;
-      if (isValidCell(grid, newRow, newCol)) {
-        grid[newRow][newCol] = 1;
-        queue.push([newRow, newCol]);
-      }
+  for (const [dr, dc] of directions) {
+    const newRow = row + dr;
+    const newCol = col + dc;
+
+    if (!isValidLandCell(grid, newRow, newCol)) {
+      continue;
     }
+
+    if (discoveryTime[newRow][newCol] === -1) {
+      children += 1;
+      parentCell[newRow][newCol] = row * cols + col;
+      findArticulationPoints(
+        grid,
+        newRow,
+        newCol,
+        discoveryTime,
+        lowestReachable,
+        parentCell,
+        apInfo,
+      );
+
+      lowestReachable[row][col] = Math.min(
+        lowestReachable[row][col],
+        lowestReachable[newRow][newCol],
+      );
+
+      if (
+        lowestReachable[newRow][newCol] >= discoveryTime[row][col] &&
+        parentCell[row][col] !== -1
+      ) {
+        apInfo.hasArticulationPoint = true;
+      }
+    } else if (newRow * cols + newCol != parentCell[row][col]) {
+      lowestReachable[row][col] = Math.min(
+        lowestReachable[row][col],
+        discoveryTime[newRow][newCol],
+      );
+    }
+  }
+
+  if (parentCell[row][col] == -1 && children > 1) {
+    apInfo.hasArticulationPoint = true;
   }
 }
 
 /**
- * @param {string[]} grid
+ * @param {number[][]} grid
  * @return {number}
  */
-function regionsBySlashes(grid) {
-  const gridSize = grid.length;
-  const expandedSize = gridSize * 3;
-  const expandedGrid = [];
-  for (let i = 0; i < expandedSize; i += 1) {
-    const g = [];
-    for (let j = 0; j < expandedSize; j += 1) {
-      g.push(0);
+function minDays(grid) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const apInfo = { hasArticulationPoint: false, time: 0 };
+  let landCells = 0;
+  let islandCount = 0;
+
+  const discoveryTime = [];
+  const lowestReachable = [];
+  const parentCell = [];
+
+  for (let i = 0; i < rows; i += 1) {
+    const discoveryTimeRow = [];
+    const lowestReachableRow = [];
+    const islandCountRow = [];
+    for (let j = 0; j < cols; j += 1) {
+      discoveryTimeRow.push(-1);
+      lowestReachableRow.push(-1);
+      islandCountRow.push(-1);
     }
-    expandedGrid.push(g);
+
+    discoveryTime.push(discoveryTimeRow);
+    lowestReachable.push(lowestReachableRow);
+    parentCell.push(islandCountRow);
   }
 
-  for (let i = 0; i < gridSize; i += 1) {
-    const baseRow = i * 3;
-    for (let j = 0; j < gridSize; j += 1) {
-      const baseCol = j * 3;
-
-      if (grid[i][j] === "\\") {
-        expandedGrid[baseRow][baseCol] = 1;
-        expandedGrid[baseRow + 1][baseCol + 1] = 1;
-        expandedGrid[baseRow + 2][baseCol + 2] = 1;
-      } else if (grid[i][j] === "/") {
-        expandedGrid[baseRow][baseCol + 2] = 1;
-        expandedGrid[baseRow + 1][baseCol + 1] = 1;
-        expandedGrid[baseRow + 2][baseCol] = 1;
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (grid[i][j] == 1) {
+        landCells++;
+        if (discoveryTime[i][j] === -1) {
+          findArticulationPoints(
+            grid,
+            i,
+            j,
+            discoveryTime,
+            lowestReachable,
+            parentCell,
+            apInfo,
+          );
+          islandCount++;
+        }
       }
     }
   }
-  let result = 0;
-  for (let i = 0; i < expandedSize; i += 1) {
-    for (let j = 0; j < expandedSize; j += 1) {
-      if (expandedGrid[i][j] === 0) {
-        floodFill(expandedGrid, i, j);
-        result += 1;
-      }
-    }
+
+  if (islandCount === 0 || islandCount >= 2) {
+    return 0;
+  } else if (landCells === 1) {
+    return 1;
+  } else if (apInfo.hasArticulationPoint) {
+    return 1;
   }
 
-  return result;
+  return 2;
 }
 
 function main() {
   const inputs = [
-    [" /", "/ "],
-    [" /", "  "],
-    ["/\\", "\\/"],
+    [
+      [0, 1, 1, 0],
+      [0, 1, 1, 0],
+      [0, 0, 0, 0],
+    ],
+    [[1, 1]],
   ];
 
-  for (const grid of inputs) {
-    const result = regionsBySlashes(grid);
+  for (const input of inputs) {
+    const result = minDays(input);
     console.log(result);
   }
 }
