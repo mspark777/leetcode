@@ -1,31 +1,31 @@
 #include "./main.h"
 
-int minSwaps(int *nums, int nums_size)
+bool lemonadeChange(int *bills, int bills_size)
 {
-	int result = INT_MAX;
-	int total_ones = 0;
-	for (int i = 0; i < nums_size; i += 1) {
-		total_ones += nums[i];
+	int five_dollar = 0;
+	int ten_dollar = 0;
+	for (int i = 0; i < bills_size; i += 1) {
+		const int bill = bills[i];
+		if (bill == 5) {
+			five_dollar += 1;
+		} else if (bill == 10) {
+			if (five_dollar > 0) {
+				five_dollar -= 1;
+				ten_dollar += 1;
+			} else {
+				return 0;
+			}
+		} else {
+			if (ten_dollar > 0 && five_dollar > 0) {
+				ten_dollar -= 1;
+				five_dollar -= 1;
+			} else if (five_dollar > 2) {
+				five_dollar -= 3;
+			} else {
+				return 0;
+			}
+		}
 	}
 
-	int ones_count = nums[0];
-	int end = 0;
-
-	for (int i = 0; i < nums_size; i += 1) {
-		if (i > 0) {
-			ones_count -= nums[i - 1];
-		}
-
-		while ((end - i + 1) < total_ones) {
-			end += 1;
-			ones_count += nums[end % nums_size];
-		}
-
-		const int ones = total_ones - ones_count;
-		if (ones < result) {
-			result = ones;
-		}
-	}
-
-	return result;
+	return 1;
 }
