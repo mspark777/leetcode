@@ -1,31 +1,34 @@
 #include "./main.h"
 
-bool lemonadeChange(int *bills, int bills_size)
+int maxDistance(int **arrays, int arrays_size, int *arrays_col_size)
 {
-	int five_dollar = 0;
-	int ten_dollar = 0;
-	for (int i = 0; i < bills_size; i += 1) {
-		const int bill = bills[i];
-		if (bill == 5) {
-			five_dollar += 1;
-		} else if (bill == 10) {
-			if (five_dollar > 0) {
-				five_dollar -= 1;
-				ten_dollar += 1;
-			} else {
-				return 0;
-			}
-		} else {
-			if (ten_dollar > 0 && five_dollar > 0) {
-				ten_dollar -= 1;
-				five_dollar -= 1;
-			} else if (five_dollar > 2) {
-				five_dollar -= 3;
-			} else {
-				return 0;
-			}
+	int min = 1e5;
+	int max = -1e5;
+	int result = 0;
+
+	for (int i = 0; i < arrays_size; i += 1) {
+		int *arr = arrays[i];
+		int left = arr[0];
+		int right = arr[arrays_col_size[i] - 1];
+		int min_diff = right - min;
+		int max_diff = max - left;
+
+		if (min_diff > result) {
+			result = min_diff;
+		}
+
+		if (max_diff > result) {
+			result = max_diff;
+		}
+
+		if (left < min) {
+			min = left;
+		}
+
+		if (right > max) {
+			max = right;
 		}
 	}
 
-	return 1;
+	return result;
 }
