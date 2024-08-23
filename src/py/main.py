@@ -1,31 +1,59 @@
 from __future__ import annotations
-from typing import List
 
 
 class Solution:
-    def stoneGameII(self, piles: List[int]) -> int:
-        n = len(piles)
-        dp = [[0] * (n + 1) for _ in range(n + 1)]
-        suffix_sum = [0] * (n + 1)
-        for i in range(n - 1, -1, -1):
-            suffix_sum[i] = suffix_sum[i + 1] + piles[i]
-        for i in range(n + 1):
-            dp[i][n] = suffix_sum[i]
-        for index in range(n - 1, -1, -1):
-            for max_till_now in range(n - 1, 0, -1):
-                for X in range(1, min(2 * max_till_now, n - index) + 1):
-                    dp[index][max_till_now] = max(
-                        dp[index][max_till_now],
-                        suffix_sum[index] - dp[index + X][max(max_till_now, X)],
-                    )
-        return dp[0][1]
+    def fractionAddition(self, expression):
+        num = 0
+        denom = 1
+
+        i = 0
+        while i < len(expression):
+            curr_num = 0
+            curr_denom = 0
+
+            is_negative = False
+
+            if expression[i] == "-" or expression[i] == "+":
+                if expression[i] == "-":
+                    is_negative = True
+                i += 1
+
+            while i < len(expression) and expression[i].isdigit():
+                val = int(expression[i])
+                curr_num = curr_num * 10 + val
+                i += 1
+
+            if is_negative:
+                curr_num *= -1
+
+            i += 1
+
+            while i < len(expression) and expression[i].isdigit():
+                val = int(expression[i])
+                curr_denom = curr_denom * 10 + val
+                i += 1
+
+            num = num * curr_denom + curr_num * denom
+            denom = denom * curr_denom
+
+        gcd = abs(self.find_gcd(num, denom))
+
+        num //= gcd
+        denom //= gcd
+
+        return f"{num}/{denom}"
+
+    def find_gcd(self, a, b):
+        if a == 0:
+            return b
+        return self.find_gcd(b % a, a)
 
 
 def main():
-    inputs: list[list[int]] = [[2, 7, 9, 4, 4], [1, 2, 3, 4, 5, 100]]
+    inputs: list[str] = ["-1/2+1/2", "-1/2+1/2+1/3", "1/3-1/2"]
 
     for input in inputs:
-        result = Solution().stoneGameII(input)
+        result = Solution().fractionAddition(input)
         print(result)
 
 

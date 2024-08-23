@@ -1,9 +1,12 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <ctype.h>
+#include <math.h>
 
 struct ListNode {
 	int val;
