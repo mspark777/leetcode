@@ -2,58 +2,63 @@ from __future__ import annotations
 
 
 class Solution:
-    def fractionAddition(self, expression):
-        num = 0
-        denom = 1
+    def nearestPalindromic(self, n: str) -> str:
+        num = int(n)
+        previous = self.previous_palidrome(num)
+        next = self.next_palidrome(num)
+        if abs(previous - num) <= abs(next - num):
+            return str(previous)
+        return str(next)
 
-        i = 0
-        while i < len(expression):
-            curr_num = 0
-            curr_denom = 0
+    def convert(self, num: int) -> int:
+        s = str(num)
+        n = len(s)
+        l = (n - 1) // 2
+        r = n // 2
+        s_list = list(s)
 
-            is_negative = False
+        while l >= 0:
+            s_list[r] = s_list[l]
+            r += 1
+            l -= 1
+        return int("".join(s_list))
 
-            if expression[i] == "-" or expression[i] == "+":
-                if expression[i] == "-":
-                    is_negative = True
-                i += 1
+    def previous_palidrome(self, num: int) -> int:
+        left = 0
+        right = num
+        result = 0
 
-            while i < len(expression) and expression[i].isdigit():
-                val = int(expression[i])
-                curr_num = curr_num * 10 + val
-                i += 1
+        while left <= right:
+            mid = (left + right) // 2
+            palin = self.convert(mid)
+            if palin < num:
+                result = palin
+                left = mid + 1
+            else:
+                right = mid - 1
 
-            if is_negative:
-                curr_num *= -1
+        return result
 
-            i += 1
-
-            while i < len(expression) and expression[i].isdigit():
-                val = int(expression[i])
-                curr_denom = curr_denom * 10 + val
-                i += 1
-
-            num = num * curr_denom + curr_num * denom
-            denom = denom * curr_denom
-
-        gcd = abs(self.find_gcd(num, denom))
-
-        num //= gcd
-        denom //= gcd
-
-        return f"{num}/{denom}"
-
-    def find_gcd(self, a, b):
-        if a == 0:
-            return b
-        return self.find_gcd(b % a, a)
+    def next_palidrome(self, num: int) -> int:
+        left = num
+        right = int(1e18)
+        result = 0
+        while left <= right:
+            mid = (left + right) // 2
+            palin = self.convert(mid)
+            if palin > num:
+                result = palin
+                right = mid - 1
+            else:
+                left = mid + 1
+        return result
 
 
 def main():
-    inputs: list[str] = ["-1/2+1/2", "-1/2+1/2+1/3", "1/3-1/2"]
+    inputs: list[str] = ["123", "1"]
 
     for input in inputs:
-        result = Solution().fractionAddition(input)
+        result = Solution().nearestPalindromic(input)
         print(result)
 
 
