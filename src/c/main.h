@@ -25,6 +25,12 @@ struct TreeNode {
 	struct TreeNode *right;
 };
 
+struct Node {
+	int val;
+	int numChildren;
+	struct Node **children;
+};
+
 #define static_cast(t, v) ((t)v)
 #define bool int
 
