@@ -1,47 +1,23 @@
 #include "./main.h"
 
-void get_node_count(struct Node *node, int *count)
+int chalkReplacer(int *chalk, int chalk_size, int k)
 {
-	if (node == NULL) {
-		return;
+	int sum_chalk = 0;
+	for (int i = 0; i < chalk_size; i += 1) {
+		sum_chalk += chalk[i];
+		if (sum_chalk > k) {
+			break;
+		}
 	}
 
-	const int children = node->numChildren;
-	*count += children;
-	for (int i = 0; i < children; i += 1) {
-		get_node_count(node->children[i], count);
-	}
-}
+	k = k % sum_chalk;
+	for (int i = 0; i < chalk_size; i += 1) {
+		if (k < chalk[i]) {
+			return i;
+		}
 
-void post(struct Node *node, int *nums, int *pos)
-{
-	if (node == NULL) {
-		return;
+		k -= chalk[i];
 	}
 
-	const int children = node->numChildren;
-	for (int i = 0; i < children; i += 1) {
-		post(node->children[i], nums, pos);
-	}
-
-	const int p = *pos;
-	nums[p] = node->val;
-	*pos += 1;
-}
-
-int *postorder(struct Node *root, int *return_size)
-{
-	if (root == NULL) {
-		*return_size = 0;
-		return malloc(sizeof(int));
-	}
-
-	*return_size = 1;
-	get_node_count(root, return_size);
-	int *nums = malloc(sizeof(int) * (*return_size));
-
-	int pos = 0;
-	post(root, nums, &pos);
-
-	return nums;
+	return 0;
 }
