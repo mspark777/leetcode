@@ -1,23 +1,24 @@
 #include "./main.h"
 
-int chalkReplacer(int *chalk, int chalk_size, int k)
+int getLucky(char *s, int k)
 {
-	int sum_chalk = 0;
-	for (int i = 0; i < chalk_size; i += 1) {
-		sum_chalk += chalk[i];
-		if (sum_chalk > k) {
-			break;
+	int result = 0;
+	for (int i = 0; s[i] != 0; i += 1) {
+		int pos = ((int)(s[i] - 'a')) + 1;
+		while (pos > 0) {
+			result += pos % 10;
+			pos /= 10;
 		}
 	}
 
-	k = k % sum_chalk;
-	for (int i = 0; i < chalk_size; i += 1) {
-		if (k < chalk[i]) {
-			return i;
+	for (int i = 1; i < k; i += 1) {
+		int temp = 0;
+		while (result > 0) {
+			temp += result % 10;
+			result /= 10;
 		}
-
-		k -= chalk[i];
+		result = temp;
 	}
 
-	return 0;
+	return result;
 }
