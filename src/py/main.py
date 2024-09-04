@@ -2,51 +2,57 @@ from __future__ import annotations
 from typing import List
 
 
-class UnionFind:
-    unimap: dict[int, int]
-    islands: int
-
-    def __init__(self) -> None:
-        self.unimap = {}
-        self.islands = 0
-
-    def find(self, x: int) -> int:
-        if x not in self.unimap:
-            self.unimap[x] = x
-            self.islands += 1
-
-        p = self.unimap[x]
-        if x != p:
-            self.unimap[x] = self.find(p)
-
-        return self.unimap[x]
-
-    def union(self, x: int, y: int) -> None:
-        x = self.find(x)
-        y = self.find(y)
-        if x != y:
-            self.unimap[x] = y
-            self.islands -= 1
-
-
 class Solution:
-    def removeStones(self, stones: List[List[int]]) -> int:
-        uf = UnionFind()
-        for stone in stones:
-            uf.union(stone[0], ~stone[1])
+    def robotSim(self, commands: List[int], obstacles: List[List[int]]) -> int:
+        obstacle_set = {self.hash_coordinates(x, y) for x, y in obstacles}
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
-        return len(stones) - uf.islands
+        x = 0
+        y = 0
+        result = 0
+        current_direction = 0
+        for command in commands:
+            if command == -1:
+                current_direction = (current_direction + 1) % 4
+                continue
+
+            if command == -2:
+                current_direction = (current_direction + 3) % 4
+                continue
+
+            dx, dy = directions[current_direction]
+            for _ in range(command):
+                next_x, next_y = x + dx, y + dy
+                if self.hash_coordinates(next_x, next_y) in obstacle_set:
+                    break
+                x, y = next_x, next_y
+
+            result = max(result, x * x + y * y)
+
+        return result
+
+    def hash_coordinates(self, x: int, y: int) -> int:
+        return x + 60001 * y
+
+
+class Input:
+    commands: list[int]
+    obstacles: list[list[int]]
+
+    def __init__(self, commands: list[int], obstacles: list[list[int]]):
+        self.commands = commands
+        self.obstacles = obstacles
 
 
 def main():
     inputs = [
-        [[0, 0], [0, 1], [1, 0], [1, 2], [2, 1], [2, 2]],
-        [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
-        [[0, 0]],
+        Input([4, -1, 3], []),
+        Input([4, -1, 4, -2, 4], [[2, 4]]),
+        Input([6, -1, -1, 6], []),
     ]
 
-    for stones in inputs:
-        result = Solution().removeStones(stones)
+    for input in inputs:
+        result = Solution().robotSim(input.commands, input.obstacles)
         print(result)
 
 
