@@ -1,23 +1,37 @@
 #include "./main.h"
 
-int getLucky(char *s, int k)
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int *missingRolls(int *rolls, int rolls_size, int mean, int n, int *return_size)
 {
-	int result = 0;
-	for (int i = 0; s[i] != 0; i += 1) {
-		int pos = ((int)(s[i] - 'a')) + 1;
-		while (pos > 0) {
-			result += pos % 10;
-			pos /= 10;
-		}
+	int sum = 0;
+	for (int i = 0; i < rolls_size; i += 1) {
+		sum += rolls[i];
 	}
 
-	for (int i = 1; i < k; i += 1) {
-		int temp = 0;
-		while (result > 0) {
-			temp += result % 10;
-			result /= 10;
-		}
-		result = temp;
+	int remaining_sum = mean * (n + rolls_size) - sum;
+
+	if (remaining_sum > (6 * n)) {
+		*return_size = 0;
+		return malloc(sizeof(int));
+	} else if (remaining_sum < n) {
+		*return_size = 0;
+		return malloc(sizeof(int));
+	}
+
+	int distribute_mean = remaining_sum / n;
+	int mod = remaining_sum % n;
+
+	int *result = malloc(sizeof(int) * n);
+	*return_size = n;
+
+	for (int i = 0; i < mod; i += 1) {
+		result[i] = distribute_mean + 1;
+	}
+
+	for (int i = mod; i < n; i += 1) {
+		result[i] = distribute_mean;
 	}
 
 	return result;
