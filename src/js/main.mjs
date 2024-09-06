@@ -1,144 +1,47 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-function isValidLandCell(grid, row, col) {
-  const rows = grid.length;
-  const cols = grid[0].length;
-  return (
-    row >= 0 && col >= 0 && row < rows && col < cols && grid[row][col] == 1
-  );
-}
-
-function findArticulationPoints(
-  grid,
-  row,
-  col,
-  discoveryTime,
-  lowestReachable,
-  parentCell,
-  apInfo,
-) {
-  const cols = grid[0].length;
-  discoveryTime[row][col] = apInfo.time;
-  apInfo.time++;
-  lowestReachable[row][col] = discoveryTime[row][col];
-  let children = 0;
-  const directions = [
-    [0, 1],
-    [1, 0],
-    [0, -1],
-    [-1, 0],
-  ];
-
-  for (const [dr, dc] of directions) {
-    const newRow = row + dr;
-    const newCol = col + dc;
-
-    if (!isValidLandCell(grid, newRow, newCol)) {
-      continue;
-    }
-
-    if (discoveryTime[newRow][newCol] === -1) {
-      children += 1;
-      parentCell[newRow][newCol] = row * cols + col;
-      findArticulationPoints(
-        grid,
-        newRow,
-        newCol,
-        discoveryTime,
-        lowestReachable,
-        parentCell,
-        apInfo,
-      );
-
-      lowestReachable[row][col] = Math.min(
-        lowestReachable[row][col],
-        lowestReachable[newRow][newCol],
-      );
-
-      if (
-        lowestReachable[newRow][newCol] >= discoveryTime[row][col] &&
-        parentCell[row][col] !== -1
-      ) {
-        apInfo.hasArticulationPoint = true;
-      }
-    } else if (newRow * cols + newCol != parentCell[row][col]) {
-      lowestReachable[row][col] = Math.min(
-        lowestReachable[row][col],
-        discoveryTime[newRow][newCol],
-      );
-    }
-  }
-
-  if (parentCell[row][col] == -1 && children > 1) {
-    apInfo.hasArticulationPoint = true;
+class ListNode {
+  constructor(val, next) {
+    this.val = val === undefined ? 0 : val;
+    this.next = next === undefined ? null : next;
   }
 }
 
 /**
- * @param {number[][]} grid
- * @return {number}
+ * @param {number[]} nums
+ * @param {ListNode | undefined} head
+ * @return {ListNode | undefined}
  */
-function minDays(grid) {
-  const rows = grid.length;
-  const cols = grid[0].length;
-  const apInfo = { hasArticulationPoint: false, time: 0 };
-  let landCells = 0;
-  let islandCount = 0;
+function modifiedList(nums, head) {
+  const numSet = new Set(nums);
 
-  const discoveryTime = [];
-  const lowestReachable = [];
-  const parentCell = [];
-
-  for (let i = 0; i < rows; i += 1) {
-    const discoveryTimeRow = [];
-    const lowestReachableRow = [];
-    const islandCountRow = [];
-    for (let j = 0; j < cols; j += 1) {
-      discoveryTimeRow.push(-1);
-      lowestReachableRow.push(-1);
-      islandCountRow.push(-1);
-    }
-
-    discoveryTime.push(discoveryTimeRow);
-    lowestReachable.push(lowestReachableRow);
-    parentCell.push(islandCountRow);
-  }
-
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      if (grid[i][j] == 1) {
-        landCells++;
-        if (discoveryTime[i][j] === -1) {
-          findArticulationPoints(
-            grid,
-            i,
-            j,
-            discoveryTime,
-            lowestReachable,
-            parentCell,
-            apInfo,
-          );
-          islandCount++;
-        }
-      }
+  while (head != null) {
+    if (numSet.has(head.val)) {
+      head = head.next;
+    } else {
+      break;
     }
   }
 
-  if (islandCount === 0 || islandCount >= 2) {
-    return 0;
-  } else if (landCells === 1) {
-    return 1;
-  } else if (apInfo.hasArticulationPoint) {
-    return 1;
+  if (head == null) {
+    return undefined;
   }
 
-  return 2;
+  let curr = head;
+  while (curr?.next != null) {
+    if (numSet.has(curr.next.val)) {
+      curr.next = curr.next.next;
+    } else {
+      curr = curr.next;
+    }
+  }
+
+  return head;
 }
 
 function main() {
