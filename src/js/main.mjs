@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-extraneous-class */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
@@ -12,36 +15,75 @@ class ListNode {
   }
 }
 
+class TreeNode {
+  constructor(val, left, right) {
+    this.val = val === undefined ? 0 : val;
+    this.left = left === undefined ? null : left;
+    this.right = right === undefined ? null : right;
+  }
+}
+
 /**
- * @param {number[]} nums
- * @param {ListNode | undefined} head
- * @return {ListNode | undefined}
+ * @param {ListNode | undefined} node
+ * @param {number} patternindex
+ * @param {number[]} pattern
+ * @param {number[]} prefixTable
+ * @return {boolean}
  */
-function modifiedList(nums, head) {
-  const numSet = new Set(nums);
+function searchInTree(node, patternIndex, pattern, prefixTable) {
+  if (node == null) {
+    return false;
+  }
+
+  while (patternIndex > 0 && node.val !== pattern[patternIndex]) {
+    patternIndex = prefixTable[patternIndex - 1];
+  }
+
+  if (node.val === pattern[patternIndex]) {
+    patternIndex += 1;
+  }
+
+  if (patternIndex === pattern.length) {
+    return true;
+  }
+
+  return (
+    searchInTree(node.left, patternIndex, pattern, prefixTable) ||
+    searchInTree(node.right, patternIndex, pattern, prefixTable)
+  );
+}
+
+/**
+ * @param {ListNode | undefined} head
+ * @param {TreeNode | undefined} root
+ * @return {boolean}
+ */
+function isSubPath(head, root) {
+  if (head == null) {
+    return false;
+  } else if (root == null) {
+    return false;
+  }
+
+  const pattern = [head.val];
+  const prefixTable = [0];
+  let patternIndex = 0;
+  head = head.next;
 
   while (head != null) {
-    if (numSet.has(head.val)) {
-      head = head.next;
-    } else {
-      break;
+    while (patternIndex > 0 && head.val !== pattern[patternIndex]) {
+      patternIndex = prefixTable[patternIndex - 1];
     }
-  }
-
-  if (head == null) {
-    return undefined;
-  }
-
-  let curr = head;
-  while (curr?.next != null) {
-    if (numSet.has(curr.next.val)) {
-      curr.next = curr.next.next;
-    } else {
-      curr = curr.next;
+    if (head.val === pattern[patternIndex]) {
+      patternIndex += 1;
     }
+
+    pattern.push(head.val);
+    prefixTable.push(patternIndex);
+    head = head.next;
   }
 
-  return head;
+  return searchInTree(root, 0, pattern, prefixTable);
 }
 
 function main() {
