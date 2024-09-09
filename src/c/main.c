@@ -1,37 +1,47 @@
 #include "./main.h"
 
 /**
- * Note: The returned array must be malloced, assume caller calls free().
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
  */
-int *missingRolls(int *rolls, int rolls_size, int mean, int n, int *return_size)
+int **spiralMatrix(int m, int n, struct ListNode *head, int *return_size,
+		   int **return_column_sizes)
 {
-	int sum = 0;
-	for (int i = 0; i < rolls_size; i += 1) {
-		sum += rolls[i];
+	int **result = malloc(sizeof(int *) * m);
+	*return_size = m;
+	*return_column_sizes = malloc(sizeof(int) * m);
+	for (int i = 0; i < m; i += 1) {
+		result[i] = malloc(sizeof(int) * n);
+		(*return_column_sizes)[i] = n;
+
+		for (int j = 0; j < n; j += 1) {
+			result[i][j] = -1;
+		}
 	}
 
-	int remaining_sum = mean * (n + rolls_size) - sum;
+	int directions[][2] = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 
-	if (remaining_sum > (6 * n)) {
-		*return_size = 0;
-		return malloc(sizeof(int));
-	} else if (remaining_sum < n) {
-		*return_size = 0;
-		return malloc(sizeof(int));
-	}
+	int r = 0;
+	int c = 0;
+	int dir = 0;
+	struct ListNode *node = head;
+	while (node != NULL) {
+		result[r][c] = node->val;
 
-	int distribute_mean = remaining_sum / n;
-	int mod = remaining_sum % n;
+		int newr = r + directions[dir][0];
+		int newc = c + directions[dir][1];
 
-	int *result = malloc(sizeof(int) * n);
-	*return_size = n;
+		int roate = newr < 0 || newc < 0 || newr >= m || newc >= n ||
+			    result[newr][newc] != -1;
+		if (roate) {
+			dir = (dir + 1) % 4;
+		}
 
-	for (int i = 0; i < mod; i += 1) {
-		result[i] = distribute_mean + 1;
-	}
+		r += directions[dir][0];
+		c += directions[dir][1];
 
-	for (int i = mod; i < n; i += 1) {
-		result[i] = distribute_mean;
+		node = node->next;
 	}
 
 	return result;
