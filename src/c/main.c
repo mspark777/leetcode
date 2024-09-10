@@ -1,48 +1,42 @@
 #include "./main.h"
 
 /**
- * Return an array of arrays of size *returnSize.
- * The sizes of the arrays are returned as *returnColumnSizes array.
- * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
  */
-int **spiralMatrix(int m, int n, struct ListNode *head, int *return_size,
-		   int **return_column_sizes)
+
+int calculate_gcd(int a, int b)
 {
-	int **result = malloc(sizeof(int *) * m);
-	*return_size = m;
-	*return_column_sizes = malloc(sizeof(int) * m);
-	for (int i = 0; i < m; i += 1) {
-		result[i] = malloc(sizeof(int) * n);
-		(*return_column_sizes)[i] = n;
-
-		for (int j = 0; j < n; j += 1) {
-			result[i][j] = -1;
-		}
+	while (b != 0) {
+		int temp = b;
+		b = a % b;
+		a = temp;
 	}
 
-	int directions[][2] = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
-
-	int r = 0;
-	int c = 0;
-	int dir = 0;
-	struct ListNode *node = head;
-	while (node != NULL) {
-		result[r][c] = node->val;
-
-		int newr = r + directions[dir][0];
-		int newc = c + directions[dir][1];
-
-		int roate = newr < 0 || newc < 0 || newr >= m || newc >= n ||
-			    result[newr][newc] != -1;
-		if (roate) {
-			dir = (dir + 1) % 4;
-		}
-
-		r += directions[dir][0];
-		c += directions[dir][1];
-
-		node = node->next;
+	return a;
+}
+struct ListNode *insertGreatestCommonDivisors(struct ListNode *head)
+{
+	if (head == NULL) {
+		return head;
 	}
 
-	return result;
+	struct ListNode *node1 = head;
+	struct ListNode *node2 = head->next;
+
+	while (node2 != NULL) {
+		struct ListNode *node = malloc(sizeof(struct ListNode));
+		node->val = calculate_gcd(node1->val, node2->val);
+
+		node1->next = node;
+		node->next = node2;
+
+		node1 = node2;
+		node2 = node2->next;
+	}
+
+	return head;
 }
