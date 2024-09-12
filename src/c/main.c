@@ -1,13 +1,26 @@
 #include "./main.h"
 
-int minBitFlips(int start, int goal)
+int countConsistentStrings(char *allowed, char **words, int words_size)
 {
-	int xor_result = start ^ goal;
-	int result = 0;
+	int bits = 0;
+	for (int i = 0; allowed[i] != 0; i += 1) {
+		bits |= 1 << (allowed[i] - 'a');
+	}
 
-	while (xor_result != 0) {
-		xor_result &= xor_result - 1;
-		result += 1;
+	int result = 0;
+	for (int i = 0; i < words_size; i += 1) {
+		int is_consistent = 1;
+		char *word = words[i];
+
+		for (int j = 0; word[j] != 0; j += 1) {
+			int bit = (bits >> (word[j] - 'a')) & 1;
+			if (bit == 0) {
+				is_consistent = 0;
+				break;
+			}
+		}
+
+		result += is_consistent;
 	}
 
 	return result;
