@@ -1,26 +1,26 @@
 #include "./main.h"
 
-int countConsistentStrings(char *allowed, char **words, int words_size)
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int *xorQueries(int *arr, int arr_size, int **queries, int queries_size,
+		int *queries_col_size, int *return_size)
 {
-	int bits = 0;
-	for (int i = 0; allowed[i] != 0; i += 1) {
-		bits |= 1 << (allowed[i] - 'a');
+	for (int i = 1; i < arr_size; i += 1) {
+		arr[i] ^= arr[i - 1];
 	}
 
-	int result = 0;
-	for (int i = 0; i < words_size; i += 1) {
-		int is_consistent = 1;
-		char *word = words[i];
+	*return_size = queries_size;
+	int *result = malloc(sizeof(int) * queries_size);
+	for (int i = 0; i < queries_size; i += 1) {
+		const int l = queries[i][0];
+		const int r = queries[i][1];
 
-		for (int j = 0; word[j] != 0; j += 1) {
-			int bit = (bits >> (word[j] - 'a')) & 1;
-			if (bit == 0) {
-				is_consistent = 0;
-				break;
-			}
+		if (l > 0) {
+			result[i] = arr[l - 1] ^ arr[r];
+		} else {
+			result[i] = arr[r];
 		}
-
-		result += is_consistent;
 	}
 
 	return result;
