@@ -1,27 +1,37 @@
 #include "./main.h"
 
-int longestSubarray(int *nums, int nums_size)
+int findTheLongestSubstring(char *s)
 {
-	int max_num = 0;
+	const char A = 'a';
+	const char E = 'e';
+	const char I = 'i';
+	const char O = 'o';
+	const char U = 'u';
+
+	int prefix_xor = 0;
+	int char_map[26] = {
+		0,
+	};
+	char_map[0] = 1;
+	char_map[E - A] = 2;
+	char_map[I - A] = 4;
+	;
+	char_map[O - A] = 8;
+	char_map[U - A] = 16;
+
+	int mp[32] = {};
+	memset(mp, -1, sizeof(mp));
 	int result = 0;
-	int current = 0;
 
-	for (int i = 0; i < nums_size; i += 1) {
-		int num = nums[i];
-		if (max_num < num) {
-			max_num = num;
-			result = 0;
-			current = 0;
+	for (int i = 0; s[i] != 0; i += 1) {
+		prefix_xor ^= char_map[s[i] - A];
+		if (mp[prefix_xor] == -1 && prefix_xor != 0) {
+			mp[prefix_xor] = i;
 		}
 
-		if (max_num == num) {
-			current += 1;
-		} else {
-			current = 0;
-		}
-
-		if (result < current) {
-			result = current;
+		int len = i - mp[prefix_xor];
+		if (result < len) {
+			result = len;
 		}
 	}
 
