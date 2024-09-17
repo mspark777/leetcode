@@ -8,96 +8,56 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-class ListNode {
-  constructor(val, next) {
-    this.val = val === undefined ? 0 : val;
-    this.next = next === undefined ? null : next;
-  }
-}
-
-class TreeNode {
-  constructor(val, left, right) {
-    this.val = val === undefined ? 0 : val;
-    this.left = left === undefined ? null : left;
-    this.right = right === undefined ? null : right;
-  }
-}
-
 /**
- * @param {ListNode | undefined} node
- * @param {number} patternindex
- * @param {number[]} pattern
- * @param {number[]} prefixTable
- * @return {boolean}
+ * @param {string} s1
+ * @param {string} s2
+ * @return {string[]}
  */
-function searchInTree(node, patternIndex, pattern, prefixTable) {
-  if (node == null) {
-    return false;
+function uncommonFromSentences(s1, s2) {
+  const counts = new Map();
+  for (const word of s1.split(" ")) {
+    const count = counts.get(word) ?? 0;
+    counts.set(word, count + 1);
+  }
+  for (const word of s2.split(" ")) {
+    const count = counts.get(word) ?? 0;
+    counts.set(word, count + 1);
   }
 
-  while (patternIndex > 0 && node.val !== pattern[patternIndex]) {
-    patternIndex = prefixTable[patternIndex - 1];
+  const result = [];
+  for (const [word, count] of counts) {
+    if (count === 1) {
+      result.push(word);
+    }
   }
 
-  if (node.val === pattern[patternIndex]) {
-    patternIndex += 1;
-  }
-
-  if (patternIndex === pattern.length) {
-    return true;
-  }
-
-  return (
-    searchInTree(node.left, patternIndex, pattern, prefixTable) ||
-    searchInTree(node.right, patternIndex, pattern, prefixTable)
-  );
+  return result;
 }
 
-/**
- * @param {ListNode | undefined} head
- * @param {TreeNode | undefined} root
- * @return {boolean}
+/*
+class Solution(object):
+    def uncommonFromSentences(self, A, B):
+        count = {}
+        for word in A.split():
+            count[word] = count.get(word, 0) + 1
+        for word in B.split():
+            count[word] = count.get(word, 0) + 1
+
+        #Alternatively:
+        #count = collections.Counter(A.split())
+        #count += collections.Counter(B.split())
+
+        return [word for word in count if count[word] == 1]
  */
-function isSubPath(head, root) {
-  if (head == null) {
-    return false;
-  } else if (root == null) {
-    return false;
-  }
-
-  const pattern = [head.val];
-  const prefixTable = [0];
-  let patternIndex = 0;
-  head = head.next;
-
-  while (head != null) {
-    while (patternIndex > 0 && head.val !== pattern[patternIndex]) {
-      patternIndex = prefixTable[patternIndex - 1];
-    }
-    if (head.val === pattern[patternIndex]) {
-      patternIndex += 1;
-    }
-
-    pattern.push(head.val);
-    prefixTable.push(patternIndex);
-    head = head.next;
-  }
-
-  return searchInTree(root, 0, pattern, prefixTable);
-}
 
 function main() {
   const inputs = [
-    [
-      [0, 1, 1, 0],
-      [0, 1, 1, 0],
-      [0, 0, 0, 0],
-    ],
-    [[1, 1]],
+    ["this apple is sweet", "this apple is sour"],
+    ["apple apple", "banana"],
   ];
 
-  for (const input of inputs) {
-    const result = minDays(input);
+  for (const [s1, s2] of inputs) {
+    const result = uncommonFromSentences(s1, s2);
     console.log(result);
   }
 }
