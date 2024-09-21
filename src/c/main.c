@@ -1,40 +1,29 @@
 #include "./main.h"
 
-char *shortestPalindrome(char *s)
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int *lexicalOrder(int n, int *return_size)
 {
-	long long hash_base = 29;
-	long long mod_value = 1e9 + 7;
-	long long forward_hash = 0;
-	long long reverse_hash = 0;
-	long long power_value = 1;
-	long long palindrome_end_index = -1;
+	int *result = malloc(sizeof(int) * n);
+	*return_size = n;
 
-	int slen = 0;
-	for (int i = 0; s[i] != 0; i += 1) {
-		slen += 1;
+	int cur = 1;
 
-		char ch = s[i];
-		int j = ch - 'a';
-		forward_hash = (forward_hash * hash_base + (j + 1)) % mod_value;
+	for (int i = 0; i < n; i += 1) {
+		result[i] = cur;
 
-		reverse_hash =
-			(reverse_hash + (j + 1) * power_value) % mod_value;
-		power_value = (power_value * hash_base) % mod_value;
-
-		if (forward_hash == reverse_hash) {
-			palindrome_end_index = i;
+		if ((cur * 10) <= n) {
+			cur *= 10;
+			continue;
 		}
+
+		while (((cur % 10) == 9) || (cur >= n)) {
+			cur /= 10;
+		}
+
+		cur += 1;
 	}
-
-	int suffix_len = slen - (palindrome_end_index + 1);
-	char *suffix = s + palindrome_end_index + 1;
-	char *result = calloc(slen + suffix_len + 1, sizeof(char));
-
-	for (int i = 0; i < suffix_len; i += 1) {
-		result[i] = suffix[suffix_len - (i + 1)];
-	}
-
-	strcpy(result + suffix_len, s);
 
 	return result;
 }
