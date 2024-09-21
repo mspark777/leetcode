@@ -1,29 +1,33 @@
 #include "./main.h"
 
 /**
- * Note: The returned array must be malloced, assume caller calls free().
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
  */
-int *lexicalOrder(int n, int *return_size)
+struct TreeNode *mergeTrees(struct TreeNode *root1, struct TreeNode *root2)
 {
-	int *result = malloc(sizeof(int) * n);
-	*return_size = n;
-
-	int cur = 1;
-
-	for (int i = 0; i < n; i += 1) {
-		result[i] = cur;
-
-		if ((cur * 10) <= n) {
-			cur *= 10;
-			continue;
-		}
-
-		while (((cur % 10) == 9) || (cur >= n)) {
-			cur /= 10;
-		}
-
-		cur += 1;
+	if (root1 == NULL) {
+		return root2;
+	} else if (root2 == NULL) {
+		return root1;
 	}
 
-	return result;
+	root1->val += root2->val;
+	if (root1->left == NULL) {
+		root1->left = root2->left;
+	} else {
+		mergeTrees(root1->left, root2->left);
+	}
+
+	if (root1->right == NULL) {
+		root1->right = root2->right;
+	} else {
+		mergeTrees(root1->right, root2->right);
+	}
+
+	return root1;
 }
