@@ -1,33 +1,33 @@
 #include "./main.h"
 
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     struct TreeNode *left;
- *     struct TreeNode *right;
- * };
- */
-struct TreeNode *mergeTrees(struct TreeNode *root1, struct TreeNode *root2)
+int count_steps(long long n, long long prefix1, long long prefix2)
 {
-	if (root1 == NULL) {
-		return root2;
-	} else if (root2 == NULL) {
-		return root1;
+	long long n1 = n + 1;
+	long long steps = 0;
+	while (prefix1 <= n) {
+		steps += (n1 < prefix2 ? n1 : prefix2) - prefix1;
+		prefix1 *= 10;
+		prefix2 *= 10;
 	}
 
-	root1->val += root2->val;
-	if (root1->left == NULL) {
-		root1->left = root2->left;
-	} else {
-		mergeTrees(root1->left, root2->left);
+	return steps;
+}
+
+int findKthNumber(int n, int k)
+{
+	long long result = 1;
+	k -= 1;
+
+	while (k > 0) {
+		int step = count_steps(n, result, result + 1);
+		if (step <= k) {
+			result += 1;
+			k -= step;
+		} else {
+			result *= 10;
+			k -= 1;
+		}
 	}
 
-	if (root1->right == NULL) {
-		root1->right = root2->right;
-	} else {
-		mergeTrees(root1->right, root2->right);
-	}
-
-	return root1;
+	return result;
 }
