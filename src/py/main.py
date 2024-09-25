@@ -1,58 +1,64 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Optional
+
+
+def offset(c: str) -> int:
+    return ord(c) - ord("a")
+
+
+class Node:
+    next: list[Optional[Node]]
+    cnt: int
+
+    def __init__(self):
+        self.next = [None] * 26
+        self.cnt = 0
 
 
 class Solution:
-    def robotSim(self, commands: List[int], obstacles: List[List[int]]) -> int:
-        obstacle_set = {self.hash_coordinates(x, y) for x, y in obstacles}
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    def sumPrefixScores(self, words: List[str]) -> List[int]:
+        N = len(words)
+        root = Node()
+        for word in words:
+            self.insert(root, word)
 
-        x = 0
-        y = 0
-        result = 0
-        current_direction = 0
-        for command in commands:
-            if command == -1:
-                current_direction = (current_direction + 1) % 4
-                continue
-
-            if command == -2:
-                current_direction = (current_direction + 3) % 4
-                continue
-
-            dx, dy = directions[current_direction]
-            for _ in range(command):
-                next_x, next_y = x + dx, y + dy
-                if self.hash_coordinates(next_x, next_y) in obstacle_set:
-                    break
-                x, y = next_x, next_y
-
-            result = max(result, x * x + y * y)
+        result = [0] * N
+        for i, word in enumerate(words):
+            result[i] = self.count(root, word)
 
         return result
 
-    def hash_coordinates(self, x: int, y: int) -> int:
-        return x + 60001 * y
+    def count(self, root: Node, s: str) -> int:
+        node = root
+        count = 0
+        for c in s:
+            i = offset(c)
+            child = node.next[i]
+            if child is None:
+                break
+            count += child.cnt
+            node = child
 
+        return count
 
-class Input:
-    commands: list[int]
-    obstacles: list[list[int]]
+    def insert(self, root: Node, word: str):
+        node = root
+        for c in word:
+            i = offset(c)
+            child = node.next[i]
+            if child is None:
+                child = Node()
+                node.next[i] = child
 
-    def __init__(self, commands: list[int], obstacles: list[list[int]]):
-        self.commands = commands
-        self.obstacles = obstacles
+            child.cnt += 1
+            node = child
 
 
 def main():
-    inputs = [
-        Input([4, -1, 3], []),
-        Input([4, -1, 4, -2, 4], [[2, 4]]),
-        Input([6, -1, -1, 6], []),
-    ]
+    inputs = [["abc", "ab", "bc", "b"], ["abcd"]]
 
     for input in inputs:
-        result = Solution().robotSim(input.commands, input.obstacles)
+        result = Solution().sumPrefixScores(input)
         print(result)
 
 
