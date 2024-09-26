@@ -2,30 +2,48 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-type data struct {
-	name   string
-	height int
+type event struct {
+	start int
+	end   int
 }
 
-func sortPeople(names []string, heights []int) []string {
-	dataList := make([]data, 0, len(names))
-	for i, name := range names {
-		dataList = append(dataList, data{name, heights[i]})
+func min(l, r int) int {
+	if l < r {
+		return l
 	}
 
-	sort.Slice(dataList, func(l, r int) bool {
-		return dataList[r].height < dataList[l].height
-	})
+	return r
+}
 
-	result := make([]string, 0, len(names))
-	for _, data := range dataList {
-		result = append(result, data.name)
+func max(l, r int) int {
+	if l > r {
+		return l
 	}
 
-	return result
+	return r
+}
+
+type MyCalendar struct {
+	events []event
+}
+
+func Constructor() MyCalendar {
+	return MyCalendar{events: []event{}}
+}
+
+func (this *MyCalendar) Book(start int, end int) bool {
+	for _, event := range this.events {
+		l := max(event.start, start)
+		r := min(event.end, end)
+		if l < r {
+			return false
+		}
+	}
+
+	this.events = append(this.events, event{start, end})
+	return true
 }
 
 type input struct {
