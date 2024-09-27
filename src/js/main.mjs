@@ -1,117 +1,73 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-/**
- * @param {string} ch
- * @return {boolean}
- */
-function isDigit(ch) {
-  const ZERO = "0".charCodeAt(0);
-  const NINE = "9".charCodeAt(0);
-  const code = ch.charCodeAt(0);
-  return ZERO <= code && code <= NINE;
-}
+class MyCalendarTwo {
+  /** @type {Map<number, number>} */
+  bookingCount;
 
-/**
- * @param {string} expression
- * @return {number[][][]}
- */
-function initializeBaseCases(expression) {
-  const dp = [];
-
-  for (let i = 0; i < expression.length; i += 1) {
-    const row = [];
-    for (let j = 0; j < expression.length; j += 1) {
-      row.push([]);
-    }
-
-    dp.push(row);
+  constructor() {
+    this.bookingCount = new Map();
   }
 
-  for (let i = 0; i < expression.length; i += 1) {
-    for (let j = 0; j < expression.length; j += 1) {
-      dp[i][j] = [];
-    }
-  }
+  /**
+   * @param {number} start
+   * @param {number} end
+   * @return {boolean}
+   */
+  book(start, end) {
+    this.inc(start, 1);
+    this.inc(end, -1);
 
-  const ZERO = "0".charCodeAt(0);
-  for (let i = 0; i < expression.length; i += 1) {
-    if (!isDigit(expression.at(i))) {
-      continue;
-    }
+    let overlappedBooking = 0;
+    const values = [...this.bookingCount]
+      .sort((l, r) => l[0] - r[0])
+      .map((l) => l[1]);
 
-    const dig1 = expression.charCodeAt(i) - ZERO;
-    if (i + 1 < expression.length && isDigit(expression.at(i + 1))) {
-      const dig2 = expression.charCodeAt(i + 1) - ZERO;
-      const n = dig1 * 10 + dig2;
-      dp[i][i + 1].push(n);
-    }
-    dp[i][i].push(dig1);
-  }
-
-  return dp;
-}
-
-/**
- * @param {string} op
- * @param {number[]} leftResults
- * @param {number[]} rightResults
- * @param {number[]} results
- * @returns {undefined}
- */
-function computeResults(op, leftResults, rightResults, results) {
-  for (const leftValue of leftResults) {
-    for (const rightValue of rightResults) {
-      if (op === "+") {
-        results.push(leftValue + rightValue);
-      } else if (op === "-") {
-        results.push(leftValue - rightValue);
-      } else if (op === "*") {
-        results.push(leftValue * rightValue);
+    for (const count of values) {
+      overlappedBooking += count;
+      if (overlappedBooking <= 2) {
+        continue;
       }
-    }
-  }
-}
 
-/**
- * @param {string} expression
- * @param {number[][][]} dp
- * @param {number} start
- * @param {number} end
- * @returns {undefined}
- */
-function processSubexpression(expression, dp, start, end) {
-  for (let split = start; split <= end; split += 1) {
-    if (isDigit(expression.at(split))) {
-      continue;
+      this.inc(start, -1);
+      this.inc(end, 1);
+
+      if (this.get(start) === 0) {
+        this.bookingCount.delete(start);
+      }
+
+      if (this.get(end) === 0) {
+        this.bookingCount.delete(end);
+      }
+
+      return false;
     }
 
-    const leftResults = dp[start][split - 1];
-    const rightResults = dp[split + 1][end];
-
-    computeResults(
-      expression.at(split),
-      leftResults,
-      rightResults,
-      dp[start][end],
-    );
+    return true;
   }
-}
 
-/**
- * @param {string} expression
- * @return {number[]}
- */
-function diffWaysToCompute(expression) {
-  const dp = initializeBaseCases(expression);
-
-  for (let i = 3; i <= expression.length; i += 1) {
-    for (let j = 0; j + i - 1 < expression.length; j += 1) {
-      const k = i + j - 1;
-      processSubexpression(expression, dp, j, k);
+  /**
+   * @param {number} key
+   * @param {number} value
+   * @return {number}
+   */
+  inc(key, value) {
+    const count = this.bookingCount.get(key);
+    if (count == null) {
+      this.bookingCount.set(key, value);
+      return value;
     }
-  }
 
-  return dp[0][expression.length - 1];
+    const cnt = count + value;
+    this.bookingCount.set(key, cnt);
+    return cnt;
+  }
+  /**
+   * @param {number} n
+   * @return {number | undefined}
+   */
+  get(n) {
+    return this.bookingCount.get(n);
+  }
 }
 
 function main() {
