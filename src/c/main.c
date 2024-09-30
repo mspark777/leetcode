@@ -1,102 +1,73 @@
 #include "./main.h"
 
 typedef struct {
-	int *queue;
-	int front;
-	int rear;
-	int size;
+	int *stack;
+	int *inc;
+	int top;
 	int capacity;
-} MyCircularDeque;
+} CustomStack;
 
-MyCircularDeque *myCircularDequeCreate(int k)
+CustomStack *customStackCreate(int max_size)
 {
-	MyCircularDeque *deque = malloc(sizeof(MyCircularDeque));
-	deque->queue = malloc(sizeof(int) * k);
-	deque->front = 0;
-	deque->rear = k - 1;
-	deque->size = 0;
-	deque->capacity = k;
+	CustomStack *stack = malloc(sizeof(CustomStack));
+	stack->top = -1;
+	stack->inc = calloc(max_size, sizeof(int));
+	stack->stack = malloc(sizeof(int) * max_size);
+	stack->capacity = max_size;
 
-	return deque;
+	return stack;
 }
 
-void myCircularDequeFree(MyCircularDeque *obj)
+void customStackFree(CustomStack *obj)
 {
-	free(obj->queue);
+	free(obj->stack);
+	free(obj->inc);
 	free(obj);
 }
 
-bool myCircularDequeInsertFront(MyCircularDeque *obj, int value);
-bool myCircularDequeInsertLast(MyCircularDeque *obj, int value);
-bool myCircularDequeDeleteFront(MyCircularDeque *obj);
-bool myCircularDequeDeleteLast(MyCircularDeque *obj);
-int myCircularDequeGetFront(MyCircularDeque *obj);
-int myCircularDequeGetRear(MyCircularDeque *obj);
-bool myCircularDequeIsEmpty(MyCircularDeque *obj);
-bool myCircularDequeIsFull(MyCircularDeque *obj);
+void customStackPush(CustomStack *obj, int x);
+int customStackPop(CustomStack *obj);
+void customStackIncrement(CustomStack *obj, int k, int val);
 
-bool myCircularDequeInsertFront(MyCircularDeque *obj, int value)
+void customStackPush(CustomStack *obj, int x)
 {
-	if (myCircularDequeIsFull(obj)) {
-		return 0;
+	const int top = obj->top + 1;
+	if (top >= obj->capacity) {
+		return;
 	}
 
-	obj->front = (obj->front - 1 + obj->capacity) % obj->capacity;
-	obj->queue[obj->front] = value;
-	obj->size += 1;
-	return 1;
+	obj->top = top;
+	obj->stack[top] = x;
 }
 
-bool myCircularDequeInsertLast(MyCircularDeque *obj, int value)
+int customStackPop(CustomStack *obj)
 {
-	if (myCircularDequeIsFull(obj)) {
-		return 0;
+	if (obj->top < 0) {
+		return -1;
 	}
 
-	obj->rear = (obj->rear + 1) % obj->capacity;
-	obj->queue[obj->rear] = value;
-	obj->size += 1;
-	return 1;
-}
-
-bool myCircularDequeDeleteFront(MyCircularDeque *obj)
-{
-	if (myCircularDequeIsEmpty(obj)) {
-		return 0;
+	const int top = obj->top;
+	const int result = obj->stack[top] + obj->inc[top];
+	if (top > 0) {
+		obj->inc[top - 1] += obj->inc[top];
 	}
 
-	obj->front = (obj->front + 1) % obj->capacity;
-	obj->size -= 1;
-	return 1;
+	obj->inc[top] = 0;
+	obj->top = top - 1;
+	return result;
 }
 
-bool myCircularDequeDeleteLast(MyCircularDeque *obj)
+void customStackIncrement(CustomStack *obj, int k, int val)
 {
-	if (myCircularDequeIsEmpty(obj)) {
-		return 0;
+	const int top = obj->top;
+	if (top < 0) {
+		return;
 	}
 
-	obj->rear = (obj->rear - 1 + obj->capacity) % obj->capacity;
-	obj->size -= 1;
-	return 1;
-}
+	int idx = k - 1;
+	if (idx > top) {
+		idx = top;
+	}
 
-int myCircularDequeGetFront(MyCircularDeque *obj)
-{
-	return myCircularDequeIsEmpty(obj) ? -1 : obj->queue[obj->front];
-}
-
-int myCircularDequeGetRear(MyCircularDeque *obj)
-{
-	return myCircularDequeIsEmpty(obj) ? -1 : obj->queue[obj->rear];
-}
-
-bool myCircularDequeIsEmpty(MyCircularDeque *obj)
-{
-	return obj->size < 1;
-}
-
-bool myCircularDequeIsFull(MyCircularDeque *obj)
-{
-	return obj->size >= obj->capacity;
+	obj->inc[idx] += val;
 }
