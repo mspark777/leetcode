@@ -1,80 +1,47 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-class MyCalendarTwo {
+/**
+ * @param {number[]} arr
+ * @param {number} k
+ * @return {boolean}
+ */
+function canArrange(arr, k) {
   /** @type {Map<number, number>} */
-  bookingCount;
+  const remainderCounts = new Map();
 
-  constructor() {
-    this.bookingCount = new Map();
+  for (const i of arr) {
+    const idx = ((i % k) + k) % k;
+    const rem = remainderCounts.get(idx) ?? 0;
+    remainderCounts.set(idx, rem + 1);
   }
 
-  /**
-   * @param {number} start
-   * @param {number} end
-   * @return {boolean}
-   */
-  book(start, end) {
-    this.inc(start, 1);
-    this.inc(end, -1);
+  for (const i of arr) {
+    const rem = ((i % k) + k) % k;
 
-    let overlappedBooking = 0;
-    const values = [...this.bookingCount]
-      .sort((l, r) => l[0] - r[0])
-      .map((l) => l[1]);
-
-    for (const count of values) {
-      overlappedBooking += count;
-      if (overlappedBooking <= 2) {
+    if (rem == 0) {
+      const cnt = remainderCounts.get(rem);
+      if (cnt == null) {
         continue;
+      } else if (cnt % 2 === 1) {
+        return false;
       }
-
-      this.inc(start, -1);
-      this.inc(end, 1);
-
-      if (this.get(start) === 0) {
-        this.bookingCount.delete(start);
-      }
-
-      if (this.get(end) === 0) {
-        this.bookingCount.delete(end);
-      }
-
+    } else if (remainderCounts.get(rem) !== remainderCounts.get(k - rem)) {
       return false;
     }
-
-    return true;
   }
 
-  /**
-   * @param {number} key
-   * @param {number} value
-   * @return {number}
-   */
-  inc(key, value) {
-    const count = this.bookingCount.get(key);
-    if (count == null) {
-      this.bookingCount.set(key, value);
-      return value;
-    }
-
-    const cnt = count + value;
-    this.bookingCount.set(key, cnt);
-    return cnt;
-  }
-  /**
-   * @param {number} n
-   * @return {number | undefined}
-   */
-  get(n) {
-    return this.bookingCount.get(n);
-  }
+  return true;
 }
 
 function main() {
-  const inputs = ["2-1-1", "2*3-4*5"];
+  const inputs = [
+    [[1, 2, 3, 4, 5, 10, 6, 7, 8, 9], 5],
+    [[1, 2, 3, 4, 5, 6], 7],
+    [[1, 2, 3, 4, 5, 6], 10],
+  ];
 
-  for (const expression of inputs) {
-    const result = diffWaysToCompute(expression);
+  for (const [arr, k] of inputs) {
+    const result = canArrange(arr, k);
     console.log(result);
   }
 }
