@@ -1,73 +1,36 @@
 #include "./main.h"
 
-typedef struct {
-	int *stack;
-	int *inc;
-	int top;
-	int capacity;
-} CustomStack;
-
-CustomStack *customStackCreate(int max_size)
+void helper(struct TreeNode *node, unsigned int *first_min,
+	    unsigned int *second_min)
 {
-	CustomStack *stack = malloc(sizeof(CustomStack));
-	stack->top = -1;
-	stack->inc = calloc(max_size, sizeof(int));
-	stack->stack = malloc(sizeof(int) * max_size);
-	stack->capacity = max_size;
-
-	return stack;
-}
-
-void customStackFree(CustomStack *obj)
-{
-	free(obj->stack);
-	free(obj->inc);
-	free(obj);
-}
-
-void customStackPush(CustomStack *obj, int x);
-int customStackPop(CustomStack *obj);
-void customStackIncrement(CustomStack *obj, int k, int val);
-
-void customStackPush(CustomStack *obj, int x)
-{
-	const int top = obj->top + 1;
-	if (top >= obj->capacity) {
+	if (node == NULL) {
 		return;
 	}
 
-	obj->top = top;
-	obj->stack[top] = x;
+	const unsigned int val = node->val;
+
+	if (val < *first_min) {
+		*second_min = *first_min;
+		*first_min = val;
+	} else if ((val > *first_min) && (val < *second_min)) {
+		*second_min = val;
+	}
+
+	helper(node->left, first_min, second_min);
+	helper(node->right, first_min, second_min);
 }
 
-int customStackPop(CustomStack *obj)
+int findSecondMinimumValue(struct TreeNode *root)
 {
-	if (obj->top < 0) {
+	if (root == NULL) {
 		return -1;
 	}
 
-	const int top = obj->top;
-	const int result = obj->stack[top] + obj->inc[top];
-	if (top > 0) {
-		obj->inc[top - 1] += obj->inc[top];
-	}
+	const unsigned int MAX = 0xFFFFFFFF;
 
-	obj->inc[top] = 0;
-	obj->top = top - 1;
-	return result;
-}
+	unsigned int first_min = root->val;
+	unsigned int second_min = MAX;
+	helper(root, &first_min, &second_min);
 
-void customStackIncrement(CustomStack *obj, int k, int val)
-{
-	const int top = obj->top;
-	if (top < 0) {
-		return;
-	}
-
-	int idx = k - 1;
-	if (idx > top) {
-		idx = top;
-	}
-
-	obj->inc[idx] += val;
+	return second_min == MAX ? -1 : second_min;
 }
