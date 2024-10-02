@@ -2,46 +2,29 @@
 
 /**
  * @param {number[]} arr
- * @param {number} k
- * @return {boolean}
+ * @return {number[]}
  */
-function canArrange(arr, k) {
+function arrayRankTransform(arr) {
+  const unique = [...new Set(arr)].sort((l, r) => l - r);
+
   /** @type {Map<number, number>} */
-  const remainderCounts = new Map();
-
-  for (const i of arr) {
-    const idx = ((i % k) + k) % k;
-    const rem = remainderCounts.get(idx) ?? 0;
-    remainderCounts.set(idx, rem + 1);
+  const ranks = new Map();
+  for (const [i, n] of unique.entries()) {
+    ranks.set(n, i + 1);
   }
 
-  for (const i of arr) {
-    const rem = ((i % k) + k) % k;
-
-    if (rem == 0) {
-      const cnt = remainderCounts.get(rem);
-      if (cnt == null) {
-        continue;
-      } else if (cnt % 2 === 1) {
-        return false;
-      }
-    } else if (remainderCounts.get(rem) !== remainderCounts.get(k - rem)) {
-      return false;
-    }
-  }
-
-  return true;
+  return arr.map((n) => ranks.get(n));
 }
 
 function main() {
   const inputs = [
-    [[1, 2, 3, 4, 5, 10, 6, 7, 8, 9], 5],
-    [[1, 2, 3, 4, 5, 6], 7],
-    [[1, 2, 3, 4, 5, 6], 10],
+    [40, 10, 20, 30],
+    [100, 100, 100],
+    [37, 12, 28, 9, 100, 56, 80, 5, 12],
   ];
 
-  for (const [arr, k] of inputs) {
-    const result = canArrange(arr, k);
+  for (const arr of inputs) {
+    const result = arrayRankTransform(arr);
     console.log(result);
   }
 }
