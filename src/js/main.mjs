@@ -1,30 +1,69 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} arr
- * @return {number[]}
+ * @param {number} l
+ * @param {number} r
+ * @returns {number}
  */
-function arrayRankTransform(arr) {
-  const unique = [...new Set(arr)].sort((l, r) => l - r);
+function div(l, r) {
+  return Number(BigInt(l) / BigInt(r));
+}
 
+/**
+ * @param {number} l
+ * @param {number} r
+ * @returns {number}
+ */
+function mod(l, r) {
+  return Number(BigInt(l) % BigInt(r));
+}
+
+/**
+ * @param {number[]} skills
+ * @return {number}
+ */
+function dividePlayers(skills) {
+  const n = skills.length;
+  let totalSkill = 0;
   /** @type {Map<number, number>} */
-  const ranks = new Map();
-  for (const [i, n] of unique.entries()) {
-    ranks.set(n, i + 1);
+  const skillMap = new Map();
+
+  for (const s of skills) {
+    totalSkill += s;
+
+    const count = skillMap.get(s) ?? 0;
+    skillMap.set(s, count + 1);
   }
 
-  return arr.map((n) => ranks.get(n));
+  if (mod(totalSkill, div(n, 2)) !== 0) {
+    return -1;
+  }
+
+  let targetSkill = div(totalSkill, div(n, 2));
+  let result = 0;
+
+  for (const [skill, count] of skillMap) {
+    const partnerSkill = targetSkill - skill;
+    const partnerCount = skillMap.get(partnerSkill);
+    if (partnerCount == null || partnerCount !== count) {
+      return -1;
+    }
+
+    result += skill * partnerSkill * count;
+  }
+
+  return div(result, 2);
 }
 
 function main() {
   const inputs = [
-    [40, 10, 20, 30],
-    [100, 100, 100],
-    [37, 12, 28, 9, 100, 56, 80, 5, 12],
+    [3, 2, 5, 1, 3, 4],
+    [3, 4],
+    [1, 1, 2, 3],
   ];
 
-  for (const arr of inputs) {
-    const result = arrayRankTransform(arr);
+  for (const skill of inputs) {
+    const result = dividePlayers(skill);
     console.log(result);
   }
 }
