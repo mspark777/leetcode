@@ -1,69 +1,42 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number} l
- * @param {number} r
- * @returns {number}
+ * @param {string} sentence1
+ * @param {string} sentence2
+ * @return {boolean}
  */
-function div(l, r) {
-  return Number(BigInt(l) / BigInt(r));
-}
+function areSentencesSimilar(sentence1, sentence2) {
+  const words1 = sentence1.split(" ");
+  const words2 = sentence2.split(" ");
+  let ends1 = words1.length - 1;
+  let ends2 = words2.length - 1;
 
-/**
- * @param {number} l
- * @param {number} r
- * @returns {number}
- */
-function mod(l, r) {
-  return Number(BigInt(l) % BigInt(r));
-}
-
-/**
- * @param {number[]} skills
- * @return {number}
- */
-function dividePlayers(skills) {
-  const n = skills.length;
-  let totalSkill = 0;
-  /** @type {Map<number, number>} */
-  const skillMap = new Map();
-
-  for (const s of skills) {
-    totalSkill += s;
-
-    const count = skillMap.get(s) ?? 0;
-    skillMap.set(s, count + 1);
+  if (ends1 > ends2) {
+    return areSentencesSimilar(sentence2, sentence1);
   }
 
-  if (mod(totalSkill, div(n, 2)) !== 0) {
-    return -1;
+  let start = 0;
+  while (start < words1.length && words1[start] === words2[start]) {
+    start += 1;
   }
 
-  let targetSkill = div(totalSkill, div(n, 2));
-  let result = 0;
-
-  for (const [skill, count] of skillMap) {
-    const partnerSkill = targetSkill - skill;
-    const partnerCount = skillMap.get(partnerSkill);
-    if (partnerCount == null || partnerCount !== count) {
-      return -1;
-    }
-
-    result += skill * partnerSkill * count;
+  while (ends1 >= 0 && words1[ends1] === words2[ends2]) {
+    ends1 -= 1;
+    ends2 -= 1;
   }
 
-  return div(result, 2);
+  return ends1 < start;
 }
 
 function main() {
   const inputs = [
-    [3, 2, 5, 1, 3, 4],
-    [3, 4],
-    [1, 1, 2, 3],
+    ["My name is Haley", "My Haley"],
+    ["of", "A lot of words"],
+    ["Eating right now", "Eating"],
   ];
 
-  for (const skill of inputs) {
-    const result = dividePlayers(skill);
+  for (const [s1, s2] of inputs) {
+    const result = areSentencesSimilar(s1, s2);
     console.log(result);
   }
 }
