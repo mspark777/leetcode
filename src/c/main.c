@@ -1,25 +1,31 @@
 #include "./main.h"
 
-int findLengthOfLCIS(int *nums, int nums_size)
+bool is_palindrome(char *s, int left, int right)
 {
-	int result = 1;
-	int len = 1;
-	for (int i = 1; i < nums_size; i += 1) {
-		const int prev = nums[i - 1];
-		const int curr = nums[i];
-		if (prev < curr) {
-			len += 1;
-		} else {
-			if (len > result) {
-				result = len;
-			}
-			len = 1;
+	while (left < right) {
+		if (s[left] != s[right]) {
+			return 0;
 		}
+		left += 1;
+		right -= 1;
 	}
 
-	if (len > result) {
-		result = len;
+	return 1;
+}
+
+bool validPalindrome(char *s)
+{
+	int left = 0;
+	int right = strlen(s) - 1;
+	while (left < right) {
+		if (s[left] != s[right]) {
+			return is_palindrome(s, left + 1, right) ||
+			       is_palindrome(s, left, right - 1);
+		}
+
+		left += 1;
+		right -= 1;
 	}
 
-	return result;
+	return 1;
 }
