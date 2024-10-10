@@ -1,36 +1,43 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {string} s
+ * @param {number[]} nums
  * @return {number}
  */
-function minLength(s) {
+function maxWidthRamp(nums) {
+  const n = nums.length;
+
   /** @type {number[]} */
-  const stack = [];
+  const indices = [];
 
-  for (const ch of s) {
-    if (stack.length < 1) {
-      stack.push(ch);
-      continue;
-    }
-
-    if (ch === "B" && stack.at(-1) === "A") {
-      stack.pop();
-    } else if (ch === "D" && stack.at(-1) === "C") {
-      stack.pop();
-    } else {
-      stack.push(ch);
+  for (const [i, n] of nums.entries()) {
+    const top = indices.at(-1);
+    if (top == null) {
+      indices.push(i);
+    } else if (nums[top] > n) {
+      indices.push(i);
     }
   }
 
-  return stack.length;
+  let result = 0;
+  for (let i = n - 1; i >= 0; i -= 1) {
+    while (indices.length > 0 && nums.at(indices.at(-1)) <= nums.at(i)) {
+      result = Math.max(result, i - indices.at(-1));
+      indices.pop();
+    }
+  }
+
+  return result;
 }
 
 function main() {
-  const inputs = ["ABFCACDB", "ACBBD"];
+  const inputs = [
+    [6, 0, 8, 2, 1, 5],
+    [9, 8, 1, 0, 1, 9, 4, 0, 4, 1],
+  ];
 
-  for (const s of inputs) {
-    const result = minLength(s);
+  for (const nums of inputs) {
+    const result = maxWidthRamp(nums);
     console.log(result);
   }
 }
