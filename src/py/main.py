@@ -1,108 +1,42 @@
 from __future__ import annotations
-from typing import Optional
+from typing import List
+from heapq import heappop, heappush
 
 
-class Node:
-    def __init__(self, freq):
-        self.freq = freq
-        self.prev = None
-        self.next = None
-        self.keys = set()
+class Solution:
+    def smallestChair(self, times: List[List[int]], target_friend: int) -> int:
+        sorted_times = sorted(
+            [(arrival, leave, index) for index, (arrival, leave) in enumerate(times)]
+        )
 
+        next_chair = 0
+        available_chairs: list[int] = []
+        leaving_queue: list[tuple[int, int]] = []
 
-class AllOne:
-    def __init__(self):
-        self.head = Node(0)
-        self.tail = Node(0)
-        self.head.next = self.tail
-        self.tail.prev = self.head
-        self.map = {}
+        for arrival, leave, index in sorted_times:
+            while leaving_queue and leaving_queue[0][0] <= arrival:
+                _, chair = heappop(leaving_queue)
+                heappush(available_chairs, chair)
 
-    def inc(self, key: str) -> None:
-        if key in self.map:
-            node = self.map[key]
-            freq = node.freq
-            node.keys.remove(key)
-
-            nextNode = node.next
-            if nextNode == self.tail or nextNode.freq != freq + 1:
-                newNode = Node(freq + 1)
-                newNode.keys.add(key)
-                newNode.prev = node
-                newNode.next = nextNode
-                node.next = newNode
-                nextNode.prev = newNode
-                self.map[key] = newNode
+            if available_chairs:
+                current_chair = heappop(available_chairs)
             else:
-                nextNode.keys.add(key)
-                self.map[key] = nextNode
+                current_chair = next_chair
+                next_chair += 1
 
-            if not node.keys:
-                self.removeNode(node)
-        else:
-            firstNode = self.head.next
-            if firstNode == self.tail or firstNode.freq > 1:
-                newNode = Node(1)
-                newNode.keys.add(key)
-                newNode.prev = self.head
-                newNode.next = firstNode
-                self.head.next = newNode
-                firstNode.prev = newNode
-                self.map[key] = newNode
-            else:
-                firstNode.keys.add(key)
-                self.map[key] = firstNode
+            heappush(leaving_queue, (leave, current_chair))
 
-    def dec(self, key: str) -> None:
-        if key not in self.map:
-            return
+            if index == target_friend:
+                return current_chair
 
-        node = self.map[key]
-        node.keys.remove(key)
-        freq = node.freq
-
-        if freq == 1:
-            del self.map[key]
-        else:
-            prevNode = node.prev
-            if prevNode == self.head or prevNode.freq != freq - 1:
-                newNode = Node(freq - 1)
-                newNode.keys.add(key)
-                newNode.prev = prevNode
-                newNode.next = node
-                prevNode.next = newNode
-                node.prev = newNode
-                self.map[key] = newNode
-            else:
-                prevNode.keys.add(key)
-                self.map[key] = prevNode
-
-        if not node.keys:
-            self.removeNode(node)
-
-    def getMaxKey(self) -> str:
-        if self.tail.prev == self.head:
-            return ""
-        return next(iter(self.tail.prev.keys))
-
-    def getMinKey(self) -> str:
-        if self.head.next == self.tail:
-            return ""
-        return next(iter(self.head.next.keys))
-
-    def removeNode(self, node):
-        prevNode = node.prev
-        nextNode = node.next
-
-        prevNode.next = nextNode
-        nextNode.prev = prevNode
+        return 0
 
 
 def main():
-    inputs = [["abc", "ab", "bc", "b"], ["abcd"]]
+    inputs = [([[1, 4], [2, 3], [4, 6]], 1), ([[3, 10], [1, 5], [2, 6]], 0)]
 
-    for input in inputs:
-        result = Solution().sumPrefixScores(input)
+    for times, target in inputs:
+        result = Solution().smallestChair(times, target)
         print(result)
 
 
