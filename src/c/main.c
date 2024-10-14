@@ -1,31 +1,57 @@
 #include "./main.h"
 
-bool is_palindrome(char *s, int left, int right)
+int to_int(char *nums)
 {
-	while (left < right) {
-		if (s[left] != s[right]) {
-			return 0;
-		}
-		left += 1;
-		right -= 1;
+	int n = 0;
+	int i = 0;
+	int minus = 0;
+	if (nums[i] == '-') {
+		minus = 1;
+		i += 1;
 	}
 
-	return 1;
+	while (nums[i] != 0) {
+		n *= 10;
+		n += nums[i] - '0';
+		i += 1;
+	}
+
+	return minus ? -n : n;
 }
 
-bool validPalindrome(char *s)
+int calPoints(char **operations, int operations_size)
 {
-	int left = 0;
-	int right = strlen(s) - 1;
-	while (left < right) {
-		if (s[left] != s[right]) {
-			return is_palindrome(s, left + 1, right) ||
-			       is_palindrome(s, left, right - 1);
-		}
+	int top_idx = -1;
+	int stack[1000] = {
+		0,
+	};
 
-		left += 1;
-		right -= 1;
+	for (int i = 0; i < operations_size; i += 1) {
+		char *oper = operations[i];
+		char ch = oper[0];
+		if (ch == '+') {
+			int top = stack[top_idx];
+			top_idx -= 1;
+			int new_top = top + stack[top_idx];
+			top_idx += 1;
+			stack[top_idx] = top;
+			top_idx += 1;
+			stack[top_idx] = new_top;
+		} else if (ch == 'D') {
+			int top = stack[top_idx];
+			top_idx += 1;
+			stack[top_idx] = top * 2;
+		} else if (ch == 'C') {
+			top_idx -= 1;
+		} else {
+			top_idx += 1;
+			stack[top_idx] = to_int(oper);
+		}
 	}
 
-	return 1;
+	int result = 0;
+	for (int i = 0; i <= top_idx; i += 1) {
+		result += stack[i];
+	}
+	return result;
 }
