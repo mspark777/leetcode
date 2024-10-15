@@ -1,18 +1,11 @@
 #include "./main.h"
 
-long long minimumSteps(char *s)
+bool hasAlternatingBits(int n)
 {
-	long long result = 0;
-	long long black_ball_count = 0;
+	long long n0 = n;
+	long long n1 = n >> 1;
+	long long n2 = n0 + n1;
+	long long n3 = n2 + 1;
 
-	for (int i = 0; s[i] != 0; i += 1) {
-		const char ch = s[i];
-		if (ch == '0') {
-			result += black_ball_count;
-		} else {
-			black_ball_count += 1;
-		}
-	}
-
-	return result;
+	return (n2 & n3) == 0;
 }
