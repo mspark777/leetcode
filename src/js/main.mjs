@@ -4,26 +4,32 @@
  * @param {number[]} nums
  * @return {number}
  */
-function maxWidthRamp(nums) {
-  const n = nums.length;
+function findShortestSubArray(nums) {
+  /** @type {Map<number, number>} */
+  const lefts = new Map();
+  /** @type {Map<number, number>} */
+  const rights = new Map();
+  /** @type {Map<number, number>} */
+  const counts = new Map();
 
-  /** @type {number[]} */
-  const indices = [];
-
-  for (const [i, n] of nums.entries()) {
-    const top = indices.at(-1);
-    if (top == null) {
-      indices.push(i);
-    } else if (nums[top] > n) {
-      indices.push(i);
+  for (const [i, num] of nums.entries()) {
+    if (!lefts.has(num)) {
+      lefts.set(num, i);
     }
+
+    rights.set(num, i);
+
+    const count = counts.get(num) ?? 0;
+    counts.set(num, count + 1);
   }
 
-  let result = 0;
-  for (let i = n - 1; i >= 0; i -= 1) {
-    while (indices.length > 0 && nums.at(indices.at(-1)) <= nums.at(i)) {
-      result = Math.max(result, i - indices.at(-1));
-      indices.pop();
+  let result = nums.length;
+  const degree = Math.max(...counts.values());
+  for (const [num, count] of counts) {
+    if (count === degree) {
+      const left = lefts.get(num);
+      const right = rights.get(num);
+      result = Math.min(result, right - left + 1);
     }
   }
 
@@ -32,12 +38,12 @@ function maxWidthRamp(nums) {
 
 function main() {
   const inputs = [
-    [6, 0, 8, 2, 1, 5],
-    [9, 8, 1, 0, 1, 9, 4, 0, 4, 1],
+    [1, 2, 2, 3, 1],
+    [1, 2, 2, 3, 1, 4, 2],
   ];
 
   for (const nums of inputs) {
-    const result = maxWidthRamp(nums);
+    const result = findShortestSubArray(nums);
     console.log(result);
   }
 }
