@@ -1,11 +1,22 @@
 #include "./main.h"
 
-bool hasAlternatingBits(int n)
+int countBinarySubstrings(char *s)
 {
-	long long n0 = n;
-	long long n1 = n >> 1;
-	long long n2 = n0 + n1;
-	long long n3 = n2 + 1;
+	int count = 0;
+	int prev = 0;
+	int cur = 1;
+	for (int i = 1; s[i] != 0; i += 1) {
+		const char pch = s[i - 1];
+		const char ch = s[i];
+		if (ch == pch) {
+			cur += 1;
+			continue;
+		}
 
-	return (n2 & n3) == 0;
+		count += prev < cur ? prev : cur;
+		prev = cur;
+		cur = 1;
+	}
+
+	return count + (prev < cur ? prev : cur);
 }
