@@ -1,15 +1,21 @@
 #include "./main.h"
 
-struct TreeNode *searchBST(struct TreeNode *root, int val)
+int search(int *nums, int nums_size, int target)
 {
-	if (root == NULL) {
-		return NULL;
+	int left = 0;
+	int right = nums_size;
+
+	while (left < right) {
+		const int mid = (left + right) / 2;
+		const int num = nums[mid];
+		if (num < target) {
+			left = mid + 1;
+		} else if (num > target) {
+			right = mid;
+		} else {
+			return mid;
+		}
 	}
 
-	if (root->val == val) {
-		return root;
-	}
-
-	struct TreeNode *left = searchBST(root->left, val);
-	return left != NULL ? left : searchBST(root->right, val);
+	return -1;
 }
