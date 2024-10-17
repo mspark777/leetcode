@@ -1,13 +1,12 @@
 #include "./main.h"
 
-char *toLowerCase(char *s)
+bool isOneBitCharacter(int *bits, int bits_size)
 {
-	const char TERM = 'a' - 'A';
-	char *result = calloc(strlen(s) + 1, sizeof(char));
-	for (int i = 0; s[i] != 0; i++) {
-		const char ch = s[i];
-		result[i] = ('A' <= ch && ch <= 'Z') ? ch + TERM : ch;
+	const int last = bits_size - 1;
+	int i = 0;
+	while (i < last) {
+		i += bits[i] + 1;
 	}
 
-	return result;
+	return i == last;
 }
