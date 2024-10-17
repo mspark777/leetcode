@@ -1,41 +1,64 @@
 #include "./main.h"
 
-char *longestDiverseString(int a, int b, int c)
+char *to_string(int n, int len)
 {
-	int curr_a = 0;
-	int curr_b = 0;
-	int curr_c = 0;
-	int pos = 0;
-	const int result_length = a + b + c;
-	char *result = calloc(sizeof(char), result_length + 1);
+	char *s = calloc(sizeof(char), len + 1);
+	for (int i = len - 1; i >= 0; i -= 1) {
+		s[i] = (n % 10) + '0';
+		n /= 10;
+	}
 
-	for (int i = 0; i < result_length; i += 1) {
-		if ((a >= b && a >= c && curr_a < 2) ||
-		    (a > 0 && (curr_b == 2 || curr_c == 2))) {
-			result[pos] = 'a';
-			pos += 1;
-			a -= 1;
-			curr_a += 1;
-			curr_b = 0;
-			curr_c = 0;
-		} else if ((b >= a && b >= c && curr_b < 2) ||
-			   (b > 0 && (curr_c == 2 || curr_a == 2))) {
-			result[pos] = 'b';
-			pos += 1;
-			b -= 1;
-			curr_b += 1;
-			curr_a = 0;
-			curr_c = 0;
-		} else if ((c >= a && c >= b && curr_c < 2) ||
-			   (c > 0 && (curr_a == 2 || curr_b == 2))) {
-			result[pos] = 'c';
-			pos += 1;
-			c -= 1;
-			curr_c += 1;
-			curr_a = 0;
-			curr_b = 0;
+	return s;
+}
+
+int get_string_length(int n)
+{
+	int len = 0;
+	while (n > 0) {
+		n /= 10;
+		len += 1;
+	}
+
+	return len;
+}
+
+int to_int(char *s, int len)
+{
+	int n = 0;
+	for (int i = 0; i < len; i += 1) {
+		n *= 10;
+		n += (int)(s[i] - '0');
+	}
+
+	return n;
+}
+
+int maximumSwap(int num)
+{
+	const int n = get_string_length(num);
+	char *s = to_string(num, n);
+
+	int max_digit_idx = -1;
+	int swap_idx0 = -1;
+	int swap_idx1 = -1;
+
+	for (int i = n - 1; i >= 0; i -= 1) {
+		if (max_digit_idx == -1 || s[i] > s[max_digit_idx]) {
+			max_digit_idx = i;
+		} else if (s[i] < s[max_digit_idx]) {
+			swap_idx0 = i;
+			swap_idx1 = max_digit_idx;
 		}
 	}
+
+	if (swap_idx0 != -1 && swap_idx1 != -1) {
+		const char temp = s[swap_idx0];
+		s[swap_idx0] = s[swap_idx1];
+		s[swap_idx1] = temp;
+	}
+
+	const int result = to_int(s, n);
+	free(s);
 
 	return result;
 }
