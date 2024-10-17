@@ -1,21 +1,13 @@
 #include "./main.h"
 
-int search(int *nums, int nums_size, int target)
+char *toLowerCase(char *s)
 {
-	int left = 0;
-	int right = nums_size;
-
-	while (left < right) {
-		const int mid = (left + right) / 2;
-		const int num = nums[mid];
-		if (num < target) {
-			left = mid + 1;
-		} else if (num > target) {
-			right = mid;
-		} else {
-			return mid;
-		}
+	const char TERM = 'a' - 'A';
+	char *result = calloc(strlen(s) + 1, sizeof(char));
+	for (int i = 0; s[i] != 0; i++) {
+		const char ch = s[i];
+		result[i] = ('A' <= ch && ch <= 'Z') ? ch + TERM : ch;
 	}
 
-	return -1;
+	return result;
 }
