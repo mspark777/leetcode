@@ -17,6 +17,7 @@ erl_crash.dump
 leetcode-*.tar
 /tmp/
 .cache
+/target
 
 
 !.keep
