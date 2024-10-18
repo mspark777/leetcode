@@ -1,31 +1,40 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_max_or_subsets(nums: Vec<i32>) -> i32 {
-        let mut max_idx = 0;
-        let mut dp = vec![0; 1 << 17];
-
-        dp[0] = 1;
-
-        for &num in nums.iter() {
-            for i in (0..=max_idx).rev() {
-                let n = num as usize;
-                let idx = i as usize;
-                dp[idx | n] += dp[idx];
+    pub fn self_dividing_numbers(left: i32, right: i32) -> Vec<i32> {
+        let mut result: Vec<i32> = Vec::new();
+        for n in left..=right {
+            if Self::self_dividing(n) {
+                result.push(n);
             }
-
-            max_idx |= num;
         }
 
-        return dp[max_idx as usize];
+        return result;
+    }
+
+    fn self_dividing(n: i32) -> bool {
+        let mut i = n;
+
+        while i > 0 {
+            let d = i % 10;
+            if d == 0 {
+                return false;
+            } else if (n % d) > 0 {
+                return false;
+            }
+
+            i /= 10;
+        }
+
+        return true;
     }
 }
 
 fn main() {
-    let inputs = vec![vec![3, 1], vec![2, 2, 2], vec![3, 2, 1, 5]];
+    let inputs = vec![(1, 22), (47, 85)];
 
     for input in inputs {
-        let result = Solution::count_max_or_subsets(input);
-        println!("{result}");
+        let result = Solution::self_dividing_numbers(input.0, input.1);
+        println!("{result:?}");
     }
 }
