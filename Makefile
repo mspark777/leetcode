@@ -10,9 +10,6 @@ js:
 go:
 	@go run src/go/main.go
 
-py:
-	@python src/py/main.py
-
 sh:
 	@cd src/sh && bash main.sh
 

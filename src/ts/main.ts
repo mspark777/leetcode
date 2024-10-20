@@ -1,114 +1,37 @@
 import "@total-typescript/ts-reset";
 
-class UnionFind {
-  private readonly parents: number[];
-  private components: number;
-  public constructor(n: number) {
-    this.parents = [];
-    this.components = n;
-    for (let i = 0; i <= n; i += 1) {
-      this.parents.push(i);
+function longestSquareStreak(nums: number[]): number {
+  nums.sort((l, r) => l - r);
+
+  const streakLengths = new Map<number, number>();
+
+  for (const n of nums) {
+    const root = Math.trunc(Math.sqrt(n));
+    const lenOfRoot = streakLengths.get(root);
+    const square = root * root;
+    if (square === n && lenOfRoot != null) {
+      streakLengths.set(n, lenOfRoot + 1);
+    } else {
+      streakLengths.set(n, 1);
     }
   }
 
-  public find(x: number): number {
-    if (x !== this.parents[x]) {
-      this.parents[x] = this.find(this.parents[x] as number);
-    }
-
-    return this.parents[x] as number;
+  let longestLength = 0;
+  for (const len of streakLengths.values()) {
+    longestLength = Math.max(longestLength, len);
   }
 
-  public union(x: number, y: number): boolean {
-    x = this.find(x);
-    y = this.find(y);
-
-    if (x === y) {
-      return false;
-    }
-
-    this.parents[y] = x;
-    this.components -= 1;
-    return true;
-  }
-
-  public isConnected(): boolean {
-    return this.components === 1;
-  }
-}
-
-function maxNumEdgesToRemove(n: number, edges: number[][]): number {
-  const alice = new UnionFind(n);
-  const bob = new UnionFind(n);
-
-  let edgesNeed = 0;
-  for (const edge of edges) {
-    const [t, u, v] = edge as [number, number, number];
-    if (t !== 3) {
-      continue;
-    }
-
-    const aliceOK = alice.union(u, v);
-    const bobOK = bob.union(u, v);
-    if (aliceOK || bobOK) {
-      edgesNeed += 1;
-    }
-  }
-
-  for (const edge of edges) {
-    const [t, u, v] = edge as [number, number, number];
-    if (t === 1) {
-      if (alice.union(u, v)) {
-        edgesNeed += 1;
-      }
-    } else if (t === 2) {
-      if (bob.union(u, v)) {
-        edgesNeed += 1;
-      }
-    }
-  }
-
-  if (alice.isConnected() && bob.isConnected()) {
-    return edges.length - edgesNeed;
-  }
-
-  return -1;
+  return longestLength === 1 ? -1 : longestLength;
 }
 
 function main(): void {
-  const inputs: Array<[number[][], number]> = [
-    [
-      [
-        [3, 1, 2],
-        [3, 2, 3],
-        [1, 1, 3],
-        [1, 2, 4],
-        [1, 1, 2],
-        [2, 3, 4],
-      ],
-      4,
-    ],
-    [
-      [
-        [3, 1, 2],
-        [3, 2, 3],
-        [1, 1, 4],
-        [2, 1, 4],
-      ],
-      4,
-    ],
-    [
-      [
-        [3, 2, 3],
-        [1, 1, 2],
-        [2, 3, 4],
-      ],
-      4,
-    ],
+  const inputs: Array<number[]> = [
+    [4, 3, 6, 16, 8, 2],
+    [2, 3, 5, 6, 7],
   ];
 
-  for (const [edges, n] of inputs) {
-    const result = maxNumEdgesToRemove(n, edges);
+  for (const nums of inputs) {
+    const result = longestSquareStreak(nums);
     console.log(result);
   }
 }
