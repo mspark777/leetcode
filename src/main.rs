@@ -1,71 +1,75 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_mountain_removals(nums: Vec<i32>) -> i32 {
-        let lis_length = Self::get_longest_increasing_subsequence_length(&nums);
+    pub fn flood_fill(image: Vec<Vec<i32>>, sr: i32, sc: i32, color: i32) -> Vec<Vec<i32>> {
+        let mut result = image.clone();
+        Self::solve(&mut result, sr as usize, sc as usize, color);
+        return result;
+    }
 
-        let mut rev_nums = nums.clone();
-        rev_nums.reverse();
+    fn solve(image: &mut Vec<Vec<i32>>, sr: usize, sc: usize, color: i32) {
+        let target_color = image[sr][sc];
+        if target_color != color {
+            Self::dfs(image, sr, sc, target_color, color);
+        }
+    }
 
-        let lds_length = Self::get_longest_increasing_subsequence_length(&rev_nums);
+    fn dfs(image: &mut Vec<Vec<i32>>, sr: usize, sc: usize, target_color: i32, new_color: i32) {
+        let mut stack = vec![(sr, sc)];
+        let last_r = image.len() - 1;
+        let last_c = image[0].len() - 1;
 
-        let mut result = i64::MAX;
-        for (&lis, &lds) in lis_length.iter().zip(lds_length.iter().rev()) {
-            if lis <= 1 || lds <= 1 {
+        while let Some((top_r, top_c)) = stack.pop() {
+            let cell_color = image[top_r][top_c];
+            if cell_color != target_color {
                 continue;
             }
 
-            let v = Self::as_i64(nums.len()) - Self::as_i64(lis) - Self::as_i64(lds) + 1;
-            result = result.min(v);
-        }
-
-        return result as i32;
-    }
-
-    fn as_i64(u: usize) -> i64 {
-        return u as i64;
-    }
-
-    fn lower_bound(lis: &Vec<i32>, target: i32) -> usize {
-        let mut left = 0usize;
-        let mut right = lis.len();
-        while left < right {
-            let mid = (left + right) / 2;
-            if lis[mid] < target {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
-        }
-
-        return left;
-    }
-
-    fn get_longest_increasing_subsequence_length(nums: &Vec<i32>) -> Vec<usize> {
-        let mut lis_len = vec![1usize; nums.len()];
-        let mut lis = vec![nums[0]];
-
-        for (i, &num) in nums.iter().enumerate().skip(1) {
-            let idx = Self::lower_bound(&lis, num);
-
-            if idx == lis.len() {
-                lis.push(num);
-            } else {
-                lis[idx] = num;
+            image[top_r][top_c] = new_color;
+            if top_r > 0 {
+                stack.push((top_r - 1, top_c));
             }
 
-            lis_len[i] = lis.len();
-        }
+            if top_r < last_r {
+                stack.push((top_r + 1, top_c));
+            }
 
-        return lis_len;
+            if top_c > 0 {
+                stack.push((top_r, top_c - 1));
+            }
+
+            if top_c < last_c {
+                stack.push((top_r, top_c + 1));
+            }
+        }
     }
 }
 
+struct Input {
+    image: Vec<Vec<i32>>,
+    sr: i32,
+    sc: i32,
+    color: i32,
+}
+
 fn main() {
-    let inputs = vec![vec![1, 3, 1], vec![2, 1, 1, 5, 6, 2, 3, 1]];
+    let inputs = vec![
+        Input {
+            image: vec![vec![1, 1, 1], vec![1, 1, 0], vec![1, 0, 1]],
+            sr: 1,
+            sc: 1,
+            color: 2,
+        },
+        Input {
+            image: vec![vec![0, 0, 0], vec![0, 0, 0]],
+            sr: 0,
+            sc: 0,
+            color: 0,
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::minimum_mountain_removals(input);
+        let result = Solution::flood_fill(input.image, input.sr, input.sc, input.color);
         println!("{result:?}");
     }
 }
