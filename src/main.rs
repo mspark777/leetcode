@@ -1,75 +1,66 @@
 struct Solution {}
 
 impl Solution {
-    pub fn flood_fill(image: Vec<Vec<i32>>, sr: i32, sc: i32, color: i32) -> Vec<Vec<i32>> {
-        let mut result = image.clone();
-        Self::solve(&mut result, sr as usize, sc as usize, color);
-        return result;
+    pub fn minimum_total_distance(robot: Vec<i32>, factory: Vec<Vec<i32>>) -> i64 {
+        return Self::solve(&mut robot.clone(), &mut factory.clone());
     }
 
-    fn solve(image: &mut Vec<Vec<i32>>, sr: usize, sc: usize, color: i32) {
-        let target_color = image[sr][sc];
-        if target_color != color {
-            Self::dfs(image, sr, sc, target_color, color);
-        }
-    }
+    fn solve(robots: &mut Vec<i32>, factories: &mut Vec<Vec<i32>>) -> i64 {
+        robots.sort_unstable();
+        factories.sort_unstable_by_key(|v| v[0]);
 
-    fn dfs(image: &mut Vec<Vec<i32>>, sr: usize, sc: usize, target_color: i32, new_color: i32) {
-        let mut stack = vec![(sr, sc)];
-        let last_r = image.len() - 1;
-        let last_c = image[0].len() - 1;
-
-        while let Some((top_r, top_c)) = stack.pop() {
-            let cell_color = image[top_r][top_c];
-            if cell_color != target_color {
-                continue;
-            }
-
-            image[top_r][top_c] = new_color;
-            if top_r > 0 {
-                stack.push((top_r - 1, top_c));
-            }
-
-            if top_r < last_r {
-                stack.push((top_r + 1, top_c));
-            }
-
-            if top_c > 0 {
-                stack.push((top_r, top_c - 1));
-            }
-
-            if top_c < last_c {
-                stack.push((top_r, top_c + 1));
+        let mut factory_positions = Vec::<i32>::new();
+        for factory in factories.iter() {
+            for _ in 0..factory[1] {
+                factory_positions.push(factory[0]);
             }
         }
+
+        let robot_count = robots.len();
+        let last_robot_count = robot_count - 1;
+        let factory_count = factory_positions.len();
+        let mut next = vec![0i64; factory_count + 1];
+        let mut current = vec![0i64; next.len()];
+
+        for i in (0..robot_count).rev() {
+            if i != last_robot_count {
+                next[factory_count] = 1e12 as i64;
+            }
+
+            current[factory_count] = 1e12 as i64;
+            for j in (0..factory_count).rev() {
+                let a = (robots[i] - factory_positions[j]).abs() as i64;
+                let assign = a + next[j + 1];
+                let skip = current[j + 1];
+                current[j] = assign.min(skip);
+            }
+
+            next = current.clone();
+        }
+
+        return current[0];
     }
 }
 
 struct Input {
-    image: Vec<Vec<i32>>,
-    sr: i32,
-    sc: i32,
-    color: i32,
+    robot: Vec<i32>,
+    factory: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            image: vec![vec![1, 1, 1], vec![1, 1, 0], vec![1, 0, 1]],
-            sr: 1,
-            sc: 1,
-            color: 2,
+            robot: vec![0, 4, 6],
+            factory: vec![vec![2, 2], vec![6, 2]],
         },
         Input {
-            image: vec![vec![0, 0, 0], vec![0, 0, 0]],
-            sr: 0,
-            sc: 0,
-            color: 0,
+            robot: vec![1, -1],
+            factory: vec![vec![-2, 1], vec![2, 1]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::flood_fill(input.image, input.sr, input.sc, input.color);
+        let result = Solution::minimum_total_distance(input.robot, input.factory);
         println!("{result:?}");
     }
 }
