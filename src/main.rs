@@ -1,66 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_total_distance(robot: Vec<i32>, factory: Vec<Vec<i32>>) -> i64 {
-        return Self::solve(&mut robot.clone(), &mut factory.clone());
-    }
+    pub fn make_fancy_string(s: String) -> String {
+        let mut chars: Vec<char> = s.chars().collect();
+        if chars.len() < 3 {
+            return s;
+        }
 
-    fn solve(robots: &mut Vec<i32>, factories: &mut Vec<Vec<i32>>) -> i64 {
-        robots.sort_unstable();
-        factories.sort_unstable_by_key(|v| v[0]);
+        let mut j = 2usize;
 
-        let mut factory_positions = Vec::<i32>::new();
-        for factory in factories.iter() {
-            for _ in 0..factory[1] {
-                factory_positions.push(factory[0]);
+        for i in 2..chars.len() {
+            if chars[i] != chars[j - 1] || chars[i] != chars[j - 2] {
+                chars[j] = chars[i];
+                j += 1;
             }
         }
 
-        let robot_count = robots.len();
-        let last_robot_count = robot_count - 1;
-        let factory_count = factory_positions.len();
-        let mut next = vec![0i64; factory_count + 1];
-        let mut current = vec![0i64; next.len()];
-
-        for i in (0..robot_count).rev() {
-            if i != last_robot_count {
-                next[factory_count] = 1e12 as i64;
-            }
-
-            current[factory_count] = 1e12 as i64;
-            for j in (0..factory_count).rev() {
-                let a = (robots[i] - factory_positions[j]).abs() as i64;
-                let assign = a + next[j + 1];
-                let skip = current[j + 1];
-                current[j] = assign.min(skip);
-            }
-
-            next = current.clone();
-        }
-
-        return current[0];
+        return chars.iter().take(j).collect();
     }
 }
 
 struct Input {
-    robot: Vec<i32>,
-    factory: Vec<Vec<i32>>,
+    s: String,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            robot: vec![0, 4, 6],
-            factory: vec![vec![2, 2], vec![6, 2]],
+            s: "leeetcode".to_string(),
         },
         Input {
-            robot: vec![1, -1],
-            factory: vec![vec![-2, 1], vec![2, 1]],
+            s: "aaabaaaa".to_string(),
+        },
+        Input {
+            s: "aab".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_total_distance(input.robot, input.factory);
-        println!("{result:?}");
+        let result = Solution::make_fancy_string(input.s);
+        println!("{result}");
     }
 }
