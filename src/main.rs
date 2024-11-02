@@ -1,22 +1,21 @@
 struct Solution {}
 
 impl Solution {
-    pub fn make_fancy_string(s: String) -> String {
-        let mut chars: Vec<char> = s.chars().collect();
-        if chars.len() < 3 {
-            return s;
+    pub fn is_circular_sentence(sentence: String) -> bool {
+        let bytes = sentence.as_bytes();
+        if bytes.first().unwrap() != bytes.last().unwrap() {
+            return false;
         }
 
-        let mut j = 2usize;
-
-        for i in 2..chars.len() {
-            if chars[i] != chars[j - 1] || chars[i] != chars[j - 2] {
-                chars[j] = chars[i];
-                j += 1;
+        for i in 1..(bytes.len() - 1) {
+            if bytes[i] == (' ' as u8) {
+                if bytes[i - 1] != bytes[i + 1] {
+                    return false;
+                }
             }
         }
 
-        return chars.iter().take(j).collect();
+        return true;
     }
 }
 
@@ -27,18 +26,18 @@ struct Input {
 fn main() {
     let inputs = vec![
         Input {
-            s: "leeetcode".to_string(),
+            s: "leetcode exercises sound delightful".to_string(),
         },
         Input {
-            s: "aaabaaaa".to_string(),
+            s: "eetcode".to_string(),
         },
         Input {
-            s: "aab".to_string(),
+            s: "Leetcode is cool".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::make_fancy_string(input.s);
+        let result = Solution::is_circular_sentence(input.s);
         println!("{result}");
     }
 }
