@@ -1,41 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn rotate_string(s: String, goal: String) -> bool {
-        let slen = s.len();
-        if slen != goal.len() {
-            return false;
+    pub fn compressed_string(word: String) -> String {
+        let chars: Vec<char> = word.chars().collect();
+        let mut comp = Vec::<char>::with_capacity(chars.len());
+        let mut pos = 0usize;
+
+        while pos < chars.len() {
+            let mut consecutive_count = 0usize;
+            let current = chars[pos];
+            while pos < chars.len() && consecutive_count < 9 && chars[pos] == current {
+                consecutive_count += 1;
+                pos += 1;
+            }
+
+            comp.push((('0' as u8) + (consecutive_count as u8)) as char);
+            comp.push(current);
         }
 
-        let doubled_len = slen * 2;
-        let doubled_string = format!("{s}{s}");
-        if let Some(i) = doubled_string.find(&goal) {
-            return i < doubled_len;
-        }
-
-        return false;
+        return comp.iter().collect();
     }
 }
 
 struct Input {
-    s: String,
-    goal: String,
+    word: String,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            s: String::from("abcde"),
-            goal: String::from("cdeab"),
+            word: String::from("abcde"),
         },
         Input {
-            s: String::from("abcde"),
-            goal: String::from("abced"),
+            word: String::from("aaaaaaaaaaaaaabb"),
         },
     ];
 
     for input in inputs {
-        let result = Solution::rotate_string(input.s, input.goal);
+        let result = Solution::compressed_string(input.word);
         println!("{result}");
     }
 }
