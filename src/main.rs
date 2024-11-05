@@ -1,43 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn compressed_string(word: String) -> String {
-        let chars: Vec<char> = word.chars().collect();
-        let mut comp = Vec::<char>::with_capacity(chars.len());
-        let mut pos = 0usize;
+    pub fn min_changes(s: String) -> i32 {
+        let mut chars = s.chars();
+        let mut result = 0;
 
-        while pos < chars.len() {
-            let mut consecutive_count = 0usize;
-            let current = chars[pos];
-            while pos < chars.len() && consecutive_count < 9 && chars[pos] == current {
-                consecutive_count += 1;
-                pos += 1;
+        while let Some(first) = chars.next() {
+            if let Some(second) = chars.next() {
+                if first != second {
+                    result += 1;
+                }
+            } else {
+                break;
             }
-
-            comp.push((('0' as u8) + (consecutive_count as u8)) as char);
-            comp.push(current);
         }
 
-        return comp.iter().collect();
+        return result;
     }
 }
 
 struct Input {
-    word: String,
+    s: String,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            word: String::from("abcde"),
+            s: String::from("1001"),
         },
         Input {
-            word: String::from("aaaaaaaaaaaaaabb"),
+            s: String::from("10"),
+        },
+        Input {
+            s: String::from("0000"),
         },
     ];
 
     for input in inputs {
-        let result = Solution::compressed_string(input.word);
+        let result = Solution::min_changes(input.s);
         println!("{result}");
     }
 }
