@@ -1,43 +1,48 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_changes(s: String) -> i32 {
-        let mut chars = s.chars();
-        let mut result = 0;
+    pub fn can_sort_array(nums: Vec<i32>) -> bool {
+        let mut cur_bits = 0;
+        let mut prev_max_num = 0;
+        let mut max_num = 0;
 
-        while let Some(first) = chars.next() {
-            if let Some(second) = chars.next() {
-                if first != second {
-                    result += 1;
-                }
-            } else {
-                break;
+        for &num in nums.iter() {
+            let bits = num.count_ones();
+            if bits != cur_bits {
+                cur_bits = bits;
+                prev_max_num = max_num;
             }
+
+            if num < prev_max_num {
+                return false;
+            }
+
+            max_num = max_num.max(num);
         }
 
-        return result;
+        return true;
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            s: String::from("1001"),
+            nums: vec![8, 4, 2, 30, 15],
         },
         Input {
-            s: String::from("10"),
+            nums: vec![1, 2, 3, 4, 5],
         },
         Input {
-            s: String::from("0000"),
+            nums: vec![3, 16, 8, 4, 2],
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_changes(input.s);
+        let result = Solution::can_sort_array(input.nums);
         println!("{result}");
     }
 }
