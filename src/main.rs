@@ -1,48 +1,41 @@
 struct Solution {}
 
 impl Solution {
-    pub fn can_sort_array(nums: Vec<i32>) -> bool {
-        let mut cur_bits = 0;
-        let mut prev_max_num = 0;
-        let mut max_num = 0;
+    pub fn largest_combination(candidates: Vec<i32>) -> i32 {
+        let mut result = 0;
 
-        for &num in nums.iter() {
-            let bits = num.count_ones();
-            if bits != cur_bits {
-                cur_bits = bits;
-                prev_max_num = max_num;
+        for i in 0..24 {
+            let mut count = 0;
+            for &num in candidates.iter() {
+                let mask = num & (1 << i);
+                if mask != 0 {
+                    count += 1;
+                }
             }
 
-            if num < prev_max_num {
-                return false;
-            }
-
-            max_num = max_num.max(num);
+            result = result.max(count);
         }
 
-        return true;
+        return result;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    candidates: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![8, 4, 2, 30, 15],
+            candidates: vec![16, 17, 71, 62, 12, 24, 14],
         },
         Input {
-            nums: vec![1, 2, 3, 4, 5],
-        },
-        Input {
-            nums: vec![3, 16, 8, 4, 2],
+            candidates: vec![8, 8],
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_sort_array(input.nums);
+        let result = Solution::largest_combination(input.candidates);
         println!("{result}");
     }
 }
