@@ -1,14 +1,21 @@
 struct Solution {}
 
 impl Solution {
-    pub fn get_maximum_xor(nums: Vec<i32>, maximum_bit: i32) -> Vec<i32> {
-        let mut xor_product = nums.iter().fold(0, |acc, n| acc ^ n);
-        let mut result = Vec::<i32>::with_capacity(nums.len());
+    pub fn min_end(n: i32, x: i32) -> i64 {
+        return Self::min_end_64(n as i64, x as i64);
+    }
 
-        let mask = (1 << maximum_bit) - 1;
-        for num in nums.iter().rev() {
-            result.push(mask ^ xor_product);
-            xor_product ^= num;
+    fn min_end_64(mut n: i64, x: i64) -> i64 {
+        let mut result = x;
+        let mut mask = 1i64;
+
+        n -= 1;
+        while n > 0 {
+            if (mask & x) == 0 {
+                result |= (n & 1) * mask;
+                n >>= 1;
+            }
+            mask <<= 1;
         }
 
         return result;
@@ -16,28 +23,15 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
-    maximum_bit: i32,
+    n: i32,
+    x: i32,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            nums: vec![0, 1, 1, 3],
-            maximum_bit: 2,
-        },
-        Input {
-            nums: vec![2, 3, 4, 7],
-            maximum_bit: 2,
-        },
-        Input {
-            nums: vec![0, 1, 2, 2, 5, 7],
-            maximum_bit: 3,
-        },
-    ];
+    let inputs = vec![Input { n: 3, x: 4 }, Input { n: 2, x: 7 }];
 
     for input in inputs {
-        let result = Solution::get_maximum_xor(input.nums, input.maximum_bit);
-        println!("{result:?}");
+        let result = Solution::min_end(input.n, input.x);
+        println!("{result}");
     }
 }
