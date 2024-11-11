@@ -1,75 +1,65 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_subarray_length(nums: Vec<i32>, k: i32) -> i32 {
-        let mut min_length = usize::MAX;
-        let mut window_start = 0usize;
-        let mut window_end = 0usize;
-        let mut bit_counts = vec![0; 32];
+    pub fn prime_sub_operation(nums: Vec<i32>) -> bool {
+        let &max_num = nums.iter().max().unwrap();
+        let mut sieve = vec![true; (max_num + 1) as usize];
+        sieve[1] = false;
 
-        while window_end < nums.len() {
-            Self::update_bit_counts(&mut bit_counts, nums[window_end], 1);
-
-            while window_start <= window_end
-                && Self::convert_bit_counts_to_number(&mut bit_counts) >= k
-            {
-                min_length = min_length.min(window_end - window_start + 1);
-                Self::update_bit_counts(&mut bit_counts, nums[window_start], -1);
-                window_start += 1;
+        for i in 2..=Self::sqrt_usize(max_num + 1) {
+            if !sieve[i] {
+                continue;
             }
-            window_end += 1;
+
+            for j in ((i * i)..=(max_num as usize)).step_by(i) {
+                sieve[j] = false;
+            }
         }
 
-        return match min_length {
-            usize::MAX => -1,
-            _ => min_length as i32,
-        };
+        let mut curr_value = 1;
+        let mut i = 0;
+        while i < nums.len() {
+            let difference = nums[i] - curr_value;
+            if difference < 0 {
+                return false;
+            }
+
+            let diff_usize = difference as usize;
+            if sieve[diff_usize] || difference == 0 {
+                i += 1;
+                curr_value += 1;
+            } else {
+                curr_value += 1;
+            }
+        }
+
+        return true;
     }
 
-    fn update_bit_counts(bit_counts: &mut Vec<i32>, num: i32, delta: i32) {
-        for bit_position in 0..32 {
-            let lsb = (num >> bit_position) & 1;
-            if lsb == 1 {
-                bit_counts[bit_position] += delta;
-            }
-        }
-    }
-
-    fn convert_bit_counts_to_number(bit_counts: &mut Vec<i32>) -> i32 {
-        let mut result = 0;
-        for bit_position in 0..32 {
-            if bit_counts[bit_position] != 0 {
-                result |= 1 << bit_position;
-            }
-        }
-
-        return result;
+    fn sqrt_usize(n: i32) -> usize {
+        return (n as f64).sqrt() as usize;
     }
 }
 
 struct Input {
     nums: Vec<i32>,
-    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 2, 3],
-            k: 2,
+            nums: vec![4, 9, 6, 10],
         },
         Input {
-            nums: vec![2, 1, 8],
-            k: 10,
+            nums: vec![6, 8, 11, 12],
         },
         Input {
-            nums: vec![1, 2],
-            k: 0,
+            nums: vec![5, 8, 3],
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_subarray_length(input.nums, input.k);
+        let result = Solution::prime_sub_operation(input.nums);
         println!("{result}");
     }
 }
