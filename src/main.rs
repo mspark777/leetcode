@@ -1,65 +1,75 @@
 struct Solution {}
 
 impl Solution {
-    pub fn prime_sub_operation(nums: Vec<i32>) -> bool {
-        let &max_num = nums.iter().max().unwrap();
-        let mut sieve = vec![true; (max_num + 1) as usize];
-        sieve[1] = false;
-
-        for i in 2..=Self::sqrt_usize(max_num + 1) {
-            if !sieve[i] {
-                continue;
-            }
-
-            for j in ((i * i)..=(max_num as usize)).step_by(i) {
-                sieve[j] = false;
-            }
-        }
-
-        let mut curr_value = 1;
-        let mut i = 0;
-        while i < nums.len() {
-            let difference = nums[i] - curr_value;
-            if difference < 0 {
-                return false;
-            }
-
-            let diff_usize = difference as usize;
-            if sieve[diff_usize] || difference == 0 {
-                i += 1;
-                curr_value += 1;
-            } else {
-                curr_value += 1;
-            }
-        }
-
-        return true;
+    pub fn maximum_beauty(items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
+        return Self::solve(items.clone(), queries);
     }
 
-    fn sqrt_usize(n: i32) -> usize {
-        return (n as f64).sqrt() as usize;
+    fn solve(mut items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
+        let mut result = vec![0; queries.len()];
+
+        items.sort_unstable_by(|a, b| a[0].cmp(&b[0]));
+        let mut max_beauty = 0;
+        for item in items.iter_mut() {
+            max_beauty = max_beauty.max(item[1]);
+            item[1] = max_beauty;
+        }
+
+        for (i, &query) in queries.iter().enumerate() {
+            result[i] = Self::binary_search(&items, query);
+        }
+
+        return result;
+    }
+
+    fn binary_search(items: &Vec<Vec<i32>>, target_price: i32) -> i32 {
+        let mut left = 0usize;
+        let mut right = items.len() - 1;
+        let mut max_beauty = 0;
+
+        while left <= right {
+            let mid = (left + right) / 2;
+            let price = items[mid][0];
+            if price > target_price {
+                if mid < 1 {
+                    break;
+                } else {
+                    right = mid - 1;
+                }
+            } else {
+                let beauty = items[mid][1];
+                max_beauty = max_beauty.max(beauty);
+                left = mid + 1;
+            }
+        }
+
+        return max_beauty;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    items: Vec<Vec<i32>>,
+    queries: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![4, 9, 6, 10],
+            items: vec![vec![1, 2], vec![3, 2], vec![2, 4], vec![5, 6], vec![3, 5]],
+            queries: vec![1, 2, 3, 4, 5, 6],
         },
         Input {
-            nums: vec![6, 8, 11, 12],
+            items: vec![vec![1, 2], vec![1, 2], vec![1, 3], vec![1, 4]],
+            queries: vec![1],
         },
         Input {
-            nums: vec![5, 8, 3],
+            items: vec![vec![10, 1000]],
+            queries: vec![5],
         },
     ];
 
     for input in inputs {
-        let result = Solution::prime_sub_operation(input.nums);
-        println!("{result}");
+        let result = Solution::maximum_beauty(input.items, input.queries);
+        println!("{result:?}");
     }
 }
