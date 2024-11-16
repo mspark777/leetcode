@@ -1,75 +1,60 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_beauty(items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
-        return Self::solve(items.clone(), queries);
+    pub fn results_array(nums: Vec<i32>, k: i32) -> Vec<i32> {
+        return Self::solve(nums, k as usize);
     }
 
-    fn solve(mut items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
-        let mut result = vec![0; queries.len()];
-
-        items.sort_unstable_by(|a, b| a[0].cmp(&b[0]));
-        let mut max_beauty = 0;
-        for item in items.iter_mut() {
-            max_beauty = max_beauty.max(item[1]);
-            item[1] = max_beauty;
+    fn solve(nums: Vec<i32>, k: usize) -> Vec<i32> {
+        if k == 1 {
+            return nums;
         }
 
-        for (i, &query) in queries.iter().enumerate() {
-            result[i] = Self::binary_search(&items, query);
+        let nums_len = nums.len();
+        let mut result = vec![-1; nums_len - k + 1];
+        let mut consecutive_count = 1;
+
+        for i in 0..(nums_len - 1) {
+            let current = nums[i] + 1;
+            let next = nums[i + 1];
+            if current == next {
+                consecutive_count += 1;
+            } else {
+                consecutive_count = 1;
+            }
+
+            if consecutive_count >= k {
+                result[i + 2 - k] = nums[i + 1];
+            }
         }
 
         return result;
     }
-
-    fn binary_search(items: &Vec<Vec<i32>>, target_price: i32) -> i32 {
-        let mut left = 0usize;
-        let mut right = items.len() - 1;
-        let mut max_beauty = 0;
-
-        while left <= right {
-            let mid = (left + right) / 2;
-            let price = items[mid][0];
-            if price > target_price {
-                if mid < 1 {
-                    break;
-                } else {
-                    right = mid - 1;
-                }
-            } else {
-                let beauty = items[mid][1];
-                max_beauty = max_beauty.max(beauty);
-                left = mid + 1;
-            }
-        }
-
-        return max_beauty;
-    }
 }
 
 struct Input {
-    items: Vec<Vec<i32>>,
-    queries: Vec<i32>,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            items: vec![vec![1, 2], vec![3, 2], vec![2, 4], vec![5, 6], vec![3, 5]],
-            queries: vec![1, 2, 3, 4, 5, 6],
+            nums: vec![1, 2, 3, 4, 3, 2, 5],
+            k: 3,
         },
         Input {
-            items: vec![vec![1, 2], vec![1, 2], vec![1, 3], vec![1, 4]],
-            queries: vec![1],
+            nums: vec![2, 2, 2, 2, 2],
+            k: 4,
         },
         Input {
-            items: vec![vec![10, 1000]],
-            queries: vec![5],
+            nums: vec![3, 2, 3, 2, 3, 2],
+            k: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_beauty(input.items, input.queries);
+        let result = Solution::results_array(input.nums, input.k);
         println!("{result:?}");
     }
 }
