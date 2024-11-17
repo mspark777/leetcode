@@ -1,75 +1,83 @@
-use std::collections::VecDeque;
+use std::collections::HashMap;
 
 struct Solution {}
 
 impl Solution {
-    pub fn shortest_subarray(nums: Vec<i32>, k: i32) -> i32 {
-        let nums_len = nums.len();
-        let mut prefix_sums = vec![0i64; nums_len + 1];
+    pub fn shortest_completing_word(license_plate: String, words: Vec<String>) -> String {
+        let license_map = Self::to_map(&license_plate);
+        let mut result = String::new();
 
-        for i in 1..=nums_len {
-            prefix_sums[i] = prefix_sums[i - 1] + (nums[i - 1] as i64);
-        }
-
-        let mut result = i32::MAX;
-        let mut candidate_indices = VecDeque::<usize>::with_capacity(nums_len + 1);
-        for i in 0..=nums_len {
-            while let Some(&candidate_index) = candidate_indices.front() {
-                let prefix_sum = prefix_sums[i] - prefix_sums[candidate_index];
-                if prefix_sum >= (k as i64) {
-                    result = result.min(Self::sub_usize(i, candidate_index));
-                    candidate_indices.pop_front();
+        for word in words.iter() {
+            let w_map = Self::to_map(word);
+            let mut found = true;
+            for (ch, &count) in license_map.iter() {
+                if let Some(&w_count) = w_map.get(ch) {
+                    if w_count < count {
+                        found = false;
+                        break;
+                    }
                 } else {
+                    found = false;
                     break;
                 }
             }
 
-            while let Some(&candidate_index) = candidate_indices.back() {
-                if prefix_sums[i] <= prefix_sums[candidate_index] {
-                    candidate_indices.pop_back();
-                } else {
-                    break;
-                }
+            if !found {
+                continue;
             }
 
-            candidate_indices.push_back(i);
+            if result.is_empty() {
+                result = word.clone();
+            } else if word.len() < result.len() {
+                result = word.clone();
+            }
         }
 
-        return if result == i32::MAX { -1 } else { result };
+        return result;
     }
 
-    fn sub_usize(left: usize, right: usize) -> i32 {
-        return if left < right {
-            -Self::sub_usize(right, left)
-        } else {
-            (left - right) as i32
-        };
+    fn is_letter(ch: char) -> bool {
+        return ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z');
+    }
+
+    fn to_map(s: &String) -> HashMap<char, i32> {
+        let mut ch_map = HashMap::<char, i32>::with_capacity(s.len());
+        for ch in s.to_lowercase().chars() {
+            if Self::is_letter(ch) {
+                if let Some(count) = ch_map.get_mut(&ch) {
+                    *count += 1;
+                } else {
+                    ch_map.insert(ch, 1);
+                }
+            }
+        }
+
+        return ch_map;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    license_plate: &'static str,
+    words: Vec<&'static str>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1],
-            k: 1,
+            license_plate: "1s3 PSt",
+            words: vec!["step", "steps", "stripe", "stepple"],
         },
         Input {
-            nums: vec![1, 2],
-            k: 4,
-        },
-        Input {
-            nums: vec![2, -1, 2],
-            k: 3,
+            license_plate: "1s3 456",
+            words: vec!["looks", "pest", "stew", "show"],
         },
     ];
 
     for input in inputs {
-        let result = Solution::shortest_subarray(input.nums, input.k);
-        println!("{result:?}");
+        let result = Solution::shortest_completing_word(
+            input.license_plate.to_string(),
+            input.words.iter().map(|s| s.to_string()).collect(),
+        );
+        println!("{result}");
     }
 }
