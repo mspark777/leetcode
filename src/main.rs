@@ -1,65 +1,56 @@
 struct Solution {}
 
 impl Solution {
-    pub fn decrypt(code: Vec<i32>, k: i32) -> Vec<i32> {
-        let code_len = code.len();
-        if k == 0 {
-            return vec![0; code_len];
+    pub fn num_jewels_in_stones(jewels: String, stones: String) -> i32 {
+        let mut jewel_flags = vec![false; ((b'z' - b'a') as usize) * 2 + 2];
+
+        for jewel in jewels.chars() {
+            let idx = Self::to_char_index(jewel);
+            jewel_flags[idx] = true;
         }
 
-        let key_len = k.abs() as usize;
-        let mut start = 1usize;
-        let mut end = key_len;
-
-        if k < 0 {
-            start = code_len - key_len;
-            end = code_len - 1;
-        }
-
-        let mut result = vec![0; code_len];
-        let mut sum = 0;
-        for i in start..=end {
-            sum += code[i];
-        }
-
-        for i in 0..code_len {
-            result[i] = sum;
-
-            sum -= code[start % code_len];
-
-            start += 1;
-            end += 1;
-
-            sum += code[end % code_len];
+        let mut result = 0;
+        for stone in stones.chars() {
+            let idx = Self::to_char_index(stone);
+            result += if jewel_flags[idx] { 1 } else { 0 };
         }
 
         return result;
     }
+
+    fn to_char_index(ch: char) -> usize {
+        let lower_a = b'a';
+        let upper_a = b'A';
+        let upper_z = b'Z';
+        let code = ch as u8;
+        return if code <= upper_z {
+            code + 26 - upper_a
+        } else {
+            code - lower_a
+        } as usize;
+    }
 }
 
 struct Input {
-    code: Vec<i32>,
-    k: i32,
+    jewels: &'static str,
+    stones: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            code: vec![5, 7, 1, 4],
-            k: 3,
+            jewels: "aA",
+            stones: "aAAbbbb",
         },
         Input {
-            code: vec![1, 2, 3, 4],
-            k: 0,
-        },
-        Input {
-            code: vec![2, 4, 9, 3],
-            k: -2,
+            jewels: "z",
+            stones: "ZZ",
         },
     ];
 
     for input in inputs {
-        let result = Solution::decrypt(input.code, input.k);
-        println!("{result:?}");
+        let result =
+            Solution::num_jewels_in_stones(input.jewels.to_string(), input.stones.to_string());
+        println!("{result}");
     }
 }
