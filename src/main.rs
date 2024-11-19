@@ -1,60 +1,57 @@
-use std::collections::HashMap;
-
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_subarray_sum(nums: Vec<i32>, k: i32) -> i64 {
-        let mut result = 0i64;
-        let mut current_sum = 0i64;
-        let mut begin = 0;
-        let mut end = 0;
-        let mut num_to_index = HashMap::<i32, i32>::with_capacity(nums.len());
+    pub fn number_of_lines(widths: Vec<i32>, s: String) -> Vec<i32> {
+        let mut number_of_lines = 1;
+        let mut width_of_pixels = 0;
 
-        while (end as usize) < nums.len() {
-            let current_num = nums[end as usize];
-            let last_occurrence = if let Some(&count) = num_to_index.get(&current_num) {
-                count
+        for ch in s.chars() {
+            let width = widths[Self::to_idx(ch)];
+            let next_width = width_of_pixels + width;
+            if next_width > 100 {
+                width_of_pixels = width;
+                number_of_lines += 1;
             } else {
-                -1
-            };
-
-            while begin <= last_occurrence || (end - begin + 1) > k {
-                current_sum -= nums[begin as usize] as i64;
-                begin += 1;
+                width_of_pixels = next_width;
             }
-
-            num_to_index.insert(current_num, end);
-            current_sum += nums[end as usize] as i64;
-            if (end - begin + 1) == k {
-                result = result.max(current_sum);
-            }
-
-            end += 1;
         }
 
-        return result;
+        return vec![number_of_lines, width_of_pixels];
+    }
+
+    fn to_idx(ch: char) -> usize {
+        let code = ch as u8;
+        let a = b'a';
+
+        return (code - a) as usize;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    widths: Vec<i32>,
+    s: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 5, 4, 2, 9, 9, 9],
-            k: 3,
+            widths: vec![
+                10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                10, 10, 10, 10, 10,
+            ],
+            s: "abcdefghijklmnopqrstuvwxyz",
         },
         Input {
-            nums: vec![4, 4, 4],
-            k: 3,
+            widths: vec![
+                4, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                10, 10, 10, 10, 10,
+            ],
+            s: "bbbcccdddaaa",
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_subarray_sum(input.nums, input.k);
-        println!("{result}");
+        let result = Solution::number_of_lines(input.widths, input.s.to_string());
+        println!("{result:?}");
     }
 }
