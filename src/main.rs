@@ -1,56 +1,60 @@
+use std::collections::HashMap;
+
 struct Solution {}
 
 impl Solution {
-    pub fn num_jewels_in_stones(jewels: String, stones: String) -> i32 {
-        let mut jewel_flags = vec![false; ((b'z' - b'a') as usize) * 2 + 2];
+    pub fn maximum_subarray_sum(nums: Vec<i32>, k: i32) -> i64 {
+        let mut result = 0i64;
+        let mut current_sum = 0i64;
+        let mut begin = 0;
+        let mut end = 0;
+        let mut num_to_index = HashMap::<i32, i32>::with_capacity(nums.len());
 
-        for jewel in jewels.chars() {
-            let idx = Self::to_char_index(jewel);
-            jewel_flags[idx] = true;
-        }
+        while (end as usize) < nums.len() {
+            let current_num = nums[end as usize];
+            let last_occurrence = if let Some(&count) = num_to_index.get(&current_num) {
+                count
+            } else {
+                -1
+            };
 
-        let mut result = 0;
-        for stone in stones.chars() {
-            let idx = Self::to_char_index(stone);
-            result += if jewel_flags[idx] { 1 } else { 0 };
+            while begin <= last_occurrence || (end - begin + 1) > k {
+                current_sum -= nums[begin as usize] as i64;
+                begin += 1;
+            }
+
+            num_to_index.insert(current_num, end);
+            current_sum += nums[end as usize] as i64;
+            if (end - begin + 1) == k {
+                result = result.max(current_sum);
+            }
+
+            end += 1;
         }
 
         return result;
     }
-
-    fn to_char_index(ch: char) -> usize {
-        let lower_a = b'a';
-        let upper_a = b'A';
-        let upper_z = b'Z';
-        let code = ch as u8;
-        return if code <= upper_z {
-            code + 26 - upper_a
-        } else {
-            code - lower_a
-        } as usize;
-    }
 }
 
 struct Input {
-    jewels: &'static str,
-    stones: &'static str,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            jewels: "aA",
-            stones: "aAAbbbb",
+            nums: vec![1, 5, 4, 2, 9, 9, 9],
+            k: 3,
         },
         Input {
-            jewels: "z",
-            stones: "ZZ",
+            nums: vec![4, 4, 4],
+            k: 3,
         },
     ];
 
     for input in inputs {
-        let result =
-            Solution::num_jewels_in_stones(input.jewels.to_string(), input.stones.to_string());
+        let result = Solution::maximum_subarray_sum(input.nums, input.k);
         println!("{result}");
     }
 }
