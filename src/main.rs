@@ -1,67 +1,89 @@
+use std::collections::{HashMap, HashSet};
+
 struct Solution {}
 
 impl Solution {
-    pub fn take_characters(s: String, k: i32) -> i32 {
-        let mut counts = vec![0; 3];
-        let chars: Vec<char> = s.chars().collect();
-
-        for &ch in chars.iter() {
-            let idx = Self::char_to_idx(ch);
-            counts[idx] += 1;
+    pub fn most_common_word(paragraph: String, banned: Vec<String>) -> String {
+        let mut banned_words = HashSet::<String>::with_capacity(banned.len());
+        for b in banned.iter() {
+            banned_words.insert(b.clone());
         }
 
-        for &count in counts.iter() {
-            if count < k {
-                return -1;
-            }
-        }
+        let mut result = String::new();
+        let mut max_count = 0;
 
-        let mut window = vec![0; 3];
-        let mut left = 0usize;
-        let mut max_window = 0usize;
+        let mut word_counts = HashMap::<String, i32>::new();
+        let chars: Vec<char> = paragraph.chars().collect();
+        let mut buffer = Vec::<char>::new();
 
-        for right in 0..chars.len() {
-            window[Self::char_to_idx(chars[right])] += 1;
-
-            while left <= right
-                && (counts[0] - window[0] < k
-                    || counts[1] - window[1] < k
-                    || counts[2] - window[2] < k)
-            {
-                window[Self::char_to_idx(chars[left])] -= 1;
-                left += 1;
+        for (i, &ch) in chars.iter().enumerate() {
+            if let Some(lower) = Self::to_lowercase(ch) {
+                buffer.push(lower);
+                let last_i = chars.len() - 1;
+                if i < last_i {
+                    continue;
+                }
             }
 
-            max_window = max_window.max(right + 1 - left);
+            if buffer.is_empty() {
+                continue;
+            }
+
+            let word: String = buffer.iter().collect();
+            if banned_words.contains(&word) {
+                buffer.clear();
+                continue;
+            }
+
+            let count = word_counts.entry(word.clone()).or_insert(0);
+            *count += 1;
+
+            if *count > max_count {
+                result = word;
+                max_count = *count;
+            }
+
+            buffer.clear();
         }
 
-        return (chars.len() - max_window) as i32;
+        return result;
     }
 
-    fn char_to_idx(ch: char) -> usize {
+    fn to_lowercase(ch: char) -> Option<char> {
         let code = ch as u8;
-        let a = b'a';
+        if b'a' <= code && code <= b'z' {
+            return Some(ch);
+        } else if b'A' <= code && code <= b'Z' {
+            let term = b'a' - b'A';
+            return Some((code + term) as char);
+        }
 
-        return (code - a) as usize;
+        return None;
     }
 }
 
 struct Input {
-    s: &'static str,
-    k: i32,
+    paragraph: &'static str,
+    banned: Vec<&'static str>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            s: "aabaaaacaabc",
-            k: 2,
+            paragraph: "Bob hit a ball, the hit BALL flew far after it was hit.",
+            banned: vec!["hit"],
         },
-        Input { s: "a", k: 1 },
+        Input {
+            paragraph: "a.",
+            banned: vec!["hit"],
+        },
     ];
 
     for input in inputs {
-        let result = Solution::take_characters(input.s.to_string(), input.k);
+        let result = Solution::most_common_word(
+            input.paragraph.to_string(),
+            input.banned.iter().map(|s| s.to_string()).collect(),
+        );
         println!("{result}");
     }
 }
