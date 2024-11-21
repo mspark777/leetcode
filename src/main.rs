@@ -1,89 +1,132 @@
-use std::collections::{HashMap, HashSet};
-
 struct Solution {}
 
+#[derive(PartialEq, Copy, Clone)]
+enum Cell {
+    GUARDED,
+    UNGUARDED,
+    WALL,
+    GUARD,
+}
+
 impl Solution {
-    pub fn most_common_word(paragraph: String, banned: Vec<String>) -> String {
-        let mut banned_words = HashSet::<String>::with_capacity(banned.len());
-        for b in banned.iter() {
-            banned_words.insert(b.clone());
+    pub fn count_unguarded(m: i32, n: i32, guards: Vec<Vec<i32>>, walls: Vec<Vec<i32>>) -> i32 {
+        let g: Vec<Vec<usize>> = guards
+            .iter()
+            .map(|r| -> Vec<usize> { r.iter().map(|&c| c as usize).collect() })
+            .collect();
+
+        let w: Vec<Vec<usize>> = walls
+            .iter()
+            .map(|r| -> Vec<usize> { r.iter().map(|&c| c as usize).collect() })
+            .collect();
+
+        return Self::solve(m as usize, n as usize, g, w);
+    }
+
+    fn solve(m: usize, n: usize, guards: Vec<Vec<usize>>, walls: Vec<Vec<usize>>) -> i32 {
+        let mut grid = vec![vec![Cell::UNGUARDED; n]; m];
+
+        for guard in guards.iter() {
+            let row = guard[0];
+            let col = guard[1];
+            grid[row][col] = Cell::GUARD;
         }
 
-        let mut result = String::new();
-        let mut max_count = 0;
+        for wall in walls.iter() {
+            let row = wall[0];
+            let col = wall[1];
+            grid[row][col] = Cell::WALL;
+        }
 
-        let mut word_counts = HashMap::<String, i32>::new();
-        let chars: Vec<char> = paragraph.chars().collect();
-        let mut buffer = Vec::<char>::new();
+        for guard in guards.iter() {
+            let row = guard[0];
+            let col = guard[1];
+            Self::mark_unguarded(row, col, &mut grid, m, n);
+        }
 
-        for (i, &ch) in chars.iter().enumerate() {
-            if let Some(lower) = Self::to_lowercase(ch) {
-                buffer.push(lower);
-                let last_i = chars.len() - 1;
-                if i < last_i {
-                    continue;
+        let mut result = 0;
+        for row in grid.iter() {
+            for &cell in row.iter() {
+                if cell == Cell::UNGUARDED {
+                    result += 1;
                 }
             }
-
-            if buffer.is_empty() {
-                continue;
-            }
-
-            let word: String = buffer.iter().collect();
-            if banned_words.contains(&word) {
-                buffer.clear();
-                continue;
-            }
-
-            let count = word_counts.entry(word.clone()).or_insert(0);
-            *count += 1;
-
-            if *count > max_count {
-                result = word;
-                max_count = *count;
-            }
-
-            buffer.clear();
         }
-
         return result;
     }
 
-    fn to_lowercase(ch: char) -> Option<char> {
-        let code = ch as u8;
-        if b'a' <= code && code <= b'z' {
-            return Some(ch);
-        } else if b'A' <= code && code <= b'Z' {
-            let term = b'a' - b'A';
-            return Some((code + term) as char);
+    fn mark_unguarded(row: usize, col: usize, grid: &mut Vec<Vec<Cell>>, m: usize, n: usize) {
+        for r in (0..row).rev() {
+            let cell = grid[r][col];
+            if cell == Cell::WALL {
+                break;
+            } else if cell == Cell::GUARD {
+                break;
+            } else {
+                grid[r][col] = Cell::GUARDED;
+            }
         }
 
-        return None;
+        for r in (row + 1)..m {
+            let cell = grid[r][col];
+            if cell == Cell::WALL {
+                break;
+            } else if cell == Cell::GUARD {
+                break;
+            } else {
+                grid[r][col] = Cell::GUARDED;
+            }
+        }
+
+        for c in (0..col).rev() {
+            let cell = grid[row][c];
+            if cell == Cell::WALL {
+                break;
+            } else if cell == Cell::GUARD {
+                break;
+            } else {
+                grid[row][c] = Cell::GUARDED;
+            }
+        }
+
+        for c in (col + 1)..n {
+            let cell = grid[row][c];
+            if cell == Cell::WALL {
+                break;
+            } else if cell == Cell::GUARD {
+                break;
+            } else {
+                grid[row][c] = Cell::GUARDED;
+            }
+        }
     }
 }
 
 struct Input {
-    paragraph: &'static str,
-    banned: Vec<&'static str>,
+    m: i32,
+    n: i32,
+    guards: Vec<Vec<i32>>,
+    walls: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            paragraph: "Bob hit a ball, the hit BALL flew far after it was hit.",
-            banned: vec!["hit"],
+            m: 4,
+            n: 6,
+            guards: vec![vec![0, 0], vec![1, 1], vec![2, 3]],
+            walls: vec![vec![0, 1], vec![2, 2], vec![1, 4]],
         },
         Input {
-            paragraph: "a.",
-            banned: vec!["hit"],
+            m: 3,
+            n: 3,
+            guards: vec![vec![1, 1]],
+            walls: vec![vec![0, 1], vec![1, 0], vec![2, 1], vec![1, 2]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::most_common_word(
-            input.paragraph.to_string(),
-            input.banned.iter().map(|s| s.to_string()).collect(),
-        );
+        let result = Solution::count_unguarded(input.m, input.n, input.guards, input.walls);
         println!("{result}");
     }
 }
