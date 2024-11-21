@@ -1,132 +1,42 @@
 struct Solution {}
 
-#[derive(PartialEq, Copy, Clone)]
-enum Cell {
-    GUARDED,
-    UNGUARDED,
-    WALL,
-    GUARD,
-}
-
 impl Solution {
-    pub fn count_unguarded(m: i32, n: i32, guards: Vec<Vec<i32>>, walls: Vec<Vec<i32>>) -> i32 {
-        let g: Vec<Vec<usize>> = guards
-            .iter()
-            .map(|r| -> Vec<usize> { r.iter().map(|&c| c as usize).collect() })
-            .collect();
+    pub fn shortest_to_char(s: String, c: char) -> Vec<i32> {
+        let chars: Vec<char> = s.chars().collect();
+        let mut result = vec![0; chars.len()];
 
-        let w: Vec<Vec<usize>> = walls
-            .iter()
-            .map(|r| -> Vec<usize> { r.iter().map(|&c| c as usize).collect() })
-            .collect();
-
-        return Self::solve(m as usize, n as usize, g, w);
-    }
-
-    fn solve(m: usize, n: usize, guards: Vec<Vec<usize>>, walls: Vec<Vec<usize>>) -> i32 {
-        let mut grid = vec![vec![Cell::UNGUARDED; n]; m];
-
-        for guard in guards.iter() {
-            let row = guard[0];
-            let col = guard[1];
-            grid[row][col] = Cell::GUARD;
+        for (i, &ch) in chars.iter().enumerate() {
+            result[i] = if ch == c { 0 } else { chars.len() as i32 };
         }
 
-        for wall in walls.iter() {
-            let row = wall[0];
-            let col = wall[1];
-            grid[row][col] = Cell::WALL;
+        for i in 1..chars.len() {
+            result[i] = result[i].min(result[i - 1] + 1);
         }
 
-        for guard in guards.iter() {
-            let row = guard[0];
-            let col = guard[1];
-            Self::mark_unguarded(row, col, &mut grid, m, n);
+        for i in (0..(chars.len() - 1)).rev() {
+            result[i] = result[i].min(result[i + 1] + 1);
         }
 
-        let mut result = 0;
-        for row in grid.iter() {
-            for &cell in row.iter() {
-                if cell == Cell::UNGUARDED {
-                    result += 1;
-                }
-            }
-        }
         return result;
-    }
-
-    fn mark_unguarded(row: usize, col: usize, grid: &mut Vec<Vec<Cell>>, m: usize, n: usize) {
-        for r in (0..row).rev() {
-            let cell = grid[r][col];
-            if cell == Cell::WALL {
-                break;
-            } else if cell == Cell::GUARD {
-                break;
-            } else {
-                grid[r][col] = Cell::GUARDED;
-            }
-        }
-
-        for r in (row + 1)..m {
-            let cell = grid[r][col];
-            if cell == Cell::WALL {
-                break;
-            } else if cell == Cell::GUARD {
-                break;
-            } else {
-                grid[r][col] = Cell::GUARDED;
-            }
-        }
-
-        for c in (0..col).rev() {
-            let cell = grid[row][c];
-            if cell == Cell::WALL {
-                break;
-            } else if cell == Cell::GUARD {
-                break;
-            } else {
-                grid[row][c] = Cell::GUARDED;
-            }
-        }
-
-        for c in (col + 1)..n {
-            let cell = grid[row][c];
-            if cell == Cell::WALL {
-                break;
-            } else if cell == Cell::GUARD {
-                break;
-            } else {
-                grid[row][c] = Cell::GUARDED;
-            }
-        }
     }
 }
 
 struct Input {
-    m: i32,
-    n: i32,
-    guards: Vec<Vec<i32>>,
-    walls: Vec<Vec<i32>>,
+    s: &'static str,
+    c: char,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            m: 4,
-            n: 6,
-            guards: vec![vec![0, 0], vec![1, 1], vec![2, 3]],
-            walls: vec![vec![0, 1], vec![2, 2], vec![1, 4]],
+            s: "loveleetcode",
+            c: 'e',
         },
-        Input {
-            m: 3,
-            n: 3,
-            guards: vec![vec![1, 1]],
-            walls: vec![vec![0, 1], vec![1, 0], vec![2, 1], vec![1, 2]],
-        },
+        Input { s: "aaab", c: 'b' },
     ];
 
     for input in inputs {
-        let result = Solution::count_unguarded(input.m, input.n, input.guards, input.walls);
-        println!("{result}");
+        let result = Solution::shortest_to_char(input.s.to_string(), input.c);
+        println!("{result:?}");
     }
 }
