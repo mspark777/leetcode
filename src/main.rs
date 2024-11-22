@@ -1,53 +1,55 @@
+use std::collections::HashMap;
+
 struct Solution {}
 
 impl Solution {
-    pub fn to_goat_latin(sentence: String) -> String {
-        let words: Vec<String> = sentence.split(" ").map(|s| s.to_string()).collect();
-        let mut chunks = Vec::<String>::new();
+    pub fn max_equal_rows_after_flips(matrix: Vec<Vec<i32>>) -> i32 {
+        let mut pattern_frequencies = HashMap::<String, i32>::new();
 
-        for (i, word) in words.iter().enumerate() {
-            let done = Self::process_word(word, i + 1);
-            chunks.push(done);
+        for row in matrix.iter() {
+            let mut patterns = Vec::<char>::with_capacity(row.len());
+            let first = row[0];
+            for &cell in row.iter() {
+                if first == cell {
+                    patterns.push('t');
+                } else {
+                    patterns.push('f');
+                }
+            }
+
+            let pattern = patterns.iter().collect::<String>();
+            let count = pattern_frequencies.entry(pattern).or_insert(0);
+            *count += 1;
         }
 
-        return chunks.join(" ");
-    }
+        let mut result = 0;
+        for &count in pattern_frequencies.values() {
+            result = result.max(count);
+        }
 
-    fn is_first_char_vowel(ch: char) -> bool {
-        return match ch {
-            'a' | 'e' | 'i' | 'o' | 'u' | 'A' | 'E' | 'I' | 'O' | 'U' => true,
-            _ => false,
-        };
-    }
-
-    fn process_word(word: &String, idx: usize) -> String {
-        let first = word.chars().nth(0).unwrap();
-        let append: String = (vec!['a'; idx]).iter().collect();
-        return if Self::is_first_char_vowel(first) {
-            format!("{}ma{}", word, append)
-        } else {
-            let sub: String = word.chars().skip(1).collect();
-            format!("{}{}ma{}", sub, first, append)
-        };
+        return result;
     }
 }
 
 struct Input {
-    sentence: &'static str,
+    matrix: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            sentence: "I speak Goat Latin",
+            matrix: vec![vec![0, 1], vec![1, 1]],
         },
         Input {
-            sentence: "The quick brown fox jumped over the lazy dog",
+            matrix: vec![vec![0, 1], vec![1, 0]],
+        },
+        Input {
+            matrix: vec![vec![0, 0, 0], vec![0, 0, 1], vec![1, 1, 0]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::to_goat_latin(input.sentence.to_string());
+        let result = Solution::max_equal_rows_after_flips(input.matrix);
         println!("{result}");
     }
 }
