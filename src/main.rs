@@ -1,30 +1,32 @@
-use std::collections::HashMap;
-
 struct Solution {}
 
 impl Solution {
-    pub fn max_equal_rows_after_flips(matrix: Vec<Vec<i32>>) -> i32 {
-        let mut pattern_frequencies = HashMap::<String, i32>::new();
+    pub fn large_group_positions(s: String) -> Vec<Vec<i32>> {
+        let mut result = Vec::<Vec<i32>>::new();
 
-        for row in matrix.iter() {
-            let mut patterns = Vec::<char>::with_capacity(row.len());
-            let first = row[0];
-            for &cell in row.iter() {
-                if first == cell {
-                    patterns.push('t');
-                } else {
-                    patterns.push('f');
-                }
+        let mut left = 0usize;
+        let mut right = 0usize;
+        let mut chars = s.chars();
+        let mut current = chars.next().unwrap();
+        for next in chars {
+            if current == next {
+                right += 1;
+                continue;
             }
 
-            let pattern = patterns.iter().collect::<String>();
-            let count = pattern_frequencies.entry(pattern).or_insert(0);
-            *count += 1;
+            let len = right - left;
+            if len >= 2 {
+                result.push(vec![left as i32, right as i32]);
+            }
+
+            right += 1;
+            left = right;
+            current = next;
         }
 
-        let mut result = 0;
-        for &count in pattern_frequencies.values() {
-            result = result.max(count);
+        let len = right - left;
+        if len >= 2 {
+            result.push(vec![left as i32, right as i32]);
         }
 
         return result;
@@ -32,24 +34,20 @@ impl Solution {
 }
 
 struct Input {
-    matrix: Vec<Vec<i32>>,
+    s: &'static str,
 }
 
 fn main() {
     let inputs = vec![
+        Input { s: "abbxxxxzzy" },
+        Input { s: "abc" },
         Input {
-            matrix: vec![vec![0, 1], vec![1, 1]],
-        },
-        Input {
-            matrix: vec![vec![0, 1], vec![1, 0]],
-        },
-        Input {
-            matrix: vec![vec![0, 0, 0], vec![0, 0, 1], vec![1, 1, 0]],
+            s: "abcdddeeeeaabbbcd",
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_equal_rows_after_flips(input.matrix);
-        println!("{result}");
+        let result = Solution::large_group_positions(input.s.to_string());
+        println!("{result:?}");
     }
 }
