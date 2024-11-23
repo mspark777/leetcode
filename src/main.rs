@@ -1,32 +1,30 @@
 struct Solution {}
 
 impl Solution {
-    pub fn large_group_positions(s: String) -> Vec<Vec<i32>> {
-        let mut result = Vec::<Vec<i32>>::new();
+    pub fn rotate_the_box(matrix: Vec<Vec<char>>) -> Vec<Vec<char>> {
+        let empty = '.';
+        let stone = '#';
+        let obstacle = '*';
 
-        let mut left = 0usize;
-        let mut right = 0usize;
-        let mut chars = s.chars();
-        let mut current = chars.next().unwrap();
-        for next in chars {
-            if current == next {
-                right += 1;
-                continue;
+        let m = matrix.len();
+        let n = matrix[0].len();
+        let mut result = vec![vec![empty; m]; n];
+
+        for (r, row) in matrix.iter().enumerate() {
+            let mut lowest_row_with_empty_cell = n - 1;
+            for (c, &cell) in row.iter().enumerate().rev() {
+                if cell == stone {
+                    result[lowest_row_with_empty_cell][m - r - 1] = stone;
+                    if lowest_row_with_empty_cell > 0 {
+                        lowest_row_with_empty_cell -= 1;
+                    }
+                } else if cell == obstacle {
+                    result[c][m - r - 1] = obstacle;
+                    if c > 0 {
+                        lowest_row_with_empty_cell = c - 1;
+                    }
+                }
             }
-
-            let len = right - left;
-            if len >= 2 {
-                result.push(vec![left as i32, right as i32]);
-            }
-
-            right += 1;
-            left = right;
-            current = next;
-        }
-
-        let len = right - left;
-        if len >= 2 {
-            result.push(vec![left as i32, right as i32]);
         }
 
         return result;
@@ -34,20 +32,28 @@ impl Solution {
 }
 
 struct Input {
-    s: &'static str,
+    matrix: Vec<Vec<char>>,
 }
 
 fn main() {
     let inputs = vec![
-        Input { s: "abbxxxxzzy" },
-        Input { s: "abc" },
         Input {
-            s: "abcdddeeeeaabbbcd",
+            matrix: vec![vec!['#', '.', '#']],
+        },
+        Input {
+            matrix: vec![vec!['#', '.', '*', '.'], vec!['#', '#', '*', '.']],
+        },
+        Input {
+            matrix: vec![
+                vec!['#', '#', '*', '.', '*', '.'],
+                vec!['#', '#', '#', '*', '.', '.'],
+                vec!['#', '#', '#', '.', '#', '.'],
+            ],
         },
     ];
 
     for input in inputs {
-        let result = Solution::large_group_positions(input.s.to_string());
+        let result = Solution::rotate_the_box(input.matrix);
         println!("{result:?}");
     }
 }
