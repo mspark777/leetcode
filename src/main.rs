@@ -1,30 +1,25 @@
 struct Solution {}
 
 impl Solution {
-    pub fn rotate_the_box(matrix: Vec<Vec<char>>) -> Vec<Vec<char>> {
-        let empty = '.';
-        let stone = '#';
-        let obstacle = '*';
+    pub fn max_matrix_sum(matrix: Vec<Vec<i32>>) -> i64 {
+        let mut result = 0i64;
+        let mut min_abs_val = i64::MAX;
+        let mut negative_count = 0i64;
 
-        let m = matrix.len();
-        let n = matrix[0].len();
-        let mut result = vec![vec![empty; m]; n];
-
-        for (r, row) in matrix.iter().enumerate() {
-            let mut lowest_row_with_empty_cell = n - 1;
-            for (c, &cell) in row.iter().enumerate().rev() {
-                if cell == stone {
-                    result[lowest_row_with_empty_cell][m - r - 1] = stone;
-                    if lowest_row_with_empty_cell > 0 {
-                        lowest_row_with_empty_cell -= 1;
-                    }
-                } else if cell == obstacle {
-                    result[c][m - r - 1] = obstacle;
-                    if c > 0 {
-                        lowest_row_with_empty_cell = c - 1;
-                    }
+        for row in matrix.iter() {
+            for &val in row.iter() {
+                let val_abs = val.abs() as i64;
+                result += val_abs;
+                if val < 0 {
+                    negative_count += 1;
                 }
+
+                min_abs_val = min_abs_val.min(val_abs);
             }
+        }
+
+        if negative_count & 1 == 1 {
+            result -= 2 * min_abs_val;
         }
 
         return result;
@@ -32,28 +27,21 @@ impl Solution {
 }
 
 struct Input {
-    matrix: Vec<Vec<char>>,
+    matrix: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            matrix: vec![vec!['#', '.', '#']],
+            matrix: vec![vec![1, -1], vec![-1, 1]],
         },
         Input {
-            matrix: vec![vec!['#', '.', '*', '.'], vec!['#', '#', '*', '.']],
-        },
-        Input {
-            matrix: vec![
-                vec!['#', '#', '*', '.', '*', '.'],
-                vec!['#', '#', '#', '*', '.', '.'],
-                vec!['#', '#', '#', '.', '#', '.'],
-            ],
+            matrix: vec![vec![1, 2, 3], vec![-1, -2, -3], vec![1, 2, 3]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::rotate_the_box(input.matrix);
-        println!("{result:?}");
+        let result = Solution::max_matrix_sum(input.matrix);
+        println!("{result}");
     }
 }
