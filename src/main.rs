@@ -1,50 +1,59 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_champion(n: i32, edges: Vec<Vec<i32>>) -> i32 {
-        return Self::solve(n as usize, edges);
+    pub fn shortest_distance_after_queries(n: i32, queries: Vec<Vec<i32>>) -> Vec<i32> {
+        let mut result = vec![0; queries.len()];
+        let mut adjacency_list = vec![Vec::<i32>::new(); n as usize];
+
+        for i in 0..(n - 1) {
+            adjacency_list[i as usize].push(i + 1);
+        }
+
+        for (i, road) in queries.iter().enumerate() {
+            let u = road[0];
+            let v = road[1];
+            adjacency_list[u as usize].push(v);
+
+            result[i] = Self::find_min_distance(&adjacency_list, n);
+        }
+
+        return result;
     }
 
-    fn solve(n: usize, edges: Vec<Vec<i32>>) -> i32 {
-        let mut indegree = vec![0; n];
-        for edge in edges.iter() {
-            let idx = edge[1] as usize;
-            indegree[idx] += 1;
-        }
+    fn find_min_distance(adjacency_list: &Vec<Vec<i32>>, n: i32) -> i32 {
+        let mut dp = vec![0; n as usize];
 
-        let mut champion = -1;
-        let mut champion_count = 0;
-
-        for (team, &count) in indegree.iter().enumerate() {
-            if count == 0 {
-                champion_count += 1;
-                champion = team as i32;
+        for current_node in (0..(n - 1)).rev() {
+            let mut min_distance = n;
+            for &neighbor in adjacency_list[current_node as usize].iter() {
+                min_distance = min_distance.min(dp[neighbor as usize] + 1);
             }
+            dp[current_node as usize] = min_distance;
         }
 
-        return if champion_count == 1 { champion } else { -1 };
+        return dp[0];
     }
 }
 
 struct Input {
     n: i32,
-    edges: Vec<Vec<i32>>,
+    queries: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 3,
-            edges: vec![vec![0, 1], vec![1, 2]],
+            n: 5,
+            queries: vec![vec![2, 4], vec![0, 2], vec![0, 4]],
         },
         Input {
             n: 4,
-            edges: vec![vec![0, 2], vec![1, 3], vec![1, 2]],
+            queries: vec![vec![0, 3], vec![0, 2]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_champion(input.n, input.edges);
-        println!("{result}");
+        let result = Solution::shortest_distance_after_queries(input.n, input.queries);
+        println!("{result:?}");
     }
 }
