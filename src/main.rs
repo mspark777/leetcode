@@ -1,59 +1,83 @@
+use std::collections::VecDeque;
+
 struct Solution {}
 
 impl Solution {
-    pub fn shortest_distance_after_queries(n: i32, queries: Vec<Vec<i32>>) -> Vec<i32> {
-        let mut result = vec![0; queries.len()];
-        let mut adjacency_list = vec![Vec::<i32>::new(); n as usize];
+    pub fn minimum_obstacles(grid: Vec<Vec<i32>>) -> i32 {
+        let directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+        let m = grid.len();
+        let n = grid[0].len();
 
-        for i in 0..(n - 1) {
-            adjacency_list[i as usize].push(i + 1);
+        let mut min_obstacles = vec![vec![i32::MAX; n]; m];
+        min_obstacles[0][0] = 0;
+
+        let mut deque = VecDeque::<(i32, usize, usize)>::new();
+        deque.push_back((0, 0, 0));
+
+        while let Some(current) = deque.pop_front() {
+            let obstacle = current.0;
+            let row = current.1;
+            let col = current.2;
+
+            for direction in directions.iter() {
+                let maybe_next_row = Self::get_next(row, direction[0], m);
+                let maybe_next_col = Self::get_next(col, direction[1], n);
+                if let (Some(next_row), Some(next_col)) = (maybe_next_row, maybe_next_col) {
+                    let min_obstacle = min_obstacles[next_row][next_col];
+                    if min_obstacle != i32::MAX {
+                        continue;
+                    }
+
+                    if grid[next_row][next_col] == 1 {
+                        min_obstacles[next_row][next_col] = obstacle + 1;
+                        deque.push_back((obstacle + 1, next_row, next_col));
+                    } else {
+                        min_obstacles[next_row][next_col] = obstacle;
+                        deque.push_front((obstacle, next_row, next_col));
+                    }
+                } else {
+                    continue;
+                }
+            }
         }
 
-        for (i, road) in queries.iter().enumerate() {
-            let u = road[0];
-            let v = road[1];
-            adjacency_list[u as usize].push(v);
-
-            result[i] = Self::find_min_distance(&adjacency_list, n);
-        }
-
-        return result;
+        return min_obstacles[m - 1][n - 1];
     }
 
-    fn find_min_distance(adjacency_list: &Vec<Vec<i32>>, n: i32) -> i32 {
-        let mut dp = vec![0; n as usize];
+    fn get_next(current: usize, direction: i32, max: usize) -> Option<usize> {
+        let next = (current as i32) + direction;
+        let m = max as i32;
 
-        for current_node in (0..(n - 1)).rev() {
-            let mut min_distance = n;
-            for &neighbor in adjacency_list[current_node as usize].iter() {
-                min_distance = min_distance.min(dp[neighbor as usize] + 1);
-            }
-            dp[current_node as usize] = min_distance;
-        }
-
-        return dp[0];
+        return if next < 0 {
+            None
+        } else if next >= m {
+            None
+        } else {
+            Some(next as usize)
+        };
     }
 }
 
 struct Input {
-    n: i32,
-    queries: Vec<Vec<i32>>,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 5,
-            queries: vec![vec![2, 4], vec![0, 2], vec![0, 4]],
+            grid: vec![vec![0, 1, 1], vec![1, 1, 0], vec![1, 1, 0]],
         },
         Input {
-            n: 4,
-            queries: vec![vec![0, 3], vec![0, 2]],
+            grid: vec![
+                vec![0, 1, 0, 0, 0],
+                vec![0, 1, 0, 1, 0],
+                vec![0, 0, 0, 1, 0],
+            ],
         },
     ];
 
     for input in inputs {
-        let result = Solution::shortest_distance_after_queries(input.n, input.queries);
+        let result = Solution::minimum_obstacles(input.grid);
         println!("{result:?}");
     }
 }
