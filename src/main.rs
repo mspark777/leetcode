@@ -1,60 +1,86 @@
-use std::collections::VecDeque;
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
 
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_obstacles(grid: Vec<Vec<i32>>) -> i32 {
-        let directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
-        let m = grid.len();
-        let n = grid[0].len();
+    pub fn minimum_time(grid: Vec<Vec<i32>>) -> i32 {
+        if grid[0][1] > 1 && grid[1][0] > 1 {
+            return -1;
+        }
 
-        let mut min_obstacles = vec![vec![i32::MAX; n]; m];
-        min_obstacles[0][0] = 0;
+        let rows = grid.len();
+        let cols = grid[0].len();
+        let last_row = rows - 1;
+        let last_col = cols - 1;
 
-        let mut deque = VecDeque::<(i32, usize, usize)>::new();
-        deque.push_back((0, 0, 0));
+        let directions = [(1, 0), (-1, 0), (0, 1), (0, -1)];
+        let mut visiteds = vec![vec![false; cols]; rows];
 
-        while let Some(current) = deque.pop_front() {
-            let obstacle = current.0;
-            let row = current.1;
-            let col = current.2;
+        let mut queue = BinaryHeap::<Reverse<(i32, usize, usize)>>::new();
+        queue.push(Reverse((grid[0][0], 0, 0)));
 
-            for direction in directions.iter() {
-                let maybe_next_row = Self::get_next(row, direction[0], m);
-                let maybe_next_col = Self::get_next(col, direction[1], n);
-                if let (Some(next_row), Some(next_col)) = (maybe_next_row, maybe_next_col) {
-                    let min_obstacle = min_obstacles[next_row][next_col];
-                    if min_obstacle != i32::MAX {
-                        continue;
-                    }
+        while let Some(Reverse((time, row, col))) = queue.pop() {
+            if row == last_row && col == last_col {
+                return time;
+            }
 
-                    if grid[next_row][next_col] == 1 {
-                        min_obstacles[next_row][next_col] = obstacle + 1;
-                        deque.push_back((obstacle + 1, next_row, next_col));
-                    } else {
-                        min_obstacles[next_row][next_col] = obstacle;
-                        deque.push_front((obstacle, next_row, next_col));
-                    }
-                } else {
+            if visiteds[row][col] {
+                continue;
+            }
+
+            visiteds[row][col] = true;
+            for &(dr, dc) in directions.iter() {
+                let may_next_row = Self::get_next(row, dr, last_row);
+                let may_next_col = Self::get_next(col, dc, last_col);
+
+                if Self::is_invalid(&visiteds, may_next_row, may_next_col) {
                     continue;
                 }
+
+                let next_row = may_next_row.unwrap();
+                let next_col = may_next_col.unwrap();
+                let wati_time = if ((grid[next_row][next_col] - time) & 1) == 0 {
+                    1
+                } else {
+                    0
+                };
+
+                let next_time = (time + 1).max(grid[next_row][next_col] + wati_time);
+                queue.push(Reverse((next_time, next_row, next_col)));
             }
         }
 
-        return min_obstacles[m - 1][n - 1];
+        return -1;
     }
 
-    fn get_next(current: usize, direction: i32, max: usize) -> Option<usize> {
-        let next = (current as i32) + direction;
-        let m = max as i32;
+    fn get_next(idx: usize, dir: i32, last: usize) -> Option<usize> {
+        let i = idx as i32;
+        let next = i + dir;
+        if next < 0 {
+            return None;
+        }
 
-        return if next < 0 {
-            None
-        } else if next >= m {
+        return if (next as usize) > last {
             None
         } else {
             Some(next as usize)
         };
+    }
+
+    fn is_invalid(
+        visited: &Vec<Vec<bool>>,
+        may_row: Option<usize>,
+        may_col: Option<usize>,
+    ) -> bool {
+        if may_row.is_none() || may_col.is_none() {
+            return true;
+        }
+
+        let row = may_row.unwrap();
+        let col = may_col.unwrap();
+
+        return visited[row][col];
     }
 }
 
@@ -65,19 +91,15 @@ struct Input {
 fn main() {
     let inputs = vec![
         Input {
-            grid: vec![vec![0, 1, 1], vec![1, 1, 0], vec![1, 1, 0]],
+            grid: vec![vec![0, 1, 3, 2], vec![5, 1, 2, 5], vec![4, 3, 8, 6]],
         },
         Input {
-            grid: vec![
-                vec![0, 1, 0, 0, 0],
-                vec![0, 1, 0, 1, 0],
-                vec![0, 0, 0, 1, 0],
-            ],
+            grid: vec![vec![0, 2, 4], vec![3, 2, 1], vec![1, 0, 4]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_obstacles(input.grid);
+        let result = Solution::minimum_time(input.grid);
         println!("{result:?}");
     }
 }
