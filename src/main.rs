@@ -1,47 +1,55 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_if_exist(arr: Vec<i32>) -> bool {
-        let mut seen = std::collections::HashSet::<i32>::with_capacity(arr.len());
-        for &num in arr.iter() {
-            let twice = num * 2;
-            if seen.contains(&twice) {
-                return true;
+    pub fn is_prefix_of_word(sentence: String, search_word: String) -> i32 {
+        for (i, word) in sentence.split(" ").enumerate() {
+            let mut chars = word.chars();
+            let mut found = true;
+            for search in search_word.chars() {
+                if let Some(ch) = chars.next() {
+                    if ch != search {
+                        found = false;
+                        break;
+                    }
+                } else {
+                    found = false;
+                    break;
+                }
             }
 
-            if num & 1 == 1 {
-                seen.insert(num);
-                continue;
+            if found {
+                return (i + 1) as i32;
             }
-
-            let half = num / 2;
-            if seen.contains(&half) {
-                return true;
-            }
-
-            seen.insert(num);
         }
 
-        return false;
+        return -1;
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    sentence: &'static str,
+    search_word: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            arr: vec![10, 2, 5, 3],
+            sentence: "i love eating burger",
+            search_word: "burg",
         },
         Input {
-            arr: vec![3, 1, 7, 11],
+            sentence: "this problem is an easy problem",
+            search_word: "pro",
+        },
+        Input {
+            sentence: "i am tired",
+            search_word: "you",
         },
     ];
 
     for input in inputs {
-        let result = Solution::check_if_exist(input.arr);
+        let result =
+            Solution::is_prefix_of_word(input.sentence.to_string(), input.search_word.to_string());
         println!("{result}");
     }
 }
