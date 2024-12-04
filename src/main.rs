@@ -1,35 +1,56 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_rectangle_overlap(rec1: Vec<i32>, rec2: Vec<i32>) -> bool {
-        return rec1[2].min(rec2[2]) > rec1[0].max(rec2[0])
-            && rec1[3].min(rec2[3]) > rec1[1].max(rec2[1]);
+    pub fn can_make_subsequence(str1: String, str2: String) -> bool {
+        let chars1 = str1.chars().collect::<Vec<char>>();
+        let chars2 = str2.chars().collect::<Vec<char>>();
+        let mut str2_idx = 0usize;
+        let str1_len = chars1.len();
+        let str2_len = chars2.len();
+
+        for str1_idx in 0..str1_len {
+            if str2_idx >= str2_len {
+                break;
+            }
+
+            let ch1 = chars1[str1_idx] as u8;
+            let ch2 = chars2[str2_idx] as u8;
+            if ch1 == ch2 {
+                str2_idx += 1;
+            } else if (ch1 + 1) == ch2 {
+                str2_idx += 1;
+            } else if (ch1 - 25) == ch2 {
+                str2_idx += 1;
+            }
+        }
+
+        return str2_idx == str2_len;
     }
 }
 
 struct Input {
-    rec1: Vec<i32>,
-    rec2: Vec<i32>,
+    str1: &'static str,
+    str2: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            rec1: vec![0, 0, 2, 2],
-            rec2: vec![1, 1, 3, 3],
+            str1: "abc",
+            str2: "ad",
         },
         Input {
-            rec1: vec![0, 0, 1, 1],
-            rec2: vec![1, 0, 2, 1],
+            str1: "zc",
+            str2: "ad",
         },
         Input {
-            rec1: vec![0, 0, 1, 1],
-            rec2: vec![2, 2, 3, 3],
+            str1: "ab",
+            str2: "d",
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_rectangle_overlap(input.rec1, input.rec2);
+        let result = Solution::can_make_subsequence(input.str1.to_string(), input.str2.to_string());
         println!("{result}");
     }
 }
