@@ -1,66 +1,59 @@
 struct Solution {}
 
 impl Solution {
-    pub fn can_change(start: String, target: String) -> bool {
-        return Self::solve(start.chars().collect(), target.chars().collect());
+    pub fn max_count(banned: Vec<i32>, n: i32, max_sum: i32) -> i32 {
+        let banned_set = std::collections::HashSet::from_iter(banned.into_iter());
+        return Self::solve(banned_set, n, max_sum);
     }
 
-    fn solve(start: Vec<char>, target: Vec<char>) -> bool {
-        let char_count = start.len();
-        let mut start_index = 0usize;
-        let mut target_index = 0usize;
+    fn solve(banned_set: std::collections::HashSet<i32>, n: i32, mut max_sum: i32) -> i32 {
+        let mut result = 0;
 
-        while start_index < char_count || target_index < char_count {
-            while start_index < char_count && start[start_index] == '_' {
-                start_index += 1;
+        for num in 1..=n {
+            if banned_set.contains(&num) {
+                continue;
             }
 
-            while target_index < char_count && target[target_index] == '_' {
-                target_index += 1;
+            let diff = max_sum - num;
+            if diff < 0 {
+                return result;
             }
 
-            if start_index == char_count || target_index == char_count {
-                return start_index == char_count && target_index == char_count;
-            }
-
-            if start[start_index] != target[target_index]
-                || (start[start_index] == 'L' && start_index < target_index)
-                || (start[start_index] == 'R' && start_index > target_index)
-            {
-                return false;
-            }
-
-            start_index += 1;
-            target_index += 1;
+            max_sum -= num;
+            result += 1;
         }
 
-        return true;
+        return result;
     }
 }
 
 struct Input {
-    start: &'static str,
-    target: &'static str,
+    banned: Vec<i32>,
+    n: i32,
+    max_sum: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            start: "_L__R__R_",
-            target: "L______RR",
+            banned: vec![1, 6, 5],
+            n: 5,
+            max_sum: 6,
         },
         Input {
-            start: "R_L_",
-            target: "__LR",
+            banned: vec![1, 2, 3, 4, 5, 6, 7],
+            n: 8,
+            max_sum: 1,
         },
         Input {
-            start: "_R",
-            target: "R_",
+            banned: vec![11],
+            n: 7,
+            max_sum: 50,
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_change(input.start.to_string(), input.target.to_string());
+        let result = Solution::max_count(input.banned, input.n, input.max_sum);
         println!("{result}");
     }
 }
