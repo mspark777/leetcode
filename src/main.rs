@@ -1,59 +1,63 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_count(banned: Vec<i32>, n: i32, max_sum: i32) -> i32 {
-        let banned_set = std::collections::HashSet::from_iter(banned.into_iter());
-        return Self::solve(banned_set, n, max_sum);
-    }
+    pub fn minimum_size(nums: Vec<i32>, max_operations: i32) -> i32 {
+        let mut left = 1;
+        let mut right = nums[0];
 
-    fn solve(banned_set: std::collections::HashSet<i32>, n: i32, mut max_sum: i32) -> i32 {
-        let mut result = 0;
-
-        for num in 1..=n {
-            if banned_set.contains(&num) {
-                continue;
-            }
-
-            let diff = max_sum - num;
-            if diff < 0 {
-                return result;
-            }
-
-            max_sum -= num;
-            result += 1;
+        for &num in nums.iter() {
+            right = right.max(num);
         }
 
-        return result;
+        while left < right {
+            let middle = (left + right) / 2;
+            if Self::is_possible(middle, &nums, max_operations) {
+                right = middle;
+            } else {
+                left = middle + 1;
+            }
+        }
+
+        return left;
+    }
+
+    fn is_possible(max_balls_in_bag: i32, nums: &Vec<i32>, max_operaions: i32) -> bool {
+        let mut total_operations = 0;
+
+        for &num in nums.iter() {
+            let n = num as f64;
+            let mbb = max_balls_in_bag as f64;
+            let operations = ((n / mbb).ceil() as i32) - 1;
+            total_operations += operations;
+
+            if total_operations > max_operaions {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
 struct Input {
-    banned: Vec<i32>,
-    n: i32,
-    max_sum: i32,
+    nums: Vec<i32>,
+    max_operations: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            banned: vec![1, 6, 5],
-            n: 5,
-            max_sum: 6,
+            nums: vec![9],
+            max_operations: 2,
         },
         Input {
-            banned: vec![1, 2, 3, 4, 5, 6, 7],
-            n: 8,
-            max_sum: 1,
-        },
-        Input {
-            banned: vec![11],
-            n: 7,
-            max_sum: 50,
+            nums: vec![2, 4, 8, 2],
+            max_operations: 4,
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_count(input.banned, input.n, input.max_sum);
+        let result = Solution::minimum_size(input.nums, input.max_operations);
         println!("{result}");
     }
 }
