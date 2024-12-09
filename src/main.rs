@@ -1,37 +1,24 @@
-use std::cmp::Reverse;
-
 struct Solution {}
 
 impl Solution {
-    pub fn max_two_events(events: Vec<Vec<i32>>) -> i32 {
-        return Self::solve(events.clone());
-    }
+    pub fn is_array_special(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> Vec<bool> {
+        let mut prefix_list = vec![0; nums.len()];
 
-    fn solve(mut events: Vec<Vec<i32>>) -> i32 {
-        events.sort_unstable_by_key(|e| (e[0], e[1]));
-
-        let mut queue =
-            std::collections::binary_heap::BinaryHeap::<Reverse<(i32, i32)>>::with_capacity(
-                events.len(),
-            );
-
-        let mut result = 0;
-        let mut max_val = 0;
-        for event in events.iter() {
-            let start = event[0];
-            let end = event[1];
-            let val = event[2];
-            while let Some(&Reverse((s, e))) = queue.peek() {
-                if s < start {
-                    max_val = max_val.max(e);
-                    queue.pop();
-                } else {
-                    break;
-                }
+        for i in 1..nums.len() {
+            let curr = nums[i] & 1;
+            let prev = nums[i - 1] & 1;
+            prefix_list[i] = prefix_list[i - 1];
+            if curr == prev {
+                prefix_list[i] += 1;
             }
+        }
 
-            result = result.max(max_val + val);
-            queue.push(Reverse((end, val)));
+        let mut result = vec![false; queries.len()];
+        for (i, query) in queries.iter().enumerate() {
+            let start = query[0] as usize;
+            let end = query[1] as usize;
+
+            result[i] = prefix_list[start] == prefix_list[end];
         }
 
         return result;
@@ -39,24 +26,24 @@ impl Solution {
 }
 
 struct Input {
-    events: Vec<Vec<i32>>,
+    nums: Vec<i32>,
+    queries: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            events: vec![vec![1, 3, 2], vec![4, 5, 2], vec![2, 4, 3]],
+            nums: vec![3, 4, 1, 2, 6],
+            queries: vec![vec![0, 4]],
         },
         Input {
-            events: vec![vec![1, 3, 2], vec![4, 5, 2], vec![1, 5, 5]],
-        },
-        Input {
-            events: vec![vec![1, 5, 3], vec![1, 5, 1], vec![6, 6, 5]],
+            nums: vec![4, 3, 1, 6],
+            queries: vec![vec![0, 2], vec![2, 3]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_two_events(input.events);
-        println!("{result}");
+        let result = Solution::is_array_special(input.nums, input.queries);
+        println!("{result:?}");
     }
 }
