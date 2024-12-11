@@ -1,47 +1,52 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_length(s: String) -> i32 {
-        let mut counts = std::collections::HashMap::<(char, usize), usize>::new();
-        let chars = s.chars().collect::<Vec<char>>();
-        for start in 0..chars.len() {
-            let char = chars[start];
-            let mut substring_length = 0usize;
-            for end in start..chars.len() {
-                if char == chars[end] {
-                    substring_length += 1;
-                    *counts.entry((char, substring_length)).or_insert(0) += 1;
-                } else {
-                    break;
-                }
+    pub fn maximum_beauty(nums: Vec<i32>, k: i32) -> i32 {
+        if nums.len() == 1 {
+            return 1;
+        }
+
+        let &max_value = nums.iter().max().unwrap();
+        let mut counts = vec![0; (max_value + 1) as usize];
+
+        for &num in nums.iter() {
+            counts[0.max(num - k) as usize] += 1;
+
+            if (num + k + 1) <= max_value {
+                counts[(num + k + 1) as usize] -= 1;
             }
         }
 
-        let mut result = 0usize;
-        for (&key, &value) in counts.iter() {
-            let len = key.1;
-            if value >= 3 && len > result {
-                result = len;
-            }
+        let mut result = 0;
+        let mut current_sum = 0;
+        for count in counts.iter() {
+            current_sum += count;
+            result = result.max(current_sum);
         }
 
-        return if result == 0 { -1 } else { result as i32 };
+        return result;
     }
 }
 
 struct Input {
-    s: &'static str,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
-        Input { s: "aaaa" },
-        Input { s: "abcdef" },
-        Input { s: "abcaba" },
+        Input {
+            nums: vec![4, 6, 1, 2],
+            k: 2,
+        },
+        Input {
+            nums: vec![1, 1, 1, 1],
+            k: 10,
+        },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_length(input.s.to_string());
+        let result = Solution::maximum_beauty(input.nums, input.k);
         println!("{result}");
     }
 }
