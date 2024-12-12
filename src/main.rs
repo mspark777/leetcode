@@ -1,27 +1,23 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_beauty(nums: Vec<i32>, k: i32) -> i32 {
-        if nums.len() == 1 {
-            return 1;
-        }
+    pub fn pick_gifts(gifts: Vec<i32>, k: i32) -> i64 {
+        let mut queue = std::collections::binary_heap::BinaryHeap::from_iter(gifts.iter().cloned());
 
-        let &max_value = nums.iter().max().unwrap();
-        let mut counts = vec![0; (max_value + 1) as usize];
-
-        for &num in nums.iter() {
-            counts[0.max(num - k) as usize] += 1;
-
-            if (num + k + 1) <= max_value {
-                counts[(num + k + 1) as usize] -= 1;
+        for _ in 0..k {
+            let top = queue.pop().unwrap();
+            if top == 1 {
+                return gifts.len() as i64;
+            } else if top == 0 {
+                return 0;
+            } else {
+                queue.push((top as f64).sqrt() as i32)
             }
         }
 
-        let mut result = 0;
-        let mut current_sum = 0;
-        for count in counts.iter() {
-            current_sum += count;
-            result = result.max(current_sum);
+        let mut result = 0i64;
+        for &n in queue.iter() {
+            result += n as i64;
         }
 
         return result;
@@ -29,24 +25,24 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    gifts: Vec<i32>,
     k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![4, 6, 1, 2],
-            k: 2,
+            gifts: vec![25, 64, 9, 4, 100],
+            k: 4,
         },
         Input {
-            nums: vec![1, 1, 1, 1],
-            k: 10,
+            gifts: vec![1, 1, 1, 1],
+            k: 4,
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_beauty(input.nums, input.k);
+        let result = Solution::pick_gifts(input.gifts, input.k);
         println!("{result}");
     }
 }
