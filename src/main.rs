@@ -1,53 +1,68 @@
 struct Solution {}
 impl Solution {
-    pub fn get_final_state(nums: Vec<i32>, k: i32, multiplier: i32) -> Vec<i32> {
-        let mut queue =
-            std::collections::BinaryHeap::<std::cmp::Reverse<(i32, usize)>>::with_capacity(
-                nums.len(),
-            );
-
-        let mut result = nums.clone();
-        for (i, num) in nums.iter().enumerate() {
-            queue.push(std::cmp::Reverse((*num, i)));
+    pub fn repeat_limited_string(s: String, repeat_limit: i32) -> String {
+        let mut frequency_map = std::collections::HashMap::<char, i32>::new();
+        for ch in s.chars() {
+            frequency_map
+                .entry(ch)
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
         }
 
-        for _ in 0..k {
-            if queue.is_empty() {
-                break;
+        let mut queue = std::collections::BinaryHeap::<char>::with_capacity(frequency_map.len());
+        for &ch in frequency_map.keys() {
+            queue.push(ch);
+        }
+
+        let mut result = Vec::<char>::new();
+        while let Some(ch) = queue.pop() {
+            let count = frequency_map[&ch];
+            let repeat = count.min(repeat_limit);
+            for _ in 0..repeat {
+                result.push(ch);
             }
 
-            let std::cmp::Reverse((num, i)) = queue.pop().unwrap();
-            let new_num = num * multiplier;
-            result[i] = new_num;
-            queue.push(std::cmp::Reverse((new_num, i)));
+            frequency_map.entry(ch).and_modify(|count| *count -= repeat);
+            if frequency_map[&ch] <= 0 {
+                continue;
+            } else if queue.is_empty() {
+                continue;
+            }
+
+            let next_ch = queue.pop().unwrap();
+            result.push(next_ch);
+
+            frequency_map.entry(next_ch).and_modify(|count| *count -= 1);
+            if frequency_map[&next_ch] > 0 {
+                queue.push(next_ch);
+            }
+
+            queue.push(ch);
         }
 
-        return result;
+        return result.iter().collect();
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
-    multiplier: i32,
+    s: &'static str,
+    repeat_limit: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![2, 1, 3, 5, 6],
-            k: 5,
-            multiplier: 2,
+            s: "cczazcc",
+            repeat_limit: 3,
         },
         Input {
-            nums: vec![1, 2],
-            k: 3,
-            multiplier: 4,
+            s: "aababab",
+            repeat_limit: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::get_final_state(input.nums, input.k, input.multiplier);
+        let result = Solution::repeat_limited_string(input.s.to_string(), input.repeat_limit);
         println!("{result:?}");
     }
 }
