@@ -1,21 +1,15 @@
 struct Solution {}
 
 impl Solution {
-    pub fn final_prices(prices: Vec<i32>) -> Vec<i32> {
-        let mut result = prices.clone();
-        let mut stack = Vec::<usize>::with_capacity(prices.len());
+    pub fn max_chunks_to_sorted(arr: Vec<i32>) -> i32 {
+        let mut result = 0;
+        let mut max_element = 0;
 
-        for (i, &price) in prices.iter().enumerate() {
-            while let Some(&j) = stack.last() {
-                if prices[j] < price {
-                    break;
-                } else {
-                    result[j] -= price;
-                    stack.pop();
-                }
+        for (i, &n) in arr.iter().enumerate() {
+            max_element = max_element.max(n);
+            if max_element == (i as i32) {
+                result += 1;
             }
-
-            stack.push(i as usize);
         }
 
         return result;
@@ -23,24 +17,21 @@ impl Solution {
 }
 
 struct Input {
-    prices: Vec<i32>,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            prices: vec![8, 4, 6, 2, 3],
+            arr: vec![4, 3, 2, 1, 0],
         },
         Input {
-            prices: vec![1, 2, 3, 4, 5],
-        },
-        Input {
-            prices: vec![10, 1, 1, 6],
+            arr: vec![1, 0, 2, 3, 4],
         },
     ];
 
     for input in inputs {
-        let result = Solution::final_prices(input.prices);
-        println!("{result:?}");
+        let result = Solution::max_chunks_to_sorted(input.arr);
+        println!("{result}");
     }
 }
