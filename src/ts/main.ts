@@ -1,27 +1,42 @@
 import "@total-typescript/ts-reset";
 
-function longestSquareStreak(nums: number[]): number {
-  nums.sort((l, r) => l - r);
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+  constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = val === undefined ? 0 : val;
+    this.left = left === undefined ? null : left;
+    this.right = right === undefined ? null : right;
+  }
+}
 
-  const streakLengths = new Map<number, number>();
-
-  for (const n of nums) {
-    const root = Math.trunc(Math.sqrt(n));
-    const lenOfRoot = streakLengths.get(root);
-    const square = root * root;
-    if (square === n && lenOfRoot != null) {
-      streakLengths.set(n, lenOfRoot + 1);
-    } else {
-      streakLengths.set(n, 1);
-    }
+function dfs(
+  left: TreeNode | null,
+  right: TreeNode | null,
+  level: number,
+): void {
+  if (left == null || right == null) {
+    return;
   }
 
-  let longestLength = 0;
-  for (const len of streakLengths.values()) {
-    longestLength = Math.max(longestLength, len);
+  if (level % 2 == 0) {
+    const temp = left.val;
+    left.val = right.val;
+    right.val = temp;
   }
 
-  return longestLength === 1 ? -1 : longestLength;
+  dfs(left.left, right.right, level + 1);
+  dfs(left.right, right.left, level + 1);
+}
+
+function reverseOddLevels(root: TreeNode | null): TreeNode | null {
+  if (root == null) {
+    return null;
+  }
+
+  dfs(root.left, root.right, 0);
+  return root;
 }
 
 function main(): void {
