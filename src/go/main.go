@@ -2,48 +2,57 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-type event struct {
-	start int
-	end   int
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func min(l, r int) int {
-	if l < r {
-		return l
-	}
+func minimumOperations(root *TreeNode) int {
+	var SHIFT int = 20
+	var MASK int = 0xFFFFF
 
-	return r
-}
+	queue := []*TreeNode{root}
+	result := 0
 
-func max(l, r int) int {
-	if l > r {
-		return l
-	}
+	for len(queue) > 0 {
+		levelSize := len(queue)
+		nodes := make([]int, levelSize)
 
-	return r
-}
+		for i := 0; i < levelSize; i += 1 {
+			node := queue[i]
+			nodes[i] = (node.Val << SHIFT) + i
 
-type MyCalendar struct {
-	events []event
-}
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
 
-func Constructor() MyCalendar {
-	return MyCalendar{events: []event{}}
-}
-
-func (this *MyCalendar) Book(start int, end int) bool {
-	for _, event := range this.events {
-		l := max(event.start, start)
-		r := min(event.end, end)
-		if l < r {
-			return false
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
 		}
+
+		sort.Ints(nodes)
+
+		for i := 0; i < levelSize; i += 1 {
+			origPos := nodes[i] & MASK
+			if origPos != i {
+				left := nodes[i]
+				right := nodes[origPos]
+				nodes[i] = right
+				nodes[origPos] = left
+				result += 1
+				i -= 1
+			}
+		}
+
+		queue = queue[levelSize:]
 	}
 
-	this.events = append(this.events, event{start, end})
-	return true
+	return result
 }
 
 type input struct {
