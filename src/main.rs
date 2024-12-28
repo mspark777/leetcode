@@ -1,44 +1,34 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_target_sum_ways(nums: Vec<i32>, target: i32) -> i32 {
-        let mut result_map = std::collections::HashMap::<i32, i32>::new();
-        result_map.insert(0, 1);
+    pub fn max_score_sightseeing_pair(values: Vec<i32>) -> i32 {
+        let mut max_left_score = values[0];
+        let mut result = 0;
 
-        for num in nums.iter().cloned() {
-            let mut dp = std::collections::HashMap::<i32, i32>::new();
-
-            for (&t, &sum) in result_map.iter() {
-                *dp.entry(t + num).or_insert(0) += sum;
-                *dp.entry(t - num).or_insert(0) += sum;
-            }
-
-            result_map = dp;
+        for (i, &score) in values.iter().skip(1).enumerate() {
+            let j = (i + 1) as i32;
+            result = result.max(max_left_score + score - j);
+            max_left_score = max_left_score.max(score + j);
         }
 
-        return *result_map.get(&target).unwrap_or(&0);
+        return result;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    target: i32,
+    values: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 1, 1, 1, 1],
-            target: 3,
+            values: vec![8, 1, 5, 2, 6],
         },
-        Input {
-            nums: vec![1],
-            target: 1,
-        },
+        Input { values: vec![1, 2] },
     ];
 
     for input in inputs {
-        let result = Solution::find_target_sum_ways(input.nums, input.target);
+        let result = Solution::max_score_sightseeing_pair(input.values);
         println!("{result:?}");
     }
 }
