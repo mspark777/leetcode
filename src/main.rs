@@ -1,93 +1,62 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_sum_of_three_subarrays(nums: Vec<i32>, k: i32) -> Vec<i32> {
-        let mut best_single_start = 0;
-        let mut best_double_start = vec![0, k];
-        let mut result = vec![0, k, k * 2];
+    pub fn num_ways(words: Vec<String>, target: String) -> i32 {
+        let target = target.chars().collect::<Vec<char>>();
+        let word_length = words[0].len();
+        let target_length = target.len();
+        let m = 1_000_000_007;
+        let mut char_frequencies = vec![vec![0; 26]; word_length];
 
-        let k = k as usize;
-
-        let mut current_window_sum_single = 0;
-        for &num in nums.iter().take(k) {
-            current_window_sum_single += num;
+        for word in words.iter() {
+            for (j, ch) in word.chars().enumerate() {
+                let i = ((ch as u8) - ('a' as u8)) as usize;
+                char_frequencies[j][i] += 1;
+            }
         }
 
-        let mut current_window_sum_double = 0;
-        for &num in nums.iter().skip(k).take(k) {
-            current_window_sum_double += num;
-        }
+        let mut prev_counts = vec![0i64; target_length + 1];
+        let mut curr_counts = vec![0i64; target_length + 1];
+        prev_counts[0] = 1;
 
-        let mut current_window_sum_triple = 0;
-        for &num in nums.iter().skip(k * 2).take(k) {
-            current_window_sum_triple += num;
-        }
-
-        let mut best_single_sum = current_window_sum_single;
-        let mut best_double_sum = current_window_sum_single + current_window_sum_double;
-        let mut best_triple_sum =
-            current_window_sum_single + current_window_sum_double + current_window_sum_triple;
-
-        let mut single_start_index = 1usize;
-        let mut double_start_index = (k + 1) as usize;
-        let mut triple_start_index = (k * 2 + 1) as usize;
-
-        while triple_start_index <= (nums.len() - (k as usize)) {
-            current_window_sum_single = current_window_sum_single - nums[single_start_index - 1]
-                + nums[single_start_index + k - 1];
-
-            current_window_sum_double = current_window_sum_double - nums[double_start_index - 1]
-                + nums[double_start_index + k - 1];
-
-            current_window_sum_triple = current_window_sum_triple - nums[triple_start_index - 1]
-                + nums[triple_start_index + k - 1];
-
-            if current_window_sum_single > best_single_sum {
-                best_single_start = single_start_index;
-                best_single_sum = current_window_sum_single;
+        for curr_word in 1..=word_length {
+            curr_counts = prev_counts.clone();
+            for curr_target in 1..=target_length {
+                let cur_pos = ((target[curr_target - 1] as u8) - ('a' as u8)) as usize;
+                curr_counts[curr_target] +=
+                    (char_frequencies[curr_word - 1][cur_pos] * prev_counts[curr_target - 1]) % m;
+                curr_counts[curr_target] %= m;
             }
 
-            if (current_window_sum_double + best_single_sum) > best_double_sum {
-                best_double_start[0] = best_single_start as i32;
-                best_double_start[1] = double_start_index as i32;
-                best_double_sum = current_window_sum_double + best_single_sum;
-            }
-
-            if (current_window_sum_triple + best_double_sum) > best_triple_sum {
-                result[0] = best_double_start[0];
-                result[1] = best_double_start[1];
-                result[2] = triple_start_index as i32;
-                best_triple_sum = current_window_sum_triple + best_double_sum;
-            }
-
-            single_start_index += 1;
-            double_start_index += 1;
-            triple_start_index += 1;
+            prev_counts = curr_counts.clone();
         }
 
-        return result;
+        return curr_counts[target_length] as i32;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    words: Vec<&'static str>,
+    target: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 2, 1, 2, 6, 7, 5, 1],
-            k: 2,
+            words: vec!["acca", "bbbb", "caca"],
+            target: "aba",
         },
         Input {
-            nums: vec![1, 2, 1, 2, 1, 2, 1, 2, 1],
-            k: 2,
+            words: vec!["abba", "baab"],
+            target: "bab",
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_sum_of_three_subarrays(input.nums, input.k);
+        let result = Solution::num_ways(
+            input.words.iter().map(|s| s.to_string()).collect(),
+            input.target.to_string(),
+        );
         println!("{result:?}");
     }
 }
