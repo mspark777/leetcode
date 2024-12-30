@@ -1,62 +1,64 @@
 struct Solution {}
 
 impl Solution {
-    pub fn num_ways(words: Vec<String>, target: String) -> i32 {
-        let target = target.chars().collect::<Vec<char>>();
-        let word_length = words[0].len();
-        let target_length = target.len();
+    pub fn count_good_strings(low: i32, high: i32, zero: i32, one: i32) -> i32 {
+        let low = low as usize;
+        let high = high as usize;
+        let zero = zero as usize;
+        let one = one as usize;
+
+        let mut dp = vec![0; high + 1];
+        dp[0] = 1;
         let m = 1_000_000_007;
-        let mut char_frequencies = vec![vec![0; 26]; word_length];
 
-        for word in words.iter() {
-            for (j, ch) in word.chars().enumerate() {
-                let i = ((ch as u8) - ('a' as u8)) as usize;
-                char_frequencies[j][i] += 1;
-            }
-        }
-
-        let mut prev_counts = vec![0i64; target_length + 1];
-        let mut curr_counts = vec![0i64; target_length + 1];
-        prev_counts[0] = 1;
-
-        for curr_word in 1..=word_length {
-            curr_counts = prev_counts.clone();
-            for curr_target in 1..=target_length {
-                let cur_pos = ((target[curr_target - 1] as u8) - ('a' as u8)) as usize;
-                curr_counts[curr_target] +=
-                    (char_frequencies[curr_word - 1][cur_pos] * prev_counts[curr_target - 1]) % m;
-                curr_counts[curr_target] %= m;
+        for end in 1..=high {
+            if end >= zero {
+                dp[end] += dp[end - zero];
             }
 
-            prev_counts = curr_counts.clone();
+            if end >= one {
+                dp[end] += dp[end - one];
+            }
+
+            dp[end] %= m;
         }
 
-        return curr_counts[target_length] as i32;
+        let mut result = 0;
+
+        for i in low..=high {
+            result += dp[i];
+            result %= m;
+        }
+
+        return result;
     }
 }
 
 struct Input {
-    words: Vec<&'static str>,
-    target: &'static str,
+    low: i32,
+    high: i32,
+    zero: i32,
+    one: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            words: vec!["acca", "bbbb", "caca"],
-            target: "aba",
+            low: 3,
+            high: 3,
+            zero: 1,
+            one: 1,
         },
         Input {
-            words: vec!["abba", "baab"],
-            target: "bab",
+            low: 3,
+            high: 3,
+            zero: 1,
+            one: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::num_ways(
-            input.words.iter().map(|s| s.to_string()).collect(),
-            input.target.to_string(),
-        );
+        let result = Solution::count_good_strings(input.low, input.high, input.zero, input.one);
         println!("{result:?}");
     }
 }
