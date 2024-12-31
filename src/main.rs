@@ -1,64 +1,49 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_good_strings(low: i32, high: i32, zero: i32, one: i32) -> i32 {
-        let low = low as usize;
-        let high = high as usize;
-        let zero = zero as usize;
-        let one = one as usize;
+    pub fn mincost_tickets(days: Vec<i32>, costs: Vec<i32>) -> i32 {
+        let last_day = days.last().unwrap().clone() as usize;
+        let mut dp = vec![0; last_day + 1];
 
-        let mut dp = vec![0; high + 1];
-        dp[0] = 1;
-        let m = 1_000_000_007;
-
-        for end in 1..=high {
-            if end >= zero {
-                dp[end] += dp[end - zero];
+        let mut i = 0usize;
+        for day in 1..=last_day {
+            if (day as i32) < days[i] {
+                dp[day] = dp[day - 1];
+            } else {
+                i += 1;
+                dp[day] = (dp[day - 1] + costs[0])
+                    .min(dp[Self::safe(day, 7)] + costs[1])
+                    .min(dp[Self::safe(day, 30)] + costs[2]);
             }
-
-            if end >= one {
-                dp[end] += dp[end - one];
-            }
-
-            dp[end] %= m;
         }
 
-        let mut result = 0;
+        return dp[last_day];
+    }
 
-        for i in low..=high {
-            result += dp[i];
-            result %= m;
-        }
-
-        return result;
+    fn safe(left: usize, right: usize) -> usize {
+        return if left <= right { 0 } else { left - right };
     }
 }
 
 struct Input {
-    low: i32,
-    high: i32,
-    zero: i32,
-    one: i32,
+    days: Vec<i32>,
+    costs: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            low: 3,
-            high: 3,
-            zero: 1,
-            one: 1,
+            days: vec![1, 4, 6, 7, 8, 20],
+            costs: vec![2, 7, 15],
         },
         Input {
-            low: 3,
-            high: 3,
-            zero: 1,
-            one: 2,
+            days: vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31],
+            costs: vec![2, 7, 15],
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_good_strings(input.low, input.high, input.zero, input.one);
+        let result = Solution::mincost_tickets(input.days, input.costs);
         println!("{result:?}");
     }
 }
