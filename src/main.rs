@@ -1,22 +1,36 @@
 struct Solution {}
 
 impl Solution {
-    pub fn ways_to_split_array(nums: Vec<i32>) -> i32 {
-        let mut left_sum = 0i64;
-        let mut right_sum = 0i64;
-
-        for num in nums.iter().cloned() {
-            right_sum += num as i64;
-        }
-
+    pub fn count_palindromic_subsequence(s: String) -> i32 {
+        let s = s.chars().collect::<Vec<char>>();
+        let letters = std::collections::HashSet::<char>::from_iter(s.iter().cloned());
         let mut result = 0;
-        for num in nums.iter().take(nums.len() - 1).cloned() {
-            left_sum += num as i64;
-            right_sum -= num as i64;
 
-            if left_sum >= right_sum {
-                result += 1;
+        for letter in letters.iter().cloned() {
+            let mut i = s.len();
+            let mut j = 0usize;
+
+            for (k, ch) in s.iter().cloned().enumerate() {
+                if ch == letter {
+                    if i == s.len() {
+                        i = k;
+                    }
+
+                    j = k;
+                }
             }
+
+            let left = i + 1;
+            let right = j;
+            if left >= right {
+                continue;
+            }
+
+            let between = std::collections::HashSet::<char>::from_iter(
+                s.iter().skip(left).take(right - left).cloned(),
+            );
+
+            result += between.len() as i32;
         }
 
         return result;
@@ -24,21 +38,21 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: &'static str,
 }
 
 fn main() {
     let inputs = vec![
+        Input { s: "aabca" },
+        Input { s: "adc" },
+        Input { s: "bbcbaba" },
         Input {
-            nums: vec![10, 4, -8, 7],
-        },
-        Input {
-            nums: vec![2, 3, 1, 0],
+            s: "aywvhbwycmbttdmogwlfosfizqlndfipffbqfxwbgrfdyomuuecllmsrzckiwgelkhgylwobz",
         },
     ];
 
     for input in inputs {
-        let result = Solution::ways_to_split_array(input.nums);
+        let result = Solution::count_palindromic_subsequence(input.s.to_string());
         println!("{result:?}");
     }
 }
