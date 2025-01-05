@@ -1,58 +1,64 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_palindromic_subsequence(s: String) -> i32 {
+    pub fn shifting_letters(s: String, shifts: Vec<Vec<i32>>) -> String {
+        let forward = 1;
         let s = s.chars().collect::<Vec<char>>();
-        let letters = std::collections::HashSet::<char>::from_iter(s.iter().cloned());
-        let mut result = 0;
+        let n = s.len();
+        let mut diff_arr = vec![0; n];
 
-        for letter in letters.iter().cloned() {
-            let mut i = s.len();
-            let mut j = 0usize;
-
-            for (k, ch) in s.iter().cloned().enumerate() {
-                if ch == letter {
-                    if i == s.len() {
-                        i = k;
-                    }
-
-                    j = k;
+        for shift in shifts.iter() {
+            let start = shift[0];
+            let end = shift[1];
+            let direction = shift[2];
+            if direction == forward {
+                diff_arr[start as usize] += 1;
+                if ((end + 1) as usize) < n {
+                    diff_arr[(end + 1) as usize] -= 1;
+                }
+            } else {
+                diff_arr[start as usize] -= 1;
+                if ((end + 1) as usize) < n {
+                    diff_arr[(end + 1) as usize] += 1;
                 }
             }
-
-            let left = i + 1;
-            let right = j;
-            if left >= right {
-                continue;
-            }
-
-            let between = std::collections::HashSet::<char>::from_iter(
-                s.iter().skip(left).take(right - left).cloned(),
-            );
-
-            result += between.len() as i32;
         }
 
-        return result;
+        let mut result = vec![' '; n];
+        let mut number_of_shifts = 0i32;
+        for (i, ch) in s.iter().cloned().enumerate() {
+            number_of_shifts = (number_of_shifts + diff_arr[i]) % 26;
+            if number_of_shifts < 0 {
+                number_of_shifts += 26;
+            }
+
+            let code = ('a' as i32) + ((ch as i32) - ('a' as i32) + number_of_shifts) % 26;
+            result[i] = code as u8 as char;
+        }
+
+        return result.iter().collect();
     }
 }
 
 struct Input {
     s: &'static str,
+    shifts: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
-        Input { s: "aabca" },
-        Input { s: "adc" },
-        Input { s: "bbcbaba" },
         Input {
-            s: "aywvhbwycmbttdmogwlfosfizqlndfipffbqfxwbgrfdyomuuecllmsrzckiwgelkhgylwobz",
+            s: "abc",
+            shifts: vec![vec![0, 1, 0], vec![1, 2, 1], vec![0, 2, 1]],
+        },
+        Input {
+            s: "dztz",
+            shifts: vec![vec![0, 0, 0], vec![1, 1, 1]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_palindromic_subsequence(input.s.to_string());
+        let result = Solution::shifting_letters(input.s.to_string(), input.shifts);
         println!("{result:?}");
     }
 }
