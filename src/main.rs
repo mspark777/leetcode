@@ -1,64 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn shifting_letters(s: String, shifts: Vec<Vec<i32>>) -> String {
-        let forward = 1;
-        let s = s.chars().collect::<Vec<char>>();
-        let n = s.len();
-        let mut diff_arr = vec![0; n];
+    pub fn min_operations(boxes: String) -> Vec<i32> {
+        let boxes = boxes.chars().collect::<Vec<char>>();
+        let mut result = vec![0; boxes.len()];
 
-        for shift in shifts.iter() {
-            let start = shift[0];
-            let end = shift[1];
-            let direction = shift[2];
-            if direction == forward {
-                diff_arr[start as usize] += 1;
-                if ((end + 1) as usize) < n {
-                    diff_arr[(end + 1) as usize] -= 1;
-                }
-            } else {
-                diff_arr[start as usize] -= 1;
-                if ((end + 1) as usize) < n {
-                    diff_arr[(end + 1) as usize] += 1;
-                }
-            }
+        let mut balls_to_left = 0;
+        let mut moves_to_left = 0;
+        let mut balls_to_right = 0;
+        let mut moves_to_right = 0;
+
+        for i in 0..boxes.len() {
+            result[i] += moves_to_left;
+            balls_to_left += (boxes[i] as i32) - ('0' as i32);
+            moves_to_left += balls_to_left;
+
+            let j = boxes.len() - 1 - i;
+            result[j] += moves_to_right;
+            balls_to_right += (boxes[j] as i32) - ('0' as i32);
+            moves_to_right += balls_to_right;
         }
 
-        let mut result = vec![' '; n];
-        let mut number_of_shifts = 0i32;
-        for (i, ch) in s.iter().cloned().enumerate() {
-            number_of_shifts = (number_of_shifts + diff_arr[i]) % 26;
-            if number_of_shifts < 0 {
-                number_of_shifts += 26;
-            }
-
-            let code = ('a' as i32) + ((ch as i32) - ('a' as i32) + number_of_shifts) % 26;
-            result[i] = code as u8 as char;
-        }
-
-        return result.iter().collect();
+        return result;
     }
 }
 
 struct Input {
-    s: &'static str,
-    shifts: Vec<Vec<i32>>,
+    boxes: &'static str,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            s: "abc",
-            shifts: vec![vec![0, 1, 0], vec![1, 2, 1], vec![0, 2, 1]],
-        },
-        Input {
-            s: "dztz",
-            shifts: vec![vec![0, 0, 0], vec![1, 1, 1]],
-        },
-    ];
+    let inputs = vec![Input { boxes: "110" }, Input { boxes: "001011" }];
 
     for input in inputs {
-        let result = Solution::shifting_letters(input.s.to_string(), input.shifts);
+        let result = Solution::min_operations(input.boxes.to_string());
         println!("{result:?}");
     }
 }
