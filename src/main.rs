@@ -1,39 +1,47 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_operations(boxes: String) -> Vec<i32> {
-        let boxes = boxes.chars().collect::<Vec<char>>();
-        let mut result = vec![0; boxes.len()];
+    pub fn can_construct(s: String, k: i32) -> bool {
+        let mut odd_count = 0u32;
+        let mut s_len = 0;
 
-        let mut balls_to_left = 0;
-        let mut moves_to_left = 0;
-        let mut balls_to_right = 0;
-        let mut moves_to_right = 0;
-
-        for i in 0..boxes.len() {
-            result[i] += moves_to_left;
-            balls_to_left += (boxes[i] as i32) - ('0' as i32);
-            moves_to_left += balls_to_left;
-
-            let j = boxes.len() - 1 - i;
-            result[j] += moves_to_right;
-            balls_to_right += (boxes[j] as i32) - ('0' as i32);
-            moves_to_right += balls_to_right;
+        for ch in s.chars() {
+            let code = ch as u32;
+            let a = 'a' as u32;
+            odd_count ^= 1 << (code - a);
+            s_len += 1;
         }
 
-        return result;
+        if s_len < k {
+            return false;
+        } else if s_len == k {
+            return true;
+        }
+
+        return odd_count.count_ones() <= (k as u32);
     }
 }
 
 struct Input {
-    boxes: &'static str,
+    s: &'static str,
+    k: i32,
 }
 
 fn main() {
-    let inputs = vec![Input { boxes: "110" }, Input { boxes: "001011" }];
+    let inputs = vec![
+        Input {
+            s: "annabelle",
+            k: 2,
+        },
+        Input {
+            s: "leetcode",
+            k: 3,
+        },
+        Input { s: "true", k: 4 },
+    ];
 
     for input in inputs {
-        let result = Solution::min_operations(input.boxes.to_string());
+        let result = Solution::can_construct(input.s.to_string(), input.k);
         println!("{result:?}");
     }
 }
