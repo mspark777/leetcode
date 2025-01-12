@@ -1,82 +1,33 @@
 struct Solution {}
 
 impl Solution {
-    pub fn can_be_valid(s: String, locked: String) -> bool {
-        let s = s.chars().collect::<Vec<char>>();
-        let locked = locked.chars().collect::<Vec<char>>();
+    pub fn binary_gap(n: i32) -> i32 {
+        let mut last = 33usize;
+        let mut result = 0usize;
 
-        if s.len() & 1 == 1 {
-            return false;
-        }
-
-        let mut open_brackets = 0;
-        let mut unlocked = 0;
-
-        for (&bracket, &lock) in s.iter().zip(locked.iter()) {
-            if lock == '0' {
-                unlocked += 1;
-            } else if bracket == '(' {
-                open_brackets += 1;
-            } else if bracket == ')' {
-                if open_brackets > 0 {
-                    open_brackets -= 1;
-                } else if unlocked > 0 {
-                    unlocked -= 1;
-                } else {
-                    return false;
+        for i in 0..32 {
+            if (n >> i) & 1 == 1 {
+                if last < 33 {
+                    result = result.max(i - last);
                 }
+
+                last = i;
             }
         }
 
-        let mut balance = 0;
-
-        for (&bracket, &lock) in s.iter().rev().zip(locked.iter().rev()) {
-            if lock == '0' {
-                balance -= 1;
-                unlocked -= 1;
-            } else if bracket == '(' {
-                balance += 1;
-                open_brackets -= 1;
-            } else if bracket == ')' {
-                balance -= 1;
-            }
-
-            if balance > 0 {
-                return false;
-            }
-
-            if unlocked == 0 && open_brackets == 0 {
-                break;
-            }
-        }
-
-        return if open_brackets <= 0 { true } else { false };
+        return result as i32;
     }
 }
 
 struct Input {
-    s: &'static str,
-    locked: &'static str,
+    n: i32,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            s: "))()))",
-            locked: "010100",
-        },
-        Input {
-            s: "()()",
-            locked: "0000",
-        },
-        Input {
-            s: ")",
-            locked: "0",
-        },
-    ];
+    let inputs = vec![Input { n: 22 }, Input { n: 8 }, Input { n: 5 }];
 
     for input in inputs {
-        let result = Solution::can_be_valid(input.s.to_string(), input.locked.to_string());
+        let result = Solution::binary_gap(input.n);
         println!("{result:?}");
     }
 }
