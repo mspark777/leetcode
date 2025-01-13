@@ -1,33 +1,40 @@
 struct Solution {}
 
 impl Solution {
-    pub fn binary_gap(n: i32) -> i32 {
-        let mut last = 33usize;
-        let mut result = 0usize;
+    pub fn minimum_length(s: String) -> i32 {
+        let mut frequencies = vec![0; 26];
+        let mut result = 0;
 
-        for i in 0..32 {
-            if (n >> i) & 1 == 1 {
-                if last < 33 {
-                    result = result.max(i - last);
-                }
+        for ch in s.chars() {
+            let code = ch as usize;
+            let a = 'a' as usize;
+            let idx = code - a;
+            frequencies[idx] += 1;
+        }
 
-                last = i;
+        for frequency in frequencies.iter().cloned() {
+            if frequency == 0 {
+                continue;
+            } else if frequency & 1 == 1 {
+                result += 1;
+            } else {
+                result += 2;
             }
         }
 
-        return result as i32;
+        return result;
     }
 }
 
 struct Input {
-    n: i32,
+    s: &'static str,
 }
 
 fn main() {
-    let inputs = vec![Input { n: 22 }, Input { n: 8 }, Input { n: 5 }];
+    let inputs = vec![Input { s: "abaacbcbb" }, Input { s: "aa" }];
 
     for input in inputs {
-        let result = Solution::binary_gap(input.n);
+        let result = Solution::minimum_length(input.s.to_string());
         println!("{result:?}");
     }
 }
