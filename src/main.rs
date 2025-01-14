@@ -1,27 +1,23 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_the_prefix_common_array(a_list: Vec<i32>, b_list: Vec<i32>) -> Vec<i32> {
-        let n = a_list.len();
-        let mut result = vec![0; n];
-        let mut frequencies = vec![0; n];
-        let mut common_count = 0;
+    pub fn projection_area(grid: Vec<Vec<i32>>) -> i32 {
+        let n = grid.len();
+        let mut result = 0;
 
-        for (i, (&a, &b)) in a_list.iter().zip(b_list.iter()).enumerate() {
-            let a_idx = (a as usize) - 1;
-            let b_idx = (b as usize) - 1;
+        for r in 0..n {
+            let mut best_row = 0;
+            let mut best_col = 0;
+            for c in 0..n {
+                if grid[r][c] > 0 {
+                    result += 1;
+                }
 
-            frequencies[a_idx] += 1;
-            if frequencies[a_idx] == 2 {
-                common_count += 1;
+                best_row = best_row.max(grid[r][c]);
+                best_col = best_col.max(grid[c][r]);
             }
 
-            frequencies[b_idx] += 1;
-            if frequencies[b_idx] == 2 {
-                common_count += 1;
-            }
-
-            result[i] = common_count;
+            result += best_row + best_col;
         }
 
         return result;
@@ -29,24 +25,24 @@ impl Solution {
 }
 
 struct Input {
-    a: Vec<i32>,
-    b: Vec<i32>,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            a: vec![1, 3, 2, 4],
-            b: vec![3, 1, 2, 4],
+            grid: vec![vec![1, 2], vec![3, 4]],
         },
         Input {
-            a: vec![2, 3, 1],
-            b: vec![3, 1, 2],
+            grid: vec![vec![2]],
+        },
+        Input {
+            grid: vec![vec![1, 0], vec![0, 2]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_the_prefix_common_array(input.a, input.b);
+        let result = Solution::projection_area(input.grid);
         println!("{result:?}");
     }
 }
