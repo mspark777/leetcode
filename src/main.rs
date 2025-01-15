@@ -1,58 +1,76 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimize_xor(num1: i32, num2: i32) -> i32 {
-        return Self::solve(num1 as u32, num2 as u32) as i32;
-    }
+    pub fn surface_area(grid: Vec<Vec<i32>>) -> i32 {
+        let dr_list = [0, 1, 0, -1];
+        let dc_list = [1, 0, -1, 0];
+        let n = grid.len();
+        let mut result = 0;
 
-    fn solve(num1: u32, num2: u32) -> u32 {
-        let mut result = 0u32;
-        let target_set_bits_count = num2.count_ones();
-        let mut set_bits_count = 0u32;
-        let mut current_bit = 31u32;
+        for r in 0..n {
+            for c in 0..n {
+                let cell = grid[r][c];
+                if cell <= 0 {
+                    continue;
+                }
 
-        while set_bits_count < target_set_bits_count {
-            if Self::is_set(num1, current_bit) {
-                result = Self::set_bit(result, current_bit);
-                set_bits_count += 1;
-                current_bit = Self::next_current_bit(current_bit);
-                continue;
+                result += 2;
+                for (&dr, &dc) in dr_list.iter().zip(dc_list.iter()) {
+                    let maybe_nr = Self::next(r, dr, n);
+                    let maybe_nc = Self::next(c, dc, n);
+                    let mut nv = 0;
+                    if let (Some(nr), Some(nc)) = (maybe_nr, maybe_nc) {
+                        nv = grid[nr][nc];
+                    }
+
+                    result += 0.max(grid[r][c] - nv);
+                }
             }
-
-            let bit_diff = target_set_bits_count - set_bits_count;
-            if bit_diff > current_bit {
-                result = Self::set_bit(result, current_bit);
-                set_bits_count += 1;
-            }
-            current_bit = Self::next_current_bit(current_bit);
         }
 
         return result;
     }
 
-    fn is_set(x: u32, bit: u32) -> bool {
-        return (x & (1 << bit)) != 0;
-    }
+    fn next(u: usize, d: i32, n: usize) -> Option<usize> {
+        if d == 0 {
+            return Some(u);
+        } else if d > 0 {
+            let nu = u + d as usize;
+            if nu < n {
+                return Some(nu);
+            }
 
-    fn set_bit(x: u32, bit: u32) -> u32 {
-        return x | (1 << bit);
-    }
+            return None;
+        }
 
-    fn next_current_bit(current: u32) -> u32 {
-        return if current > 1 { current - 1 } else { 0 };
+        let d = (d * -1) as usize;
+        if u < d {
+            return None;
+        }
+
+        return Some(u - d);
     }
 }
 
 struct Input {
-    num1: i32,
-    num2: i32,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
-    let inputs = vec![Input { num1: 3, num2: 5 }, Input { num1: 1, num2: 12 }];
+    let inputs = vec![
+        Input {
+            grid: vec![vec![1, 2], vec![3, 4]],
+        },
+        Input {
+            grid: vec![vec![1, 1, 1], vec![1, 0, 1], vec![1, 1, 1]],
+        },
+        Input {
+            grid: vec![vec![2, 2, 2], vec![2, 1, 2], vec![2, 2, 2]],
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::minimize_xor(input.num1, input.num2);
+        let result = Solution::surface_area(input.grid);
         println!("{result:?}");
     }
 }
