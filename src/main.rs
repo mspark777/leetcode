@@ -1,46 +1,58 @@
 struct Solution {}
 
 impl Solution {
-    pub fn fair_candy_swap(alice_sizes: Vec<i32>, bob_sizes: Vec<i32>) -> Vec<i32> {
-        let sum_a = alice_sizes.iter().sum::<i32>();
-        let sum_b = bob_sizes.iter().sum::<i32>();
-        let diff = (sum_a - sum_b) / 2;
-        let alice_set = std::collections::HashSet::<i32>::from_iter(alice_sizes.iter().cloned());
+    pub fn minimize_xor(num1: i32, num2: i32) -> i32 {
+        return Self::solve(num1 as u32, num2 as u32) as i32;
+    }
 
-        for bob in bob_sizes.iter().cloned() {
-            let target = bob + diff;
-            if alice_set.contains(&target) {
-                return vec![bob + diff, bob];
+    fn solve(num1: u32, num2: u32) -> u32 {
+        let mut result = 0u32;
+        let target_set_bits_count = num2.count_ones();
+        let mut set_bits_count = 0u32;
+        let mut current_bit = 31u32;
+
+        while set_bits_count < target_set_bits_count {
+            if Self::is_set(num1, current_bit) {
+                result = Self::set_bit(result, current_bit);
+                set_bits_count += 1;
+                current_bit = Self::next_current_bit(current_bit);
+                continue;
             }
+
+            let bit_diff = target_set_bits_count - set_bits_count;
+            if bit_diff > current_bit {
+                result = Self::set_bit(result, current_bit);
+                set_bits_count += 1;
+            }
+            current_bit = Self::next_current_bit(current_bit);
         }
 
-        return bob_sizes;
+        return result;
+    }
+
+    fn is_set(x: u32, bit: u32) -> bool {
+        return (x & (1 << bit)) != 0;
+    }
+
+    fn set_bit(x: u32, bit: u32) -> u32 {
+        return x | (1 << bit);
+    }
+
+    fn next_current_bit(current: u32) -> u32 {
+        return if current > 1 { current - 1 } else { 0 };
     }
 }
 
 struct Input {
-    alice_sizes: Vec<i32>,
-    bob_sizes: Vec<i32>,
+    num1: i32,
+    num2: i32,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            alice_sizes: vec![1, 1],
-            bob_sizes: vec![2, 2],
-        },
-        Input {
-            alice_sizes: vec![1, 2],
-            bob_sizes: vec![2, 3],
-        },
-        Input {
-            alice_sizes: vec![2],
-            bob_sizes: vec![1, 3],
-        },
-    ];
+    let inputs = vec![Input { num1: 3, num2: 5 }, Input { num1: 1, num2: 12 }];
 
     for input in inputs {
-        let result = Solution::fair_candy_swap(input.alice_sizes, input.bob_sizes);
+        let result = Solution::minimize_xor(input.num1, input.num2);
         println!("{result:?}");
     }
 }
