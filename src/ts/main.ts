@@ -1,24 +1,29 @@
 import "@total-typescript/ts-reset";
 
-function isPrefixAndSubfix(str1: string, str2: string): boolean {
-  return (
-    str2.slice(0, str1.length) === str1 &&
-    str2.slice(str2.length - str1.length) === str1
-  );
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+  constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = val === undefined ? 0 : val;
+    this.left = left === undefined ? null : left;
+    this.right = right === undefined ? null : right;
+  }
 }
 
-function countPrefixSuffixPairs(words: string[]): number {
-  let result = 0;
-
-  for (let i = 0; i < words.length; i += 1) {
-    for (let j = i + 1; j < words.length; j += 1) {
-      if (isPrefixAndSubfix(words[i] as string, words[j] as string)) {
-        result += 1;
-      }
-    }
+function solve(root: TreeNode | null, tail: TreeNode | null): TreeNode | null {
+  if (root == null) {
+    return tail;
   }
 
-  return result;
+  const res = solve(root.left, root);
+  root.left = null;
+  root.right = solve(root.right, tail);
+  return res;
+}
+
+function increasingBST(root: TreeNode | null): TreeNode | null {
+  return solve(root, null);
 }
 
 function main(): void {
