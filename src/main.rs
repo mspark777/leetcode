@@ -1,30 +1,42 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_servers(grid: Vec<Vec<i32>>) -> i32 {
-        let mut result = 0;
-        let mut row_counts = vec![0; grid[0].len()];
-        let mut last_server_in_col = vec![grid[0].len(); grid.len()];
+    pub fn eventual_safe_nodes(graph: Vec<Vec<i32>>) -> Vec<i32> {
+        let n = graph.len();
+        let mut indegrees = vec![0; n];
+        let mut adjacents = vec![Vec::<usize>::new(); n];
 
-        for (r, row) in grid.iter().enumerate() {
-            let mut server_count_in_row = 0;
-            for (c, cell) in row.iter().cloned().enumerate() {
-                if cell == 1 {
-                    server_count_in_row += 1;
-                    row_counts[c] += 1;
-                    last_server_in_col[r] = c;
-                }
-            }
-
-            if server_count_in_row != 1 {
-                result += server_count_in_row;
-                last_server_in_col[r] = grid[0].len();
+        for (i, nodes) in graph.iter().enumerate() {
+            for node in nodes.iter().cloned() {
+                adjacents[node as usize].push(i);
+                indegrees[i] += 1;
             }
         }
 
-        for r in 0..grid.len() {
-            if (last_server_in_col[r] != grid[0].len()) && (row_counts[last_server_in_col[r]] > 1) {
-                result += 1;
+        let mut queue = std::collections::VecDeque::with_capacity(n);
+        for (i, indegree) in indegrees.iter().cloned().enumerate() {
+            if indegree == 0 {
+                queue.push_back(i);
+            }
+        }
+
+        let mut safe = vec![false; n];
+
+        while let Some(node) = queue.pop_front() {
+            safe[node] = true;
+
+            for neighbor in adjacents[node].iter().cloned() {
+                indegrees[neighbor] -= 1;
+                if indegrees[neighbor] == 0 {
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+
+        let mut result = Vec::<i32>::with_capacity(n);
+        for (i, s) in safe.iter().cloned().enumerate() {
+            if s {
+                result.push(i as i32);
             }
         }
 
@@ -33,29 +45,29 @@ impl Solution {
 }
 
 struct Input {
-    grid: Vec<Vec<i32>>,
+    graph: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            grid: vec![vec![1, 0], vec![0, 1]],
-        },
-        Input {
-            grid: vec![vec![1, 0], vec![1, 1]],
-        },
-        Input {
-            grid: vec![
-                vec![1, 1, 0, 0],
-                vec![0, 0, 1, 0],
-                vec![0, 0, 1, 0],
-                vec![0, 0, 0, 1],
+            graph: vec![
+                vec![1, 2],
+                vec![2, 3],
+                vec![5],
+                vec![0],
+                vec![5],
+                vec![],
+                vec![],
             ],
+        },
+        Input {
+            graph: vec![vec![1, 2, 3, 4], vec![1, 2], vec![3, 4], vec![0, 4], vec![]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_servers(input.grid);
+        let result = Solution::eventual_safe_nodes(input.graph);
         println!("{result:?}");
     }
 }
