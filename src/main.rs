@@ -1,43 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn eventual_safe_nodes(graph: Vec<Vec<i32>>) -> Vec<i32> {
-        let n = graph.len();
-        let mut indegrees = vec![0; n];
-        let mut adjacents = vec![Vec::<usize>::new(); n];
+    pub fn lexicographically_smallest_array(nums: Vec<i32>, limit: i32) -> Vec<i32> {
+        let mut nums_sorted = nums.clone();
+        nums_sorted.sort_unstable();
 
-        for (i, nodes) in graph.iter().enumerate() {
-            for node in nodes.iter().cloned() {
-                adjacents[node as usize].push(i);
-                indegrees[i] += 1;
+        let mut curr_group = 0;
+        let mut num_to_group = std::collections::HashMap::<i32, i32>::new();
+        num_to_group.insert(nums_sorted[0], curr_group);
+
+        let mut group_to_list =
+            std::collections::HashMap::<i32, std::collections::VecDeque<i32>>::new();
+        group_to_list.insert(
+            curr_group,
+            std::collections::VecDeque::from([nums_sorted[0]]),
+        );
+
+        for i in 1..nums.len() {
+            let diff = nums_sorted[i] - nums_sorted[i - 1];
+            if diff.abs() > limit {
+                curr_group += 1;
             }
+
+            num_to_group.insert(nums_sorted[i], curr_group);
+            if !group_to_list.contains_key(&curr_group) {
+                group_to_list.insert(curr_group, std::collections::VecDeque::new());
+            }
+
+            group_to_list
+                .get_mut(&curr_group)
+                .unwrap()
+                .push_back(nums_sorted[i]);
         }
 
-        let mut queue = std::collections::VecDeque::with_capacity(n);
-        for (i, indegree) in indegrees.iter().cloned().enumerate() {
-            if indegree == 0 {
-                queue.push_back(i);
-            }
-        }
-
-        let mut safe = vec![false; n];
-
-        while let Some(node) = queue.pop_front() {
-            safe[node] = true;
-
-            for neighbor in adjacents[node].iter().cloned() {
-                indegrees[neighbor] -= 1;
-                if indegrees[neighbor] == 0 {
-                    queue.push_back(neighbor);
-                }
-            }
-        }
-
-        let mut result = Vec::<i32>::with_capacity(n);
-        for (i, s) in safe.iter().cloned().enumerate() {
-            if s {
-                result.push(i as i32);
-            }
+        let mut result = nums.clone();
+        for num in result.iter_mut() {
+            let group_no = num_to_group.get(num).unwrap();
+            *num = group_to_list
+                .get_mut(group_no)
+                .unwrap()
+                .pop_front()
+                .unwrap();
         }
 
         return result;
@@ -45,29 +48,28 @@ impl Solution {
 }
 
 struct Input {
-    graph: Vec<Vec<i32>>,
+    nums: Vec<i32>,
+    limit: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            graph: vec![
-                vec![1, 2],
-                vec![2, 3],
-                vec![5],
-                vec![0],
-                vec![5],
-                vec![],
-                vec![],
-            ],
+            nums: vec![1, 5, 3, 9, 8],
+            limit: 2,
         },
         Input {
-            graph: vec![vec![1, 2, 3, 4], vec![1, 2], vec![3, 4], vec![0, 4], vec![]],
+            nums: vec![1, 7, 6, 18, 2, 1],
+            limit: 3,
+        },
+        Input {
+            nums: vec![1, 7, 28, 19, 10],
+            limit: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::eventual_safe_nodes(input.graph);
+        let result = Solution::lexicographically_smallest_array(input.nums, input.limit);
         println!("{result:?}");
     }
 }
