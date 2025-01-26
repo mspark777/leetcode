@@ -1,75 +1,78 @@
 struct Solution {}
 
 impl Solution {
-    pub fn lexicographically_smallest_array(nums: Vec<i32>, limit: i32) -> Vec<i32> {
-        let mut nums_sorted = nums.clone();
-        nums_sorted.sort_unstable();
+    pub fn maximum_invitations(favorites: Vec<i32>) -> i32 {
+        let n = favorites.len();
+        let mut indegrees = vec![0; n];
 
-        let mut curr_group = 0;
-        let mut num_to_group = std::collections::HashMap::<i32, i32>::new();
-        num_to_group.insert(nums_sorted[0], curr_group);
-
-        let mut group_to_list =
-            std::collections::HashMap::<i32, std::collections::VecDeque<i32>>::new();
-        group_to_list.insert(
-            curr_group,
-            std::collections::VecDeque::from([nums_sorted[0]]),
-        );
-
-        for i in 1..nums.len() {
-            let diff = nums_sorted[i] - nums_sorted[i - 1];
-            if diff.abs() > limit {
-                curr_group += 1;
-            }
-
-            num_to_group.insert(nums_sorted[i], curr_group);
-            if !group_to_list.contains_key(&curr_group) {
-                group_to_list.insert(curr_group, std::collections::VecDeque::new());
-            }
-
-            group_to_list
-                .get_mut(&curr_group)
-                .unwrap()
-                .push_back(nums_sorted[i]);
+        for f in favorites.iter().cloned() {
+            let person = f as usize;
+            indegrees[person] += 1;
         }
 
-        let mut result = nums.clone();
-        for num in result.iter_mut() {
-            let group_no = num_to_group.get(num).unwrap();
-            *num = group_to_list
-                .get_mut(group_no)
-                .unwrap()
-                .pop_front()
-                .unwrap();
+        let mut queue = std::collections::VecDeque::<usize>::with_capacity(n);
+        for (person, indegree) in indegrees.iter().cloned().enumerate() {
+            if indegree == 0 {
+                queue.push_back(person);
+            }
         }
 
-        return result;
+        let mut depths = vec![1; n];
+        while let Some(current) = queue.pop_front() {
+            let next = favorites[current] as usize;
+            depths[next] = depths[next].max(depths[current] + 1);
+            if indegrees[next] == 1 {
+                queue.push_back(next);
+            }
+
+            indegrees[next] -= 1;
+        }
+
+        let mut longest_cycle = 0;
+        let mut two_cycle_invitations = 0;
+        for person in 0..n {
+            if indegrees[person] == 0 {
+                continue;
+            }
+
+            let mut cycle_length = 0;
+            let mut current = person;
+            while indegrees[current] != 0 {
+                indegrees[current] = 0;
+                cycle_length += 1;
+                current = favorites[current] as usize;
+            }
+
+            if cycle_length == 2 {
+                two_cycle_invitations += depths[person] + depths[favorites[person] as usize];
+            } else {
+                longest_cycle = longest_cycle.max(cycle_length);
+            }
+        }
+
+        return longest_cycle.max(two_cycle_invitations);
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    limit: i32,
+    favorite: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 5, 3, 9, 8],
-            limit: 2,
+            favorite: vec![2, 2, 1, 2],
         },
         Input {
-            nums: vec![1, 7, 6, 18, 2, 1],
-            limit: 3,
+            favorite: vec![1, 2, 0],
         },
         Input {
-            nums: vec![1, 7, 28, 19, 10],
-            limit: 3,
+            favorite: vec![3, 0, 1, 4, 1],
         },
     ];
 
     for input in inputs {
-        let result = Solution::lexicographically_smallest_array(input.nums, input.limit);
+        let result = Solution::maximum_invitations(input.favorite);
         println!("{result:?}");
     }
 }
