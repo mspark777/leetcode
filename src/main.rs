@@ -1,78 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_invitations(favorites: Vec<i32>) -> i32 {
-        let n = favorites.len();
-        let mut indegrees = vec![0; n];
-
-        for f in favorites.iter().cloned() {
-            let person = f as usize;
-            indegrees[person] += 1;
+    pub fn has_groups_size_x(deck: Vec<i32>) -> bool {
+        let mut counts = std::collections::HashMap::<i32, i32>::new();
+        for c in deck.iter().cloned() {
+            let count = counts.entry(c).or_insert(0);
+            *count += 1;
         }
 
-        let mut queue = std::collections::VecDeque::<usize>::with_capacity(n);
-        for (person, indegree) in indegrees.iter().cloned().enumerate() {
-            if indegree == 0 {
-                queue.push_back(person);
-            }
+        let mut gcd = *counts.get(&deck[0]).unwrap();
+        counts.remove(&deck[0]);
+
+        for count in counts.values().cloned() {
+            gcd = Self::gcd(gcd, count);
         }
 
-        let mut depths = vec![1; n];
-        while let Some(current) = queue.pop_front() {
-            let next = favorites[current] as usize;
-            depths[next] = depths[next].max(depths[current] + 1);
-            if indegrees[next] == 1 {
-                queue.push_back(next);
-            }
+        return gcd >= 2;
+    }
 
-            indegrees[next] -= 1;
-        }
-
-        let mut longest_cycle = 0;
-        let mut two_cycle_invitations = 0;
-        for person in 0..n {
-            if indegrees[person] == 0 {
-                continue;
-            }
-
-            let mut cycle_length = 0;
-            let mut current = person;
-            while indegrees[current] != 0 {
-                indegrees[current] = 0;
-                cycle_length += 1;
-                current = favorites[current] as usize;
-            }
-
-            if cycle_length == 2 {
-                two_cycle_invitations += depths[person] + depths[favorites[person] as usize];
-            } else {
-                longest_cycle = longest_cycle.max(cycle_length);
-            }
-        }
-
-        return longest_cycle.max(two_cycle_invitations);
+    fn gcd(a: i32, b: i32) -> i32 {
+        return if a == 0 { b } else { Self::gcd(b % a, a) };
     }
 }
 
 struct Input {
-    favorite: Vec<i32>,
+    deck: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            favorite: vec![2, 2, 1, 2],
+            deck: vec![1, 2, 3, 4, 4, 3, 2, 1],
         },
         Input {
-            favorite: vec![1, 2, 0],
-        },
-        Input {
-            favorite: vec![3, 0, 1, 4, 1],
+            deck: vec![1, 1, 1, 2, 2, 2, 3, 3],
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_invitations(input.favorite);
+        let result = Solution::has_groups_size_x(input.deck);
         println!("{result:?}");
     }
 }
