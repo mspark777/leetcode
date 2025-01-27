@@ -1,63 +1,52 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_if_prerequisite(
-        num_courses: i32,
-        prerequisites: Vec<Vec<i32>>,
-        queries: Vec<Vec<i32>>,
-    ) -> Vec<bool> {
-        let num_courses = num_courses as usize;
-        let mut is_prerequisite = vec![vec![false; num_courses]; num_courses];
-        for edge in prerequisites.iter() {
-            is_prerequisite[edge[0] as usize][edge[1] as usize] = true;
-        }
+    pub fn reverse_only_letters(s: String) -> String {
+        let s = s.chars().collect::<Vec<char>>();
+        let mut chars = Vec::<char>::with_capacity(s.len());
 
-        for intermediate in 0..num_courses {
-            for src in 0..num_courses {
-                for target in 0..num_courses {
-                    is_prerequisite[src][target] = is_prerequisite[src][target]
-                        || (is_prerequisite[src][intermediate]
-                            && is_prerequisite[intermediate][target]);
+        let mut j = (s.len() as i32) - 1;
+        for i in 0..s.len() {
+            let left = s[i];
+            if Self::is_letter(left) {
+                while j >= 0 && !Self::is_letter(s[j as usize]) {
+                    j -= 1;
                 }
+
+                if j >= 0 {
+                    chars.push(s[j as usize]);
+                    j -= 1;
+                }
+            } else {
+                chars.push(left);
             }
         }
 
-        let mut result = vec![false; queries.len()];
-        for (i, query) in queries.iter().enumerate() {
-            result[i] = is_prerequisite[query[0] as usize][query[1] as usize];
-        }
-        return result;
+        return chars.iter().collect();
+    }
+
+    fn is_letter(ch: char) -> bool {
+        let ch = ch as u8;
+
+        return ((b'a' <= ch) && (ch <= b'z')) || ((b'A' <= ch) && (ch <= b'Z'));
     }
 }
 
 struct Input {
-    num_courses: i32,
-    prerequisites: Vec<Vec<i32>>,
-    queries: Vec<Vec<i32>>,
+    s: &'static str,
 }
 
 fn main() {
     let inputs = vec![
+        Input { s: "ab-cd" },
+        Input { s: "a-bC-dEf-ghIj" },
         Input {
-            num_courses: 2,
-            prerequisites: vec![vec![1, 0]],
-            queries: vec![vec![0, 1], vec![1, 0]],
-        },
-        Input {
-            num_courses: 2,
-            prerequisites: vec![],
-            queries: vec![vec![1, 0], vec![0, 1]],
-        },
-        Input {
-            num_courses: 3,
-            prerequisites: vec![vec![1, 2], vec![1, 0], vec![2, 0]],
-            queries: vec![vec![1, 0], vec![1, 2]],
+            s: "Test1ng-Leet=code-Q!",
         },
     ];
 
     for input in inputs {
-        let result =
-            Solution::check_if_prerequisite(input.num_courses, input.prerequisites, input.queries);
+        let result = Solution::reverse_only_letters(input.s.to_string());
         println!("{result:?}");
     }
 }
