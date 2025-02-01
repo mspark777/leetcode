@@ -1,15 +1,33 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_array_special(nums: Vec<i32>) -> bool {
-        let mut prev = nums[0] & 1;
+    pub fn is_long_pressed_name(name: String, typed: String) -> bool {
+        let mut np = 0usize;
+        let mut tp = 0usize;
 
-        for num in nums.iter().skip(1).cloned() {
-            let c = num & 1;
-            if prev == c {
+        let name = name.chars().collect::<Vec<char>>();
+        let typed = typed.chars().collect::<Vec<char>>();
+
+        while (np < name.len()) && (tp < typed.len()) {
+            if name[np] == typed[tp] {
+                np += 1;
+                tp += 1;
+            } else if (tp > 0) && typed[tp] == typed[tp - 1] {
+                tp += 1;
+            } else {
+                return false;
+            }
+        }
+
+        if np != name.len() {
+            return false;
+        }
+
+        while tp < typed.len() {
+            if typed[tp] != typed[tp - 1] {
                 return false;
             } else {
-                prev = c;
+                tp += 1;
             }
         }
 
@@ -18,25 +36,29 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    name: &'static str,
+    typed: &'static str,
 }
 
 fn main() {
     let inputs = vec![
-        Input { nums: vec![1] },
         Input {
-            nums: vec![2, 1, 4],
+            name: "alex",
+            typed: "aaleex",
         },
         Input {
-            nums: vec![4, 3, 1, 6],
+            name: "saeed",
+            typed: "ssaaedd",
         },
         Input {
-            nums: vec![1, 6, 2],
+            name: "vtkgn",
+            typed: "vttkgnn",
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_array_special(input.nums);
+        let result =
+            Solution::is_long_pressed_name(input.name.to_string(), input.typed.to_string());
         println!("{result:?}");
     }
 }
