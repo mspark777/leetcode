@@ -1,29 +1,19 @@
 struct Solution {}
 
 impl Solution {
-    pub fn sort_array_by_parity_ii(nums: Vec<i32>) -> Vec<i32> {
-        let mut result = nums.clone();
+    pub fn is_array_special(nums: Vec<i32>) -> bool {
+        let mut prev = nums[0] & 1;
 
-        let mut even = 0usize;
-        let mut odd = 1usize;
-        let n = nums.len();
-
-        while (even < n) && (odd < n) {
-            if result[even] & 1 == 0 {
-                even += 2;
-            } else if result[odd] & 1 == 1 {
-                odd += 2;
+        for num in nums.iter().skip(1).cloned() {
+            let c = num & 1;
+            if prev == c {
+                return false;
             } else {
-                let t0 = result[even];
-                let t1 = result[odd];
-                result[even] = t1;
-                result[odd] = t0;
-                even += 2;
-                odd += 2;
+                prev = c;
             }
         }
 
-        return result;
+        return true;
     }
 }
 
@@ -33,14 +23,20 @@ struct Input {
 
 fn main() {
     let inputs = vec![
+        Input { nums: vec![1] },
         Input {
-            nums: vec![4, 2, 5, 7],
+            nums: vec![2, 1, 4],
         },
-        Input { nums: vec![2, 3] },
+        Input {
+            nums: vec![4, 3, 1, 6],
+        },
+        Input {
+            nums: vec![1, 6, 2],
+        },
     ];
 
     for input in inputs {
-        let result = Solution::sort_array_by_parity_ii(input.nums);
+        let result = Solution::is_array_special(input.nums);
         println!("{result:?}");
     }
 }
