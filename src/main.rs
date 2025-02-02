@@ -1,64 +1,49 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_long_pressed_name(name: String, typed: String) -> bool {
-        let mut np = 0usize;
-        let mut tp = 0usize;
+    pub fn check(nums: Vec<i32>) -> bool {
+        let n = nums.len();
+        if n < 2 {
+            return true;
+        }
 
-        let name = name.chars().collect::<Vec<char>>();
-        let typed = typed.chars().collect::<Vec<char>>();
+        let mut inversion_count = 0;
+        for i in 0..nums.len() {
+            let curr = nums[i];
+            let next_idx = (i + 1) % nums.len();
+            let next = nums[next_idx];
+            if curr > next {
+                inversion_count += 1;
+            }
 
-        while (np < name.len()) && (tp < typed.len()) {
-            if name[np] == typed[tp] {
-                np += 1;
-                tp += 1;
-            } else if (tp > 0) && typed[tp] == typed[tp - 1] {
-                tp += 1;
-            } else {
+            if inversion_count > 1 {
                 return false;
             }
         }
 
-        if np != name.len() {
-            return false;
-        }
-
-        while tp < typed.len() {
-            if typed[tp] != typed[tp - 1] {
-                return false;
-            } else {
-                tp += 1;
-            }
-        }
-
-        return true;
+        return inversion_count <= 1;
     }
 }
 
 struct Input {
-    name: &'static str,
-    typed: &'static str,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            name: "alex",
-            typed: "aaleex",
+            nums: vec![3, 4, 5, 1, 2],
         },
         Input {
-            name: "saeed",
-            typed: "ssaaedd",
+            nums: vec![2, 1, 3, 4],
         },
         Input {
-            name: "vtkgn",
-            typed: "vttkgnn",
+            nums: vec![1, 2, 3],
         },
     ];
 
     for input in inputs {
-        let result =
-            Solution::is_long_pressed_name(input.name.to_string(), input.typed.to_string());
+        let result = Solution::check(input.nums);
         println!("{result:?}");
     }
 }
