@@ -1,44 +1,55 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_ascending_sum(nums: Vec<i32>) -> i32 {
-        let mut result = nums[0];
-        let mut sum = nums[0];
-        for sub in nums.windows(2) {
-            let left = sub[0];
-            let right = sub[1];
-            if left < right {
-                sum += right;
-            } else {
-                sum = right;
+    pub fn are_almost_equal(s1: String, s2: String) -> bool {
+        let mut first_diff = (' ', ' ');
+        let mut second_diff = (' ', ' ');
+        let mut num_diffs = 0usize;
+
+        for (ch1, ch2) in s1.chars().zip(s2.chars()) {
+            if ch1 == ch2 {
+                continue;
             }
 
-            result = result.max(sum);
+            num_diffs += 1;
+            if num_diffs > 2 {
+                return false;
+            } else if num_diffs == 1 {
+                first_diff.0 = ch1;
+                first_diff.1 = ch2;
+            } else {
+                second_diff.0 = ch1;
+                second_diff.1 = ch2;
+            }
         }
 
-        return result;
+        return (first_diff.0 == second_diff.1) && (first_diff.1 == second_diff.0);
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s1: &'static str,
+    s2: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![10, 20, 30, 5, 10, 50],
+            s1: "bank",
+            s2: "kanb",
         },
         Input {
-            nums: vec![10, 20, 30, 40, 50],
+            s1: "attack",
+            s2: "defend",
         },
         Input {
-            nums: vec![12, 17, 15, 13, 10, 11, 12],
+            s1: "kelb",
+            s2: "kelb",
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_ascending_sum(input.nums);
+        let result = Solution::are_almost_equal(input.s1.to_string(), input.s2.to_string());
         println!("{result:?}");
     }
 }
