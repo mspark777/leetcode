@@ -1,31 +1,30 @@
-struct Solution {}
+struct RecentCounter {
+    queue: std::collections::VecDeque<i32>,
+}
 
-impl Solution {
-    pub fn query_results(_limit: i32, queries: Vec<Vec<i32>>) -> Vec<i32> {
-        let n = queries.len();
-        let mut result = vec![0; n];
-        let mut color_map = std::collections::HashMap::<i32, i32>::with_capacity(n);
-        let mut ball_map = std::collections::HashMap::<i32, i32>::with_capacity(n);
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl RecentCounter {
+    fn new() -> Self {
+        return Self {
+            queue: std::collections::VecDeque::new(),
+        };
+    }
 
-        for (i, query) in queries.iter().enumerate() {
-            let ball = query[0];
-            if let Some(prev_color) = ball_map.get(&ball) {
-                let prev_count = color_map.get_mut(prev_color).unwrap();
-                if (*prev_count) > 1 {
-                    *prev_count -= 1;
-                } else {
-                    color_map.remove(prev_color);
-                }
+    fn ping(&mut self, t: i32) -> i32 {
+        self.queue.push_back(t);
+        let threshold = t - 3000;
+        while let Some(&num) = self.queue.front() {
+            if num < threshold {
+                self.queue.pop_front();
+            } else {
+                break;
             }
-
-            let color = query[1];
-            ball_map.insert(ball, color);
-            let count = color_map.entry(color).or_insert(0);
-            *count += 1;
-            result[i] = color_map.len() as i32;
         }
 
-        return result;
+        return self.queue.len() as i32;
     }
 }
 
