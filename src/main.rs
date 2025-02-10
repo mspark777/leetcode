@@ -1,39 +1,37 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_bad_pairs(nums: Vec<i32>) -> i64 {
-        let mut result = 0i64;
-        let mut diff_counts = std::collections::HashMap::<i64, i64>::new();
+    pub fn clear_digits(s: String) -> String {
+        let mut s = s.chars().collect::<Vec<char>>();
+        let mut result_length = 0usize;
 
-        for (i, num) in nums.iter().cloned().enumerate() {
-            let i = i as i64;
-            let diff = i - (num as i64);
-            let &good_paris_count = diff_counts.get(&diff).unwrap_or(&0);
-            result += (i - good_paris_count) as i64;
-
-            diff_counts.entry(diff).and_modify(|e| *e += 1).or_insert(1);
+        for i in 0..s.len() {
+            let ch = s[i];
+            if ch.is_digit(10) {
+                if result_length > 1 {
+                    result_length -= 1;
+                } else {
+                    result_length = 0;
+                }
+            } else {
+                s[result_length] = ch;
+                result_length += 1;
+            }
         }
 
-        return result;
+        return s.iter().take(result_length).collect();
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: &'static str,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            nums: vec![4, 1, 3, 3],
-        },
-        Input {
-            nums: vec![1, 2, 3, 4, 5],
-        },
-    ];
+    let inputs = vec![Input { s: "abc" }, Input { s: "cb34" }];
 
     for input in inputs {
-        let result = Solution::count_bad_pairs(input.nums);
+        let result = Solution::clear_digits(input.s.to_string());
         println!("{result:?}");
     }
 }
