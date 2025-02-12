@@ -1,46 +1,38 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_sum(nums: Vec<i32>) -> i32 {
-        let mut result = -1;
-        let mut digit_mapping = [0; 82];
+    pub fn valid_mountain_array(arr: Vec<i32>) -> bool {
+        let mut left = 0usize;
+        let mut right = arr.len() - 1;
 
-        for num in nums.iter().cloned() {
-            let mut digit_sum = 0usize;
-            let mut curr_value = num;
-            while curr_value > 0 {
-                let curr_digit = curr_value % 10;
-                digit_sum += curr_digit as usize;
-                curr_value /= 10;
-            }
-
-            if digit_mapping[digit_sum] > 0 {
-                result = result.max(digit_mapping[digit_sum] + num);
-            }
-
-            digit_mapping[digit_sum] = num.max(digit_mapping[digit_sum]);
+        let last = right;
+        while (left < last) && (arr[left] < arr[left + 1]) {
+            left += 1;
         }
 
-        return result;
+        while (right > 0) && (arr[right - 1] > arr[right]) {
+            right -= 1;
+        }
+
+        return (left > 0) && (left == right) && (right < last);
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
+        Input { arr: vec![2, 1] },
+        Input { arr: vec![3, 5, 5] },
         Input {
-            nums: vec![18, 43, 36, 13, 7],
-        },
-        Input {
-            nums: vec![10, 12, 19, 14],
+            arr: vec![0, 3, 2, 1],
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_sum(input.nums);
+        let result = Solution::valid_mountain_array(input.arr);
         println!("{result:?}");
     }
 }
