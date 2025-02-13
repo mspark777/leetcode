@@ -1,38 +1,66 @@
 struct Solution {}
 
 impl Solution {
-    pub fn valid_mountain_array(arr: Vec<i32>) -> bool {
-        let mut left = 0usize;
-        let mut right = arr.len() - 1;
+    pub fn min_operations(nums: Vec<i32>, k: i32) -> i32 {
+        let mut queue = std::collections::BinaryHeap::from_iter(nums.iter().map(|i| {
+            let i = (*i) as i64;
+            return std::cmp::Reverse(i);
+        }));
 
-        let last = right;
-        while (left < last) && (arr[left] < arr[left + 1]) {
-            left += 1;
+        let mut result = 0;
+
+        let k = k as i64;
+        while let Some(&std::cmp::Reverse(top)) = queue.peek() {
+            if top >= k {
+                break;
+            }
+
+            let left = queue.pop();
+            if left.is_none() {
+                break;
+            }
+
+            let right = queue.pop();
+            if right.is_none() {
+                break;
+            }
+
+            let std::cmp::Reverse(left) = left.unwrap();
+            let std::cmp::Reverse(right) = right.unwrap();
+
+            queue.push(std::cmp::Reverse(left * 2 + right));
+            result += 1;
         }
 
-        while (right > 0) && (arr[right - 1] > arr[right]) {
-            right -= 1;
-        }
-
-        return (left > 0) && (left == right) && (right < last);
+        return result;
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
-        Input { arr: vec![2, 1] },
-        Input { arr: vec![3, 5, 5] },
         Input {
-            arr: vec![0, 3, 2, 1],
+            nums: vec![2, 11, 10, 1, 3],
+            k: 10,
+        },
+        Input {
+            nums: vec![1, 1, 2, 4, 9],
+            k: 20,
+        },
+        Input {
+            nums: vec![
+                1000000000, 999999999, 1000000000, 999999999, 1000000000, 999999999,
+            ],
+            k: 1000000000,
         },
     ];
 
     for input in inputs {
-        let result = Solution::valid_mountain_array(input.arr);
+        let result = Solution::min_operations(input.nums, input.k);
         println!("{result:?}");
     }
 }
