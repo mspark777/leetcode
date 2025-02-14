@@ -1,71 +1,36 @@
-struct ProductOfNumbers {
-    prefix_product: Vec<i32>,
-}
+struct Solution {}
 
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl ProductOfNumbers {
-    fn new() -> Self {
-        return Self {
-            prefix_product: vec![1],
-        };
-    }
+impl Solution {
+    pub fn di_string_match(s: String) -> Vec<i32> {
+        let s = s.chars().collect::<Vec<char>>();
+        let mut left = 0usize;
+        let mut right = s.len();
+        let mut result = vec![0i32; right + 1];
 
-    fn add(&mut self, num: i32) {
-        if num == 0 {
-            self.prefix_product = vec![1];
-        } else {
-            let last = self.prefix_product.last().unwrap();
-            self.prefix_product.push(num * last);
-        }
-    }
-
-    fn get_product(&self, k: i32) -> i32 {
-        let size = self.prefix_product.len();
-        let k = k as usize;
-        if k >= size {
-            return 0;
+        for (&ch, perm) in s.iter().zip(result.iter_mut()) {
+            if ch == 'I' {
+                *perm = left as i32;
+                left += 1;
+            } else {
+                *perm = right as i32;
+                right -= 1;
+            }
         }
 
-        let last = size - 1;
-        return self.prefix_product[last] / self.prefix_product[last - k];
+        result[s.len()] = left as i32;
+        return result;
     }
 }
-
-/**
- * Your ProductOfNumbers object will be instantiated and called as such:
- * let obj = ProductOfNumbers::new();
- * obj.add(num);
- * let ret_2: i32 = obj.get_product(k);
- */
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    s: &'static str,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            nums: vec![2, 11, 10, 1, 3],
-            k: 10,
-        },
-        Input {
-            nums: vec![1, 1, 2, 4, 9],
-            k: 20,
-        },
-        Input {
-            nums: vec![
-                1000000000, 999999999, 1000000000, 999999999, 1000000000, 999999999,
-            ],
-            k: 1000000000,
-        },
-    ];
+    let inputs = vec![Input { s: "IDID" }, Input { s: "III" }, Input { s: "DDI" }];
 
     for input in inputs {
-        let result = Solution::min_operations(input.nums, input.k);
+        let result = Solution::di_string_match(input.s.to_string());
         println!("{result:?}");
     }
 }
