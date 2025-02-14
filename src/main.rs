@@ -1,40 +1,45 @@
-struct Solution {}
+struct ProductOfNumbers {
+    prefix_product: Vec<i32>,
+}
 
-impl Solution {
-    pub fn min_operations(nums: Vec<i32>, k: i32) -> i32 {
-        let mut queue = std::collections::BinaryHeap::from_iter(nums.iter().map(|i| {
-            let i = (*i) as i64;
-            return std::cmp::Reverse(i);
-        }));
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl ProductOfNumbers {
+    fn new() -> Self {
+        return Self {
+            prefix_product: vec![1],
+        };
+    }
 
-        let mut result = 0;
+    fn add(&mut self, num: i32) {
+        if num == 0 {
+            self.prefix_product = vec![1];
+        } else {
+            let last = self.prefix_product.last().unwrap();
+            self.prefix_product.push(num * last);
+        }
+    }
 
-        let k = k as i64;
-        while let Some(&std::cmp::Reverse(top)) = queue.peek() {
-            if top >= k {
-                break;
-            }
-
-            let left = queue.pop();
-            if left.is_none() {
-                break;
-            }
-
-            let right = queue.pop();
-            if right.is_none() {
-                break;
-            }
-
-            let std::cmp::Reverse(left) = left.unwrap();
-            let std::cmp::Reverse(right) = right.unwrap();
-
-            queue.push(std::cmp::Reverse(left * 2 + right));
-            result += 1;
+    fn get_product(&self, k: i32) -> i32 {
+        let size = self.prefix_product.len();
+        let k = k as usize;
+        if k >= size {
+            return 0;
         }
 
-        return result;
+        let last = size - 1;
+        return self.prefix_product[last] / self.prefix_product[last - k];
     }
 }
+
+/**
+ * Your ProductOfNumbers object will be instantiated and called as such:
+ * let obj = ProductOfNumbers::new();
+ * obj.add(num);
+ * let ret_2: i32 = obj.get_product(k);
+ */
 
 struct Input {
     nums: Vec<i32>,
