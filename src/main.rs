@@ -1,36 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn di_string_match(s: String) -> Vec<i32> {
-        let s = s.chars().collect::<Vec<char>>();
-        let mut left = 0usize;
-        let mut right = s.len();
-        let mut result = vec![0i32; right + 1];
+    pub fn punishment_number(n: i32) -> i32 {
+        let mut result = 0;
 
-        for (&ch, perm) in s.iter().zip(result.iter_mut()) {
-            if ch == 'I' {
-                *perm = left as i32;
-                left += 1;
-            } else {
-                *perm = right as i32;
-                right -= 1;
+        for num in 1..=n {
+            let square = num * num;
+
+            if Self::can_partition(square.to_string().chars().collect(), num) {
+                result += square;
             }
         }
 
-        result[s.len()] = left as i32;
         return result;
+    }
+
+    fn can_partition(str_num: Vec<char>, target: i32) -> bool {
+        if str_num.is_empty() && target == 0 {
+            return true;
+        } else if target < 0 {
+            return false;
+        }
+
+        for i in 1..str_num.len() {
+            let left = str_num[0..i].to_vec();
+            let right = str_num[i..].to_vec();
+            let left_num = left.iter().collect::<String>().parse::<i32>().unwrap();
+
+            if Self::can_partition(right, target - left_num) {
+                return true;
+            }
+        }
+
+        let num = str_num.iter().collect::<String>().parse::<i32>().unwrap();
+        return num == target;
     }
 }
 
 struct Input {
-    s: &'static str,
+    n: i32,
 }
 
 fn main() {
-    let inputs = vec![Input { s: "IDID" }, Input { s: "III" }, Input { s: "DDI" }];
+    let inputs = vec![Input { n: 10 }, Input { n: 37 }];
 
     for input in inputs {
-        let result = Solution::di_string_match(input.s.to_string());
+        let result = Solution::punishment_number(input.n);
         println!("{result:?}");
     }
 }
