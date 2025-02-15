@@ -1,51 +1,38 @@
 struct Solution {}
 
 impl Solution {
-    pub fn punishment_number(n: i32) -> i32 {
-        let mut result = 0;
-
-        for num in 1..=n {
-            let square = num * num;
-
-            if Self::can_partition(square.to_string().chars().collect(), num) {
-                result += square;
+    pub fn repeated_n_times(nums: Vec<i32>) -> i32 {
+        for i in 1..=3 {
+            for j in 0..(nums.len() - i) {
+                if nums[j] == nums[j + i] {
+                    return nums[j];
+                }
             }
         }
 
-        return result;
-    }
-
-    fn can_partition(str_num: Vec<char>, target: i32) -> bool {
-        if str_num.is_empty() && target == 0 {
-            return true;
-        } else if target < 0 {
-            return false;
-        }
-
-        for i in 1..str_num.len() {
-            let left = str_num[0..i].to_vec();
-            let right = str_num[i..].to_vec();
-            let left_num = left.iter().collect::<String>().parse::<i32>().unwrap();
-
-            if Self::can_partition(right, target - left_num) {
-                return true;
-            }
-        }
-
-        let num = str_num.iter().collect::<String>().parse::<i32>().unwrap();
-        return num == target;
+        return -1;
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = vec![Input { n: 10 }, Input { n: 37 }];
+    let inputs = vec![
+        Input {
+            nums: vec![1, 2, 3, 3],
+        },
+        Input {
+            nums: vec![2, 1, 2, 5, 3, 2],
+        },
+        Input {
+            nums: vec![5, 1, 5, 2, 5, 3, 5, 4],
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::punishment_number(input.n);
+        let result = Solution::repeated_n_times(input.nums);
         println!("{result:?}");
     }
 }
