@@ -1,21 +1,43 @@
 import "@total-typescript/ts-reset";
 
-function numUniqueEmails(emails: string[]): number {
-  const emailSet = new Set<string>();
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+  constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = val === undefined ? 0 : val;
+    this.left = left === undefined ? null : left;
+    this.right = right === undefined ? null : right;
+  }
+}
 
-  for (const email of emails) {
-    const chunks = email.split("@");
-    let local = chunks[0] as string;
-    const plus = local.indexOf("+");
-    if (plus >= 0) {
-      local = local.slice(0, plus);
-    }
-    local = local.replaceAll(".", "");
-    const domain = chunks[1] as string;
-    emailSet.add(`${local}@${domain}`);
+function solve(node: TreeNode, val: number): boolean {
+  if (node.val !== val) {
+    return false;
   }
 
-  return emailSet.size;
+  if (node.left != null) {
+    if (!solve(node.left, val)) {
+      return false;
+    }
+  }
+
+  if (node.right != null) {
+    if (!solve(node.right, val)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function isUnivalTree(root: TreeNode | null): boolean {
+  if (root == null) {
+    return false;
+  }
+
+  const val = root.val;
+  return solve(root, val);
 }
 
 function main(): void {
