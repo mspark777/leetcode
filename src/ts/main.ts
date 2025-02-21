@@ -11,31 +11,57 @@ class TreeNode {
   }
 }
 
-class FindElements {
-  seen: Set<number>;
-  constructor(root: TreeNode | null) {
-    this.seen = new Set();
-    if (root == null) {
-      return;
+interface Node {
+  node: TreeNode;
+  parent: TreeNode;
+  level: number;
+}
+
+function findNode(root: TreeNode, val: number): Node {
+  const stack: Node[] = [
+    {
+      node: root,
+      parent: root,
+      level: 0,
+    },
+  ];
+
+  while (stack.length > 0) {
+    const { node, parent, level } = stack.pop() as Node;
+    if (node.val == val) {
+      return { node, parent, level };
     }
 
-    const stack: Array<[TreeNode, number]> = [[root, 0]];
-    while (stack.length > 0) {
-      const [node, val] = stack.pop() as [TreeNode, number];
-      this.seen.add(val);
-      if (node.left != null) {
-        stack.push([node.left, val * 2 + 1]);
-      }
+    if (node.left != null) {
+      stack.push({ node: node.left, parent: node, level: level + 1 });
+    }
 
-      if (node.right != null) {
-        stack.push([node.right, val * 2 + 2]);
-      }
+    if (node.right != null) {
+      stack.push({ node: node.right, parent: node, level: level + 1 });
     }
   }
 
-  find(target: number): boolean {
-    return this.seen.has(target);
+  return null as unknown as Node;
+}
+
+function isCousins(root: TreeNode | null, x: number, y: number): boolean {
+  if (root == null) {
+    return false;
   }
+
+  const xNode = findNode(root, x);
+  if (xNode.level === 0) {
+    return false;
+  }
+
+  const yNode = findNode(root, y);
+  if (yNode.level === 0) {
+    return false;
+  } else if (xNode.level !== yNode.level) {
+    return false;
+  }
+
+  return xNode.parent.val !== yNode.parent.val;
 }
 
 function main(): void {
