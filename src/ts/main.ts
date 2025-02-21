@@ -11,33 +11,31 @@ class TreeNode {
   }
 }
 
-function solve(node: TreeNode, val: number): boolean {
-  if (node.val !== val) {
-    return false;
-  }
+class FindElements {
+  seen: Set<number>;
+  constructor(root: TreeNode | null) {
+    this.seen = new Set();
+    if (root == null) {
+      return;
+    }
 
-  if (node.left != null) {
-    if (!solve(node.left, val)) {
-      return false;
+    const stack: Array<[TreeNode, number]> = [[root, 0]];
+    while (stack.length > 0) {
+      const [node, val] = stack.pop() as [TreeNode, number];
+      this.seen.add(val);
+      if (node.left != null) {
+        stack.push([node.left, val * 2 + 1]);
+      }
+
+      if (node.right != null) {
+        stack.push([node.right, val * 2 + 2]);
+      }
     }
   }
 
-  if (node.right != null) {
-    if (!solve(node.right, val)) {
-      return false;
-    }
+  find(target: number): boolean {
+    return this.seen.has(target);
   }
-
-  return true;
-}
-
-function isUnivalTree(root: TreeNode | null): boolean {
-  if (root == null) {
-    return false;
-  }
-
-  const val = root.val;
-  return solve(root, val);
 }
 
 function main(): void {
