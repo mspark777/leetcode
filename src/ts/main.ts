@@ -11,57 +11,50 @@ class TreeNode {
   }
 }
 
-interface Node {
-  node: TreeNode;
-  parent: TreeNode;
-  level: number;
-}
-
-function findNode(root: TreeNode, val: number): Node {
-  const stack: Node[] = [
-    {
-      node: root,
-      parent: root,
-      level: 0,
-    },
-  ];
-
-  while (stack.length > 0) {
-    const { node, parent, level } = stack.pop() as Node;
-    if (node.val == val) {
-      return { node, parent, level };
+function recoverFromPreorder(traversal: string): TreeNode | null {
+  const levels: TreeNode[] = [];
+  const n = traversal.length;
+  let i = 0;
+  while (i < n) {
+    let depth = 0;
+    while (i < n) {
+      if (traversal.at(i) === "-") {
+        depth += 1;
+        i += 1;
+      } else {
+        break;
+      }
     }
 
-    if (node.left != null) {
-      stack.push({ node: node.left, parent: node, level: level + 1 });
+    let value = 0;
+    while (i < n) {
+      const code = traversal.charCodeAt(i) - "0".charCodeAt(0);
+      if (0 <= code && code <= 9) {
+        value = value * 10 + code;
+        i += 1;
+      } else {
+        break;
+      }
     }
 
-    if (node.right != null) {
-      stack.push({ node: node.right, parent: node, level: level + 1 });
+    const node = new TreeNode(value);
+    if (depth < levels.length) {
+      levels[depth] = node;
+    } else {
+      levels.push(node);
+    }
+
+    if (depth > 0) {
+      const parent = levels[depth - 1] as TreeNode;
+      if (parent.left == null) {
+        parent.left = node;
+      } else {
+        parent.right = node;
+      }
     }
   }
 
-  return null as unknown as Node;
-}
-
-function isCousins(root: TreeNode | null, x: number, y: number): boolean {
-  if (root == null) {
-    return false;
-  }
-
-  const xNode = findNode(root, x);
-  if (xNode.level === 0) {
-    return false;
-  }
-
-  const yNode = findNode(root, y);
-  if (yNode.level === 0) {
-    return false;
-  } else if (xNode.level !== yNode.level) {
-    return false;
-  }
-
-  return xNode.parent.val !== yNode.parent.val;
+  return levels.at(0) as TreeNode;
 }
 
 function main(): void {
