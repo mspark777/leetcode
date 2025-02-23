@@ -11,64 +11,66 @@ class TreeNode {
   }
 }
 
-function recoverFromPreorder(traversal: string): TreeNode | null {
-  const levels: TreeNode[] = [];
-  const n = traversal.length;
-  let i = 0;
-  while (i < n) {
-    let depth = 0;
-    while (i < n) {
-      if (traversal.at(i) === "-") {
-        depth += 1;
-        i += 1;
-      } else {
-        break;
-      }
-    }
+interface Index {
+  pre: number;
+  post: number;
+}
 
-    let value = 0;
-    while (i < n) {
-      const code = traversal.charCodeAt(i) - "0".charCodeAt(0);
-      if (0 <= code && code <= 9) {
-        value = value * 10 + code;
-        i += 1;
-      } else {
-        break;
-      }
-    }
-
-    const node = new TreeNode(value);
-    if (depth < levels.length) {
-      levels[depth] = node;
-    } else {
-      levels.push(node);
-    }
-
-    if (depth > 0) {
-      const parent = levels[depth - 1] as TreeNode;
-      if (parent.left == null) {
-        parent.left = node;
-      } else {
-        parent.right = node;
-      }
-    }
+function constructTree(
+  idx: Index,
+  preorder: number[],
+  postorder: number[],
+): TreeNode | null {
+  if (idx.pre >= preorder.length) {
+    return null;
   }
 
-  return levels.at(0) as TreeNode;
+  const root = new TreeNode(preorder[idx.pre]);
+  idx.pre += 1;
+
+  if (idx.post >= postorder.length) {
+    return null;
+  }
+
+  if (root.val !== postorder[idx.post]) {
+    root.left = constructTree(idx, preorder, postorder);
+  }
+
+  if (root.val !== postorder[idx.post]) {
+    root.right = constructTree(idx, preorder, postorder);
+  }
+
+  idx.post += 1;
+  return root;
+}
+
+function constructFromPrePost(
+  preorder: number[],
+  postorder: number[],
+): TreeNode | null {
+  const idx: Index = { pre: 0, post: 0 };
+  return constructTree(idx, preorder, postorder);
+}
+
+interface Input {
+  preorder: number[];
+  postorder: number[];
 }
 
 function main(): void {
-  const inputs: Array<string[]> = [
-    [
-      "test.email+alex@leetcode.com",
-      "test.e.mail+bob.cathy@leetcode.com",
-      "testemail+david@lee.tcode.com",
-    ],
-    ["a@leetcode.com", "b@leetcode.com", "c@leetcode.com"],
+  const inputs: Input[] = [
+    {
+      preorder: [1, 2, 4, 5, 3, 6, 7],
+      postorder: [4, 5, 2, 6, 7, 3, 1],
+    },
+    {
+      preorder: [1],
+      postorder: [4],
+    },
   ];
 
-  for (const email of inputs) {
-    const result = numUniqueEmails(email);
+  for (const input of inputs) {
+    const result = constructFromPrePost(input.preorder, input.postorder);
     console.log(result);
   }
 }
