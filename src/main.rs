@@ -1,43 +1,59 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_different_binary_string(nums: Vec<String>) -> String {
-        let mut result = Vec::<char>::with_capacity(nums.len());
+    pub fn largest_sum_after_k_negations(nums: Vec<i32>, k: i32) -> i32 {
+        let mut nums = nums.clone();
+        nums.sort_unstable();
 
-        for i in 0..nums.len() {
-            let ch = nums[i].chars().nth(i).unwrap();
-            if ch == '1' {
-                result.push('0');
+        let mut k = k;
+
+        for num in nums.iter_mut() {
+            if k < 1 {
+                break;
+            }
+
+            if *num < 0 {
+                *num = -*num;
+                k -= 1;
             } else {
-                result.push('1');
+                break;
             }
         }
 
-        return result.iter().collect();
+        let mut result = 0;
+        let mut min_num = i32::MAX;
+        for num in nums.iter().cloned() {
+            result += num;
+            min_num = min_num.min(num);
+        }
+
+        return result - (k & 1) * min_num * 2;
     }
 }
 
 struct Input {
-    nums: Vec<&'static str>,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec!["01", "10"],
+            nums: vec![4, 2, 3],
+            k: 1,
         },
         Input {
-            nums: vec!["00", "01"],
+            nums: vec![3, -1, 0, 2],
+            k: 3,
         },
         Input {
-            nums: vec!["111", "011", "001"],
+            nums: vec![2, -3, -1, 5, -4],
+            k: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_different_binary_string(
-            input.nums.iter().map(|s| s.to_string()).collect(),
-        );
+        let result = Solution::largest_sum_after_k_negations(input.nums, input.k);
         println!("{result:?}");
     }
 }
