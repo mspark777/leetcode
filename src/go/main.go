@@ -1,83 +1,68 @@
 package main
 
-import (
-	"fmt"
-	"sort"
-)
+import "fmt"
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
+func numRookCaptures(board [][]byte) int {
+	x0 := 0
+	y0 := 0
+	found := false
 
-func minimumOperations(root *TreeNode) int {
-	var SHIFT int = 20
-	var MASK int = 0xFFFFF
+	for y := 0; y < 8; y += 1 {
+		for x := 0; x < 8; x += 1 {
+			if board[y][x] == 'R' {
+				x0 = x
+				y0 = y
+				found = true
+				break
+			}
+		}
 
-	queue := []*TreeNode{root}
+		if found {
+			break
+		}
+	}
+
 	result := 0
-
-	for len(queue) > 0 {
-		levelSize := len(queue)
-		nodes := make([]int, levelSize)
-
-		for i := 0; i < levelSize; i += 1 {
-			node := queue[i]
-			nodes[i] = (node.Val << SHIFT) + i
-
-			if node.Left != nil {
-				queue = append(queue, node.Left)
-			}
-
-			if node.Right != nil {
-				queue = append(queue, node.Right)
-			}
-		}
-
-		sort.Ints(nodes)
-
-		for i := 0; i < levelSize; i += 1 {
-			origPos := nodes[i] & MASK
-			if origPos != i {
-				left := nodes[i]
-				right := nodes[origPos]
-				nodes[i] = right
-				nodes[origPos] = left
+	directions := [][]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+	for _, dir := range directions {
+		x := x0 + dir[0]
+		y := y0 + dir[1]
+		for (0 <= x) && (x < 8) && (0 <= y) && (y < 8) {
+			if board[y][x] == 'p' {
 				result += 1
-				i -= 1
 			}
-		}
 
-		queue = queue[levelSize:]
+			if board[y][x] != '.' {
+				break
+			}
+
+			x += dir[0]
+			y += dir[1]
+		}
 	}
 
 	return result
 }
 
 type input struct {
-	names   []string
-	heights []int
+	board [][]byte
 }
 
 func main() {
 	inputs := []input{
 		{
-			[]string{"Mary", "John", "Emma"},
-			[]int{180, 165, 170},
+			board: [][]byte{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', 'R', '.', '.', '.', 'p'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}},
 		},
 		{
-			[]string{"Alice", "Bob", "Bob"},
-			[]int{155, 185, 150},
+			board: [][]byte{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', 'p', 'p', 'p', 'p', 'p', '.', '.'}, {'.', 'p', 'p', 'B', 'p', 'p', '.', '.'}, {'.', 'p', 'B', 'R', 'B', 'p', '.', '.'}, {'.', 'p', 'p', 'B', 'p', 'p', '.', '.'}, {'.', 'p', 'p', 'p', 'p', 'p', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}},
 		},
 		{
-			[]string{"IEO", "Sgizfdfrims", "QTASHKQ", "Vk", "RPJOFYZUBFSIYp", "EPCFFt", "VOYGWWNCf", "WSpmqvb"},
-			[]int{17233, 32521, 14087, 42738, 46669, 65662, 43204, 8224},
+			board: [][]byte{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'p', 'p', '.', 'R', '.', 'p', 'B', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}},
 		},
 	}
 
 	for _, input := range inputs {
-		result := sortPeople(input.names, input.heights)
+		result := numRookCaptures(input.board)
 		fmt.Println(result)
 	}
 }
