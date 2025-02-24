@@ -1,76 +1,107 @@
 import "@total-typescript/ts-reset";
 
-class TreeNode {
-  val: number;
-  left: TreeNode | null;
-  right: TreeNode | null;
-  constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = val === undefined ? 0 : val;
-    this.left = left === undefined ? null : left;
-    this.right = right === undefined ? null : right;
+class Solve {
+  private tree: number[][];
+  private distanceFromBob: number[];
+  private readonly n: number;
+
+  public constructor(edges: number[][], amount: number[]) {
+    this.n = amount.length;
+    this.tree = [];
+    this.distanceFromBob = [];
+    for (let i = 0; i < this.n; i += 1) {
+      this.tree.push([]);
+      this.distanceFromBob.push(0);
+    }
+
+    for (const edge of edges) {
+      const [a, b] = edge as [number, number];
+      this.tree[a]?.push(b);
+      this.tree[b]?.push(a);
+    }
+  }
+
+  public solve(bob: number, amount: number[]): number {
+    return this.findPaths(0, 0, 0, bob, amount);
+  }
+
+  private findPaths(
+    sourceNode: number,
+    parentNode: number,
+    time: number,
+    bob: number,
+    amount: number[],
+  ): number {
+    let maxIncome = 0;
+    let maxChild = Number.MIN_SAFE_INTEGER;
+
+    if (sourceNode === bob) {
+      this.distanceFromBob[sourceNode] = 0;
+    } else {
+      this.distanceFromBob[sourceNode] = this.n;
+    }
+
+    for (const adjacentNode of this.tree[sourceNode] as number[]) {
+      if (adjacentNode !== parentNode) {
+        maxChild = Math.max(
+          maxChild,
+          this.findPaths(adjacentNode, sourceNode, time + 1, bob, amount),
+        );
+        this.distanceFromBob[sourceNode] = Math.min(
+          this.distanceFromBob[sourceNode] as number,
+          (this.distanceFromBob[adjacentNode] as number) + 1,
+        );
+      }
+    }
+
+    if ((this.distanceFromBob[sourceNode] as number) > time) {
+      maxIncome += amount[sourceNode] as number;
+    } else if (this.distanceFromBob[sourceNode] === time) {
+      maxIncome += Number(BigInt(amount[sourceNode] as number) / 2n);
+    }
+
+    return maxChild === Number.MIN_SAFE_INTEGER
+      ? maxIncome
+      : maxIncome + maxChild;
   }
 }
 
-interface Index {
-  pre: number;
-  post: number;
-}
-
-function constructTree(
-  idx: Index,
-  preorder: number[],
-  postorder: number[],
-): TreeNode | null {
-  if (idx.pre >= preorder.length) {
-    return null;
-  }
-
-  const root = new TreeNode(preorder[idx.pre]);
-  idx.pre += 1;
-
-  if (idx.post >= postorder.length) {
-    return null;
-  }
-
-  if (root.val !== postorder[idx.post]) {
-    root.left = constructTree(idx, preorder, postorder);
-  }
-
-  if (root.val !== postorder[idx.post]) {
-    root.right = constructTree(idx, preorder, postorder);
-  }
-
-  idx.post += 1;
-  return root;
-}
-
-function constructFromPrePost(
-  preorder: number[],
-  postorder: number[],
-): TreeNode | null {
-  const idx: Index = { pre: 0, post: 0 };
-  return constructTree(idx, preorder, postorder);
+function mostProfitablePath(
+  edges: number[][],
+  bob: number,
+  amount: number[],
+): number {
+  const solve = new Solve(edges, amount);
+  return solve.solve(bob, amount);
 }
 
 interface Input {
-  preorder: number[];
-  postorder: number[];
+  edges: number[][];
+  bob: number;
+  amount: number[];
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      preorder: [1, 2, 4, 5, 3, 6, 7],
-      postorder: [4, 5, 2, 6, 7, 3, 1],
+      edges: [
+        [0, 1],
+        [1, 2],
+        [1, 3],
+        [3, 4],
+      ],
+      bob: 3,
+      amount: [-2, 4, 2, -4, 6],
     },
     {
-      preorder: [1],
-      postorder: [4],
+      edges: [[0, 1]],
+      bob: 1,
+      amount: [-7280, 2350],
     },
   ];
 
   for (const input of inputs) {
-    const result = constructFromPrePost(input.preorder, input.postorder);
+    const result = mostProfitablePath(input.edges, input.bob, input.amount);
     console.log(result);
   }
 }
