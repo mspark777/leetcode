@@ -1,56 +1,38 @@
 struct Solution {}
 
 impl Solution {
-    pub fn can_three_parts_equal_sum(arr: Vec<i32>) -> bool {
-        let total_sum = arr.iter().cloned().reduce(|acc, n| acc + n).unwrap();
-        if total_sum % 3 != 0 {
-            return false;
+    pub fn max_absolute_sum(nums: Vec<i32>) -> i32 {
+        let mut min_prefix_sum = 0;
+        let mut max_prefix_sum = 0;
+        let mut prefix_sum = 0;
+
+        for num in nums.iter().cloned() {
+            prefix_sum += num;
+
+            min_prefix_sum = min_prefix_sum.min(prefix_sum);
+            max_prefix_sum = max_prefix_sum.max(prefix_sum);
         }
 
-        let sum_of_partition = total_sum / 3;
-        let mut partitions = 0;
-        let mut sum = 0;
-        let mut pos = 0usize;
-
-        for num in arr.iter().cloned() {
-            if partitions >= 2 {
-                break;
-            }
-
-            sum += num;
-            if sum == sum_of_partition {
-                partitions += 1;
-                sum = 0;
-            }
-            pos += 1;
-        }
-
-        return partitions == 2 && pos != arr.len();
+        return max_prefix_sum - min_prefix_sum;
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            arr: vec![0, 2, 1, -6, 6, -7, 9, 1, 2, 0, 1],
+            nums: vec![1, -3, 2, 3, 4],
         },
         Input {
-            arr: vec![0, 2, 1, -6, 6, 7, 9, -1, 2, 0, 1],
-        },
-        Input {
-            arr: vec![3, 3, 6, 5, -2, 2, 5, 1, -9, 4],
-        },
-        Input {
-            arr: vec![1, -1, 1, -1],
+            nums: vec![2, -5, 1, -4, 3, -2],
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_three_parts_equal_sum(input.arr);
+        let result = Solution::max_absolute_sum(input.nums);
         println!("{result:?}");
     }
 }
