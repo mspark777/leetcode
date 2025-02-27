@@ -1,38 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_absolute_sum(nums: Vec<i32>) -> i32 {
-        let mut min_prefix_sum = 0;
-        let mut max_prefix_sum = 0;
-        let mut prefix_sum = 0;
+    pub fn len_longest_fib_subseq(arr: Vec<i32>) -> i32 {
+        let n = arr.len();
+        let mut dp = vec![vec![0; n]; n];
+        let mut max_len = 0;
 
-        for num in nums.iter().cloned() {
-            prefix_sum += num;
+        for curr in 2..n {
+            let mut start = 0;
+            let mut end = curr - 1;
 
-            min_prefix_sum = min_prefix_sum.min(prefix_sum);
-            max_prefix_sum = max_prefix_sum.max(prefix_sum);
+            while start < end {
+                let pair_sum = arr[start] + arr[end];
+                if pair_sum > arr[curr] {
+                    end -= 1;
+                } else if pair_sum < arr[curr] {
+                    start += 1;
+                } else {
+                    dp[end][curr] = dp[start][end] + 1;
+                    max_len = max_len.max(dp[end][curr]);
+                    end -= 1;
+                    start += 1;
+                }
+            }
         }
 
-        return max_prefix_sum - min_prefix_sum;
+        let result = if max_len != 0 { max_len + 2 } else { 0 };
+        return result;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, -3, 2, 3, 4],
+            arr: vec![1, 2, 3, 4, 5, 6, 7, 8],
         },
         Input {
-            nums: vec![2, -5, 1, -4, 3, -2],
+            arr: vec![1, 3, 7, 11, 12, 14, 18],
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_absolute_sum(input.nums);
+        let result = Solution::len_longest_fib_subseq(input.arr);
         println!("{result:?}");
     }
 }
