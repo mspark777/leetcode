@@ -1,51 +1,84 @@
 struct Solution {}
 
 impl Solution {
-    pub fn len_longest_fib_subseq(arr: Vec<i32>) -> i32 {
-        let n = arr.len();
-        let mut dp = vec![vec![0; n]; n];
-        let mut max_len = 0;
+    pub fn shortest_common_supersequence(str1: String, str2: String) -> String {
+        let str1 = str1.chars().collect::<Vec<char>>();
+        let str2 = str2.chars().collect::<Vec<char>>();
 
-        for curr in 2..n {
-            let mut start = 0;
-            let mut end = curr - 1;
+        let str1_len = str1.len();
+        let str2_len = str2.len();
+        let mut dp = vec![vec![0; str2_len + 1]; str1_len + 1];
 
-            while start < end {
-                let pair_sum = arr[start] + arr[end];
-                if pair_sum > arr[curr] {
-                    end -= 1;
-                } else if pair_sum < arr[curr] {
-                    start += 1;
+        for row in 0..=str1_len {
+            dp[row][0] = row;
+        }
+
+        for col in 0..=str2_len {
+            dp[0][col] = col;
+        }
+
+        for row in 1..=str1_len {
+            for col in 1..=str2_len {
+                if str1[row - 1] == str2[col - 1] {
+                    dp[row][col] = dp[row - 1][col - 1] + 1;
                 } else {
-                    dp[end][curr] = dp[start][end] + 1;
-                    max_len = max_len.max(dp[end][curr]);
-                    end -= 1;
-                    start += 1;
+                    dp[row][col] = dp[row - 1][col].min(dp[row][col - 1]) + 1;
                 }
             }
         }
 
-        let result = if max_len != 0 { max_len + 2 } else { 0 };
-        return result;
+        let mut supersequence = Vec::<char>::new();
+        let mut row = str1_len;
+        let mut col = str2_len;
+
+        while row > 0 && col > 0 {
+            if str1[row - 1] == str2[col - 1] {
+                supersequence.push(str1[row - 1]);
+                row -= 1;
+                col -= 1;
+            } else if dp[row - 1][col] < dp[row][col - 1] {
+                supersequence.push(str1[row - 1]);
+                row -= 1;
+            } else {
+                supersequence.push(str2[col - 1]);
+                col -= 1;
+            }
+        }
+
+        while row > 0 {
+            supersequence.push(str1[row - 1]);
+            row -= 1;
+        }
+
+        while col > 0 {
+            supersequence.push(str2[col - 1]);
+            col -= 1;
+        }
+
+        return supersequence.iter().rev().collect();
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    str1: &'static str,
+    str2: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            arr: vec![1, 2, 3, 4, 5, 6, 7, 8],
+            str1: "abac",
+            str2: "cab",
         },
         Input {
-            arr: vec![1, 3, 7, 11, 12, 14, 18],
+            str1: "aaaaaaaa",
+            str2: "aaaaaaaa",
         },
     ];
 
     for input in inputs {
-        let result = Solution::len_longest_fib_subseq(input.arr);
+        let result =
+            Solution::shortest_common_supersequence(input.str1.to_string(), input.str2.to_string());
         println!("{result:?}");
     }
 }
