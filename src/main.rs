@@ -1,84 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn shortest_common_supersequence(str1: String, str2: String) -> String {
-        let str1 = str1.chars().collect::<Vec<char>>();
-        let str2 = str2.chars().collect::<Vec<char>>();
+    pub fn apply_operations(nums: Vec<i32>) -> Vec<i32> {
+        let mut nums = nums.clone();
+        for j in 1..nums.len() {
+            let i = j - 1;
 
-        let str1_len = str1.len();
-        let str2_len = str2.len();
-        let mut dp = vec![vec![0; str2_len + 1]; str1_len + 1];
-
-        for row in 0..=str1_len {
-            dp[row][0] = row;
-        }
-
-        for col in 0..=str2_len {
-            dp[0][col] = col;
-        }
-
-        for row in 1..=str1_len {
-            for col in 1..=str2_len {
-                if str1[row - 1] == str2[col - 1] {
-                    dp[row][col] = dp[row - 1][col - 1] + 1;
-                } else {
-                    dp[row][col] = dp[row - 1][col].min(dp[row][col - 1]) + 1;
-                }
-            }
-        }
-
-        let mut supersequence = Vec::<char>::new();
-        let mut row = str1_len;
-        let mut col = str2_len;
-
-        while row > 0 && col > 0 {
-            if str1[row - 1] == str2[col - 1] {
-                supersequence.push(str1[row - 1]);
-                row -= 1;
-                col -= 1;
-            } else if dp[row - 1][col] < dp[row][col - 1] {
-                supersequence.push(str1[row - 1]);
-                row -= 1;
+            if nums[i] != nums[j] {
+                continue;
+            } else if nums[i] == 0 {
+                continue;
             } else {
-                supersequence.push(str2[col - 1]);
-                col -= 1;
+                nums[i] *= 2;
+                nums[j] = 0;
             }
         }
 
-        while row > 0 {
-            supersequence.push(str1[row - 1]);
-            row -= 1;
+        let mut non_zero_idx = 0;
+        for i in 0..nums.len() {
+            if nums[i] != 0 {
+                nums[non_zero_idx] = nums[i];
+                non_zero_idx += 1;
+            }
         }
 
-        while col > 0 {
-            supersequence.push(str2[col - 1]);
-            col -= 1;
+        for i in non_zero_idx..nums.len() {
+            nums[i] = 0;
         }
 
-        return supersequence.iter().rev().collect();
+        return nums;
     }
 }
 
 struct Input {
-    str1: &'static str,
-    str2: &'static str,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            str1: "abac",
-            str2: "cab",
+            nums: vec![1, 2, 2, 1, 1, 0],
         },
-        Input {
-            str1: "aaaaaaaa",
-            str2: "aaaaaaaa",
-        },
+        Input { nums: vec![0, 1] },
     ];
 
     for input in inputs {
-        let result =
-            Solution::shortest_common_supersequence(input.str1.to_string(), input.str2.to_string());
+        let result = Solution::apply_operations(input.nums);
         println!("{result:?}");
     }
 }
