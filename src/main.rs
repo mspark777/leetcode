@@ -1,51 +1,63 @@
 struct Solution {}
 
 impl Solution {
-    pub fn apply_operations(nums: Vec<i32>) -> Vec<i32> {
-        let mut nums = nums.clone();
-        for j in 1..nums.len() {
-            let i = j - 1;
+    pub fn merge_arrays(nums1: Vec<Vec<i32>>, nums2: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let n1 = nums1.len();
+        let n2 = nums2.len();
+        let mut pos1 = 0usize;
+        let mut pos2 = 0usize;
 
-            if nums[i] != nums[j] {
-                continue;
-            } else if nums[i] == 0 {
-                continue;
+        let mut result = Vec::<Vec<i32>>::new();
+        while pos1 < n1 && pos2 < n2 {
+            let id1 = nums1[pos1][0];
+            let id2 = nums2[pos2][0];
+            let val1 = nums1[pos1][1];
+            let val2 = nums2[pos2][1];
+
+            if id1 == id2 {
+                result.push(vec![id1, val1 + val2]);
+                pos1 += 1;
+                pos2 += 1;
+            } else if id1 < id2 {
+                result.push(vec![id1, val1]);
+                pos1 += 1;
             } else {
-                nums[i] *= 2;
-                nums[j] = 0;
+                result.push(vec![id2, val2]);
+                pos2 += 1;
             }
         }
 
-        let mut non_zero_idx = 0;
-        for i in 0..nums.len() {
-            if nums[i] != 0 {
-                nums[non_zero_idx] = nums[i];
-                non_zero_idx += 1;
-            }
+        for i in pos1..n1 {
+            result.push(nums1[i].clone());
         }
 
-        for i in non_zero_idx..nums.len() {
-            nums[i] = 0;
+        for i in pos2..n2 {
+            result.push(nums2[i].clone());
         }
 
-        return nums;
+        return result;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    nums1: Vec<Vec<i32>>,
+    nums2: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 2, 2, 1, 1, 0],
+            nums1: vec![vec![1, 2], vec![2, 3], vec![4, 5]],
+            nums2: vec![vec![1, 4], vec![3, 2], vec![4, 1]],
         },
-        Input { nums: vec![0, 1] },
+        Input {
+            nums1: vec![vec![2, 4], vec![3, 6], vec![5, 5]],
+            nums2: vec![vec![1, 3], vec![4, 3]],
+        },
     ];
 
     for input in inputs {
-        let result = Solution::apply_operations(input.nums);
+        let result = Solution::merge_arrays(input.nums1, input.nums2);
         println!("{result:?}");
     }
 }
