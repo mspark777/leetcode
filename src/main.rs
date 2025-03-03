@@ -1,33 +1,57 @@
 struct Solution {}
 
 impl Solution {
-    pub fn prefixes_div_by5(nums: Vec<i32>) -> Vec<bool> {
-        let mut result = Vec::<bool>::with_capacity(nums.len());
-        let mut n = 0;
-        for num in nums.iter().cloned() {
-            n = (n * 2 + num) % 5;
-            result.push(n == 0);
+    pub fn pivot_array(nums: Vec<i32>, pivot: i32) -> Vec<i32> {
+        let mut result = vec![0; nums.len()];
+        let mut less_idx = 0usize;
+        let mut greater_idx = nums.len() - 1;
+        let mut i = less_idx;
+        let mut j = greater_idx;
+        while i < nums.len() {
+            if nums[i] < pivot {
+                result[less_idx] = nums[i];
+                less_idx += 1;
+            }
+
+            if nums[j] > pivot {
+                result[greater_idx] = nums[j];
+                greater_idx -= 1;
+            }
+
+            i += 1;
+            if j > 0 {
+                j -= 1;
+            }
         }
+
+        while less_idx <= greater_idx {
+            result[less_idx] = pivot;
+            less_idx += 1;
+        }
+
         return result;
     }
 }
 
 struct Input {
     nums: Vec<i32>,
+    pivot: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![0, 1, 1],
+            nums: vec![9, 12, 5, 10, 14, 3, 10],
+            pivot: 10,
         },
         Input {
-            nums: vec![1, 1, 1],
+            nums: vec![-3, 4, 3, 2],
+            pivot: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::prefixes_div_by5(input.nums);
+        let result = Solution::pivot_array(input.nums, input.pivot);
         println!("{result:?}");
     }
 }
