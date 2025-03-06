@@ -1,57 +1,45 @@
 struct Solution {}
 
 impl Solution {
-    pub fn pivot_array(nums: Vec<i32>, pivot: i32) -> Vec<i32> {
-        let mut result = vec![0; nums.len()];
-        let mut less_idx = 0usize;
-        let mut greater_idx = nums.len() - 1;
-        let mut i = less_idx;
-        let mut j = greater_idx;
-        while i < nums.len() {
-            if nums[i] < pivot {
-                result[less_idx] = nums[i];
-                less_idx += 1;
-            }
+    pub fn find_missing_and_repeated_values(grid: Vec<Vec<i32>>) -> Vec<i32> {
+        let mut sum = 0i64;
+        let mut sqr_sum = 0i64;
+        let n = grid.len();
 
-            if nums[j] > pivot {
-                result[greater_idx] = nums[j];
-                greater_idx -= 1;
-            }
-
-            i += 1;
-            if j > 0 {
-                j -= 1;
+        for row in 0..n {
+            for col in 0..n {
+                let num = grid[row][col] as i64;
+                sum += num;
+                sqr_sum += num * num;
             }
         }
 
-        while less_idx <= greater_idx {
-            result[less_idx] = pivot;
-            less_idx += 1;
-        }
+        let total = (n * n) as i64;
+        let sum_diff = sum - total * (total + 1) / 2;
+        let sqr_diff = sqr_sum - total * (total + 1) * (2 * total + 1) / 6;
+        let repeat = (sqr_diff / sum_diff + sum_diff) / 2;
+        let missing = (sqr_diff / sum_diff - sum_diff) / 2;
 
-        return result;
+        return vec![repeat as i32, missing as i32];
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    pivot: i32,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![9, 12, 5, 10, 14, 3, 10],
-            pivot: 10,
+            grid: vec![vec![1, 3], vec![2, 2]],
         },
         Input {
-            nums: vec![-3, 4, 3, 2],
-            pivot: 2,
+            grid: vec![vec![9, 1, 7], vec![8, 9, 2], vec![3, 4, 6]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::pivot_array(input.nums, input.pivot);
+        let result = Solution::find_missing_and_repeated_values(input.grid);
         println!("{result:?}");
     }
 }
