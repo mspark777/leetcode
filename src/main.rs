@@ -1,45 +1,80 @@
 struct Solution {}
 
 impl Solution {
-    pub fn remove_outer_parentheses(s: String) -> String {
-        let mut result = Vec::<char>::new();
-        let mut balance = 0;
+    pub fn maximum_count(nums: Vec<i32>) -> i32 {
+        let positive_count = nums.len() - Self::upper_bound(&nums);
+        let negative_count = Self::lower_bound(&nums);
 
-        for ch in s.chars() {
-            if ch == '(' {
-                if balance > 0 {
-                    result.push(ch);
-                }
+        return positive_count.max(negative_count) as i32;
+    }
 
-                balance += 1;
+    fn lower_bound(nums: &Vec<i32>) -> usize {
+        let mut start = 0usize;
+        let mut end = nums.len() - 1;
+        let mut idx = nums.len();
+
+        while start <= end {
+            let mid = (start + end) / 2;
+
+            if nums[mid] < 0 {
+                start = mid + 1;
             } else {
-                balance -= 1;
-
-                if balance > 0 {
-                    result.push(ch);
+                if mid > 0 {
+                    end = mid - 1;
+                    idx = mid;
+                } else {
+                    idx = 0;
+                    break;
                 }
             }
         }
 
-        return result.iter().collect();
+        return idx;
+    }
+
+    fn upper_bound(nums: &Vec<i32>) -> usize {
+        let mut start = 0usize;
+        let mut end = nums.len() - 1;
+        let mut idx = nums.len();
+
+        while start <= end {
+            let mid = (start + end) / 2;
+            if nums[mid] <= 0 {
+                start = mid + 1;
+            } else {
+                if mid > 0 {
+                    end = mid - 1;
+                    idx = mid;
+                } else {
+                    idx = 0;
+                    break;
+                }
+            }
+        }
+
+        return idx;
     }
 }
 
 struct Input {
-    s: &'static str,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
-        Input { s: "(()())(())" },
         Input {
-            s: "(()())(())(()(()))",
+            nums: vec![-2, -1, -1, 1, 2, 3],
         },
-        Input { s: "()()" },
+        Input {
+            nums: vec![-3, -2, -1, 0, 0, 1, 2],
+        },
+        Input {
+            nums: vec![5, 20, 66, 1314],
+        },
     ];
 
     for input in inputs {
-        let result = Solution::remove_outer_parentheses(input.s.to_string());
+        let result = Solution::maximum_count(input.nums);
         println!("{result:?}");
     }
 }
