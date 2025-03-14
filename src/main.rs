@@ -1,56 +1,52 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_zero_array(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> i32 {
-        let n = nums.len();
-        let mut sum = 0;
-        let mut result = 0usize;
-        let mut difference_array = vec![0; n + 1];
+    pub fn maximum_candies(candies: Vec<i32>, k: i64) -> i32 {
+        let mut left = 0;
+        let mut right = *candies.iter().max().unwrap();
 
-        for i in 0..n {
-            while sum + difference_array[i] < nums[i] {
-                result += 1;
-
-                if result > queries.len() {
-                    return -1;
-                }
-
-                let left = queries[result - 1][0] as usize;
-                let right = queries[result - 1][1] as usize;
-                let val = queries[result - 1][2];
-
-                if right >= i {
-                    difference_array[i.max(left)] += val;
-                    difference_array[right + 1] -= val;
-                }
+        while left < right {
+            let middle = (left + right + 1) / 2;
+            if Self::can_allocate_candies(&candies, k, middle) {
+                left = middle;
+            } else {
+                right = middle - 1;
             }
-
-            sum += difference_array[i];
         }
 
-        return result as i32;
+        return left;
+    }
+
+    fn can_allocate_candies(candies: &Vec<i32>, k: i64, num_of_candies: i32) -> bool {
+        let mut max_num_of_children = 0i64;
+
+        for pile in candies.iter().cloned() {
+            max_num_of_children += (pile / num_of_candies) as i64;
+        }
+
+        return max_num_of_children >= k;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    queries: Vec<Vec<i32>>,
+    candies: Vec<i32>,
+    k: i64,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![2, 0, 2],
-            queries: vec![vec![0, 2, 1], vec![0, 2, 1], vec![1, 1, 3]],
+            candies: vec![5, 8, 6],
+            k: 3,
         },
         Input {
-            nums: vec![4, 3, 2, 1],
-            queries: vec![vec![1, 3, 2], vec![0, 2, 1]],
+            candies: vec![2, 5],
+            k: 11,
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_zero_array(input.nums, input.queries);
+        let result = Solution::maximum_candies(input.candies, input.k);
         println!("{result:?}");
     }
 }
