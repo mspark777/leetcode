@@ -1,55 +1,52 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_capability(nums: Vec<i32>, k: i32) -> i32 {
-        let mut min_reward = 1;
-        let mut max_reward = nums.iter().cloned().max().unwrap();
+    pub fn repair_cars(ranks: Vec<i32>, cars: i32) -> i64 {
+        let cars = cars as usize;
+        let mut low = 1;
+        let mut high = cars * cars * (ranks[0] as usize);
 
-        while min_reward < max_reward {
-            let mid_reward = (min_reward + max_reward) / 2;
-            let mut possitle_thefts = 0;
+        while low < high {
+            let mid = (low + high) / 2;
+            let mut cars_repaired = 0usize;
 
-            let mut idx = 0usize;
-            while idx < nums.len() {
-                let money = nums[idx];
-                if money <= mid_reward {
-                    possitle_thefts += 1;
-                    idx += 1;
-                }
-
-                idx += 1;
+            for rank in ranks.iter().cloned() {
+                let fmid = mid as f64;
+                let rank = rank as f64;
+                let repaired = (fmid / rank).sqrt();
+                cars_repaired += repaired as usize;
             }
 
-            if possitle_thefts >= k {
-                max_reward = mid_reward;
+            if cars_repaired < cars {
+                low = mid + 1;
             } else {
-                min_reward = mid_reward + 1;
+                high = mid;
             }
         }
 
-        return min_reward;
+        return low as i64;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    ranks: Vec<i32>,
+    cars: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![2, 3, 5, 9],
-            k: 2,
+            ranks: vec![4, 2, 3, 1],
+            cars: 10,
         },
         Input {
-            nums: vec![2, 7, 9, 3, 1],
-            k: 2,
+            ranks: vec![5, 1, 8],
+            cars: 6,
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_capability(input.nums, input.k);
+        let result = Solution::repair_cars(input.ranks, input.cars);
         println!("{result:?}");
     }
 }
