@@ -1,22 +1,27 @@
 struct Solution {}
 
 impl Solution {
-    pub fn longest_nice_subarray(nums: Vec<i32>) -> i32 {
-        let mut used_bits = 0;
-        let mut window_start = 0usize;
-        let mut max_length = 0usize;
+    pub fn min_operations(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut result = 0;
+        let mut nums = nums.clone();
 
-        for window_end in 0..nums.len() {
-            while (used_bits & nums[window_end]) != 0 {
-                used_bits ^= nums[window_start];
-                window_start += 1;
+        for i in 0..=(n - 3) {
+            if nums[i] != 0 {
+                continue;
             }
 
-            used_bits |= nums[window_end];
-            max_length = max_length.max(window_end - window_start + 1);
+            nums[i] = 1;
+            nums[i + 1] = if nums[i + 1] == 0 { 1 } else { 0 };
+            nums[i + 2] = if nums[i + 2] == 0 { 1 } else { 0 };
+            result += 1;
         }
 
-        return max_length as i32;
+        if (nums[n - 1] == 0) || (nums[n - 2] == 0) {
+            return -1;
+        }
+
+        return result;
     }
 }
 
@@ -27,15 +32,15 @@ struct Input {
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 3, 8, 48, 10],
+            nums: vec![0, 1, 1, 1, 0, 0],
         },
         Input {
-            nums: vec![3, 1, 5, 11, 13],
+            nums: vec![0, 1, 1, 1],
         },
     ];
 
     for input in inputs {
-        let result = Solution::longest_nice_subarray(input.nums);
+        let result = Solution::min_operations(input.nums);
         println!("{result:?}");
     }
 }
