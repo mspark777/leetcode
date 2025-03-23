@@ -1,104 +1,81 @@
 struct Solution {}
 
-struct Helper {
-    parent: Vec<usize>,
-    depth: Vec<usize>,
-    n: usize,
-}
-
-impl Helper {
-    fn new(n: usize) -> Self {
-        return Self {
-            n,
-            parent: vec![n; n],
-            depth: vec![0; n],
-        };
-    }
-
-    pub fn find(&mut self, node: usize) -> usize {
-        if self.parent[node] == self.n {
-            return node;
-        }
-
-        self.parent[node] = self.find(self.parent[node]);
-        return self.parent[node];
-    }
-
-    pub fn union(&mut self, node1: usize, node2: usize) {
-        let mut root1 = self.find(node1);
-        let mut root2 = self.find(node2);
-
-        if root1 == root2 {
-            return;
-        }
-
-        if self.depth[root1] < self.depth[root2] {
-            let t1 = root1;
-            let t2 = root2;
-            root1 = t2;
-            root2 = t1;
-        }
-
-        self.parent[root2] = root1;
-        if self.depth[root1] == self.depth[root2] {
-            self.depth[root1] += 1;
-        }
-    }
-}
-
 impl Solution {
-    pub fn minimum_cost(n: i32, edges: Vec<Vec<i32>>, query: Vec<Vec<i32>>) -> Vec<i32> {
+    pub fn count_paths(n: i32, roads: Vec<Vec<i32>>) -> i32 {
         let n = n as usize;
-        let mut helper = Helper::new(n);
+        const MOD: i32 = 1000000007;
 
-        for edge in edges.iter() {
-            helper.union(edge[0] as usize, edge[1] as usize);
+        let mut graph = vec![Vec::<(usize, usize)>::new(); n];
+
+        for road in roads.iter() {
+            let start_node = road[0] as usize;
+            let end_node = road[1] as usize;
+            let time = road[2] as usize;
+            graph[start_node].push((end_node, time));
+            graph[end_node].push((start_node, time));
         }
 
-        let mut component_cost = vec![u32::MAX; n];
-        for edge in edges.iter() {
-            let root = helper.find(edge[0] as usize);
-            component_cost[root] &= edge[2] as u32;
-        }
+        let mut queue = std::collections::BinaryHeap::<std::cmp::Reverse<(usize, usize)>>::new();
+        let mut shortest_time = vec![usize::MAX; n];
+        let mut path_count = vec![0; n];
 
-        let mut result = Vec::<i32>::new();
-        for q in query.iter() {
-            let start = q[0] as usize;
-            let end = q[1] as usize;
+        shortest_time[0] = 0;
+        path_count[0] = 1;
+        queue.push(std::cmp::Reverse((0, 0)));
 
-            if helper.find(start) != helper.find(end) {
-                result.push(-1);
-            } else {
-                let root = helper.find(start);
-                result.push(component_cost[root] as i32);
+        while let Some(std::cmp::Reverse((current_time, current_node))) = queue.pop() {
+            if current_time > shortest_time[current_node] {
+                continue;
+            }
+
+            for &(neighbor_node, road_time) in graph[current_node].iter() {
+                let time = current_time + road_time;
+                let curr_short = shortest_time[neighbor_node];
+                if time < curr_short {
+                    shortest_time[neighbor_node] = time;
+                    path_count[neighbor_node] = path_count[current_node];
+                    queue.push(std::cmp::Reverse((time, neighbor_node)));
+                } else if time == curr_short {
+                    path_count[neighbor_node] =
+                        (path_count[neighbor_node] + path_count[current_node]) % MOD;
+                }
             }
         }
-        return result;
+
+        return path_count[n - 1];
     }
 }
 
 struct Input {
     n: i32,
-    edges: Vec<Vec<i32>>,
-    query: Vec<Vec<i32>>,
+    roads: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 5,
-            edges: vec![vec![0, 1, 7], vec![1, 3, 7], vec![1, 2, 1]],
-            query: vec![vec![0, 3], vec![3, 4]],
+            n: 7,
+            roads: vec![
+                vec![0, 6, 7],
+                vec![0, 1, 2],
+                vec![1, 2, 3],
+                vec![1, 3, 3],
+                vec![6, 3, 3],
+                vec![3, 5, 1],
+                vec![6, 5, 1],
+                vec![2, 5, 1],
+                vec![0, 4, 5],
+                vec![4, 6, 2],
+            ],
         },
         Input {
-            n: 3,
-            edges: vec![vec![0, 2, 7], vec![0, 1, 15], vec![1, 2, 1]],
-            query: vec![vec![1, 2]],
+            n: 2,
+            roads: vec![vec![1, 0, 10]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_cost(input.n, input.edges, input.query);
+        let result = Solution::count_paths(input.n, input.roads);
         println!("{result:?}");
     }
 }
