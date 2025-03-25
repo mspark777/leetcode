@@ -1,81 +1,67 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_paths(n: i32, roads: Vec<Vec<i32>>) -> i32 {
-        let n = n as usize;
-        const MOD: i32 = 1000000007;
+    pub fn check_valid_cuts(_n: i32, rectangles: Vec<Vec<i32>>) -> bool {
+        return Self::check_cuts(rectangles.clone(), 0) || Self::check_cuts(rectangles.clone(), 1);
+    }
 
-        let mut graph = vec![Vec::<(usize, usize)>::new(); n];
+    fn check_cuts(mut rectangles: Vec<Vec<i32>>, dim: usize) -> bool {
+        let mut gap_count = 0;
 
-        for road in roads.iter() {
-            let start_node = road[0] as usize;
-            let end_node = road[1] as usize;
-            let time = road[2] as usize;
-            graph[start_node].push((end_node, time));
-            graph[end_node].push((start_node, time));
-        }
+        rectangles.sort_unstable_by_key(|r| r[dim]);
+        let mut furthest_end = rectangles[0][dim + 2];
 
-        let mut queue = std::collections::BinaryHeap::<std::cmp::Reverse<(usize, usize)>>::new();
-        let mut shortest_time = vec![usize::MAX; n];
-        let mut path_count = vec![0; n];
-
-        shortest_time[0] = 0;
-        path_count[0] = 1;
-        queue.push(std::cmp::Reverse((0, 0)));
-
-        while let Some(std::cmp::Reverse((current_time, current_node))) = queue.pop() {
-            if current_time > shortest_time[current_node] {
-                continue;
+        for rect in rectangles.iter().skip(1) {
+            if furthest_end <= rect[dim] {
+                gap_count += 1;
             }
 
-            for &(neighbor_node, road_time) in graph[current_node].iter() {
-                let time = current_time + road_time;
-                let curr_short = shortest_time[neighbor_node];
-                if time < curr_short {
-                    shortest_time[neighbor_node] = time;
-                    path_count[neighbor_node] = path_count[current_node];
-                    queue.push(std::cmp::Reverse((time, neighbor_node)));
-                } else if time == curr_short {
-                    path_count[neighbor_node] =
-                        (path_count[neighbor_node] + path_count[current_node]) % MOD;
-                }
-            }
+            furthest_end = furthest_end.max(rect[dim + 2]);
         }
 
-        return path_count[n - 1];
+        return gap_count >= 2;
     }
 }
 
 struct Input {
     n: i32,
-    roads: Vec<Vec<i32>>,
+    rectangles: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 7,
-            roads: vec![
-                vec![0, 6, 7],
-                vec![0, 1, 2],
-                vec![1, 2, 3],
-                vec![1, 3, 3],
-                vec![6, 3, 3],
-                vec![3, 5, 1],
-                vec![6, 5, 1],
-                vec![2, 5, 1],
-                vec![0, 4, 5],
-                vec![4, 6, 2],
+            n: 5,
+            rectangles: vec![
+                vec![1, 0, 5, 2],
+                vec![0, 2, 2, 4],
+                vec![3, 2, 5, 3],
+                vec![0, 4, 4, 5],
             ],
         },
         Input {
-            n: 2,
-            roads: vec![vec![1, 0, 10]],
+            n: 4,
+            rectangles: vec![
+                vec![0, 0, 1, 1],
+                vec![2, 0, 3, 4],
+                vec![0, 2, 2, 3],
+                vec![3, 0, 4, 3],
+            ],
+        },
+        Input {
+            n: 4,
+            rectangles: vec![
+                vec![0, 2, 2, 4],
+                vec![1, 0, 3, 2],
+                vec![2, 2, 3, 4],
+                vec![3, 0, 4, 2],
+                vec![3, 2, 4, 4],
+            ],
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_paths(input.n, input.roads);
+        let result = Solution::check_valid_cuts(input.n, input.rectangles);
         println!("{result:?}");
     }
 }
