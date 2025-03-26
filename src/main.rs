@@ -1,67 +1,47 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_valid_cuts(_n: i32, rectangles: Vec<Vec<i32>>) -> bool {
-        return Self::check_cuts(rectangles.clone(), 0) || Self::check_cuts(rectangles.clone(), 1);
-    }
+    pub fn min_operations(grid: Vec<Vec<i32>>, x: i32) -> i32 {
+        let mut nums_array = grid.iter().cloned().flatten().collect::<Vec<_>>();
+        nums_array.sort_unstable();
 
-    fn check_cuts(mut rectangles: Vec<Vec<i32>>, dim: usize) -> bool {
-        let mut gap_count = 0;
-
-        rectangles.sort_unstable_by_key(|r| r[dim]);
-        let mut furthest_end = rectangles[0][dim + 2];
-
-        for rect in rectangles.iter().skip(1) {
-            if furthest_end <= rect[dim] {
-                gap_count += 1;
+        let final_common_number = nums_array[nums_array.len() / 2];
+        let mut result = 0;
+        for num in nums_array.iter().cloned() {
+            if (num % x) != (final_common_number % x) {
+                return -1;
             }
 
-            furthest_end = furthest_end.max(rect[dim + 2]);
+            result += (final_common_number - num).abs() / x;
         }
 
-        return gap_count >= 2;
+        return result;
     }
 }
 
 struct Input {
-    n: i32,
+    x: i32,
     rectangles: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 5,
-            rectangles: vec![
-                vec![1, 0, 5, 2],
-                vec![0, 2, 2, 4],
-                vec![3, 2, 5, 3],
-                vec![0, 4, 4, 5],
-            ],
+            x: 2,
+            rectangles: vec![vec![2, 4], vec![6, 8]],
         },
         Input {
-            n: 4,
-            rectangles: vec![
-                vec![0, 0, 1, 1],
-                vec![2, 0, 3, 4],
-                vec![0, 2, 2, 3],
-                vec![3, 0, 4, 3],
-            ],
+            x: 1,
+            rectangles: vec![vec![1, 5], vec![2, 3]],
         },
         Input {
-            n: 4,
-            rectangles: vec![
-                vec![0, 2, 2, 4],
-                vec![1, 0, 3, 2],
-                vec![2, 2, 3, 4],
-                vec![3, 0, 4, 2],
-                vec![3, 2, 4, 4],
-            ],
+            x: 2,
+            rectangles: vec![vec![1, 2], vec![3, 4]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::check_valid_cuts(input.n, input.rectangles);
+        let result = Solution::min_operations(input.rectangles, input.x);
         println!("{result:?}");
     }
 }
