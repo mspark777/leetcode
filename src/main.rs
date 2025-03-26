@@ -1,18 +1,28 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_operations(grid: Vec<Vec<i32>>, x: i32) -> i32 {
-        let mut nums_array = grid.iter().cloned().flatten().collect::<Vec<_>>();
-        nums_array.sort_unstable();
+    pub fn all_cells_dist_order(
+        rows: i32,
+        cols: i32,
+        r_center: i32,
+        c_center: i32,
+    ) -> Vec<Vec<i32>> {
+        let rows = rows as usize;
+        let cols = cols as usize;
+        let mut result = Vec::<Vec<i32>>::with_capacity(rows * cols);
 
-        let final_common_number = nums_array[nums_array.len() / 2];
-        let mut result = 0;
-        for num in nums_array.iter().cloned() {
-            if (num % x) != (final_common_number % x) {
-                return -1;
+        for r in 0..rows {
+            for c in 0..cols {
+                let r = r as i32;
+                let c = c as i32;
+                let distance = (r - r_center).abs() + (c - c_center).abs();
+                result.push(vec![r, c, distance]);
             }
+        }
 
-            result += (final_common_number - num).abs() / x;
+        result.sort_unstable_by_key(|nums| nums[2]);
+        for nums in result.iter_mut() {
+            nums.pop();
         }
 
         return result;
@@ -20,28 +30,37 @@ impl Solution {
 }
 
 struct Input {
-    x: i32,
-    rectangles: Vec<Vec<i32>>,
+    rows: i32,
+    cols: i32,
+    r_center: i32,
+    c_center: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            x: 2,
-            rectangles: vec![vec![2, 4], vec![6, 8]],
+            rows: 1,
+            cols: 2,
+            r_center: 0,
+            c_center: 0,
         },
         Input {
-            x: 1,
-            rectangles: vec![vec![1, 5], vec![2, 3]],
+            rows: 2,
+            cols: 2,
+            r_center: 0,
+            c_center: 1,
         },
         Input {
-            x: 2,
-            rectangles: vec![vec![1, 2], vec![3, 4]],
+            rows: 2,
+            cols: 3,
+            r_center: 1,
+            c_center: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_operations(input.rectangles, input.x);
+        let result =
+            Solution::all_cells_dist_order(input.rows, input.cols, input.r_center, input.c_center);
         println!("{result:?}");
     }
 }
