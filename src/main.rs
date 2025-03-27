@@ -1,66 +1,68 @@
 struct Solution {}
 
 impl Solution {
-    pub fn all_cells_dist_order(
-        rows: i32,
-        cols: i32,
-        r_center: i32,
-        c_center: i32,
-    ) -> Vec<Vec<i32>> {
-        let rows = rows as usize;
-        let cols = cols as usize;
-        let mut result = Vec::<Vec<i32>>::with_capacity(rows * cols);
+    pub fn minimum_index(nums: Vec<i32>) -> i32 {
+        let mut x = nums[0];
+        let mut count = 0;
 
-        for r in 0..rows {
-            for c in 0..cols {
-                let r = r as i32;
-                let c = c as i32;
-                let distance = (r - r_center).abs() + (c - c_center).abs();
-                result.push(vec![r, c, distance]);
+        for num in nums.iter().cloned() {
+            if num == x {
+                count += 1;
+            } else {
+                count -= 1;
+            }
+
+            if count == 0 {
+                x = num;
+                count = 1;
             }
         }
 
-        result.sort_unstable_by_key(|nums| nums[2]);
-        for nums in result.iter_mut() {
-            nums.pop();
+        let mut x_count = 0;
+        for num in nums.iter().cloned() {
+            if num == x {
+                x_count += 1;
+            }
         }
 
-        return result;
+        count = 0;
+
+        for (i, num) in nums.iter().cloned().enumerate() {
+            if num == x {
+                count += 1;
+            }
+
+            let remaining_count = x_count - count;
+            let left = ((i + 1) / 2) as i32;
+            let right = ((nums.len() - i - 1) / 2) as i32;
+            if (count > left) && remaining_count > right {
+                return i as i32;
+            }
+        }
+
+        return -1;
     }
 }
 
 struct Input {
-    rows: i32,
-    cols: i32,
-    r_center: i32,
-    c_center: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            rows: 1,
-            cols: 2,
-            r_center: 0,
-            c_center: 0,
+            nums: vec![1, 2, 2, 2],
         },
         Input {
-            rows: 2,
-            cols: 2,
-            r_center: 0,
-            c_center: 1,
+            nums: vec![2, 1, 3, 1, 1, 1, 7, 1, 2, 1],
         },
         Input {
-            rows: 2,
-            cols: 3,
-            r_center: 1,
-            c_center: 2,
+            nums: vec![3, 3, 3, 3, 7, 2, 2],
         },
     ];
 
     for input in inputs {
-        let result =
-            Solution::all_cells_dist_order(input.rows, input.cols, input.r_center, input.c_center);
+        let result = Solution::minimum_index(input.nums);
         println!("{result:?}");
     }
 }
