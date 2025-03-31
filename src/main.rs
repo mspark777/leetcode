@@ -1,51 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn partition_labels(s: String) -> Vec<i32> {
-        let mut last_occurrence = vec![0; 26];
-        let mut n = 0usize;
-        for (i, ch) in s.chars().enumerate() {
-            let code = ch as u8;
-            let a = b'a';
-            let j = (code - a) as usize;
-            last_occurrence[j] = i;
-            n += 1;
+    pub fn put_marbles(weights: Vec<i32>, k: i32) -> i64 {
+        let n = weights.len();
+        let mut pair_weights = vec![0; n - 1];
+        for i in 0..(n - 1) {
+            pair_weights[i] = weights[i] + weights[i + 1];
         }
 
-        let n = n;
-        let last_occurrence = last_occurrence;
-        let mut partition_start = 0usize;
-        let mut partition_end = 0usize;
-        let mut result = Vec::<i32>::with_capacity(n);
-        for (i, ch) in s.chars().enumerate() {
-            let code = ch as u8;
-            let a = b'a';
-            let j = (code - a) as usize;
-            partition_end = partition_end.max(last_occurrence[j]);
-            if i == partition_end {
-                result.push((i + 1 - partition_start) as i32);
-                partition_start = i + 1;
-            }
-        }
+        pair_weights.sort_unstable();
+        let mut result = 0i64;
 
+        let k = k as usize;
+        for i in 0..(k - 1) {
+            let diff = pair_weights[n - 2 - i] - pair_weights[i];
+            result += diff as i64;
+        }
         return result;
     }
 }
 
 struct Input {
-    s: &'static str,
+    weights: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            s: "ababcbacadefegdehijhklij",
+            weights: vec![1, 3, 5, 1],
+            k: 2,
         },
-        Input { s: "eccbbbbdec" },
+        Input {
+            weights: vec![1, 3],
+            k: 2,
+        },
     ];
 
     for input in inputs {
-        let result = Solution::partition_labels(input.s.to_string());
+        let result = Solution::put_marbles(input.weights, input.k);
         println!("{result:?}");
     }
 }
