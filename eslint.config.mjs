@@ -4,7 +4,6 @@ import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 export default [
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   pluginJs.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   eslintPluginPrettierRecommended,
