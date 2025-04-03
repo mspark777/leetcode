@@ -2,67 +2,47 @@ package main
 
 import "fmt"
 
-func numRookCaptures(board [][]byte) int {
-	x0 := 0
-	y0 := 0
-	found := false
-
-	for y := 0; y < 8; y += 1 {
-		for x := 0; x < 8; x += 1 {
-			if board[y][x] == 'R' {
-				x0 = x
-				y0 = y
-				found = true
-				break
-			}
-		}
-
-		if found {
-			break
-		}
+func max(a, b int64) int64 {
+	if a > b {
+		return a
 	}
+	return b
+}
 
-	result := 0
-	directions := [][]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
-	for _, dir := range directions {
-		x := x0 + dir[0]
-		y := y0 + dir[1]
-		for (0 <= x) && (x < 8) && (0 <= y) && (y < 8) {
-			if board[y][x] == 'p' {
-				result += 1
-			}
+func maximumTripletValue(nums []int) int64 {
+	result := int64(0)
+	imax := int64(0)
+	dmax := int64(0)
 
-			if board[y][x] != '.' {
-				break
-			}
-
-			x += dir[0]
-			y += dir[1]
-		}
+	for _, num := range nums {
+		num := int64(num)
+		result = max(result, dmax*num)
+		dmax = max(dmax, imax-num)
+		imax = max(imax, num)
 	}
 
 	return result
 }
 
 type input struct {
-	board [][]byte
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			board: [][]byte{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', 'R', '.', '.', '.', 'p'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}},
+			nums: []int{12, 6, 1, 2, 7},
 		},
 		{
-			board: [][]byte{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', 'p', 'p', 'p', 'p', 'p', '.', '.'}, {'.', 'p', 'p', 'B', 'p', 'p', '.', '.'}, {'.', 'p', 'B', 'R', 'B', 'p', '.', '.'}, {'.', 'p', 'p', 'B', 'p', 'p', '.', '.'}, {'.', 'p', 'p', 'p', 'p', 'p', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}},
+			nums: []int{1, 10, 3, 4, 19},
 		},
 		{
-			board: [][]byte{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'p', 'p', '.', 'R', '.', 'p', 'B', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'p', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}},
+			nums: []int{1, 2, 3},
 		},
 	}
 
 	for _, input := range inputs {
-		result := numRookCaptures(input.board)
+		result := maximumTripletValue(input.nums)
 		fmt.Println(result)
 	}
 }
