@@ -1,11 +1,36 @@
 import "@total-typescript/ts-reset";
 
-function isBoomerang(points: number[][]): boolean {
-  const [x0, y0] = points[0] as [number, number];
-  const [x1, y1] = points[1] as [number, number];
-  const [x2, y2] = points[2] as [number, number];
+class TreeNode {
+  val: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+  constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+    this.val = val === undefined ? 0 : val;
+    this.left = left === undefined ? null : left;
+    this.right = right === undefined ? null : right;
+  }
+}
 
-  return (y1 - y0) * (x2 - x1) !== (y2 - y1) * (x1 - x0);
+function dfs(root: TreeNode | null): [TreeNode | null, number] {
+  if (root == null) {
+    return [null, 0];
+  }
+
+  const [left, leftDepth] = dfs(root.left);
+  const [right, rightDepth] = dfs(root.right);
+
+  if (leftDepth > rightDepth) {
+    return [left, leftDepth + 1];
+  } else if (leftDepth < rightDepth) {
+    return [right, rightDepth + 1];
+  }
+
+  return [root, leftDepth + 1];
+}
+
+function lcaDeepestLeaves(root: TreeNode | null): TreeNode | null {
+  const [node] = dfs(root);
+  return node;
 }
 
 interface Input {
