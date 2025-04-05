@@ -1,19 +1,18 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_triplet_value(nums: Vec<i32>) -> i64 {
-        let mut result = 0i64;
-        let mut imax = 0i64;
-        let mut dmax = 0i64;
-
-        for num in nums.iter().cloned() {
-            let num = num as i64;
-            result = result.max(dmax * num);
-            dmax = dmax.max(imax - num);
-            imax = imax.max(num);
+    pub fn subset_xor_sum(nums: Vec<i32>) -> i32 {
+        if nums.is_empty() {
+            return 0;
         }
 
-        return result;
+        let mut or = 0usize;
+        for num in nums.iter().cloned() {
+            or |= num as usize;
+        }
+
+        let shift = nums.len() - 1;
+        return (or << shift) as i32;
     }
 }
 
@@ -23,19 +22,17 @@ struct Input {
 
 fn main() {
     let inputs = vec![
+        Input { nums: vec![1, 3] },
         Input {
-            nums: vec![12, 6, 1, 2, 7],
+            nums: vec![5, 1, 6],
         },
         Input {
             nums: vec![1, 10, 3, 4, 19],
         },
-        Input {
-            nums: vec![1, 2, 3],
-        },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_triplet_value(input.nums);
+        let result = Solution::subset_xor_sum(input.nums);
         println!("{result:?}");
     }
 }
