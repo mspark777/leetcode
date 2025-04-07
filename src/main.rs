@@ -1,40 +1,28 @@
 struct Solution {}
 
 impl Solution {
-    pub fn largest_divisible_subset(nums: Vec<i32>) -> Vec<i32> {
-        let mut nums = nums.clone();
-        nums.sort_unstable();
-
-        let n = nums.len();
-        let mut prev = vec![Vec::<i32>::new(); n + 1];
-
-        for i in 1..=n {
-            let mut curr = vec![Vec::<i32>::new(); n + 1];
-            for j in 1..=n {
-                let mut x = Vec::<i32>::new();
-                if j == 1 {
-                    x = prev[i].clone();
-                    x.push(nums[i - 1]);
-                } else if (nums[j - 1] % nums[i - 1]) == 0 {
-                    x = prev[i].clone();
-                    x.push(nums[i - 1]);
-                } else if (nums[i - 1] % nums[j - 1]) == 0 {
-                    x = prev[i].clone();
-                    x.push(nums[i - 1]);
-                }
-
-                let y = &prev[j];
-                if y.len() > x.len() {
-                    curr[j] = y.clone();
-                } else {
-                    curr[j] = x.clone();
-                }
-            }
-
-            prev = curr;
+    pub fn can_partition(nums: Vec<i32>) -> bool {
+        let sum = nums.iter().sum::<i32>();
+        let sum = sum as usize;
+        if (sum & 1) == 1 {
+            return false;
         }
 
-        return prev[1].clone();
+        let target = sum / 2;
+        let mut dp = vec![false; target + 1];
+        dp[0] = true;
+
+        for num in nums.iter().cloned() {
+            let num = num as usize;
+            for curr_sum in (num..=target).rev() {
+                dp[curr_sum] = dp[curr_sum] || dp[curr_sum - num];
+                if dp[target] {
+                    return true;
+                }
+            }
+        }
+
+        return dp[target];
     }
 }
 
@@ -45,15 +33,15 @@ struct Input {
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 2, 3],
+            nums: vec![1, 5, 11, 5],
         },
         Input {
-            nums: vec![1, 2, 4, 8],
+            nums: vec![1, 2, 3, 5],
         },
     ];
 
     for input in inputs {
-        let result = Solution::largest_divisible_subset(input.nums);
+        let result = Solution::can_partition(input.nums);
         println!("{result:?}");
     }
 }
