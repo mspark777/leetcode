@@ -1,40 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    const MOD: i64 = 1000000007;
-    pub fn count_good_numbers(n: i64) -> i32 {
-        let left = Self::quickmul(5, (n + 1) / 2);
-        let right = Self::quickmul(4, n / 2);
-        return ((left * right) % Self::MOD) as i32;
-    }
-
-    fn quickmul(x: i32, y: i64) -> i64 {
-        let mut result = 1i64;
-        let mut mul = x as i64;
-        let mut y = y;
-
-        while y > 0 {
-            if (y & 1) == 1 {
-                result = (result * mul) % Self::MOD;
+    pub fn count_good_triplets(arr: Vec<i32>, a: i32, b: i32, c: i32) -> i32 {
+        let mut result = 0;
+        for (i, ni) in arr.iter().cloned().enumerate() {
+            for (j, nj) in arr.iter().cloned().enumerate().skip(i + 1) {
+                for nk in arr.iter().cloned().skip(j + 1) {
+                    if (ni - nj).abs() <= a && (nj - nk).abs() <= b && (ni - nk).abs() <= c {
+                        result += 1;
+                    }
+                }
             }
-
-            mul = (mul * mul) % Self::MOD;
-            y >>= 1;
         }
-
         return result;
     }
 }
 
 struct Input {
-    n: i64,
+    arr: Vec<i32>,
+    a: i32,
+    b: i32,
+    c: i32,
 }
 
 fn main() {
-    let inputs = vec![Input { n: 1 }, Input { n: 4 }, Input { n: 50 }];
+    let inputs = vec![
+        Input {
+            arr: vec![3, 0, 1, 1, 9, 7],
+            a: 7,
+            b: 2,
+            c: 3,
+        },
+        Input {
+            arr: vec![1, 1, 2, 2, 3],
+            a: 0,
+            b: 0,
+            c: 1,
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::count_good_numbers(input.n);
+        let result = Solution::count_good_triplets(input.arr, input.a, input.b, input.c);
         println!("{result:?}");
     }
 }
