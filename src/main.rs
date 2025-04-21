@@ -1,46 +1,52 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_good_triplets(arr: Vec<i32>, a: i32, b: i32, c: i32) -> i32 {
-        let mut result = 0;
-        for (i, ni) in arr.iter().cloned().enumerate() {
-            for (j, nj) in arr.iter().cloned().enumerate().skip(i + 1) {
-                for nk in arr.iter().cloned().skip(j + 1) {
-                    if (ni - nj).abs() <= a && (nj - nk).abs() <= b && (ni - nk).abs() <= c {
-                        result += 1;
-                    }
-                }
+    pub fn number_of_arrays(differences: Vec<i32>, lower: i32, upper: i32) -> i32 {
+        let mut x = 0;
+        let mut y = 0;
+        let mut cur = 0;
+
+        for &diff in &differences {
+            cur += diff;
+            x = x.min(cur);
+            y = y.max(cur);
+
+            if (y - x) > (upper - lower) {
+                return 0;
             }
         }
-        return result;
+
+        return (upper - lower) - (y - x) + 1;
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
-    a: i32,
-    b: i32,
-    c: i32,
+    differences: Vec<i32>,
+    lower: i32,
+    upper: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            arr: vec![3, 0, 1, 1, 9, 7],
-            a: 7,
-            b: 2,
-            c: 3,
+            differences: vec![1, -3, 4],
+            lower: 1,
+            upper: 6,
         },
         Input {
-            arr: vec![1, 1, 2, 2, 3],
-            a: 0,
-            b: 0,
-            c: 1,
+            differences: vec![3, -4, 5, 1, -2],
+            lower: -4,
+            upper: 5,
+        },
+        Input {
+            differences: vec![4, -7, 2],
+            lower: 3,
+            upper: 6,
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_good_triplets(input.arr, input.a, input.b, input.c);
+        let result = Solution::number_of_arrays(input.differences, input.lower, input.upper);
         println!("{result:?}");
     }
 }
