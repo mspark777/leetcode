@@ -1,52 +1,54 @@
 struct Solution {}
 
 impl Solution {
-    pub fn number_of_arrays(differences: Vec<i32>, lower: i32, upper: i32) -> i32 {
-        let mut x = 0;
-        let mut y = 0;
-        let mut cur = 0;
+    pub fn count_subarrays(nums: Vec<i32>, min_k: i32, max_k: i32) -> i64 {
+        let mut result = 0i64;
+        let mut bad_idx = -1i64;
+        let mut left_idx = -1i64;
+        let mut right_idx = -1i64;
 
-        for &diff in &differences {
-            cur += diff;
-            x = x.min(cur);
-            y = y.max(cur);
-
-            if (y - x) > (upper - lower) {
-                return 0;
+        for (i, num) in nums.iter().cloned().enumerate() {
+            if (num < min_k) || (num > max_k) {
+                bad_idx = i as i64;
             }
+
+            if num == min_k {
+                left_idx = i as i64;
+            }
+
+            if num == max_k {
+                right_idx = i as i64;
+            }
+
+            result += 0.max(left_idx.min(right_idx) - bad_idx);
         }
 
-        return (upper - lower) - (y - x) + 1;
+        return result;
     }
 }
 
 struct Input {
-    differences: Vec<i32>,
-    lower: i32,
-    upper: i32,
+    nums: Vec<i32>,
+    min_k: i32,
+    max_k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            differences: vec![1, -3, 4],
-            lower: 1,
-            upper: 6,
+            nums: vec![1, 3, 5, 2, 7, 5],
+            min_k: 1,
+            max_k: 5,
         },
         Input {
-            differences: vec![3, -4, 5, 1, -2],
-            lower: -4,
-            upper: 5,
-        },
-        Input {
-            differences: vec![4, -7, 2],
-            lower: 3,
-            upper: 6,
+            nums: vec![1, 1, 1, 1],
+            min_k: 1,
+            max_k: 1,
         },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_arrays(input.differences, input.lower, input.upper);
+        let result = Solution::count_subarrays(input.nums, input.min_k, input.max_k);
         println!("{result:?}");
     }
 }
