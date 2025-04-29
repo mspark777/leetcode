@@ -1,40 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_subarrays(nums: Vec<i32>) -> i32 {
-        let mut result = 0;
+    pub fn count_subarrays(nums: Vec<i32>, k: i32) -> i64 {
+        let max_num = nums.iter().cloned().max().unwrap();
+        let mut result = 0usize;
+        let mut start = 0usize;
+        let mut k = k;
 
-        for i in 1..(nums.len() - 1) {
-            let first = nums[i - 1];
-            let second = nums[i];
-            let third = nums[i + 1];
-            let sum = (first + third) * 2;
-
-            if second == sum {
-                result += 1;
+        for end in 0..nums.len() {
+            if nums[end] == max_num {
+                k -= 1;
             }
+
+            while k == 0 {
+                if nums[start] == max_num {
+                    k = 1;
+                }
+
+                start += 1;
+            }
+
+            result += start;
         }
 
-        return result;
+        return result as i64;
     }
 }
 
 struct Input {
     nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 2, 1, 4, 1],
+            nums: vec![1, 3, 2, 3, 3],
+            k: 2,
         },
         Input {
-            nums: vec![1, 1, 1],
+            nums: vec![1, 4, 2, 1],
+            k: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_subarrays(input.nums);
+        let result = Solution::count_subarrays(input.nums, input.k);
         println!("{result:?}");
     }
 }
