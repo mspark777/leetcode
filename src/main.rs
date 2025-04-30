@@ -1,51 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_subarrays(nums: Vec<i32>, k: i32) -> i64 {
-        let max_num = nums.iter().cloned().max().unwrap();
-        let mut result = 0usize;
-        let mut start = 0usize;
-        let mut k = k;
+    pub fn find_numbers(nums: Vec<i32>) -> i32 {
+        let mut result = 0;
 
-        for end in 0..nums.len() {
-            if nums[end] == max_num {
-                k -= 1;
+        for num in nums.iter().cloned() {
+            if (num >= 10) && (num <= 99) {
+                result += 1;
+            } else if (num >= 1000) && (num <= 9999) {
+                result += 1;
+            } else if num == 100000 {
+                result += 1;
             }
-
-            while k == 0 {
-                if nums[start] == max_num {
-                    k = 1;
-                }
-
-                start += 1;
-            }
-
-            result += start;
         }
 
-        return result as i64;
+        return result;
     }
 }
 
 struct Input {
     nums: Vec<i32>,
-    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 3, 2, 3, 3],
-            k: 2,
+            nums: vec![12, 345, 2, 6, 7896],
         },
         Input {
-            nums: vec![1, 4, 2, 1],
-            k: 3,
+            nums: vec![555, 901, 482, 1771],
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_subarrays(input.nums, input.k);
+        let result = Solution::find_numbers(input.nums);
         println!("{result:?}");
     }
 }
