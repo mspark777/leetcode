@@ -1,73 +1,58 @@
 struct Solution {}
 
 impl Solution {
-    pub fn push_dominoes(dominoes: String) -> String {
-        const LEFT: char = 'L';
-        const RIGHT: char = 'R';
-        const STAND: char = '.';
+    pub fn min_domino_rotations(tops: Vec<i32>, bottoms: Vec<i32>) -> i32 {
+        let top = Self::get_count(tops[0], &tops, &bottoms);
+        let bottom = Self::get_count(bottoms[0], &tops, &bottoms);
+        let result = top.min(bottom);
 
-        let dominoes = dominoes.chars().collect::<Vec<char>>();
-        let dominoes_len = dominoes.len();
-        let max_force = dominoes_len as i32;
-
-        let mut force = 0;
-        let mut forces = vec![0; dominoes_len];
-        for (i, domino) in dominoes.iter().cloned().enumerate() {
-            if domino == LEFT {
-                force = 0;
-            } else if domino == RIGHT {
-                force = max_force;
-            } else {
-                force = force.max(1) - 1;
-            }
-
-            forces[i] += force;
+        if result > tops.len() {
+            return -1;
         }
 
-        force = 0;
-        for (i, domino) in dominoes.iter().cloned().enumerate().rev() {
-            if domino == LEFT {
-                force = max_force;
-            } else if domino == RIGHT {
-                force = 0;
-            } else {
-                force = force.max(1) - 1;
+        return result as i32;
+    }
+
+    fn get_count(target: i32, tops: &Vec<i32>, bottoms: &Vec<i32>) -> usize {
+        let mut count1 = 0usize;
+        let mut count2 = 0usize;
+        for (top, bottom) in tops.iter().cloned().zip(bottoms.iter().cloned()) {
+            if (top != target) && (bottom != target) {
+                return tops.len() + 1;
             }
 
-            forces[i] -= force;
-        }
+            if top == target {
+                count1 += 1;
+            }
 
-        let mut result = vec![' '; dominoes_len];
-        for (i, force) in forces.into_iter().enumerate() {
-            if force < 0 {
-                result[i] = LEFT;
-            } else if force > 0 {
-                result[i] = RIGHT;
-            } else {
-                result[i] = STAND;
+            if bottom == target {
+                count2 += 1;
             }
         }
 
-        return result.iter().collect();
+        return tops.len() - count1.max(count2);
     }
 }
 
 struct Input {
-    dominoes: String,
+    tops: Vec<i32>,
+    bottoms: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            dominoes: "RR.L".to_string(),
+            tops: vec![2, 1, 2, 4, 2, 2],
+            bottoms: vec![5, 2, 6, 2, 3, 2],
         },
         Input {
-            dominoes: ".L.R...LR..L..".to_string(),
+            tops: vec![3, 5, 1, 2, 3],
+            bottoms: vec![3, 6, 3, 3, 4],
         },
     ];
 
     for input in inputs {
-        let result = Solution::push_dominoes(input.dominoes);
+        let result = Solution::min_domino_rotations(input.tops, input.bottoms);
         println!("{result:?}");
     }
 }
