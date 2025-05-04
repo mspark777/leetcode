@@ -1,58 +1,47 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_domino_rotations(tops: Vec<i32>, bottoms: Vec<i32>) -> i32 {
-        let top = Self::get_count(tops[0], &tops, &bottoms);
-        let bottom = Self::get_count(bottoms[0], &tops, &bottoms);
-        let result = top.min(bottom);
+    pub fn num_equiv_domino_pairs(dominoes: Vec<Vec<i32>>) -> i32 {
+        let mut nums = vec![0; 100];
+        let mut result = 0;
 
-        if result > tops.len() {
-            return -1;
+        for domino in dominoes.iter() {
+            let a = domino[0];
+            let b = domino[1];
+            let num = (if a < b { a * 10 + b } else { b * 10 + a }) as usize;
+
+            result += nums[num];
+            nums[num] += 1;
         }
 
-        return result as i32;
-    }
-
-    fn get_count(target: i32, tops: &Vec<i32>, bottoms: &Vec<i32>) -> usize {
-        let mut count1 = 0usize;
-        let mut count2 = 0usize;
-        for (top, bottom) in tops.iter().cloned().zip(bottoms.iter().cloned()) {
-            if (top != target) && (bottom != target) {
-                return tops.len() + 1;
-            }
-
-            if top == target {
-                count1 += 1;
-            }
-
-            if bottom == target {
-                count2 += 1;
-            }
-        }
-
-        return tops.len() - count1.max(count2);
+        return result;
     }
 }
 
 struct Input {
-    tops: Vec<i32>,
-    bottoms: Vec<i32>,
+    dominoes: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            tops: vec![2, 1, 2, 4, 2, 2],
-            bottoms: vec![5, 2, 6, 2, 3, 2],
+            dominoes: [[1, 2], [2, 1], [3, 4], [5, 6]]
+                .to_vec()
+                .iter()
+                .map(|s| s.to_vec())
+                .collect(),
         },
         Input {
-            tops: vec![3, 5, 1, 2, 3],
-            bottoms: vec![3, 6, 3, 3, 4],
+            dominoes: [[1, 2], [1, 2], [1, 1], [1, 2], [2, 2]]
+                .to_vec()
+                .iter()
+                .map(|s| s.to_vec())
+                .collect(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_domino_rotations(input.tops, input.bottoms);
+        let result = Solution::num_equiv_domino_pairs(input.dominoes);
         println!("{result:?}");
     }
 }
