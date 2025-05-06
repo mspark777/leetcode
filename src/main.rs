@@ -1,37 +1,34 @@
 struct Solution {}
 
 impl Solution {
-    pub fn num_tilings(n: i32) -> i32 {
-        if n < 3 {
-            return n;
+    pub fn build_array(nums: Vec<i32>) -> Vec<i32> {
+        let mut result = vec![0; nums.len()];
+
+        for (i, num) in nums.iter().cloned().enumerate() {
+            let j = num as usize;
+            result[i] = nums[j];
         }
 
-        let n = n as i64;
-        const MOD: i64 = 1_000_000_007;
-        let mut ways_prev1 = 2i64;
-        let mut ways_prev2 = 1i64;
-        let mut tromino_sum = 1i64;
-
-        for _ in 3..=n {
-            let current = (ways_prev1 + ways_prev2 + 2 * tromino_sum) % MOD;
-            tromino_sum = (tromino_sum + ways_prev2) % MOD;
-            ways_prev2 = ways_prev1;
-            ways_prev1 = current;
-        }
-
-        return ways_prev1 as i32;
+        return result;
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = vec![Input { n: 3 }, Input { n: 1 }];
+    let inputs = vec![
+        Input {
+            nums: vec![0, 2, 1, 5, 3, 4],
+        },
+        Input {
+            nums: vec![5, 0, 1, 2, 3, 4],
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::num_tilings(input.n);
+        let result = Solution::build_array(input.nums);
         println!("{result:?}");
     }
 }
