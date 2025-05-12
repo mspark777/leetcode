@@ -1,62 +1,65 @@
 import "@total-typescript/ts-reset";
 
-class TreeNode {
-  val: number;
-  left: TreeNode | null;
-  right: TreeNode | null;
-  constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-    this.val = val === undefined ? 0 : val;
-    this.left = left === undefined ? null : left;
-    this.right = right === undefined ? null : right;
-  }
+function div(l: number, r: number): number {
+  return Number(BigInt(l) / BigInt(r));
 }
 
-function dfs(root: TreeNode | null): [TreeNode | null, number] {
-  if (root == null) {
-    return [null, 0];
+function findEvenNumbers(digits: number[]): number[] {
+  const frequencies = new Map<number, number>();
+  const result: number[] = [];
+
+  for (const digit of digits) {
+    frequencies.set(digit, (frequencies.get(digit) ?? 0) + 1);
   }
 
-  const [left, leftDepth] = dfs(root.left);
-  const [right, rightDepth] = dfs(root.right);
+  for (let i = 100; i < 1000; i += 2) {
+    const unit = i % 10;
+    const ten = div(i, 10) % 10;
+    const hundred = div(i, 100);
 
-  if (leftDepth > rightDepth) {
-    return [left, leftDepth + 1];
-  } else if (leftDepth < rightDepth) {
-    return [right, rightDepth + 1];
+    frequencies.set(unit, (frequencies.get(unit) ?? 0) - 1);
+    frequencies.set(ten, (frequencies.get(ten) ?? 0) - 1);
+    frequencies.set(hundred, (frequencies.get(hundred) ?? 0) - 1);
+
+    const unit_frequency = frequencies.get(unit) as number;
+    const ten_frequency = frequencies.get(ten) as number;
+    const hundred_frequency = frequencies.get(hundred) as number;
+
+    const ok = [unit_frequency, ten_frequency, hundred_frequency].every(
+      f => f >= 0,
+    );
+
+    if (ok) {
+      result.push(i);
+    }
+
+    frequencies.set(unit, (frequencies.get(unit) ?? 0) + 1);
+    frequencies.set(ten, (frequencies.get(ten) ?? 0) + 1);
+    frequencies.set(hundred, (frequencies.get(hundred) ?? 0) + 1);
   }
 
-  return [root, leftDepth + 1];
-}
-
-function lcaDeepestLeaves(root: TreeNode | null): TreeNode | null {
-  const [node] = dfs(root);
-  return node;
+  return result;
 }
 
 interface Input {
-  points: number[][];
+  digits: number[];
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      points: [
-        [1, 1],
-        [2, 3],
-        [3, 2],
-      ],
+      digits: [2, 1, 3, 0],
     },
     {
-      points: [
-        [1, 1],
-        [2, 2],
-        [3, 3],
-      ],
+      digits: [2, 2, 8, 8, 2],
+    },
+    {
+      digits: [3, 7, 5],
     },
   ];
 
   for (const input of inputs) {
-    const result = isBoomerang(input.points);
+    const result = findEvenNumbers(input.digits);
     console.log(result);
   }
 }
