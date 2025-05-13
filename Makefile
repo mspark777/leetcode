@@ -15,3 +15,6 @@ sh:
 
 rs:
 	@cargo run
+
+py:
+	@python src/py/main.py
