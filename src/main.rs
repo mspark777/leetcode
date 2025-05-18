@@ -1,51 +1,91 @@
 struct Solution {}
 
 impl Solution {
-    pub fn sort_colors(nums: &mut Vec<i32>) {
-        let mut low = 0usize;
-        let mut mid = 0usize;
-        let mut high = nums.len() - 1;
+    pub fn color_the_grid(m: i32, n: i32) -> i32 {
+        use std::collections::HashMap;
 
-        while mid <= high {
-            if nums[mid] == 0 {
-                let temp = nums[low];
-                nums[low] = nums[mid];
-                nums[mid] = temp;
-                low += 1;
-                mid += 1;
-            } else if nums[mid] == 1 {
-                mid += 1;
-            } else {
-                let temp = nums[mid];
-                nums[mid] = nums[high];
-                nums[high] = temp;
-                if high > 1 {
-                    high -= 1;
-                } else {
+        const MOD: i32 = 1_000_000_007;
+        let m = m as usize;
+        let n = n as usize;
+        let mut valid = HashMap::<i32, Vec<i32>>::new();
+        let mask_end = 3i32.pow(m as u32);
+        for mask in 0..mask_end {
+            let mut color = Vec::<i32>::new();
+            let mut mm = mask;
+            for _ in 0..m {
+                color.push(mm % 3);
+                mm /= 3;
+            }
+            let mut check = true;
+            for i in 0..m - 1 {
+                if color[i] == color[i + 1] {
+                    check = false;
                     break;
                 }
             }
+            if check {
+                valid.insert(mask, color);
+            }
         }
+
+        let mut adjacent = HashMap::<i32, Vec<i32>>::new();
+        for (&mask1, color1) in &valid {
+            for (&mask2, color2) in &valid {
+                let mut check = true;
+                for i in 0..m {
+                    if color1[i] == color2[i] {
+                        check = false;
+                        break;
+                    }
+                }
+
+                if check {
+                    adjacent.entry(mask1).or_insert(Vec::new()).push(mask2);
+                }
+            }
+        }
+        let mut f = HashMap::<i32, i32>::new();
+        for &mask in valid.keys() {
+            f.insert(mask, 1);
+        }
+
+        for _ in 1..n {
+            let mut g = HashMap::<i32, i32>::new();
+            for &mask2 in valid.keys() {
+                let mut total = 0;
+                if let Some(list) = adjacent.get(&mask2) {
+                    for &mask1 in list {
+                        total = (total + f.get(&mask1).unwrap_or(&0)) % MOD;
+                    }
+                }
+                g.insert(mask2, total);
+            }
+            f = g;
+        }
+
+        let mut result = 0;
+        for &num in f.values() {
+            result = (result + num) % MOD;
+        }
+
+        return result;
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    m: i32,
+    n: i32,
 }
 
 fn main() {
     let inputs = vec![
-        Input {
-            nums: vec![2, 0, 2, 1, 1, 0],
-        },
-        Input {
-            nums: vec![2, 0, 1],
-        },
-        Input { nums: vec![2] },
+        Input { m: 1, n: 1 },
+        Input { m: 1, n: 2 },
+        Input { m: 5, n: 5 },
     ];
 
-    for mut input in inputs {
-        Solution::sort_colors(&mut input.nums);
-        println!("{:?}", input.nums);
+    for input in inputs {
+        let result = Solution::color_the_grid(input.m, input.n);
+        println!("{:?}", result);
     }
 }
