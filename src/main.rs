@@ -1,38 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn triangle_type(nums: Vec<i32>) -> String {
-        let mut nums = nums.clone();
-        nums.sort_unstable();
-
-        if (nums[0] + nums[1]) <= nums[2] {
-            return "none".to_string();
-        } else if nums[0] == nums[2] {
-            return "equilateral".to_string();
-        } else if (nums[0] == nums[1]) || (nums[1] == nums[2]) {
-            return "isosceles".to_string();
+    pub fn is_zero_array(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> bool {
+        let mut delta_array = vec![0; nums.len() + 1];
+        for query in queries.iter() {
+            let left = query[0] as usize;
+            let right = query[1] as usize;
+            delta_array[left] += 1;
+            delta_array[right + 1] -= 1;
         }
 
-        return "scalene".to_string();
+        let mut operation_counts = vec![0; delta_array.len()];
+        let mut current_operations = 0;
+        for (i, delta) in delta_array.iter().cloned().enumerate() {
+            current_operations += delta;
+            operation_counts[i] = current_operations;
+        }
+
+        for (num, operation_count) in nums.iter().cloned().zip(operation_counts.iter().cloned()) {
+            if operation_count < num {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
 struct Input {
     nums: Vec<i32>,
+    queries: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![3, 3, 3],
+            nums: vec![1, 0, 1],
+            queries: vec![vec![0, 2]],
         },
         Input {
-            nums: vec![3, 4, 5],
+            nums: vec![4, 3, 2, 1],
+            queries: vec![vec![1, 3], vec![0, 2]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::triangle_type(input.nums);
+        let result = Solution::is_zero_array(input.nums, input.queries);
         println!("{:?}", result);
     }
 }
