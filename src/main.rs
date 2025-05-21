@@ -1,51 +1,65 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_zero_array(nums: Vec<i32>, queries: Vec<Vec<i32>>) -> bool {
-        let mut delta_array = vec![0; nums.len() + 1];
-        for query in queries.iter() {
-            let left = query[0] as usize;
-            let right = query[1] as usize;
-            delta_array[left] += 1;
-            delta_array[right + 1] -= 1;
-        }
+    pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
+        let n = matrix.len();
+        let m = matrix[0].len();
+        let mut fr = false;
+        let mut fc = false;
 
-        let mut operation_counts = vec![0; delta_array.len()];
-        let mut current_operations = 0;
-        for (i, delta) in delta_array.iter().cloned().enumerate() {
-            current_operations += delta;
-            operation_counts[i] = current_operations;
-        }
+        for r in 0..n {
+            for c in 0..m {
+                if matrix[r][c] != 0 {
+                    continue;
+                }
 
-        for (num, operation_count) in nums.iter().cloned().zip(operation_counts.iter().cloned()) {
-            if operation_count < num {
-                return false;
+                fr = if fr { true } else { r == 0 };
+                fc = if fc { true } else { c == 0 };
+                matrix[0][c] = 0;
+                matrix[r][0] = 0;
             }
         }
 
-        return true;
+        for r in 1..n {
+            for c in 1..m {
+                if matrix[r][0] == 0 {
+                    matrix[r][c] = 0;
+                } else if matrix[0][c] == 0 {
+                    matrix[r][c] = 0;
+                }
+            }
+        }
+
+        if fr {
+            for c in 0..m {
+                matrix[0][c] = 0;
+            }
+        }
+
+        if fc {
+            for r in 0..n {
+                matrix[r][0] = 0;
+            }
+        }
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    queries: Vec<Vec<i32>>,
+    matrix: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: vec![1, 0, 1],
-            queries: vec![vec![0, 2]],
+            matrix: vec![vec![1, 1, 1], vec![1, 0, 1], vec![1, 1, 1]],
         },
         Input {
-            nums: vec![4, 3, 2, 1],
-            queries: vec![vec![1, 3], vec![0, 2]],
+            matrix: vec![vec![0, 1, 2, 0], vec![3, 4, 5, 2], vec![1, 3, 1, 5]],
         },
     ];
 
-    for input in inputs {
-        let result = Solution::is_zero_array(input.nums, input.queries);
-        println!("{:?}", result);
+    for mut input in inputs {
+        Solution::set_zeroes(&mut input.matrix);
+        println!("{:?}", input.matrix);
     }
 }
