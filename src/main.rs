@@ -1,64 +1,89 @@
 struct Solution {}
 
 impl Solution {
-    fn dfs(node: i32, edges: &Vec<i32>, dist: &mut Vec<i32>, visit: &mut Vec<bool>) {
-        let node = node as usize;
-        visit[node] = true;
-        let neighbor = edges[node];
-        if (neighbor != -1) && !visit[neighbor as usize] {
-            dist[neighbor as usize] = 1 + dist[node];
-            Self::dfs(neighbor, edges, dist, visit);
-        }
-    }
+    pub fn snakes_and_ladders(board: Vec<Vec<i32>>) -> i32 {
+        let n = board.len();
+        let mut min_rolls = vec![-1; n * n + 1];
+        let mut queue = std::collections::VecDeque::<i32>::new();
 
-    pub fn closest_meeting_node(edges: Vec<i32>, node1: i32, node2: i32) -> i32 {
-        let n = edges.len();
-        let mut dist1 = vec![i32::MAX; n];
-        let mut dist2 = vec![i32::MAX; n];
-        let mut visit1 = vec![false; n];
-        let mut visit2 = vec![false; n];
+        min_rolls[1] = 0;
+        queue.push_back(1);
 
-        dist1[node1 as usize] = 0;
-        dist2[node2 as usize] = 0;
-        Self::dfs(node1, &edges, &mut dist1, &mut visit1);
-        Self::dfs(node2, &edges, &mut dist2, &mut visit2);
+        while let Some(x) = queue.pop_front() {
+            for i in 1..=6 {
+                let n = n as i32;
+                if (x + i) > (n * n) {
+                    break;
+                }
 
-        let mut min_dist_node = -1;
-        let mut min_dist_till_now = i32::MAX;
+                let t = x + i;
+                let row = (t - 1) / n;
+                let col = (t - 1) % n;
+                let v = if row & 1 == 1 {
+                    board[(n - 1 - row) as usize][(n - 1 - col) as usize]
+                } else {
+                    board[(n - 1 - row) as usize][col as usize]
+                };
 
-        for curr_node in 0..n {
-            if min_dist_till_now > dist1[curr_node].max(dist2[curr_node]) {
-                min_dist_node = curr_node as i32;
-                min_dist_till_now = dist1[curr_node].max(dist2[curr_node]);
+                let y = if v > 0 { v } else { t };
+
+                if y == n * n {
+                    return min_rolls[x as usize] + 1;
+                }
+
+                if min_rolls[y as usize] == -1 {
+                    min_rolls[y as usize] = min_rolls[x as usize] + 1;
+                    queue.push_back(y);
+                }
             }
         }
 
-        return min_dist_node;
+        return -1;
     }
 }
 
 struct Input {
-    edges: Vec<i32>,
-    node1: i32,
-    node2: i32,
+    board: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            edges: vec![2, 2, 3, -1],
-            node1: 0,
-            node2: 1,
+            board: vec![
+                vec![-1, -1, -1, -1, -1, -1],
+                vec![-1, -1, -1, -1, -1, -1],
+                vec![-1, -1, -1, -1, -1, -1],
+                vec![-1, 35, -1, -1, 13, -1],
+                vec![-1, -1, -1, -1, -1, -1],
+                vec![-1, 15, -1, -1, -1, -1],
+            ],
         },
         Input {
-            edges: vec![1, 2, -1],
-            node1: 0,
-            node2: 2,
+            board: vec![vec![-1, -1], vec![-1, 3]],
+        },
+        Input {
+            board: vec![
+                vec![-1, 1, 2, -1],
+                vec![2, 13, 15, -1],
+                vec![-1, 10, -1, -1],
+                vec![-1, 6, 2, 8],
+            ],
+        },
+        Input {
+            board: vec![
+                vec![-1, -1, 27, 13, -1, 25, -1],
+                vec![-1, -1, -1, -1, -1, -1, -1],
+                vec![44, -1, 8, -1, -1, 2, -1],
+                vec![-1, 30, -1, -1, -1, -1, -1],
+                vec![3, -1, 20, -1, 46, 6, -1],
+                vec![-1, -1, -1, -1, -1, -1, 29],
+                vec![-1, 29, 21, 33, -1, -1, -1],
+            ],
         },
     ];
 
     for input in inputs {
-        let result = Solution::closest_meeting_node(input.edges, input.node1, input.node2);
+        let result = Solution::snakes_and_ladders(input.board);
         println!("{:?}", result);
     }
 }
