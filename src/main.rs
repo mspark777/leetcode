@@ -1,62 +1,76 @@
 struct Solution {}
 
 impl Solution {
-    pub fn answer_string(word: String, num_friends: i32) -> String {
-        if num_friends == 1 {
-            return word;
+    pub fn smallest_equivalent_string(s1: String, s2: String, base_str: String) -> String {
+        let mut parents = (0..26usize).map(|i| i).collect::<Vec<_>>();
+
+        for (c1, c2) in s1.chars().zip(s2.chars()) {
+            let u = (c1 as u8 - b'a') as usize;
+            let v = (c2 as u8 - b'a') as usize;
+
+            let pu = Self::find(&mut parents, u);
+            let pv = Self::find(&mut parents, v);
+
+            if pu < pv {
+                parents[pv] = pu;
+            } else {
+                parents[pu] = pv;
+            }
         }
 
-        let num_friends = num_friends as usize;
-        let n = word.len();
-        let last = Self::last_substring(&word);
-        let m = last.len();
-        let len = m.min(n - num_friends + 1);
-        return last[..len].to_string();
+        return base_str
+            .chars()
+            .map(|c| Self::convert(&mut parents, c))
+            .collect();
     }
 
-    fn last_substring(s: &String) -> String {
-        let chars = s.chars().collect::<Vec<_>>();
-        let n = chars.len();
-        let mut i = 0usize;
-        let mut j = 1usize;
-        while j < n {
-            let mut k = 0usize;
-            while j + k < n && chars[i + k] == chars[j + k] {
-                k += 1;
-            }
-
-            if j + k < n && chars[i + k] < chars[j + k] {
-                let t = i;
-                i = j;
-                j = (j + 1).max(t + k + 1);
-            } else {
-                j = j + k + 1;
-            }
+    fn find(parents: &mut Vec<usize>, i: usize) -> usize {
+        if parents[i] != i {
+            parents[i] = Self::find(parents, parents[i]);
         }
 
-        return chars[i..].iter().collect();
+        return parents[i];
+    }
+
+    fn convert(parents: &mut Vec<usize>, c: char) -> char {
+        let a = b'a';
+        let u = ((c as u8) - a) as usize;
+        let pu = Self::find(parents, u) as u8;
+        return (pu + a) as char;
     }
 }
 
 struct Input {
-    word: &'static str,
-    num_friends: i32,
+    s1: &'static str,
+    s2: &'static str,
+    base_str: &'static str,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            word: "dbca",
-            num_friends: 2,
+            s1: "parker",
+            s2: "morris",
+            base_str: "parser",
         },
         Input {
-            word: "gggg",
-            num_friends: 4,
+            s1: "hello",
+            s2: "world",
+            base_str: "hold",
+        },
+        Input {
+            s1: "leetcode",
+            s2: "programs",
+            base_str: "sourcecode",
         },
     ];
 
     for input in inputs {
-        let result = Solution::answer_string(input.word.to_string(), input.num_friends);
+        let result = Solution::smallest_equivalent_string(
+            input.s1.to_string(),
+            input.s2.to_string(),
+            input.base_str.to_string(),
+        );
         println!("{:?}", result);
     }
 }
