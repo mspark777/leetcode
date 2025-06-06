@@ -1,76 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn smallest_equivalent_string(s1: String, s2: String, base_str: String) -> String {
-        let mut parents = (0..26usize).map(|i| i).collect::<Vec<_>>();
+    pub fn robot_with_string(s: String) -> String {
+        let mut counts = vec![0; 26];
+        let mut s_len = 0usize;
+        for c in s.chars() {
+            let c = c as u8;
+            let a = b'a';
+            let i = (c - a) as usize;
+            counts[i] += 1;
+            s_len += 1;
+        }
 
-        for (c1, c2) in s1.chars().zip(s2.chars()) {
-            let u = (c1 as u8 - b'a') as usize;
-            let v = (c2 as u8 - b'a') as usize;
+        let mut stack = Vec::<u8>::with_capacity(s_len);
+        let mut result = Vec::<char>::with_capacity(s_len);
+        let mut min_char = b'a';
+        for c in s.chars() {
+            let c = c as u8;
+            stack.push(c);
+            counts[(c - b'a') as usize] -= 1;
+            while min_char != b'z' && counts[(min_char - b'a') as usize] == 0 {
+                min_char += 1;
+            }
 
-            let pu = Self::find(&mut parents, u);
-            let pv = Self::find(&mut parents, v);
-
-            if pu < pv {
-                parents[pv] = pu;
-            } else {
-                parents[pu] = pv;
+            while let Some(&ch) = stack.last() {
+                if ch <= min_char {
+                    result.push(ch as char);
+                    stack.pop();
+                } else {
+                    break;
+                }
             }
         }
 
-        return base_str
-            .chars()
-            .map(|c| Self::convert(&mut parents, c))
-            .collect();
-    }
-
-    fn find(parents: &mut Vec<usize>, i: usize) -> usize {
-        if parents[i] != i {
-            parents[i] = Self::find(parents, parents[i]);
-        }
-
-        return parents[i];
-    }
-
-    fn convert(parents: &mut Vec<usize>, c: char) -> char {
-        let a = b'a';
-        let u = ((c as u8) - a) as usize;
-        let pu = Self::find(parents, u) as u8;
-        return (pu + a) as char;
+        return result.iter().collect();
     }
 }
 
 struct Input {
-    s1: &'static str,
-    s2: &'static str,
-    base_str: &'static str,
+    s: &'static str,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            s1: "parker",
-            s2: "morris",
-            base_str: "parser",
-        },
-        Input {
-            s1: "hello",
-            s2: "world",
-            base_str: "hold",
-        },
-        Input {
-            s1: "leetcode",
-            s2: "programs",
-            base_str: "sourcecode",
-        },
-    ];
+    let inputs = vec![Input { s: "zza" }, Input { s: "bac" }, Input { s: "bdda" }];
 
     for input in inputs {
-        let result = Solution::smallest_equivalent_string(
-            input.s1.to_string(),
-            input.s2.to_string(),
-            input.base_str.to_string(),
-        );
+        let result = Solution::robot_with_string(input.s.to_string());
         println!("{:?}", result);
     }
 }
