@@ -1,39 +1,29 @@
 struct Solution {}
 
 impl Solution {
-    pub fn robot_with_string(s: String) -> String {
-        let mut counts = vec![0; 26];
-        let mut s_len = 0usize;
-        for c in s.chars() {
-            let c = c as u8;
-            let a = b'a';
-            let i = (c - a) as usize;
-            counts[i] += 1;
-            s_len += 1;
-        }
+    pub fn clear_stars(s: String) -> String {
+        let mut counts: Vec<Vec<usize>> = vec![vec![]; 26];
+        let mut chars = s.chars().collect::<Vec<_>>();
+        let mut indices = Vec::<usize>::new();
 
-        let mut stack = Vec::<u8>::with_capacity(s_len);
-        let mut result = Vec::<char>::with_capacity(s_len);
-        let mut min_char = b'a';
-        for c in s.chars() {
-            let c = c as u8;
-            stack.push(c);
-            counts[(c - b'a') as usize] -= 1;
-            while min_char != b'z' && counts[(min_char - b'a') as usize] == 0 {
-                min_char += 1;
-            }
-
-            while let Some(&ch) = stack.last() {
-                if ch <= min_char {
-                    result.push(ch as char);
-                    stack.pop();
-                } else {
-                    break;
+        for (i, ch) in chars.iter().cloned().enumerate() {
+            if ch != '*' {
+                counts[((ch as u8) - b'a') as usize].push(i);
+            } else {
+                for j in 0..26 {
+                    if let Some(idx) = counts[j].pop() {
+                        indices.push(idx);
+                        break;
+                    }
                 }
             }
         }
 
-        return result.iter().collect();
+        for i in indices {
+            chars[i] = '*';
+        }
+
+        return chars.iter().cloned().filter(|&c| c != '*').collect();
     }
 }
 
@@ -42,10 +32,10 @@ struct Input {
 }
 
 fn main() {
-    let inputs = vec![Input { s: "zza" }, Input { s: "bac" }, Input { s: "bdda" }];
+    let inputs = vec![Input { s: "aaba*" }, Input { s: "abc" }];
 
     for input in inputs {
-        let result = Solution::robot_with_string(input.s.to_string());
+        let result = Solution::clear_stars(input.s.to_string());
         println!("{:?}", result);
     }
 }
