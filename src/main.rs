@@ -1,41 +1,41 @@
 struct Solution {}
 
 impl Solution {
-    pub fn clear_stars(s: String) -> String {
-        let mut counts: Vec<Vec<usize>> = vec![vec![]; 26];
-        let mut chars = s.chars().collect::<Vec<_>>();
-        let mut indices = Vec::<usize>::new();
+    pub fn lexical_order(n: i32) -> Vec<i32> {
+        let mut result = vec![0i32; n as usize];
+        let mut cur = 1i32;
+        let mut i = 0usize;
 
-        for (i, ch) in chars.iter().cloned().enumerate() {
-            if ch != '*' {
-                counts[((ch as u8) - b'a') as usize].push(i);
-            } else {
-                for j in 0..26 {
-                    if let Some(idx) = counts[j].pop() {
-                        indices.push(idx);
-                        break;
-                    }
-                }
+        while i < (n as usize) {
+            result[i] = cur;
+
+            if (cur * 10) <= n {
+                cur *= 10;
+                i += 1;
+                continue;
             }
+
+            while ((cur % 10) == 9) || (cur >= n) {
+                cur /= 10;
+            }
+
+            cur += 1;
+            i += 1;
         }
 
-        for i in indices {
-            chars[i] = '*';
-        }
-
-        return chars.iter().cloned().filter(|&c| c != '*').collect();
+        return result;
     }
 }
 
 struct Input {
-    s: &'static str,
+    n: i32,
 }
 
 fn main() {
-    let inputs = vec![Input { s: "aaba*" }, Input { s: "abc" }];
+    let inputs = vec![Input { n: 13 }, Input { n: 2 }];
 
     for input in inputs {
-        let result = Solution::clear_stars(input.s.to_string());
+        let result = Solution::lexical_order(input.n);
         println!("{:?}", result);
     }
 }
