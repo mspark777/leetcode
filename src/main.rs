@@ -1,21 +1,35 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_max_difference(num: i32) -> i32 {
-        let s = num.to_string();
-        let mut max_num = num;
-        for ch in s.chars() {
-            if ch == '9' {
-                continue;
-            } else {
-                max_num = s.replace(ch, "9").parse().unwrap();
+    pub fn max_diff(num: i32) -> i32 {
+        let mut min_num = num.to_string();
+        let mut max_num = min_num.clone();
+        for digit in max_num.chars() {
+            if digit != '9' {
+                max_num = Self::replace(max_num.as_str(), digit, '9');
                 break;
             }
         }
 
-        let first = s.chars().next().unwrap();
-        let min_num = s.replace(first, "0").parse::<i32>().unwrap();
-        max_num - min_num
+        for (i, digit) in min_num.chars().enumerate() {
+            if i == 0 {
+                if digit != '1' {
+                    min_num = Self::replace(min_num.as_str(), digit, '1');
+                    break;
+                }
+            } else {
+                if digit != '0' && digit != min_num.chars().nth(0).unwrap() {
+                    min_num = Self::replace(min_num.as_str(), digit, '0');
+                    break;
+                }
+            }
+        }
+
+        max_num.parse::<i32>().unwrap() - min_num.parse::<i32>().unwrap()
+    }
+
+    fn replace(s: &str, x: char, y: char) -> String {
+        s.chars().map(|c| if c == x { y } else { c }).collect()
     }
 }
 
@@ -24,10 +38,10 @@ struct Input {
 }
 
 fn main() {
-    let inputs = vec![Input { num: 11891 }, Input { num: 90 }];
+    let inputs = vec![Input { num: 555 }, Input { num: 9 }];
 
     for input in inputs {
-        let result = Solution::min_max_difference(input.num);
+        let result = Solution::max_diff(input.num);
         println!("{:?}", result);
     }
 }
