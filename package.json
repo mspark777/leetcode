@@ -21,15 +21,15 @@
     ]
   },
   "devDependencies": {
-    "@eslint/js": "^9.28.0",
+    "@eslint/js": "^9.29.0",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/node": "^22.15.29",
-    "eslint": "^9.28.0",
+    "@types/node": "^22.15.31",
+    "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",
     "globals": "^16.2.0",
     "prettier": "^3.5.3",
-    "tsx": "^4.19.4",
-    "typescript-eslint": "^8.33.0"
+    "tsx": "^4.20.3",
+    "typescript-eslint": "^8.34.0"
   }
 }
