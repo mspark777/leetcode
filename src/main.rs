@@ -1,46 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn partition_array(nums: Vec<i32>, k: i32) -> i32 {
-        let mut nums = nums;
-        nums.sort_unstable();
+    pub fn max_distance(s: String, k: i32) -> i32 {
+        s.chars()
+            .enumerate()
+            .fold(
+                (0i32, 0i32, 0i32),
+                |(latitude, longitude, result), (i, c)| {
+                    let latitude = match c {
+                        'N' => latitude + 1,
+                        'S' => latitude - 1,
+                        _ => latitude,
+                    };
 
-        nums.iter()
-            .skip(1)
-            .fold((1, nums[0]), |(result, prev), &n| {
-                if (n - prev) > k {
-                    (result + 1, n)
-                } else {
-                    (result, prev)
-                }
-            })
-            .0
+                    let longitude = match c {
+                        'E' => longitude + 1,
+                        'W' => longitude - 1,
+                        _ => longitude,
+                    };
+
+                    let j = (i + 1) as i32;
+                    let current = j.min(latitude.abs() + longitude.abs() + k * 2);
+                    (latitude, longitude, result.max(current))
+                },
+            )
+            .2
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: &'static str,
     k: i32,
 }
 
 fn main() {
-    let inputs = vec![
-        Input {
-            nums: vec![3, 6, 1, 2, 5],
-            k: 2,
-        },
-        Input {
-            nums: vec![1, 2, 3],
-            k: 1,
-        },
-        Input {
-            nums: vec![2, 2, 4, 5],
-            k: 0,
-        },
-    ];
+    let inputs = vec![Input { s: "NWSE", k: 1 }, Input { s: "NSWWEW", k: 3 }];
 
     for input in inputs {
-        let result = Solution::partition_array(input.nums, input.k);
+        let result = Solution::max_distance(input.s.to_string(), input.k);
         println!("{:?}", result);
     }
 }
