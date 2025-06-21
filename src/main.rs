@@ -1,43 +1,63 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_distance(s: String, k: i32) -> i32 {
-        s.chars()
-            .enumerate()
-            .fold(
-                (0i32, 0i32, 0i32),
-                |(latitude, longitude, result), (i, c)| {
-                    let latitude = match c {
-                        'N' => latitude + 1,
-                        'S' => latitude - 1,
-                        _ => latitude,
-                    };
+    pub fn minimum_deletions(word: String, k: i32) -> i32 {
+        let mut counts = vec![0; 26];
+        let mut result = 0;
+        for ch in word.chars() {
+            result += 1;
+            let idx = ((ch as u8) - b'a') as usize;
+            counts[idx] += 1;
+        }
 
-                    let longitude = match c {
-                        'E' => longitude + 1,
-                        'W' => longitude - 1,
-                        _ => longitude,
-                    };
+        for a in counts.iter().cloned() {
+            if a < 1 {
+                continue;
+            }
 
-                    let j = (i + 1) as i32;
-                    let current = j.min(latitude.abs() + longitude.abs() + k * 2);
-                    (latitude, longitude, result.max(current))
-                },
-            )
-            .2
+            let mut deleted = 0;
+            for b in counts.iter().cloned() {
+                if b < 1 {
+                    continue;
+                }
+
+                if a > b {
+                    deleted += b;
+                } else if b > (a + k) {
+                    deleted += b - (a + k);
+                }
+            }
+
+            result = result.min(deleted);
+        }
+
+        result
     }
 }
 
 struct Input {
-    s: &'static str,
+    word: &'static str,
     k: i32,
 }
 
 fn main() {
-    let inputs = vec![Input { s: "NWSE", k: 1 }, Input { s: "NSWWEW", k: 3 }];
+    let inputs = vec![
+        Input {
+            word: "aabcaba",
+            k: 0,
+        },
+        Input {
+            word: "dabdcbdcdcd",
+            k: 2,
+        },
+        Input {
+            word: "aaabaaa",
+            k: 2,
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::max_distance(input.s.to_string(), input.k);
+        let result = Solution::minimum_deletions(input.word.to_string(), input.k);
         println!("{:?}", result);
     }
 }
