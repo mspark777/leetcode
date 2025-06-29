@@ -1,78 +1,64 @@
 struct Solution {}
 
 impl Solution {
-    pub fn longest_subsequence_repeated_k(s: String, k: i32) -> String {
-        let mut freq = [0; 26];
-        for ch in s.chars() {
-            freq[(ch as u8 - b'a') as usize] += 1;
+    pub fn num_subseq(nums: Vec<i32>, target: i32) -> i32 {
+        const MOD: i32 = 1_000_000_007;
+        let n = nums.len();
+        let mut nums = nums;
+        nums.sort_unstable();
+        let mut power = vec![1; n];
+        for i in 1..n {
+            power[i] = (power[i - 1] * 2) % MOD;
         }
 
-        let mut candidate: Vec<char> = Vec::new();
-        for i in (0..26).rev() {
-            if freq[i] >= k {
-                candidate.push((b'a' + i as u8) as char);
-            }
-        }
+        let mut left = 0usize;
+        let mut right = n - 1;
+        let mut result = 0;
 
-        let mut q = std::collections::VecDeque::<Vec<char>>::new();
-        for ch in candidate.iter().cloned() {
-            q.push_back(vec![ch]);
-        }
-        let mut result = Vec::<char>::new();
-        while let Some(curr) = q.pop_front() {
-            if curr.len() > result.len() {
-                result = curr.clone();
-            }
-
-            for ch in candidate.iter().cloned() {
-                let mut next = curr.clone();
-                next.push(ch);
-                if Self::is_k_repeated_subsequence(&s, &next, k) {
-                    q.push_back(next);
+        while left <= right {
+            if (nums[left] + nums[right]) <= target {
+                result = (result + power[right - left]) % MOD;
+                left += 1;
+            } else {
+                if right > 0 {
+                    right -= 1;
+                } else {
+                    break;
                 }
             }
         }
 
-        result.iter().collect()
-    }
-
-    fn is_k_repeated_subsequence(s: &str, t: &Vec<char>, k: i32) -> bool {
-        let mut pos = 0;
-        let mut matched = 0;
-        let m = t.len();
-        for ch in s.chars() {
-            if ch == t[pos] {
-                pos += 1;
-                if pos == m {
-                    pos = 0;
-                    matched += 1;
-                    if matched == k {
-                        return true;
-                    }
-                }
-            }
-        }
-        false
+        result
     }
 }
 
 struct Input {
-    s: &'static str,
-    k: i32,
+    nums: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            s: "letsleetcode",
-            k: 2,
+            nums: vec![3, 5, 6, 7],
+            target: 9,
         },
-        Input { s: "bb", k: 2 },
-        Input { s: "ab", k: 2 },
+        Input {
+            nums: vec![3, 3, 6, 8],
+            target: 10,
+        },
+        Input {
+            nums: vec![2, 3, 3, 4, 6, 7],
+            target: 12,
+        },
+        Input {
+            nums: vec![1],
+            target: 1,
+        },
     ];
 
     for input in inputs {
-        let result = Solution::longest_subsequence_repeated_k(input.s.to_string(), input.k);
+        let result = Solution::num_subseq(input.nums, input.target);
         println!("{:?}", result);
     }
 }
