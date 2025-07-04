@@ -1,33 +1,38 @@
 struct Solution {}
 
 impl Solution {
-    pub fn kth_character(k: i32) -> char {
-        let mut result = b'a';
-        let mut k = k;
+    pub fn kth_character(k: i64, operations: Vec<i32>) -> char {
+        let k = (k as u64) - 1;
+        let result = (0..64 - k.leading_zeros())
+            .rev()
+            .fold(0i32, |acc, i| match (k >> i) & 1 {
+                1 => acc + operations[i as usize],
+                _ => acc,
+            });
 
-        while k != 1 {
-            let mut t = 31 - k.leading_zeros();
-            if (1 << t) == k {
-                t -= 1
-            }
-
-            k -= 1 << t;
-            result += 1;
-        }
-
-        result as char
+        (b'a' + (result % 26) as u8) as char
     }
 }
 
 struct Input {
-    k: i32,
+    k: i64,
+    operations: Vec<i32>,
 }
 
 fn main() {
-    let inputs = vec![Input { k: 5 }, Input { k: 10 }];
+    let inputs = vec![
+        Input {
+            k: 5,
+            operations: vec![0, 0, 0],
+        },
+        Input {
+            k: 10,
+            operations: vec![0, 1, 0, 1],
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::kth_character(input.k);
+        let result = Solution::kth_character(input.k, input.operations);
         println!("{:?}", result);
     }
 }
