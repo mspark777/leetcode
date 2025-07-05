@@ -1,38 +1,38 @@
 struct Solution {}
 
 impl Solution {
-    pub fn kth_character(k: i64, operations: Vec<i32>) -> char {
-        let k = (k as u64) - 1;
-        let result = (0..64 - k.leading_zeros())
-            .rev()
-            .fold(0i32, |acc, i| match (k >> i) & 1 {
-                1 => acc + operations[i as usize],
-                _ => acc,
-            });
+    pub fn find_lucky(arr: Vec<i32>) -> i32 {
+        let mut frequencies = std::collections::HashMap::<i32, i32>::new();
+        for num in arr.iter().cloned() {
+            frequencies.entry(num).and_modify(|f| *f += 1).or_insert(1);
+        }
 
-        (b'a' + (result % 26) as u8) as char
+        frequencies.iter().fold(-1, |acc, (&k, &v)| match k == v {
+            true => acc.max(k),
+            _ => acc,
+        })
     }
 }
 
 struct Input {
-    k: i64,
-    operations: Vec<i32>,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            k: 5,
-            operations: vec![0, 0, 0],
+            arr: vec![2, 2, 3, 4],
         },
         Input {
-            k: 10,
-            operations: vec![0, 1, 0, 1],
+            arr: vec![1, 2, 2, 3, 3, 3],
+        },
+        Input {
+            arr: vec![2, 2, 2, 3, 3],
         },
     ];
 
     for input in inputs {
-        let result = Solution::kth_character(input.k, input.operations);
+        let result = Solution::find_lucky(input.arr);
         println!("{:?}", result);
     }
 }
