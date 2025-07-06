@@ -1,4 +1,28 @@
 from collections import deque
+from collections import Counter
+
+
+class FindSumPairs:
+    nums1: list[int]
+    nums2: list[int]
+    counts: dict[int, int]
+
+    def __init__(self, nums1: list[int], nums2: list[int]):
+        self.nums1 = nums1
+        self.nums2 = nums2
+        self.counts = Counter(nums2)
+
+    def add(self, index: int, val: int) -> None:
+        self.counts[self.nums2[index]] -= 1
+        self.nums2[index] += val
+        self.counts[self.nums2[index]] += 1
+
+    def count(self, tot: int) -> int:
+        count = 0
+        for num in self.nums1:
+            count += self.counts[tot - num]
+
+        return count
 
 
 class Solution:
