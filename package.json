@@ -3,33 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start:ts": "tsx src/ts/main.ts",
-    "start:js": "node src/js/main.mjs"
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "prettier": {
-    "overrides": [
-      {
-        "files": "src/**/*.(js|ts)",
-        "options": {
-          "arrowParens": "avoid"
-        }
-      }
-    ]
-  },
   "devDependencies": {
-    "@eslint/js": "^9.30.0",
+    "@eslint/js": "^9.30.1",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/node": "^24.0.8",
-    "eslint": "^9.30.0",
+    "@types/node": "^22.16.0",
+    "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.5.1",
-    "globals": "^16.2.0",
-    "prettier": "^3.6.2",
+    "eslint-plugin-prettier": "^5.4.1",
+    "globals": "^16.3.0",
+    "prettier": "^3.5.3",
     "tsx": "^4.20.3",
-    "typescript-eslint": "^8.35.1"
+    "typescript-eslint": "^8.36.0"
   }
 }
