@@ -1,72 +1,64 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_value(events: Vec<Vec<i32>>, k: i32) -> i32 {
-        let mut events = events;
+    pub fn max_free_time(event_time: i32, k: i32, start_time: Vec<i32>, end_time: Vec<i32>) -> i32 {
+        let n = start_time.len();
         let k = k as usize;
-        let n = events.len();
-        let mut dp = vec![vec![0; n + 1]; k + 1];
+        let mut result = 0;
+        let mut t = 0;
 
-        events.sort_unstable_by_key(|e| e[0]);
-
-        for cur in (0..n).rev() {
-            let next = Self::bsearch(&events, events[cur][1]);
-            for count in 1..=k {
-                dp[count][cur] = dp[count][cur + 1].max(events[cur][2] + dp[count - 1][next]);
-            }
-        }
-
-        dp[k][0]
-    }
-
-    fn bsearch(events: &Vec<Vec<i32>>, target: i32) -> usize {
-        let mut left = 0;
-        let mut right = events.len();
-        while left < right {
-            let mid = (left + right) / 2;
-            if events[mid][0] <= target {
-                left = mid + 1;
+        for i in 0..n {
+            t += end_time[i] - start_time[i];
+            let left = if i <= k - 1 { 0 } else { end_time[i - k] };
+            let right = if i == n - 1 {
+                event_time
             } else {
-                right = mid;
+                start_time[i + 1]
+            };
+
+            result = result.max(right - left - t);
+            if i >= k - 1 {
+                let j = (i + 1) - k;
+                t -= end_time[j] - start_time[j];
             }
         }
 
-        left
+        result
     }
 }
 
 struct Input {
-    events: Vec<Vec<i32>>,
+    event_time: i32,
     k: i32,
+    start_time: Vec<i32>,
+    end_time: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            events: [[1, 2, 4], [3, 4, 3], [2, 3, 1]]
-                .iter()
-                .map(|v| v.to_vec())
-                .collect(),
-            k: 2,
+            event_time: 5,
+            k: 1,
+            start_time: [1, 3].to_vec(),
+            end_time: [2, 4].to_vec(),
         },
         Input {
-            events: [[1, 2, 4], [3, 4, 3], [2, 3, 10]]
-                .iter()
-                .map(|v| v.to_vec())
-                .collect(),
-            k: 2,
+            event_time: 10,
+            k: 1,
+            start_time: [0, 2, 9].to_vec(),
+            end_time: [1, 4, 10].to_vec(),
         },
         Input {
-            events: [[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]]
-                .iter()
-                .map(|v| v.to_vec())
-                .collect(),
-            k: 3,
+            event_time: 5,
+            k: 2,
+            start_time: [0, 1, 2, 3, 4].to_vec(),
+            end_time: [1, 2, 3, 4, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_value(input.events, input.k);
+        let result =
+            Solution::max_free_time(input.event_time, input.k, input.start_time, input.end_time);
         println!("{:?}", result);
     }
 }
