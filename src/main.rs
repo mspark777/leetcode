@@ -1,92 +1,85 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_free_time(event_time: i32, start_time: Vec<i32>, end_time: Vec<i32>) -> i32 {
-        let n = start_time.len();
-        let mut q = vec![false; n];
-        let mut t1 = 0;
-        let mut t2 = 0;
+    pub fn most_booked(n: i32, meetings: Vec<Vec<i32>>) -> i32 {
+        let n = n as usize;
+        let mut meeting_count = vec![0; n];
+        let mut used_rooms =
+            std::collections::BinaryHeap::<std::cmp::Reverse<(usize, usize)>>::new();
+        let mut unused_rooms = std::collections::BinaryHeap::<std::cmp::Reverse<usize>>::from_iter(
+            (0..n).map(|v| std::cmp::Reverse(v)),
+        );
 
-        for i in 0..n {
-            if end_time[i] - start_time[i] <= t1 {
-                q[i] = true;
-            }
-
-            if i == 0 {
-                t1 = t1.max(start_time[i]);
+        let mut meetings = meetings;
+        meetings.sort_unstable_by(|l, r| {
+            if l[0] == r[0] {
+                l[1].cmp(&r[1])
             } else {
-                t1 = t1.max(start_time[i] - end_time[i - 1]);
+                l[0].cmp(&r[0])
+            }
+        });
+
+        for meeting in meetings.iter() {
+            let start = meeting[0] as usize;
+            let end = meeting[1] as usize;
+
+            while let Some(std::cmp::Reverse(top)) = used_rooms.peek() {
+                if top.0 <= start {
+                    let room = top.1;
+                    used_rooms.pop();
+                    unused_rooms.push(std::cmp::Reverse(room));
+                } else {
+                    break;
+                }
             }
 
-            let j = n - (i + 1);
-            if end_time[j] - start_time[j] <= t2 {
-                q[j] = true;
-            }
-
-            if i == 0 {
-                t2 = t2.max(event_time - end_time[j]);
-            } else {
-                t2 = t2.max(start_time[n - i] - end_time[j]);
+            if let Some(std::cmp::Reverse(room)) = unused_rooms.pop() {
+                used_rooms.push(std::cmp::Reverse((end, room)));
+                meeting_count[room] += 1;
+            } else if let Some(std::cmp::Reverse((availability_time, room))) = used_rooms.pop() {
+                used_rooms.push(std::cmp::Reverse((availability_time + end - start, room)));
+                meeting_count[room] += 1;
             }
         }
 
+        let mut max_meeting_count = 0;
         let mut result = 0;
-        for i in 0..n {
-            let left = if i == 0 { 0 } else { end_time[i - 1] };
-            let right = if i == n - 1 {
-                event_time
-            } else {
-                start_time[i + 1]
-            };
-
-            result = if q[i] {
-                result.max(right - left)
-            } else {
-                result.max(right - left - (end_time[i] - start_time[i]))
+        for (i, count) in meeting_count.iter().cloned().enumerate() {
+            if count > max_meeting_count {
+                max_meeting_count = count;
+                result = i as i32;
             }
         }
 
-        result
+        return result;
     }
 }
 
 struct Input {
-    event_time: i32,
-    start_time: Vec<i32>,
-    end_time: Vec<i32>,
+    n: i32,
+    meetings: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            event_time: 5,
-            start_time: [1, 3].to_vec(),
-            end_time: [2, 5].to_vec(),
+            n: 2,
+            meetings: [[0, 10], [1, 5], [2, 7], [3, 4]]
+                .iter()
+                .map(|v| v.to_vec())
+                .collect(),
         },
         Input {
-            event_time: 10,
-            start_time: [0, 7, 9].to_vec(),
-            end_time: [1, 8, 10].to_vec(),
-        },
-        Input {
-            event_time: 10,
-            start_time: [0, 3, 7, 9].to_vec(),
-            end_time: [1, 4, 8, 10].to_vec(),
-        },
-        Input {
-            event_time: 5,
-            start_time: [0, 1, 2, 3, 4].to_vec(),
-            end_time: [1, 2, 3, 4, 5].to_vec(),
-        },
-        Input {
-            event_time: 17,
-            start_time: [6, 9, 16].to_vec(),
-            end_time: [8, 16, 17].to_vec(),
+            n: 3,
+            meetings: [[1, 20], [2, 10], [3, 5], [4, 9], [6, 8]]
+                .iter()
+                .map(|v| v.to_vec())
+                .collect(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_free_time(input.event_time, input.start_time, input.end_time);
+        let result = Solution::most_booked(input.n, input.meetings);
         println!("{:?}", result);
     }
 }
