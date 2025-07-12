@@ -1,85 +1,95 @@
 struct Solution {}
 
 impl Solution {
-    pub fn most_booked(n: i32, meetings: Vec<Vec<i32>>) -> i32 {
-        let n = n as usize;
-        let mut meeting_count = vec![0; n];
-        let mut used_rooms =
-            std::collections::BinaryHeap::<std::cmp::Reverse<(usize, usize)>>::new();
-        let mut unused_rooms = std::collections::BinaryHeap::<std::cmp::Reverse<usize>>::from_iter(
-            (0..n).map(|v| std::cmp::Reverse(v)),
-        );
+    pub fn earliest_and_latest(n: i32, first_player: i32, second_player: i32) -> Vec<i32> {
+        const MAX_N: usize = 30;
+        let mut f = [[[0; MAX_N]; MAX_N]; MAX_N];
+        let mut g = [[[0; MAX_N]; MAX_N]; MAX_N];
 
-        let mut meetings = meetings;
-        meetings.sort_unstable_by(|l, r| {
-            if l[0] == r[0] {
-                l[1].cmp(&r[1])
-            } else {
-                l[0].cmp(&r[0])
-            }
-        });
+        let mut first = first_player as usize;
+        let mut second = second_player as usize;
+        if first > second {
+            let t = first;
+            first = second;
+            second = t;
+        }
+        let (earliest, latest) = Self::dp(n as usize, first, second, &mut f, &mut g);
+        [earliest, latest].to_vec()
+    }
 
-        for meeting in meetings.iter() {
-            let start = meeting[0] as usize;
-            let end = meeting[1] as usize;
+    fn dp(
+        n: usize,
+        first: usize,
+        second: usize,
+        f: &mut [[[i32; 30]; 30]; 30],
+        g: &mut [[[i32; 30]; 30]; 30],
+    ) -> (i32, i32) {
+        if f[n][first][second] != 0 {
+            return (f[n][first][second], g[n][first][second]);
+        }
 
-            while let Some(std::cmp::Reverse(top)) = used_rooms.peek() {
-                if top.0 <= start {
-                    let room = top.1;
-                    used_rooms.pop();
-                    unused_rooms.push(std::cmp::Reverse(room));
-                } else {
-                    break;
+        if first + second == n + 1 {
+            return (1, 1);
+        }
+
+        if first + second > n + 1 {
+            let (x, y) = Self::dp(n, n + 1 - second, n + 1 - first, f, g);
+            f[n][first][second] = x;
+            g[n][first][second] = y;
+            return (x, y);
+        }
+
+        let mut earliest = i32::MAX;
+        let mut latest = i32::MIN;
+        let n_half = (n + 1) / 2;
+        if second <= n_half {
+            for i in 0..first {
+                for j in 0..(second - first) {
+                    let (x, y) = Self::dp(n_half, i + 1, i + j + 2, f, g);
+                    earliest = earliest.min(x);
+                    latest = latest.max(y);
                 }
             }
-
-            if let Some(std::cmp::Reverse(room)) = unused_rooms.pop() {
-                used_rooms.push(std::cmp::Reverse((end, room)));
-                meeting_count[room] += 1;
-            } else if let Some(std::cmp::Reverse((availability_time, room))) = used_rooms.pop() {
-                used_rooms.push(std::cmp::Reverse((availability_time + end - start, room)));
-                meeting_count[room] += 1;
+        } else {
+            let s_prime = n + 1 - second;
+            let mid = (n - 2 * s_prime + 1) / 2;
+            for i in 0..first {
+                for j in 0..(s_prime - first) {
+                    let (x, y) = Self::dp(n_half, i + 1, i + j + mid + 2, f, g);
+                    earliest = earliest.min(x);
+                    latest = latest.max(y);
+                }
             }
         }
-
-        let mut max_meeting_count = 0;
-        let mut result = 0;
-        for (i, count) in meeting_count.iter().cloned().enumerate() {
-            if count > max_meeting_count {
-                max_meeting_count = count;
-                result = i as i32;
-            }
-        }
-
-        return result;
+        f[n][first][second] = earliest + 1;
+        g[n][first][second] = latest + 1;
+        (f[n][first][second], g[n][first][second])
     }
 }
 
 struct Input {
     n: i32,
-    meetings: Vec<Vec<i32>>,
+    first_player: i32,
+    second_player: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 2,
-            meetings: [[0, 10], [1, 5], [2, 7], [3, 4]]
-                .iter()
-                .map(|v| v.to_vec())
-                .collect(),
+            n: 11,
+            first_player: 2,
+            second_player: 4,
         },
         Input {
-            n: 3,
-            meetings: [[1, 20], [2, 10], [3, 5], [4, 9], [6, 8]]
-                .iter()
-                .map(|v| v.to_vec())
-                .collect(),
+            n: 5,
+            first_player: 1,
+            second_player: 5,
         },
     ];
 
     for input in inputs {
-        let result = Solution::most_booked(input.n, input.meetings);
+        let result =
+            Solution::earliest_and_latest(input.n, input.first_player, input.second_player);
         println!("{:?}", result);
     }
 }
