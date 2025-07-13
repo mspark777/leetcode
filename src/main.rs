@@ -1,95 +1,55 @@
 struct Solution {}
 
 impl Solution {
-    pub fn earliest_and_latest(n: i32, first_player: i32, second_player: i32) -> Vec<i32> {
-        const MAX_N: usize = 30;
-        let mut f = [[[0; MAX_N]; MAX_N]; MAX_N];
-        let mut g = [[[0; MAX_N]; MAX_N]; MAX_N];
+    pub fn match_players_and_trainers(players: Vec<i32>, trainers: Vec<i32>) -> i32 {
+        let mut players = players;
+        let mut trainers = trainers;
 
-        let mut first = first_player as usize;
-        let mut second = second_player as usize;
-        if first > second {
-            let t = first;
-            first = second;
-            second = t;
-        }
-        let (earliest, latest) = Self::dp(n as usize, first, second, &mut f, &mut g);
-        [earliest, latest].to_vec()
-    }
+        players.sort_unstable();
+        trainers.sort_unstable();
 
-    fn dp(
-        n: usize,
-        first: usize,
-        second: usize,
-        f: &mut [[[i32; 30]; 30]; 30],
-        g: &mut [[[i32; 30]; 30]; 30],
-    ) -> (i32, i32) {
-        if f[n][first][second] != 0 {
-            return (f[n][first][second], g[n][first][second]);
-        }
+        let mut result = 0;
+        let mut i = 0usize;
+        let mut j = 0usize;
+        let m = players.len();
+        let n = trainers.len();
 
-        if first + second == n + 1 {
-            return (1, 1);
-        }
-
-        if first + second > n + 1 {
-            let (x, y) = Self::dp(n, n + 1 - second, n + 1 - first, f, g);
-            f[n][first][second] = x;
-            g[n][first][second] = y;
-            return (x, y);
-        }
-
-        let mut earliest = i32::MAX;
-        let mut latest = i32::MIN;
-        let n_half = (n + 1) / 2;
-        if second <= n_half {
-            for i in 0..first {
-                for j in 0..(second - first) {
-                    let (x, y) = Self::dp(n_half, i + 1, i + j + 2, f, g);
-                    earliest = earliest.min(x);
-                    latest = latest.max(y);
-                }
+        while (i < m) && (j < n) {
+            while (j < n) && (players[i] > trainers[j]) {
+                j += 1;
             }
-        } else {
-            let s_prime = n + 1 - second;
-            let mid = (n - 2 * s_prime + 1) / 2;
-            for i in 0..first {
-                for j in 0..(s_prime - first) {
-                    let (x, y) = Self::dp(n_half, i + 1, i + j + mid + 2, f, g);
-                    earliest = earliest.min(x);
-                    latest = latest.max(y);
-                }
+
+            if j < n {
+                result += 1;
             }
+
+            i += 1;
+            j += 1;
         }
-        f[n][first][second] = earliest + 1;
-        g[n][first][second] = latest + 1;
-        (f[n][first][second], g[n][first][second])
+
+        result
     }
 }
 
 struct Input {
-    n: i32,
-    first_player: i32,
-    second_player: i32,
+    players: Vec<i32>,
+    trainers: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            n: 11,
-            first_player: 2,
-            second_player: 4,
+            players: [4, 7, 9].to_vec(),
+            trainers: [8, 2, 5, 8].to_vec(),
         },
         Input {
-            n: 5,
-            first_player: 1,
-            second_player: 5,
+            players: [1, 1, 1].to_vec(),
+            trainers: [10].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result =
-            Solution::earliest_and_latest(input.n, input.first_player, input.second_player);
+        let result = Solution::match_players_and_trainers(input.players, input.trainers);
         println!("{:?}", result);
     }
 }
