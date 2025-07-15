@@ -1,55 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn match_players_and_trainers(players: Vec<i32>, trainers: Vec<i32>) -> i32 {
-        let mut players = players;
-        let mut trainers = trainers;
+    pub fn is_valid(word: String) -> bool {
+        let mut has_vowel = false;
+        let mut has_consonant = false;
+        let mut has_invalid = false;
+        let mut len = 0usize;
 
-        players.sort_unstable();
-        trainers.sort_unstable();
-
-        let mut result = 0;
-        let mut i = 0usize;
-        let mut j = 0usize;
-        let m = players.len();
-        let n = trainers.len();
-
-        while (i < m) && (j < n) {
-            while (j < n) && (players[i] > trainers[j]) {
-                j += 1;
+        for ch in word.chars() {
+            len += 1;
+            if ch.is_ascii_alphabetic() {
+                let ch = ch.to_ascii_lowercase();
+                if "aeiou".contains(ch) {
+                    has_vowel = true;
+                } else {
+                    has_consonant = true;
+                }
+            } else if !ch.is_ascii_digit() {
+                has_invalid = true;
+                break;
             }
-
-            if j < n {
-                result += 1;
-            }
-
-            i += 1;
-            j += 1;
         }
 
-        result
+        has_vowel && has_consonant && !has_invalid && len >= 3
     }
 }
 
 struct Input {
-    players: Vec<i32>,
-    trainers: Vec<i32>,
+    word: &'static str,
 }
 
 fn main() {
     let inputs = vec![
-        Input {
-            players: [4, 7, 9].to_vec(),
-            trainers: [8, 2, 5, 8].to_vec(),
-        },
-        Input {
-            players: [1, 1, 1].to_vec(),
-            trainers: [10].to_vec(),
-        },
+        Input { word: "234Adas" },
+        Input { word: "b3" },
+        Input { word: "a3$e" },
     ];
 
     for input in inputs {
-        let result = Solution::match_players_and_trainers(input.players, input.trainers);
+        let result = Solution::is_valid(input.word.to_string());
         println!("{:?}", result);
     }
 }
