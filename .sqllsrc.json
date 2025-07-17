@@ -1,1 +1,13 @@
-{}
+{
+  "connections": [
+    {
+      "name": "postgres",
+      "adapter": "postgres"
+    }
+  ],
+  "lint": {
+    "rules": {
+      "reserved-word-case": ["error", "lower"]
+    }
+  }
+}
