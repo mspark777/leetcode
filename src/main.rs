@@ -1,44 +1,42 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_valid(word: String) -> bool {
-        let mut has_vowel = false;
-        let mut has_consonant = false;
-        let mut has_invalid = false;
-        let mut len = 0usize;
+    pub fn maximum_length(nums: Vec<i32>, k: i32) -> i32 {
+        let k = k as usize;
+        let mut dp = vec![vec![0; k]; k];
+        let mut result = 0;
 
-        for ch in word.chars() {
-            len += 1;
-            if ch.is_ascii_alphabetic() {
-                let ch = ch.to_ascii_lowercase();
-                if "aeiou".contains(ch) {
-                    has_vowel = true;
-                } else {
-                    has_consonant = true;
-                }
-            } else if !ch.is_ascii_digit() {
-                has_invalid = true;
-                break;
+        for num in nums.iter().cloned() {
+            let m = (num % k as i32) as usize;
+            for prev in 0..k {
+                dp[prev][m] = dp[m][prev] + 1;
+                result = result.max(dp[prev][m]);
             }
         }
 
-        has_vowel && has_consonant && !has_invalid && len >= 3
+        result
     }
 }
 
 struct Input {
-    word: &'static str,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = vec![
-        Input { word: "234Adas" },
-        Input { word: "b3" },
-        Input { word: "a3$e" },
+        Input {
+            nums: [1, 2, 3, 4, 5].to_vec(),
+            k: 2,
+        },
+        Input {
+            nums: [1, 4, 2, 3, 1, 4].to_vec(),
+            k: 3,
+        },
     ];
 
     for input in inputs {
-        let result = Solution::is_valid(input.word.to_string());
+        let result = Solution::maximum_length(input.nums, input.k);
         println!("{:?}", result);
     }
 }
