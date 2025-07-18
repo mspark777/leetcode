@@ -1,60 +1,52 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_ocurrences(text: String, first: String, second: String) -> Vec<String> {
-        let mut chunks = text.split(' ');
-        let mut f = if let Some(s) = chunks.next() {
-            s
-        } else {
-            return vec![];
-        };
-        let mut s = if let Some(s) = chunks.next() {
-            s
-        } else {
-            return vec![];
-        };
-
-        let mut result = Vec::<String>::new();
-        for chunk in chunks {
-            if (f == first) && (s == second) {
-                result.push(chunk.to_string());
+    pub fn duplicate_zeros(arr: &mut Vec<i32>) {
+        let mut possible_dups = 0usize;
+        let mut n = arr.len() - 1;
+        let mut left = 0usize;
+        while left <= (n - possible_dups) {
+            if arr[left] == 0 {
+                if left == (n - possible_dups) {
+                    arr[n] = 0;
+                    n -= 1;
+                    break;
+                }
+                possible_dups += 1;
             }
 
-            f = s;
-            s = chunk;
+            left += 1;
         }
 
-        result
+        for i in (0..=(n - possible_dups)).rev() {
+            if arr[i] == 0 {
+                arr[i + possible_dups] = 0;
+                possible_dups -= 1;
+                arr[i + possible_dups] = 0;
+            } else {
+                arr[i + possible_dups] = arr[i];
+            }
+        }
     }
 }
 
 struct Input {
-    text: String,
-    first: String,
-    second: String,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            text: "alice is a good girl she is a good student".to_string(),
-            first: "a".to_string(),
-            second: "good".to_string(),
+            arr: [1, 0, 2, 3, 0, 4, 5, 0].to_vec(),
         },
         Input {
-            text: "we will we will rock you".to_string(),
-            first: "we".to_string(),
-            second: "will".to_string(),
-        },
-        Input {
-            text: "we we we we will rock you".to_string(),
-            first: "we".to_string(),
-            second: "we".to_string(),
+            arr: [1, 2, 3].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_ocurrences(input.text, input.first, input.second);
-        println!("{:?}", result);
+        let mut input = input;
+        Solution::duplicate_zeros(&mut input.arr);
+        println!("{:?}", input.arr);
     }
 }
