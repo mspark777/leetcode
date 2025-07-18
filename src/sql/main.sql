@@ -1,4 +1,6 @@
-select p.product_name as product_name, s.year as year, s.price as price
-from product as p
-join sales as s on p.product_id = s.product_id
+select p.project_id as project_id, round(avg(e.experience_years), 2) as average_years
+from project as p
+join employee as e on p.employee_id = e.employee_id
+group by p.project_id
+;
 
