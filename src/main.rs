@@ -1,17 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_length(nums: Vec<i32>, k: i32) -> i32 {
-        let k = k as usize;
-        let mut dp = vec![vec![0; k]; k];
-        let mut result = 0;
+    pub fn minimum_difference(nums: Vec<i32>) -> i64 {
+        let n3 = nums.len();
+        let n = n3 / 3;
+        let mut part1 = vec![0i64; n + 1];
+        let mut sum = 0i64;
+        let mut max_heap = std::collections::BinaryHeap::<i64>::with_capacity(part1.len());
+        for num in nums.iter().take(n).cloned() {
+            let num = num as i64;
+            sum += num;
+            max_heap.push(num);
+        }
+        part1[0] = sum;
+        for (i, num) in nums.iter().skip(n).take(n).cloned().enumerate() {
+            let num = num as i64;
+            sum += num;
+            max_heap.push(num);
+            sum -= max_heap.pop().unwrap();
+            part1[i + 1] = sum;
+        }
+        let mut part2 = 0i64;
+        let mut min_heap =
+            std::collections::BinaryHeap::<std::cmp::Reverse<i64>>::with_capacity(part1.len());
+        for num in nums.iter().skip(n * 2).take(n).rev().cloned() {
+            let num = num as i64;
+            part2 += num;
+            min_heap.push(std::cmp::Reverse(num));
+        }
 
-        for num in nums.iter().cloned() {
-            let m = (num % k as i32) as usize;
-            for prev in 0..k {
-                dp[prev][m] = dp[m][prev] + 1;
-                result = result.max(dp[prev][m]);
+        let mut result = part1[n] - part2;
+        for (i, num) in nums.iter().skip(n).take(n).cloned().enumerate().rev() {
+            let num = num as i64;
+            part2 += num;
+            min_heap.push(std::cmp::Reverse(num));
+            if let Some(std::cmp::Reverse(val)) = min_heap.pop() {
+                part2 -= val;
             }
+            result = result.min(part1[i] - part2);
         }
 
         result
@@ -20,23 +46,20 @@ impl Solution {
 
 struct Input {
     nums: Vec<i32>,
-    k: i32,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: [1, 2, 3, 4, 5].to_vec(),
-            k: 2,
+            nums: [3, 1, 2].to_vec(),
         },
         Input {
-            nums: [1, 4, 2, 3, 1, 4].to_vec(),
-            k: 3,
+            nums: [7, 9, 5, 8, 1, 3].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_length(input.nums, input.k);
+        let result = Solution::minimum_difference(input.nums);
         println!("{:?}", result);
     }
 }
