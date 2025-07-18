@@ -1,43 +1,27 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_difference(nums: Vec<i32>) -> i64 {
-        let n3 = nums.len();
-        let n = n3 / 3;
-        let mut part1 = vec![0i64; n + 1];
-        let mut sum = 0i64;
-        let mut max_heap = std::collections::BinaryHeap::<i64>::with_capacity(part1.len());
-        for num in nums.iter().take(n).cloned() {
-            let num = num as i64;
-            sum += num;
-            max_heap.push(num);
-        }
-        part1[0] = sum;
-        for (i, num) in nums.iter().skip(n).take(n).cloned().enumerate() {
-            let num = num as i64;
-            sum += num;
-            max_heap.push(num);
-            sum -= max_heap.pop().unwrap();
-            part1[i + 1] = sum;
-        }
-        let mut part2 = 0i64;
-        let mut min_heap =
-            std::collections::BinaryHeap::<std::cmp::Reverse<i64>>::with_capacity(part1.len());
-        for num in nums.iter().skip(n * 2).take(n).rev().cloned() {
-            let num = num as i64;
-            part2 += num;
-            min_heap.push(std::cmp::Reverse(num));
-        }
+    pub fn find_ocurrences(text: String, first: String, second: String) -> Vec<String> {
+        let mut chunks = text.split(' ');
+        let mut f = if let Some(s) = chunks.next() {
+            s
+        } else {
+            return vec![];
+        };
+        let mut s = if let Some(s) = chunks.next() {
+            s
+        } else {
+            return vec![];
+        };
 
-        let mut result = part1[n] - part2;
-        for (i, num) in nums.iter().skip(n).take(n).cloned().enumerate().rev() {
-            let num = num as i64;
-            part2 += num;
-            min_heap.push(std::cmp::Reverse(num));
-            if let Some(std::cmp::Reverse(val)) = min_heap.pop() {
-                part2 -= val;
+        let mut result = Vec::<String>::new();
+        for chunk in chunks {
+            if (f == first) && (s == second) {
+                result.push(chunk.to_string());
             }
-            result = result.min(part1[i] - part2);
+
+            f = s;
+            s = chunk;
         }
 
         result
@@ -45,21 +29,32 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    text: String,
+    first: String,
+    second: String,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            nums: [3, 1, 2].to_vec(),
+            text: "alice is a good girl she is a good student".to_string(),
+            first: "a".to_string(),
+            second: "good".to_string(),
         },
         Input {
-            nums: [7, 9, 5, 8, 1, 3].to_vec(),
+            text: "we will we will rock you".to_string(),
+            first: "we".to_string(),
+            second: "will".to_string(),
+        },
+        Input {
+            text: "we we we we will rock you".to_string(),
+            first: "we".to_string(),
+            second: "we".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_difference(input.nums);
+        let result = Solution::find_ocurrences(input.text, input.first, input.second);
         println!("{:?}", result);
     }
 }
