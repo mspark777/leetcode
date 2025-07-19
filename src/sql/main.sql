@@ -1,7 +1,5 @@
-select s.product_id as product_id, p.product_name as product_name
-from sales as s
-join product as p on s.product_id = p.product_id
-group by s.product_id, p.product_name
-having min(s.sale_date) >= '2019-01-01' and max(s.sale_date) <= '2019-03-31'
-;
+select activity_date as day, count(distinct user_id) as active_users
+from activity
+where activity_date between '2019-06-28' and '2019-07-27'
+group by activity_date
 
