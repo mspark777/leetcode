@@ -1,82 +1,35 @@
-from collections import deque
-from collections import Counter
-
-
-class FindSumPairs:
-    nums1: list[int]
-    nums2: list[int]
-    counts: dict[int, int]
-
-    def __init__(self, nums1: list[int], nums2: list[int]):
-        self.nums1 = nums1
-        self.nums2 = nums2
-        self.counts = Counter(nums2)
-
-    def add(self, index: int, val: int) -> None:
-        self.counts[self.nums2[index]] -= 1
-        self.nums2[index] += val
-        self.counts[self.nums2[index]] += 1
-
-    def count(self, tot: int) -> int:
-        count = 0
-        for num in self.nums1:
-            count += self.counts[tot - num]
-
-        return count
+from typing import List
+import math
 
 
 class Solution:
-    def largestPathValue(self, colors: str, edges: list[list[int]]) -> int:
-        n = len(colors)
-        graph: list[list[int]] = [[] for _ in range(n)]
-        indegree = [0] * n
-        for u, v in edges:
-            graph[u].append(v)
-            indegree[v] += 1
+    def distributeCandies(self, candies: int, num_people: int) -> List[int]:
+        x = int(math.sqrt(candies * 2 + 0.25) - 0.5)
+        result = [0] * num_people
+        for i in range(num_people):
+            m = x // num_people
+            if (x % num_people) > i:
+                m += 1
 
-        dp = [[0] * 26 for _ in range(n)]
-        queue = deque()
-        for i in range(n):
-            if indegree[i] == 0:
-                queue.append(i)
-                dp[i][ord(colors[i]) - ord("a")] = 1
-
-        visited = 0
-        max_color_value = 0
-
-        while queue:
-            u = queue.popleft()
-            visited += 1
-
-            for v in graph[u]:
-                for c in range(26):
-                    dp[v][c] = max(
-                        dp[v][c],
-                        dp[u][c] + (1 if c == ord(colors[v]) - ord("a") else 0),
-                    )
-                indegree[v] -= 1
-                if indegree[v] == 0:
-                    queue.append(v)
-
-            max_color_value = max(max_color_value, max(dp[u]))
-
-        return max_color_value if visited == n else -1
+            result[i] = m * (i + 1) + m * (m - 1) // 2 * num_people
+        result[x % num_people] += candies - x * (x + 1) // 2
+        return result
 
 
 class Input:
-    colors: str
-    edges: list[list[int]]
+    candies: int
+    num_people: int
 
-    def __init__(self, colors: str, edges: list[list[int]]):
-        self.colors = colors
-        self.edges = edges
+    def __init__(self, candies: int, num_people: int):
+        self.candies = candies
+        self.num_people = num_people
 
 
 def main():
-    inputs = [Input("abaca", [[0, 1], [0, 2], [2, 3], [3, 4]]), Input("a", [[0, 0]])]
+    inputs = [Input(7, 4), Input(10, 3)]
 
     for input in inputs:
-        result = Solution().largestPathValue(input.colors, input.edges)
+        result = Solution().distributeCandies(input.candies, input.num_people)
         print(result)
 
 
