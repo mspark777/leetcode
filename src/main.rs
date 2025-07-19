@@ -1,52 +1,45 @@
 struct Solution {}
 
 impl Solution {
-    pub fn duplicate_zeros(arr: &mut Vec<i32>) {
-        let mut possible_dups = 0usize;
-        let mut n = arr.len() - 1;
-        let mut left = 0usize;
-        while left <= (n - possible_dups) {
-            if arr[left] == 0 {
-                if left == (n - possible_dups) {
-                    arr[n] = 0;
-                    n -= 1;
-                    break;
-                }
-                possible_dups += 1;
-            }
+    pub fn remove_subfolders(folder: Vec<String>) -> Vec<String> {
+        let mut folder = folder;
+        folder.sort_unstable();
 
-            left += 1;
-        }
-
-        for i in (0..=(n - possible_dups)).rev() {
-            if arr[i] == 0 {
-                arr[i + possible_dups] = 0;
-                possible_dups -= 1;
-                arr[i + possible_dups] = 0;
-            } else {
-                arr[i + possible_dups] = arr[i];
+        let mut result = vec![folder[0].clone()];
+        for f in folder.iter().skip(1) {
+            let last = format!("{}/", result.last().unwrap());
+            if !f.starts_with(last.as_str()) {
+                result.push(f.clone());
             }
         }
+
+        result
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    folder: Vec<String>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            arr: [1, 0, 2, 3, 0, 4, 5, 0].to_vec(),
+            folder: ["/a", "/a/b", "/c/d", "/c/d/e", "/c/f"]
+                .map(|s| s.to_string())
+                .to_vec(),
         },
         Input {
-            arr: [1, 2, 3].to_vec(),
+            folder: ["/a", "/a/b/c", "/a/b/d"].map(|s| s.to_string()).to_vec(),
+        },
+        Input {
+            folder: ["/a/b/c", "/a/b/ca", "/a/b/d"]
+                .map(|s| s.to_string())
+                .to_vec(),
         },
     ];
 
     for input in inputs {
-        let mut input = input;
-        Solution::duplicate_zeros(&mut input.arr);
-        println!("{:?}", input.arr);
+        let result = Solution::remove_subfolders(input.folder);
+        println!("{:?}", result);
     }
 }

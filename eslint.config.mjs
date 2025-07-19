@@ -3,9 +3,9 @@ import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
-export default [
+export default tseslint.config(
   pluginJs.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
+  tseslint.configs.strictTypeChecked,
   eslintPluginPrettierRecommended,
   {
     files: ["src/**/*.js", "src/**/*.ts"],
@@ -69,4 +69,4 @@ export default [
       "@typescript-eslint/explicit-function-return-type": "error",
     },
   },
-];
+);
