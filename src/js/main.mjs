@@ -1,32 +1,18 @@
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {string[]} words
- * @param {string} pref
- * @return {number}
+ * @param {string} address
+ * @return {string}
  */
-function prefixCount(words, pref) {
-  let result = 0;
-
-  for (const word of words) {
-    const sub = word.slice(0, pref.length);
-    if (sub === pref) {
-      result += 1;
-    }
-  }
-
-  return result;
-}
+var defangIPaddr = function (address) {
+  return address.split(".").join("[.]");
+};
 
 function main() {
-  const inputs = [
-    [["pay", "attention", "practice", "attend"], "at"],
-    [["leetcode", "win", "loops", "success"], "code"],
-  ];
+  const inputs = ["1.1.1.1", "255.100.50.0"];
 
-  for (const [words, pref] of inputs) {
-    const result = prefixCount(words, pref);
+  for (const input of inputs) {
+    const result = defangIPaddr(input);
     console.log(result);
   }
 }

@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start:js": "node src/js/main.mjs",
+    "start:ts": "tsx src/ts/main.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
