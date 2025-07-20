@@ -1,69 +1,47 @@
 package main
 
 import "fmt"
+import "strconv"
 
-func count(n int) int {
-	return (n * (n + 1)) / 2
+func offset(year int) []int {
+	if ((year%4 == 0) && (year%100 != 0)) || (year%400 == 0) {
+		return []int{0, 31, 60, 91, 121, 152,
+			182, 213, 244, 274, 305, 335}
+	}
+
+	return []int{0, 31, 59, 90, 120, 151,
+		181, 212, 243, 273, 304, 334}
 }
 
-func candy(ratings []int) int {
-	ratings_len := len(ratings)
-	if ratings_len < 2 {
-		return ratings_len
-	}
-
-	candies := 0
-	up := 0
-	down := 0
-	old_slope := 0
-
-	for i := 1; i < ratings_len; i += 1 {
-		cur := ratings[i]
-		prev := ratings[i-1]
-		slope := 0
-		if cur > prev {
-			slope = 1
-		} else if cur < prev {
-			slope = -1
-		}
-
-		if ((old_slope > 0) && (slope == 0)) || ((old_slope < 0) && (slope >= 0)) {
-			candies += count(up) + count(down) + max(up, down)
-			up = 0
-			down = 0
-		}
-
-		if slope > 0 {
-			up += 1
-		} else if slope < 0 {
-			down += 1
-		} else {
-			candies += 1
-		}
-
-		old_slope = slope
-	}
-
-	candies += count(up) + count(down) + max(up, down) + 1
-	return candies
+func dayOfYear(date string) int {
+	year, _ := strconv.Atoi(date[0:4])
+	month, _ := strconv.Atoi(date[5:7])
+	day, _ := strconv.Atoi(date[8:])
+	return offset(year)[month-1] + day
 }
 
 type input struct {
-	ratings []int
+	date string
 }
 
 func main() {
 	inputs := []input{
 		{
-			ratings: []int{1, 0, 2},
+			date: "2019-01-09",
 		},
 		{
-			ratings: []int{1, 2, 2},
+			date: "2019-02-10",
+		},
+		{
+			date: "2008-10-10",
+		},
+		{
+			date: "2016-02-09",
 		},
 	}
 
 	for _, input := range inputs {
-		result := candy(input.ratings)
+		result := dayOfYear(input.date)
 		fmt.Println(result)
 	}
 }
