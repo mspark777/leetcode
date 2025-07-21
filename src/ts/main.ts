@@ -1,65 +1,63 @@
 import "@total-typescript/ts-reset";
 
-function div(l: number, r: number): number {
-  return Number(BigInt(l) / BigInt(r));
+function calcIdx(day: number, month: number, year: number): number {
+  const d = BigInt(day);
+  let m = BigInt(month);
+  let y = BigInt(year);
+  if (m < 3n) {
+    m += 12n;
+    y -= 1n;
+  }
+
+  const k = y % 100n;
+  const j = y / 100n;
+
+  const i = (d + (13n * (m + 1n)) / 5n + k + k / 4n + j / 4n + 5n * j) % 7n;
+  return Number(i);
 }
 
-function findEvenNumbers(digits: number[]): number[] {
-  const frequencies = new Map<number, number>();
-  const result: number[] = [];
+function dayOfTheWeek(day: number, month: number, year: number): string {
+  const date = [
+    "Saturday",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+  ];
 
-  for (const digit of digits) {
-    frequencies.set(digit, (frequencies.get(digit) ?? 0) + 1);
-  }
-
-  for (let i = 100; i < 1000; i += 2) {
-    const unit = i % 10;
-    const ten = div(i, 10) % 10;
-    const hundred = div(i, 100);
-
-    frequencies.set(unit, (frequencies.get(unit) ?? 0) - 1);
-    frequencies.set(ten, (frequencies.get(ten) ?? 0) - 1);
-    frequencies.set(hundred, (frequencies.get(hundred) ?? 0) - 1);
-
-    const unit_frequency = frequencies.get(unit) as number;
-    const ten_frequency = frequencies.get(ten) as number;
-    const hundred_frequency = frequencies.get(hundred) as number;
-
-    const ok = [unit_frequency, ten_frequency, hundred_frequency].every(
-      f => f >= 0,
-    );
-
-    if (ok) {
-      result.push(i);
-    }
-
-    frequencies.set(unit, (frequencies.get(unit) ?? 0) + 1);
-    frequencies.set(ten, (frequencies.get(ten) ?? 0) + 1);
-    frequencies.set(hundred, (frequencies.get(hundred) ?? 0) + 1);
-  }
-
-  return result;
+  const idx = calcIdx(day, month, year);
+  return date[idx] as string;
 }
 
 interface Input {
-  digits: number[];
+  day: number;
+  month: number;
+  year: number;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      digits: [2, 1, 3, 0],
+      day: 31,
+      month: 8,
+      year: 2019,
     },
     {
-      digits: [2, 2, 8, 8, 2],
+      day: 18,
+      month: 7,
+      year: 1999,
     },
     {
-      digits: [3, 7, 5],
+      day: 15,
+      month: 8,
+      year: 1993,
     },
   ];
 
   for (const input of inputs) {
-    const result = findEvenNumbers(input.digits);
+    const result = dayOfTheWeek(input.day, input.month, input.year);
     console.log(result);
   }
 }
