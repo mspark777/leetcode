@@ -1,4 +1,8 @@
 {
-  "name": "postgres",
-  "adapter": "postgres"
+  "connections": [
+    {
+      "name": "postgres",
+      "adapter": "postgres"
+    }
+  ]
 }
