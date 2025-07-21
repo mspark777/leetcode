@@ -1,111 +1,49 @@
-use std::collections::HashMap;
-
 struct Solution {}
 
-#[derive(Default)]
-struct Trie {
-    serial: String,
-    children: HashMap<String, Trie>,
-}
-
 impl Solution {
-    pub fn delete_duplicate_folder(paths: Vec<Vec<String>>) -> Vec<Vec<String>> {
-        let mut root = Trie::default();
-        for path in paths.iter() {
-            let mut cur = &mut root;
-            for node in path.iter() {
-                cur = cur.children.entry(node.clone()).or_default();
-            }
+    pub fn max_number_of_balloons(text: String) -> i32 {
+        let mut b_count = 0;
+        let mut a_count = 0;
+        let mut l_count = 0;
+        let mut o_count = 0;
+        let mut n_count = 0;
+
+        for ch in text.chars() {
+            match ch {
+                'b' => b_count += 1,
+                'a' => a_count += 1,
+                'l' => l_count += 1,
+                'o' => o_count += 1,
+                'n' => n_count += 1,
+                _ => (),
+            };
         }
 
-        let mut freq = HashMap::<String, usize>::new();
-        Self::construct(&mut root, &mut freq);
-        let mut result = Vec::<Vec<String>>::new();
-        let mut path = Vec::<String>::new();
-        Self::operate(&root, &freq, &mut path, &mut result);
-
-        result
-    }
-
-    fn construct(node: &mut Trie, freq: &mut HashMap<String, usize>) {
-        if node.children.is_empty() {
-            return;
-        }
-
-        let mut v = Vec::new();
-        for (folder, child) in node.children.iter_mut() {
-            Self::construct(child, freq);
-            v.push(format!("{}({})", folder, child.serial));
-        }
-
-        v.sort();
-        node.serial = v.join("");
-        *freq.entry(node.serial.clone()).or_default() += 1;
-    }
-
-    fn operate(
-        node: &Trie,
-        freq: &HashMap<String, usize>,
-        path: &mut Vec<String>,
-        ans: &mut Vec<Vec<String>>,
-    ) {
-        if freq.get(&node.serial).unwrap_or(&0) > &1 {
-            return;
-        }
-
-        if !path.is_empty() {
-            ans.push(path.clone());
-        }
-
-        for (folder, child) in node.children.iter() {
-            path.push(folder.clone());
-            Self::operate(child, freq, path, ans);
-            path.pop();
-        }
+        l_count /= 2;
+        o_count /= 2;
+        b_count.min(a_count).min(l_count).min(o_count).min(n_count)
     }
 }
 
 struct Input {
-    paths: Vec<Vec<String>>,
+    text: String,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            paths: [
-                vec!["a"],
-                vec!["c"],
-                vec!["d"],
-                vec!["a", "b"],
-                vec!["c", "b"],
-                vec!["d", "a"],
-            ]
-            .map(|path| path.iter().map(|p| p.to_string()).collect())
-            .to_vec(),
+            text: "nlaebolko".to_string(),
         },
         Input {
-            paths: [
-                vec!["a"],
-                vec!["c"],
-                vec!["a", "b"],
-                vec!["c", "b"],
-                vec!["a", "b", "x"],
-                vec!["a", "b", "x", "y"],
-                vec!["w"],
-                vec!["w", "y"],
-            ]
-            .map(|path| path.iter().map(|p| p.to_string()).collect())
-            .to_vec(),
+            text: "loonbalxballpoon".to_string(),
         },
         Input {
-            paths: [vec!["a", "b"], vec!["c", "d"], vec!["c"], vec!["a"]]
-                .map(|path| path.iter().map(|p| p.to_string()).collect())
-                .to_vec(),
+            text: "leetcode".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::delete_duplicate_folder(input.paths);
+        let result = Solution::max_number_of_balloons(input.text);
         println!("{:?}", result);
     }
 }
