@@ -1,63 +1,38 @@
 import "@total-typescript/ts-reset";
 
-function calcIdx(day: number, month: number, year: number): number {
-  const d = BigInt(day);
-  let m = BigInt(month);
-  let y = BigInt(year);
-  if (m < 3n) {
-    m += 12n;
-    y -= 1n;
+function minCostToMoveChips(position: number[]): number {
+  let odd = 0;
+  let even = 0;
+  for (const p of position) {
+    if (p % 2 === 0) {
+      even += 1;
+    } else {
+      odd += 1;
+    }
   }
 
-  const k = y % 100n;
-  const j = y / 100n;
-
-  const i = (d + (13n * (m + 1n)) / 5n + k + k / 4n + j / 4n + 5n * j) % 7n;
-  return Number(i);
-}
-
-function dayOfTheWeek(day: number, month: number, year: number): string {
-  const date = [
-    "Saturday",
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-  ];
-
-  const idx = calcIdx(day, month, year);
-  return date[idx] as string;
+  return Math.min(even, odd);
 }
 
 interface Input {
-  day: number;
-  month: number;
-  year: number;
+  position: number[];
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      day: 31,
-      month: 8,
-      year: 2019,
+      position: [1, 2, 3],
     },
     {
-      day: 18,
-      month: 7,
-      year: 1999,
+      position: [2, 2, 2, 3, 3],
     },
     {
-      day: 15,
-      month: 8,
-      year: 1993,
+      position: [1, 1000000000],
     },
   ];
 
   for (const input of inputs) {
-    const result = dayOfTheWeek(input.day, input.month, input.year);
+    const result = minCostToMoveChips(input.position);
     console.log(result);
   }
 }
