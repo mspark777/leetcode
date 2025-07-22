@@ -1,45 +1,48 @@
 package main
 
 import "fmt"
+import "math"
 
-func makeFancyString(s string) string {
-	chars := []rune(s)
-	n := len(chars)
-	if n < 3 {
-		return s
-	}
-
-	j := 2
-
-	for i := 2; i < n; i += 1 {
-		if chars[i] != chars[j-1] || chars[i] != chars[j-2] {
-			chars[j] = chars[i]
-			j += 1
+func maximumUniqueSubarray(nums []int) int {
+	result := math.MinInt
+	sum := 0
+	visits := make(map[int]int)
+	left := 0
+	right := 0
+	for right < len(nums) {
+		rn := nums[right]
+		if v, ok := visits[rn]; ok {
+			for left <= v {
+				sum -= nums[left]
+				left += 1
+			}
 		}
+
+		sum += rn
+		result = max(result, sum)
+		visits[rn] = right
+		right += 1
 	}
 
-	return string(chars[0:j])
+	return result
 }
 
 type input struct {
-	s string
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "leeetcode",
+			nums: []int{4, 2, 4, 5, 6},
 		},
 		{
-			s: "aaabaaaa",
-		},
-		{
-			s: "aab",
+			nums: []int{5, 2, 1, 2, 5, 2, 1, 2, 5},
 		},
 	}
 
 	for _, input := range inputs {
-		result := makeFancyString(input.s)
+		result := maximumUniqueSubarray(input.nums)
 		fmt.Println(result)
 	}
 }

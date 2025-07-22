@@ -1,49 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_number_of_balloons(text: String) -> i32 {
-        let mut b_count = 0;
-        let mut a_count = 0;
-        let mut l_count = 0;
-        let mut o_count = 0;
-        let mut n_count = 0;
+    pub fn minimum_abs_difference(arr: Vec<i32>) -> Vec<Vec<i32>> {
+        let mut arr = arr;
+        arr.sort_unstable();
 
-        for ch in text.chars() {
-            match ch {
-                'b' => b_count += 1,
-                'a' => a_count += 1,
-                'l' => l_count += 1,
-                'o' => o_count += 1,
-                'n' => n_count += 1,
-                _ => (),
-            };
+        let mut min_diff = i32::MAX;
+        let mut result = Vec::<Vec<i32>>::new();
+        for (left, right) in arr.iter().cloned().zip(arr.iter().skip(1).cloned()) {
+            let diff = right - left;
+            if diff < min_diff {
+                min_diff = diff;
+                result.clear();
+                result.push(vec![left, right]);
+            } else if diff == min_diff {
+                result.push(vec![left, right]);
+            }
         }
 
-        l_count /= 2;
-        o_count /= 2;
-        b_count.min(a_count).min(l_count).min(o_count).min(n_count)
+        result
     }
 }
 
 struct Input {
-    text: String,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            text: "nlaebolko".to_string(),
+            arr: [4, 2, 1, 3].to_vec(),
         },
         Input {
-            text: "loonbalxballpoon".to_string(),
+            arr: [1, 3, 6, 10, 15].to_vec(),
         },
         Input {
-            text: "leetcode".to_string(),
+            arr: [3, 8, -10, 23, 19, -4, -14, 27].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_number_of_balloons(input.text);
+        let result = Solution::minimum_abs_difference(input.arr);
         println!("{:?}", result);
     }
 }
