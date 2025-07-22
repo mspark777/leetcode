@@ -1,46 +1,49 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_abs_difference(arr: Vec<i32>) -> Vec<Vec<i32>> {
-        let mut arr = arr;
-        arr.sort_unstable();
+    pub fn check_straight_line(coordinates: Vec<Vec<i32>>) -> bool {
+        let x0 = coordinates[0][0];
+        let y0 = coordinates[0][1];
+        let x1 = coordinates[1][0];
+        let y1 = coordinates[1][1];
+        let dx0 = x1 - x0;
+        let dy0 = y1 - y0;
 
-        let mut min_diff = i32::MAX;
-        let mut result = Vec::<Vec<i32>>::new();
-        for (left, right) in arr.iter().cloned().zip(arr.iter().skip(1).cloned()) {
-            let diff = right - left;
-            if diff < min_diff {
-                min_diff = diff;
-                result.clear();
-                result.push(vec![left, right]);
-            } else if diff == min_diff {
-                result.push(vec![left, right]);
+        for coordinate in coordinates.iter().skip(2) {
+            let x = coordinate[0];
+            let y = coordinate[1];
+            let dx = x1 - x;
+            let dy = y1 - y;
+
+            if (dy0 * dx) != (dy * dx0) {
+                return false;
             }
         }
 
-        result
+        return true;
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    coordinates: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = vec![
         Input {
-            arr: [4, 2, 1, 3].to_vec(),
+            coordinates: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
         Input {
-            arr: [1, 3, 6, 10, 15].to_vec(),
-        },
-        Input {
-            arr: [3, 8, -10, 23, 19, -4, -14, 27].to_vec(),
+            coordinates: [[1, 1], [2, 2], [3, 4], [4, 5], [5, 6], [7, 7]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_abs_difference(input.arr);
+        let result = Solution::check_straight_line(input.coordinates);
         println!("{:?}", result);
     }
 }
