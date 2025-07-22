@@ -1,34 +1,52 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 /**
- * @param {number[]} distance
- * @param {number} start
- * @param {number} destination
+ * @param {string} s
  * @return {number}
  */
-var distanceBetweenBusStops = function (distance, start, destination) {
-  if (start > destination) {
-    const t = start;
-    start = destination;
-    destination = t;
+var balancedStringSplit = function (s) {
+  let result = 0;
+  let balance = 0;
+
+  for (let c of s) {
+    if (c === "L") {
+      balance -= 1;
+    } else if (c === "R") {
+      balance += 1;
+    }
+
+    if (balance === 0) {
+      result += 1;
+    }
   }
 
-  const clockwise = distance
-    .slice(start, destination)
-    .reduce((acc, i) => acc + i);
-  const total = distance.reduce((acc, i) => acc + i);
-  return Math.min(clockwise, total - clockwise);
+  return result;
 };
 
+/**
+ * @typedef Input
+ * @property {string} s
+ */
+
+/**
+ * @return {undefined}
+ */
 function main() {
+  /** @type Input[] */
   const inputs = [
-    [[1, 2, 3, 4], 0, 1],
-    [[1, 2, 3, 4], 0, 2],
-    [[1, 2, 3, 4], 0, 3],
+    {
+      s: "RLRRLLRLRL",
+    },
+    {
+      s: "RLRRRLLRLL",
+    },
+    {
+      s: "LLLLRRRR",
+    },
   ];
 
-  for (const [distance, start, destination] of inputs) {
-    const result = distanceBetweenBusStops(distance, start, destination);
+  for (const input of inputs) {
+    const result = balancedStringSplit(input.s);
     console.log(result);
   }
 }
