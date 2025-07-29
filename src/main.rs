@@ -1,49 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_straight_line(coordinates: Vec<Vec<i32>>) -> bool {
-        let x0 = coordinates[0][0];
-        let y0 = coordinates[0][1];
-        let x1 = coordinates[1][0];
-        let y1 = coordinates[1][1];
-        let dx0 = x1 - x0;
-        let dy0 = y1 - y0;
+    pub fn smallest_subarrays(nums: Vec<i32>) -> Vec<i32> {
+        let n = nums.len();
+        let mut pos = vec![-1; 31];
+        let mut result = vec![0; n];
 
-        for coordinate in coordinates.iter().skip(2) {
-            let x = coordinate[0];
-            let y = coordinate[1];
-            let dx = x1 - x;
-            let dy = y1 - y;
-
-            if (dy0 * dx) != (dy * dx0) {
-                return false;
+        for (i, num) in nums.iter().cloned().enumerate().rev() {
+            let mut j = i;
+            for bit in 0..31usize {
+                if (num & (1 << bit)) == 0 {
+                    if pos[bit] != -1 {
+                        j = j.max(pos[bit] as usize);
+                    }
+                } else {
+                    pos[bit] = i as i32;
+                }
             }
+
+            result[i] = (j + 1 - i) as i32;
         }
 
-        return true;
+        result
     }
 }
 
 struct Input {
-    coordinates: Vec<Vec<i32>>,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = vec![
+    let inputs = [
         Input {
-            coordinates: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            nums: [1, 0, 2, 1, 3].to_vec(),
         },
         Input {
-            coordinates: [[1, 1], [2, 2], [3, 4], [4, 5], [5, 6], [7, 7]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            nums: [1, 2].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::check_straight_line(input.coordinates);
+        let result = Solution::smallest_subarrays(input.nums);
         println!("{:?}", result);
     }
 }
