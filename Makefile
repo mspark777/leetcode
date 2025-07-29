@@ -18,3 +18,6 @@ rs:
 
 py:
 	@python src/py/main.py
+
+pg:
+	@bash src/sql/postgresql.sh
