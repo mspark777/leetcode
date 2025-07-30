@@ -1,24 +1,25 @@
 struct Solution {}
 
 impl Solution {
-    pub fn smallest_subarrays(nums: Vec<i32>) -> Vec<i32> {
-        let n = nums.len();
-        let mut pos = vec![-1; 31];
-        let mut result = vec![0; n];
+    pub fn longest_subarray(nums: Vec<i32>) -> i32 {
+        let mut max_num = 0;
+        let mut result = 0;
+        let mut current = 0;
 
-        for (i, num) in nums.iter().cloned().enumerate().rev() {
-            let mut j = i;
-            for bit in 0..31usize {
-                if (num & (1 << bit)) == 0 {
-                    if pos[bit] != -1 {
-                        j = j.max(pos[bit] as usize);
-                    }
-                } else {
-                    pos[bit] = i as i32;
-                }
+        for num in nums.iter().cloned() {
+            if max_num < num {
+                max_num = num;
+                result = 0;
+                current = 0;
             }
 
-            result[i] = (j + 1 - i) as i32;
+            if max_num == num {
+                current += 1;
+            } else {
+                current = 0;
+            }
+
+            result = result.max(current);
         }
 
         result
@@ -32,15 +33,15 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 0, 2, 1, 3].to_vec(),
+            nums: [1, 2, 3, 3, 2, 2].to_vec(),
         },
         Input {
-            nums: [1, 2].to_vec(),
+            nums: [1, 2, 3, 4].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::smallest_subarrays(input.nums);
+        let result = Solution::longest_subarray(input.nums);
         println!("{:?}", result);
     }
 }
