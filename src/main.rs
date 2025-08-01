@@ -1,47 +1,35 @@
 struct Solution {}
 
 impl Solution {
-    pub fn longest_subarray(nums: Vec<i32>) -> i32 {
-        let mut max_num = 0;
-        let mut result = 0;
-        let mut current = 0;
-
-        for num in nums.iter().cloned() {
-            if max_num < num {
-                max_num = num;
-                result = 0;
-                current = 0;
+    pub fn generate(num_rows: i32) -> Vec<Vec<i32>> {
+        let num_rows = num_rows as usize;
+        let mut rows = Vec::<Vec<i32>>::with_capacity(num_rows);
+        for i in 0..num_rows {
+            let mut row = vec![1; i + 1];
+            let i = i as i32;
+            let prev = i - 1;
+            for j in 1..i {
+                let j = j as usize;
+                let prev = prev as usize;
+                row[j] = rows[prev][j - 1] + rows[prev][j];
             }
 
-            if max_num == num {
-                current += 1;
-            } else {
-                current = 0;
-            }
-
-            result = result.max(current);
+            rows.push(row);
         }
 
-        result
+        rows
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    num_rows: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [1, 2, 3, 3, 2, 2].to_vec(),
-        },
-        Input {
-            nums: [1, 2, 3, 4].to_vec(),
-        },
-    ];
+    let inputs = [Input { num_rows: 5 }, Input { num_rows: 1 }];
 
     for input in inputs {
-        let result = Solution::longest_subarray(input.nums);
+        let result = Solution::generate(input.num_rows);
         println!("{:?}", result);
     }
 }
