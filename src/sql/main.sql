@@ -1,15 +1,9 @@
-select
-    p.product_id,
-    case
-        when sum(u.units) is not null
-        then round(sum(u.units * p.price)::numeric / sum(u.units)::numeric, 2)
-        else 0
-    end as average_price
-from prices as p
+select s.student_id, s.student_name, su.subject_name, count(e.student_id) attended_exams
+from students s
+cross join subjects su
 left join
-    unitssold as u
-    on p.product_id = u.product_id
-    and u.purchase_date between p.start_date and p.end_date
-group by p.product_id
+    examinations e on s.student_id = e.student_id and su.subject_name = e.subject_name
+group by s.student_id, s.student_name, su.subject_name
+order by s.student_id, s.student_name, su.subject_name
 ;
 
