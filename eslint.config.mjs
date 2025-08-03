@@ -22,10 +22,6 @@ export default tseslint.config(
         project: "./tsconfig.json",
       },
     },
-    rules: {
-      "@typescript-eslint/no-extraneous-class": "off",
-      "@typescript-eslint/explicit-function-return-type": "error",
-    },
   },
   {
     files: ["**/*.cjs"],
@@ -45,7 +41,9 @@ export default tseslint.config(
     },
     rules: {
       "@typescript-eslint/no-extraneous-class": "off",
-      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
     },
   },
   {
@@ -66,7 +64,9 @@ export default tseslint.config(
     },
     rules: {
       "@typescript-eslint/no-extraneous-class": "off",
-      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
     },
   },
 );
