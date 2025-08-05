@@ -1,42 +1,26 @@
 /**
- * @param {number[][]} moves
- * @return {string}
+ * @param {number} n
+ * @returns {Generator<number>}
  */
-var tictactoe = function (moves) {
-  const row = [0, 0, 0];
-  const col = [0, 0, 0];
-  const diagonal = [0, 0];
-  let point = 1;
-
-  for (const [r, c] of moves) {
-    row[r] += point;
-    col[c] += point;
-    if (r === c) {
-      diagonal[0] += point;
-    }
-
-    if (r + c === 2) {
-      diagonal[1] += point;
-    }
-
-    if (
-      Math.abs(row[r]) === 3 ||
-      Math.abs(col[c]) === 3 ||
-      Math.abs(diagonal[0]) === 3 ||
-      Math.abs(diagonal[1]) === 3
-    ) {
-      return point == 1 ? "A" : "B";
-    }
-
-    point = -point;
+function* range(n) {
+  let i = 1 - n;
+  while (i < n) {
+    yield i;
+    i += 2;
   }
+}
 
-  return moves.length === 9 ? "Draw" : "Pending";
+/**
+ * @param {number} n
+ * @return {number[]}
+ */
+var sumZero = function (n) {
+  return [...range(n)];
 };
 
 /**
  * @typedef Input
- * @property {number[][]} moves
+ * @property {number} n
  */
 
 /**
@@ -46,41 +30,18 @@ function main() {
   /** @type Input[] */
   const inputs = [
     {
-      moves: [
-        [0, 0],
-        [2, 0],
-        [1, 1],
-        [2, 1],
-        [2, 2],
-      ],
+      n: 5,
     },
     {
-      moves: [
-        [0, 0],
-        [1, 1],
-        [0, 1],
-        [0, 2],
-        [1, 0],
-        [2, 0],
-      ],
+      n: 3,
     },
     {
-      moves: [
-        [0, 0],
-        [1, 1],
-        [2, 0],
-        [1, 0],
-        [1, 2],
-        [2, 1],
-        [0, 1],
-        [0, 2],
-        [2, 2],
-      ],
+      n: 1,
     },
   ];
 
   for (const input of inputs) {
-    const result = tictactoe(input.moves);
+    const result = sumZero(input.n);
     console.log(result);
   }
 }
