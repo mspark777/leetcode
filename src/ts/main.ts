@@ -1,42 +1,31 @@
 import "@total-typescript/ts-reset";
 
-function decompressRLElist(nums: number[]): number[] {
-  const result: number[] = [];
-
-  for (let i = 0; i < nums.length; i += 2) {
-    const frequency = nums[i];
-    const value = nums[i + 1];
-
-    if (frequency == null) {
-      continue;
-    } else if (value == null) {
-      continue;
-    }
-
-    for (let j = 0; j < frequency; j += 1) {
-      result.push(value);
-    }
-  }
-
-  return result;
+function daysBetweenDates(date1: string, date2: string): number {
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  const diff = Math.abs(d1.getTime() - d2.getTime());
+  return Number(BigInt(diff) / 86400000n);
 }
 
 interface Input {
-  nums: number[];
+  date1: string;
+  date2: string;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      nums: [1, 2, 3, 4],
+      date1: "2019-06-29",
+      date2: "2019-06-30",
     },
     {
-      nums: [1, 1, 2, 3],
+      date1: "2020-01-15",
+      date2: "2019-12-31",
     },
   ];
 
   for (const input of inputs) {
-    const result = decompressRLElist(input.nums);
+    const result = daysBetweenDates(input.date1, input.date2);
     console.log(result);
   }
 }
