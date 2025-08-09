@@ -1,9 +1,7 @@
-select s.student_id, s.student_name, su.subject_name, count(e.student_id) attended_exams
-from students s
-cross join subjects su
-left join
-    examinations e on s.student_id = e.student_id and su.subject_name = e.subject_name
-group by s.student_id, s.student_name, su.subject_name
-order by s.student_id, s.student_name, su.subject_name
-;
+select product_name, sum(unit) as unit
+from products as p
+join orders as o on o.product_id = p.product_id
+where order_date between '2020-02-01' and '2020-02-29'
+group by p.product_name
+having sum(unit) >= 100
 
