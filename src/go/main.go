@@ -1,37 +1,58 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func subtractProductAndSum(n int) int {
-	mul := 1
-	sum := 0
-	for n > 0 {
-		d := n % 10
-		n /= 10
-
-		mul *= d
-		sum += d
+func sortString(s string) string {
+	counts := make([]int, 26)
+	n := 0
+	for _, ch := range s {
+		idx := int(ch - 'a')
+		counts[idx] += 1
+		n += 1
 	}
 
-	return mul - sum
+	result := make([]rune, 0, n)
+	for len(result) < n {
+		for i := 0; i < 26; i += 1 {
+			cnt := counts[i]
+			if cnt > 0 {
+				ch := rune(i) + 'a'
+				result = append(result, ch)
+				counts[i] = cnt - 1
+			}
+		}
+
+		for i := 25; i >= 0; i -= 1 {
+			cnt := counts[i]
+			if cnt > 0 {
+				ch := rune(i) + 'a'
+				result = append(result, ch)
+				counts[i] = cnt - 1
+			}
+		}
+	}
+
+	return string(result)
 }
 
 type input struct {
-	n int
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			n: 234,
+			s: "aaaabbbbcccc",
 		},
 		{
-			n: 4421,
+			s: "rat",
 		},
 	}
 
 	for _, input := range inputs {
-		result := subtractProductAndSum(input.n)
+		result := sortString(input.s)
 		fmt.Println(result)
 	}
 }
