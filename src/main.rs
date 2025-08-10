@@ -1,39 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn get_no_zero_integers(n: i32) -> Vec<i32> {
-        for i in 1..n {
-            if Self::no_zero(i) && Self::no_zero(n - i) {
-                return vec![i, n - i];
-            }
+    pub fn smaller_numbers_than_current(nums: Vec<i32>) -> Vec<i32> {
+        let mut counts = std::collections::HashMap::<i32, usize>::with_capacity(nums.len());
+        let mut result = nums.clone();
+        result.sort_unstable();
+
+        for (i, n) in result.iter().cloned().enumerate() {
+            counts.entry(n).or_insert(i);
         }
 
-        vec![]
-    }
-
-    fn no_zero(n: i32) -> bool {
-        let mut n = n;
-        while n > 0 {
-            if (n % 10) == 0 {
-                return false;
-            } else {
-                n /= 10;
-            }
+        for (i, n) in nums.iter().cloned().enumerate() {
+            let &idx = counts.get(&n).unwrap();
+            result[i] = idx as i32;
         }
 
-        true
+        result
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 2 }, Input { n: 11 }];
+    let inputs = [
+        Input {
+            nums: [8, 1, 2, 2, 3].to_vec(),
+        },
+        Input {
+            nums: [6, 5, 4, 8].to_vec(),
+        },
+        Input {
+            nums: [7, 7, 7, 7].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::get_no_zero_integers(input.n);
+        let result = Solution::smaller_numbers_than_current(input.nums);
         println!("{:?}", result);
     }
 }
