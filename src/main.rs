@@ -1,43 +1,38 @@
 struct Solution {}
 
 impl Solution {
-    pub fn smaller_numbers_than_current(nums: Vec<i32>) -> Vec<i32> {
-        let mut counts = std::collections::HashMap::<i32, usize>::with_capacity(nums.len());
-        let mut result = nums.clone();
-        result.sort_unstable();
+    pub fn number_of_ways(n: i32, x: i32) -> i32 {
+        const MOD: i64 = 1_000_000_007;
+        let n = n as usize;
+        let x = x as u32;
+        let mut dp = vec![0i64; n + 1];
 
-        for (i, n) in result.iter().cloned().enumerate() {
-            counts.entry(n).or_insert(i);
+        dp[0] = 1;
+        for i in 1..=n {
+            let val = i.pow(x);
+            if val > n {
+                break;
+            }
+
+            for j in (val..=n).rev() {
+                dp[j] = (dp[j] + dp[j - val]) % MOD;
+            }
         }
 
-        for (i, n) in nums.iter().cloned().enumerate() {
-            let &idx = counts.get(&n).unwrap();
-            result[i] = idx as i32;
-        }
-
-        result
+        dp[n] as i32
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
+    x: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [8, 1, 2, 2, 3].to_vec(),
-        },
-        Input {
-            nums: [6, 5, 4, 8].to_vec(),
-        },
-        Input {
-            nums: [7, 7, 7, 7].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 10, x: 2 }, Input { n: 4, x: 1 }];
 
     for input in inputs {
-        let result = Solution::smaller_numbers_than_current(input.nums);
+        let result = Solution::number_of_ways(input.n, input.x);
         println!("{:?}", result);
     }
 }

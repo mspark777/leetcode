@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
 export class TreeNode {
   /** @type {number} */
   val;
@@ -10,7 +7,7 @@ export class TreeNode {
   right;
 
   /**
-   * @param {number} val
+   * @param {number|null} val
    * @param {TreeNode|null} [left]
    * @param {TreeNode|null} [right]
    */
