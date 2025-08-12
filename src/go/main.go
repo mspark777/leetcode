@@ -2,57 +2,81 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
-func sortString(s string) string {
-	counts := make([]int, 26)
-	n := 0
-	for _, ch := range s {
-		idx := int(ch - 'a')
-		counts[idx] += 1
-		n += 1
-	}
-
-	result := make([]rune, 0, n)
-	for len(result) < n {
-		for i := 0; i < 26; i += 1 {
-			cnt := counts[i]
-			if cnt > 0 {
-				ch := rune(i) + 'a'
-				result = append(result, ch)
-				counts[i] = cnt - 1
-			}
-		}
-
-		for i := 25; i >= 0; i -= 1 {
-			cnt := counts[i]
-			if cnt > 0 {
-				ch := rune(i) + 'a'
-				result = append(result, ch)
-				counts[i] = cnt - 1
-			}
+func binarySearchLeft(arr []int, i int) int {
+	left := 0
+	right := len(arr)
+	for left < right {
+		mid := (left + right) / 2
+		if arr[mid] < i {
+			left = mid + 1
+		} else {
+			right = mid
 		}
 	}
 
-	return string(result)
+	return left
+}
+
+func binarySearchRight(arr []int, i int) int {
+	left := 0
+	right := len(arr)
+	for left < right {
+		mid := (left + right) / 2
+		if arr[mid] <= i {
+			left = mid + 1
+		} else {
+			right = mid
+		}
+	}
+
+	return left
+}
+
+func findTheDistanceValue(arr1 []int, arr2 []int, d int) int {
+	sort.Ints(arr2)
+	result := 0
+
+	for _, num := range arr1 {
+		left := binarySearchLeft(arr2, num-d)
+		right := binarySearchRight(arr2, num+d)
+		if left == right {
+			result += 1
+		}
+	}
+
+	return result
 }
 
 type input struct {
-	s string
+	arr1 []int
+	arr2 []int
+	d    int
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "aaaabbbbcccc",
+			arr1: []int{4, 5, 8},
+			arr2: []int{10, 9, 1, 8},
+			d:    2,
 		},
 		{
-			s: "rat",
+			arr1: []int{1, 4, 2, 3},
+			arr2: []int{-4, -3, 6, 10, 20, 30},
+			d:    3,
+		},
+		{
+			arr1: []int{2, 1, 100, 3},
+			arr2: []int{-5, -2, 10, -3, 7},
+			d:    6,
 		},
 	}
 
 	for _, input := range inputs {
-		result := sortString(input.s)
+		result := findTheDistanceValue(input.arr1, input.arr2, input.d)
 		fmt.Println(result)
 	}
 }
