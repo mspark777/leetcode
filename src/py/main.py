@@ -1,31 +1,28 @@
-class Solution:
-    def freqAlphabets(self, s: str) -> str:
-        result: list[str] = []
-        i = 0
-        while i < len(s):
-            if ((i + 2) < len(s)) and (s[i + 2] == "#"):
-                val = int(s[i : i + 2])
-                result.append(chr(val + 96))
-                i += 3
-            else:
-                result.append(chr(int(s[i]) + 96))
-                i += 1
+from collections import Counter
 
-        return "".join(result)
+
+class Solution:
+    def countLargestGroup(self, n: int) -> int:
+        counts = Counter[int]()
+        for i in range(1, n + 1):
+            key = sum([int(x) for x in str(i)])
+            counts[key] += 1
+        max_count = max(counts.values())
+        return sum(1 for v in counts.values() if v == max_count)
 
 
 class Input:
-    s: str
+    n: int
 
-    def __init__(self, s: str):
-        self.s = s
+    def __init__(self, n: int):
+        self.n = n
 
 
 def main():
-    inputs = [Input("10#11#12"), Input("1326#")]
+    inputs = [Input(13), Input(2)]
 
     for input in inputs:
-        result = Solution().freqAlphabets(input.s)
+        result = Solution().countLargestGroup(input.n)
         print(result)
 
 
