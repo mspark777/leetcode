@@ -1,38 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn number_of_ways(n: i32, x: i32) -> i32 {
-        const MOD: i64 = 1_000_000_007;
-        let n = n as usize;
-        let x = x as u32;
-        let mut dp = vec![0i64; n + 1];
-
-        dp[0] = 1;
-        for i in 1..=n {
-            let val = i.pow(x);
-            if val > n {
-                break;
+    pub fn create_target_array(nums: Vec<i32>, index: Vec<i32>) -> Vec<i32> {
+        let mut result = vec![0; nums.len()];
+        for (i, num) in index.iter().cloned().zip(nums.iter().cloned()) {
+            let i = i as usize;
+            for j in ((i + 1)..nums.len()).rev() {
+                result[j] = result[j - 1];
             }
 
-            for j in (val..=n).rev() {
-                dp[j] = (dp[j] + dp[j - val]) % MOD;
-            }
+            result[i] = num;
         }
 
-        dp[n] as i32
+        result
     }
 }
 
 struct Input {
-    n: i32,
-    x: i32,
+    nums: Vec<i32>,
+    index: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 10, x: 2 }, Input { n: 4, x: 1 }];
+    let inputs = [
+        Input {
+            nums: [0, 1, 2, 3, 4].to_vec(),
+            index: [0, 1, 2, 2, 1].to_vec(),
+        },
+        Input {
+            nums: [1, 2, 3, 4, 0].to_vec(),
+            index: [0, 1, 2, 3, 0].to_vec(),
+        },
+        Input {
+            nums: [1].to_vec(),
+            index: [0].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::number_of_ways(input.n, input.x);
+        let result = Solution::create_target_array(input.nums, input.index);
         println!("{:?}", result);
     }
 }
