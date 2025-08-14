@@ -2,48 +2,57 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
-func binarySearchLeft(arr []int, i int) int {
-	left := 0
-	right := len(arr)
-	for left < right {
-		mid := (left + right) / 2
-		if arr[mid] < i {
-			left = mid + 1
+type TrieNode struct {
+	frequency int
+	children  map[rune]*TrieNode
+}
+
+func newTrieNode() *TrieNode {
+	node := new(TrieNode)
+	node.frequency = 0
+	node.children = make(map[rune]*TrieNode)
+	return node
+}
+
+func insertWord(root *TrieNode, word string) {
+	current := root
+	for _, c := range word {
+		if child, ok := current.children[c]; ok {
+			child.frequency += 1
+			current = child
 		} else {
-			right = mid
+			child := newTrieNode()
+			child.frequency = 1
+			current.children[c] = child
+			current = child
+		}
+	}
+}
+
+func isSubstring(root *TrieNode, word string) bool {
+	current := root
+	for _, c := range word {
+		current = current.children[c]
+	}
+
+	return current.frequency > 1
+}
+
+func stringMatching(words []string) []string {
+	result := []string{}
+	root := newTrieNode()
+
+	for _, word := range words {
+		for i := 0; i < len(word); i += 1 {
+			insertWord(root, word[i:])
 		}
 	}
 
-	return left
-}
-
-func binarySearchRight(arr []int, i int) int {
-	left := 0
-	right := len(arr)
-	for left < right {
-		mid := (left + right) / 2
-		if arr[mid] <= i {
-			left = mid + 1
-		} else {
-			right = mid
-		}
-	}
-
-	return left
-}
-
-func findTheDistanceValue(arr1 []int, arr2 []int, d int) int {
-	sort.Ints(arr2)
-	result := 0
-
-	for _, num := range arr1 {
-		left := binarySearchLeft(arr2, num-d)
-		right := binarySearchRight(arr2, num+d)
-		if left == right {
-			result += 1
+	for _, word := range words {
+		if isSubstring(root, word) {
+			result = append(result, word)
 		}
 	}
 
@@ -51,32 +60,24 @@ func findTheDistanceValue(arr1 []int, arr2 []int, d int) int {
 }
 
 type input struct {
-	arr1 []int
-	arr2 []int
-	d    int
+	words []string
 }
 
 func main() {
 	inputs := []input{
 		{
-			arr1: []int{4, 5, 8},
-			arr2: []int{10, 9, 1, 8},
-			d:    2,
+			words: []string{"mass", "as", "hero", "superhero"},
 		},
 		{
-			arr1: []int{1, 4, 2, 3},
-			arr2: []int{-4, -3, 6, 10, 20, 30},
-			d:    3,
+			words: []string{"leetcode", "et", "code"},
 		},
 		{
-			arr1: []int{2, 1, 100, 3},
-			arr2: []int{-5, -2, 10, -3, 7},
-			d:    6,
+			words: []string{"blue", "green", "bu"},
 		},
 	}
 
 	for _, input := range inputs {
-		result := findTheDistanceValue(input.arr1, input.arr2, input.d)
+		result := stringMatching(input.words)
 		fmt.Println(result)
 	}
 }
