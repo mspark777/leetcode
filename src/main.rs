@@ -1,22 +1,16 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_subsequence(nums: Vec<i32>) -> Vec<i32> {
-        let mut threshold = nums.iter().sum::<i32>() / 2;
+    pub fn min_start_value(nums: Vec<i32>) -> i32 {
+        let mut result = 1;
+        let mut sum = 0;
 
-        let mut nums = nums;
-        nums.sort_unstable_by_key(|&n| -n);
-
-        let mut result = Vec::<i32>::new();
         for num in nums.iter().cloned() {
-            threshold -= num;
-            result.push(num);
-            if threshold < 0 {
-                break;
-            }
+            sum += num;
+            result = result.min(sum);
         }
 
-        result
+        0.max(-result) + 1
     }
 }
 
@@ -27,15 +21,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [4, 3, 10, 9, 8].to_vec(),
+            nums: [-3, 2, -3, 4, 2].to_vec(),
         },
         Input {
-            nums: [4, 4, 7, 6, 7].to_vec(),
+            nums: [1, 2].to_vec(),
+        },
+        Input {
+            nums: [1, -2, -3].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_subsequence(input.nums);
+        let result = Solution::min_start_value(input.nums);
         println!("{:?}", result);
     }
 }
