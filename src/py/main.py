@@ -1,28 +1,31 @@
-from collections import Counter
-
-
 class Solution:
-    def countLargestGroup(self, n: int) -> int:
-        counts = Counter[int]()
-        for i in range(1, n + 1):
-            key = sum([int(x) for x in str(i)])
-            counts[key] += 1
-        max_count = max(counts.values())
-        return sum(1 for v in counts.values() if v == max_count)
+    def reformat(self, s: str) -> str:
+        letters = [c for c in s if c.isalpha()]
+        digits = [c for c in s if c.isdigit()]
+        if abs(len(letters) - len(digits)) > 1:
+            return ""
+        elif len(letters) > len(digits):
+            s = "".join([f"{l}{d}" for l, d in zip(letters, digits)])
+            return s + letters[-1]
+        elif len(letters) < len(digits):
+            s = "".join([f"{d}{l}" for l, d in zip(letters, digits)])
+            return s + digits[-1]
+
+        return "".join([f"{l}{d}" for l, d in zip(letters, digits)])
 
 
 class Input:
-    n: int
+    s: str
 
-    def __init__(self, n: int):
-        self.n = n
+    def __init__(self, s: str):
+        self.s = s
 
 
 def main():
-    inputs = [Input(13), Input(2)]
+    inputs = [Input("a0b1c2"), Input("leetcode"), Input("1229857369")]
 
     for input in inputs:
-        result = Solution().countLargestGroup(input.n)
+        result = Solution().reformat(input.s)
         print(result)
 
 
