@@ -1,28 +1,49 @@
 import "@total-typescript/ts-reset";
 
-function generateTheString(n: number): string {
-  return (n & 1) === 1 ? "a".repeat(n) : "a".repeat(n - 1) + "b";
+function kLengthApart(nums: number[], k: number): boolean {
+  let left = nums.indexOf(1);
+  if (left < 0) {
+    return true;
+  }
+
+  let zeros = 0;
+  for (let right = left + 1; right < nums.length; right += 1) {
+    const num = nums[right];
+    if (num === 0) {
+      zeros += 1;
+      continue;
+    }
+
+    if (zeros < k) {
+      return false;
+    }
+
+    left = right;
+    zeros = 0;
+  }
+
+  return true;
 }
 
 interface Input {
-  n: number;
+  nums: number[];
+  k: number;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      n: 4,
+      nums: [1, 0, 0, 0, 1, 0, 0, 1],
+      k: 2,
     },
     {
-      n: 2,
-    },
-    {
-      n: 7,
+      nums: [1, 0, 0, 1, 0, 1],
+      k: 2,
     },
   ];
 
   for (const input of inputs) {
-    const result = generateTheString(input.n);
+    const result = kLengthApart(input.nums, input.k);
     console.log(result);
   }
 }
