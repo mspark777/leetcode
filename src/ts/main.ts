@@ -1,49 +1,46 @@
 import "@total-typescript/ts-reset";
 
-function kLengthApart(nums: number[], k: number): boolean {
-  let left = nums.indexOf(1);
-  if (left < 0) {
-    return true;
-  }
+function busyStudent(
+  startTime: number[],
+  endTime: number[],
+  queryTime: number,
+): number {
+  let result = 0;
 
-  let zeros = 0;
-  for (let right = left + 1; right < nums.length; right += 1) {
-    const num = nums[right];
-    if (num === 0) {
-      zeros += 1;
+  for (const [i, s] of startTime.entries()) {
+    const e = endTime[i];
+    if (e == null) {
       continue;
+    } else if (s <= queryTime && queryTime <= e) {
+      result += 1;
     }
-
-    if (zeros < k) {
-      return false;
-    }
-
-    left = right;
-    zeros = 0;
   }
 
-  return true;
+  return result;
 }
 
 interface Input {
-  nums: number[];
-  k: number;
+  startTime: number[];
+  endTime: number[];
+  queryTime: number;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      nums: [1, 0, 0, 0, 1, 0, 0, 1],
-      k: 2,
+      startTime: [1, 2, 3],
+      endTime: [3, 2, 7],
+      queryTime: 4,
     },
     {
-      nums: [1, 0, 0, 1, 0, 1],
-      k: 2,
+      startTime: [4],
+      endTime: [4],
+      queryTime: 4,
     },
   ];
 
   for (const input of inputs) {
-    const result = kLengthApart(input.nums, input.k);
+    const result = busyStudent(input.startTime, input.endTime, input.queryTime);
     console.log(result);
   }
 }
