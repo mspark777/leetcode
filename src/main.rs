@@ -1,38 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_start_value(nums: Vec<i32>) -> i32 {
-        let mut result = 1;
-        let mut sum = 0;
+    pub fn max_power(s: String) -> i32 {
+        let mut result = 1usize;
+        let mut len = 1usize;
+        let mut prev = s.chars().nth(0).unwrap();
 
-        for num in nums.iter().cloned() {
-            sum += num;
-            result = result.min(sum);
+        for ch in s.chars().skip(1) {
+            if prev == ch {
+                len += 1;
+            } else {
+                result = result.max(len);
+                len = 1;
+                prev = ch;
+            }
         }
 
-        0.max(-result) + 1
+        result.max(len) as i32
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [-3, 2, -3, 4, 2].to_vec(),
+            s: "leetcode".to_string(),
         },
         Input {
-            nums: [1, 2].to_vec(),
+            s: "abbcccddddeeeeedcba".to_string(),
         },
         Input {
-            nums: [1, -2, -3].to_vec(),
+            s: "cc".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_start_value(input.nums);
+        let result = Solution::max_power(input.s);
         println!("{:?}", result);
     }
 }
