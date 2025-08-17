@@ -1,6 +1,9 @@
-select u.name as name, coalesce(sum(r.distance), 0) as travelled_distance
-from users u
-left join rides r on u.id = r.user_id
-group by u.id, u.name
-order by travelled_distance desc, name asc
+select
+    sell_date,
+    count(distinct(product, sell_date)) as num_sold,
+    string_agg(distinct product, ',' order by product) as products
+from activities
+group by sell_date
+order by sell_date
+;
 
