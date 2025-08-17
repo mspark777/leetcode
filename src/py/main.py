@@ -1,31 +1,31 @@
-class Solution:
-    def reformat(self, s: str) -> str:
-        letters = [c for c in s if c.isalpha()]
-        digits = [c for c in s if c.isdigit()]
-        if abs(len(letters) - len(digits)) > 1:
-            return ""
-        elif len(letters) > len(digits):
-            s = "".join([f"{l}{d}" for l, d in zip(letters, digits)])
-            return s + letters[-1]
-        elif len(letters) < len(digits):
-            s = "".join([f"{d}{l}" for l, d in zip(letters, digits)])
-            return s + digits[-1]
+from typing import List
 
-        return "".join([f"{l}{d}" for l, d in zip(letters, digits)])
+
+class Solution:
+    def canMakeArithmeticProgression(self, arr: List[int]) -> bool:
+        arr.sort()
+
+        for i in range(2, len(arr)):
+            left = arr[i - 1] - arr[i - 2]
+            right = arr[i] - arr[i - 1]
+            if left != right:
+                return False
+
+        return True
 
 
 class Input:
-    s: str
+    arr: list[int]
 
-    def __init__(self, s: str):
-        self.s = s
+    def __init__(self, arr: list[int]):
+        self.arr = arr
 
 
 def main():
-    inputs = [Input("a0b1c2"), Input("leetcode"), Input("1229857369")]
+    inputs = [Input([3, 5, 1]), Input([1, 2, 4])]
 
     for input in inputs:
-        result = Solution().reformat(input.s)
+        result = Solution().canMakeArithmeticProgression(input.arr)
         print(result)
 
 
