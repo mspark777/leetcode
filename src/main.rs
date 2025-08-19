@@ -1,78 +1,36 @@
 struct Solution {}
 
 impl Solution {
-    const EPS: f64 = 1e-6;
-
-    pub fn judge_point24(cards: Vec<i32>) -> bool {
-        let nums: Vec<f64> = cards.iter().map(|&n| n as f64).collect();
-        Self::dfs(&nums)
-    }
-
-    fn dfs(nums: &Vec<f64>) -> bool {
-        if nums.len() == 1 {
-            return (nums[0] - 24f64).abs() < Self::EPS;
+    pub fn restore_string(s: String, indices: Vec<i32>) -> String {
+        let chars = s.chars().collect::<Vec<char>>();
+        let mut result = vec![' '; chars.len()];
+        for i in 0..indices.len() {
+            result[indices[i] as usize] = chars[i];
         }
 
-        for i in 0..nums.len() {
-            for j in 0..nums.len() {
-                if i == j {
-                    continue;
-                }
-
-                let mut next = Vec::<f64>::with_capacity(nums.len());
-                for (k, n) in nums.iter().cloned().enumerate() {
-                    if (k != i) && (k != j) {
-                        next.push(n);
-                    }
-                }
-
-                for num in Self::compute(nums[i], nums[j]) {
-                    next.push(num);
-                    if Self::dfs(&next) {
-                        return true;
-                    }
-                    next.pop();
-                }
-            }
-        }
-        false
-    }
-
-    fn compute(a: f64, b: f64) -> Vec<f64> {
-        let mut list = Vec::<f64>::with_capacity(6);
-        list.push(a + b);
-        list.push(a - b);
-        list.push(b - a);
-        list.push(a * b);
-
-        if a.abs() > Self::EPS {
-            list.push(b / a);
-        }
-
-        if b.abs() > Self::EPS {
-            list.push(a / b);
-        }
-
-        list
+        result.iter().collect()
     }
 }
 
 struct Input {
-    cards: Vec<i32>,
+    s: String,
+    indices: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            cards: [4, 1, 8, 7].to_vec(),
+            s: "codeleet".to_string(),
+            indices: [4, 5, 6, 7, 0, 2, 1, 3].to_vec(),
         },
         Input {
-            cards: [1, 2, 1, 2].to_vec(),
+            s: "abc".to_string(),
+            indices: [0, 1, 2].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::judge_point24(input.cards);
+        let result = Solution::restore_string(input.s, input.indices);
         println!("{:?}", result);
     }
 }
