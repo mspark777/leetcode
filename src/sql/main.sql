@@ -1,5 +1,14 @@
-select *
-from users
-where mail ~ '^[a-zA-Z][a-zA-Z0-9\.\-_]*@leetcode\.com$'
+select patient_id, patient_name, conditions
+from patients
+where
+    conditions is not null
+    and (
+        conditions = 'DIAB1'
+        or conditions like 'DIAB1 %'
+        or conditions like '% DIAB1'
+        or conditions like '% DIAB1 %'
+        or conditions like 'DIAB1%'
+        or conditions like '% DIAB1%'
+    )
 ;
 
