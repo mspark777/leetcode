@@ -1,36 +1,35 @@
 struct Solution {}
 
 impl Solution {
-    pub fn restore_string(s: String, indices: Vec<i32>) -> String {
-        let chars = s.chars().collect::<Vec<char>>();
-        let mut result = vec![' '; chars.len()];
-        for i in 0..indices.len() {
-            result[indices[i] as usize] = chars[i];
+    pub fn thousand_separator(n: i32) -> String {
+        let nums = n.to_string().chars().collect::<Vec<char>>();
+        let mut result = Vec::<char>::with_capacity(nums.len() + ((nums.len() - 1) / 3));
+        let mut point = 0usize;
+
+        for num in nums.iter().rev().cloned() {
+            if point == 3 {
+                result.push('.');
+                result.push(num);
+                point = 1;
+            } else {
+                result.push(num);
+                point += 1;
+            }
         }
 
-        result.iter().collect()
+        result.iter().rev().collect()
     }
 }
 
 struct Input {
-    s: String,
-    indices: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            s: "codeleet".to_string(),
-            indices: [4, 5, 6, 7, 0, 2, 1, 3].to_vec(),
-        },
-        Input {
-            s: "abc".to_string(),
-            indices: [0, 1, 2].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 987 }, Input { n: 1234 }];
 
     for input in inputs {
-        let result = Solution::restore_string(input.s, input.indices);
+        let result = Solution::thousand_separator(input.n);
         println!("{:?}", result);
     }
 }
