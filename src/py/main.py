@@ -2,30 +2,40 @@ from typing import List
 
 
 class Solution:
-    def canMakeArithmeticProgression(self, arr: List[int]) -> bool:
-        arr.sort()
+    def containsPattern(self, arr: List[int], m: int, k: int) -> bool:
+        count = 0
+        for i in range(0, len(arr) - m):
+            if arr[i] == arr[i + m]:
+                count += 1
+            else:
+                count = 0
 
-        for i in range(2, len(arr)):
-            left = arr[i - 1] - arr[i - 2]
-            right = arr[i] - arr[i - 1]
-            if left != right:
-                return False
+            if count == (m * (k - 1)):
+                return True
 
-        return True
+        return False
 
 
 class Input:
     arr: list[int]
+    m: int
+    k: int
 
-    def __init__(self, arr: list[int]):
+    def __init__(self, arr: list[int], m: int, k: int):
         self.arr = arr
+        self.m = m
+        self.k = k
 
 
 def main():
-    inputs = [Input([3, 5, 1]), Input([1, 2, 4])]
+    inputs = [
+        Input([1, 2, 4, 4, 4, 4], 1, 3),
+        Input([1, 2, 1, 2, 1, 1, 1, 3], 2, 2),
+        Input([1, 2, 1, 2, 1, 3], 2, 3),
+    ]
 
     for input in inputs:
-        result = Solution().canMakeArithmeticProgression(input.arr)
+        result = Solution().containsPattern(input.arr, input.m, input.k)
         print(result)
 
 
