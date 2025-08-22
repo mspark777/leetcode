@@ -1,35 +1,53 @@
 struct Solution {}
 
 impl Solution {
-    pub fn thousand_separator(n: i32) -> String {
-        let nums = n.to_string().chars().collect::<Vec<char>>();
-        let mut result = Vec::<char>::with_capacity(nums.len() + ((nums.len() - 1) / 3));
-        let mut point = 0usize;
+    pub fn modify_string(s: String) -> String {
+        let mut result = s.chars().collect::<Vec<char>>();
 
-        for num in nums.iter().rev().cloned() {
-            if point == 3 {
-                result.push('.');
-                result.push(num);
-                point = 1;
-            } else {
-                result.push(num);
-                point += 1;
+        for i in 0..result.len() {
+            let ch = result[i];
+            if ch != '?' {
+                continue;
             }
+
+            let mut candidate = std::collections::HashSet::with_capacity(2);
+            if i < (result.len() - 1) {
+                candidate.insert(result[i + 1]);
+            }
+
+            if i > 0 {
+                candidate.insert(result[i - 1]);
+            }
+
+            result[i] = if !candidate.contains(&'a') {
+                'a'
+            } else if !candidate.contains(&'b') {
+                'b'
+            } else {
+                'c'
+            };
         }
 
-        result.iter().rev().collect()
+        result.iter().collect()
     }
 }
 
 struct Input {
-    n: i32,
+    s: String,
 }
 
 fn main() {
-    let inputs = [Input { n: 987 }, Input { n: 1234 }];
+    let inputs = [
+        Input {
+            s: "?zs".to_string(),
+        },
+        Input {
+            s: "ubv?w".to_string(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::thousand_separator(input.n);
+        let result = Solution::modify_string(input.s);
         println!("{:?}", result);
     }
 }
