@@ -1,14 +1,6 @@
-select patient_id, patient_name, conditions
-from patients
-where
-    conditions is not null
-    and (
-        conditions = 'DIAB1'
-        or conditions like 'DIAB1 %'
-        or conditions like '% DIAB1'
-        or conditions like '% DIAB1 %'
-        or conditions like 'DIAB1%'
-        or conditions like '% DIAB1%'
-    )
-;
+select customer_id, count(*) as count_no_trans
+from visits as v
+left join transactions as t on v.visit_id = t.visit_id
+where t.visit_id is null
+group by customer_id
 
