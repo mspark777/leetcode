@@ -1,6 +1,7 @@
-select customer_id, count(*) as count_no_trans
-from visits as v
-left join transactions as t on v.visit_id = t.visit_id
-where t.visit_id is null
-group by customer_id
+select name, sum(amount) as balance
+from users u
+inner join transactions t on u.account = t.account
+group by name
+having sum(amount) > 10000
+;
 
