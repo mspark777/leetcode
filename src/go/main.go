@@ -4,51 +4,39 @@ import (
 	"fmt"
 )
 
-func mostVisited(n int, rounds []int) []int {
-	start := rounds[0]
-	end := rounds[len(rounds)-1]
-	result := []int{}
+func sumOddLengthSubarrays(arr []int) int {
+	n := len(arr)
+	result := 0
 
-	if start <= end {
-		for i := start; i <= end; i += 1 {
-			result = append(result, i)
-		}
-	} else {
-		for i := 1; i <= end; i += 1 {
-			result = append(result, i)
-		}
-
-		for i := start; i <= n; i += 1 {
-			result = append(result, i)
-		}
+	for i := 0; i < n; i += 1 {
+		left := i
+		right := n - 1 - i
+		result += arr[i] * (left/2 + 1) * (right/2 + 1)
+		result += arr[i] * ((left + 1) / 2) * ((right + 1) / 2)
 	}
 
 	return result
 }
 
 type input struct {
-	n      int
-	rounds []int
+	arr []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			n:      4,
-			rounds: []int{1, 3, 1, 2},
+			arr: []int{1, 4, 2, 5, 3},
 		},
 		{
-			n:      2,
-			rounds: []int{2, 1, 2, 1, 2, 1, 2, 1, 2},
+			arr: []int{1, 2},
 		},
 		{
-			n:      7,
-			rounds: []int{1, 3, 5, 7},
+			arr: []int{10, 11, 12},
 		},
 	}
 
 	for _, input := range inputs {
-		result := mostVisited(input.n, input.rounds)
+		result := sumOddLengthSubarrays(input.arr)
 		fmt.Println(result)
 	}
 }
