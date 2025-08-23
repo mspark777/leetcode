@@ -4,39 +4,41 @@ import (
 	"fmt"
 )
 
-func sumOddLengthSubarrays(arr []int) int {
-	n := len(arr)
+func minOperations(logs []string) int {
 	result := 0
 
-	for i := 0; i < n; i += 1 {
-		left := i
-		right := n - 1 - i
-		result += arr[i] * (left/2 + 1) * (right/2 + 1)
-		result += arr[i] * ((left + 1) / 2) * ((right + 1) / 2)
+	for _, operation := range logs {
+		if operation == "../" {
+			if result > 0 {
+				result = max(result-1, 0)
+			}
+		} else if operation != "./" {
+			result += 1
+		}
 	}
 
 	return result
 }
 
 type input struct {
-	arr []int
+	logs []string
 }
 
 func main() {
 	inputs := []input{
 		{
-			arr: []int{1, 4, 2, 5, 3},
+			logs: []string{"d1/", "d2/", "../", "d21/", "./"},
 		},
 		{
-			arr: []int{1, 2},
+			logs: []string{"d1/", "d2/", "./", "d3/", "../", "d31/"},
 		},
 		{
-			arr: []int{10, 11, 12},
+			logs: []string{"d1/", "../", "../", "../"},
 		},
 	}
 
 	for _, input := range inputs {
-		result := sumOddLengthSubarrays(input.arr)
+		result := minOperations(input.logs)
 		fmt.Println(result)
 	}
 }
