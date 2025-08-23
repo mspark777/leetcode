@@ -1,45 +1,31 @@
 import "@total-typescript/ts-reset";
 
-function reformatDate(date: string): string {
-  const [day, month, year] = date.split(" ") as [string, string, string];
-  const monthMap = new Map(
-    Object.entries({
-      Jan: "01",
-      Feb: "02",
-      Mar: "03",
-      Apr: "04",
-      May: "05",
-      Jun: "06",
-      Jul: "07",
-      Aug: "08",
-      Sep: "09",
-      Oct: "10",
-      Nov: "11",
-      Dec: "12",
-    }),
+function reorderSpaces(text: string): string {
+  const splitted = text.split(" ");
+  const words = splitted.filter((word) => word !== "");
+  const spacePerWord = Math.floor((splitted.length - 1) / (words.length - 1));
+  const joined = words.join(
+    " ".repeat(Number.isFinite(spacePerWord) ? spacePerWord : 0),
   );
-  return `${year}-${monthMap.get(month) as string}-${day.slice(0, -2).padStart(2, "0")}`;
+  return joined + " ".repeat(text.length - joined.length);
 }
 
 interface Input {
-  date: string;
+  text: string;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      date: "20th Oct 2052",
+      text: "  this   is  a sentence ",
     },
     {
-      date: "6th Jun 1933",
-    },
-    {
-      date: "26th May 1960",
+      text: " practice   makes   perfect",
     },
   ];
 
   for (const input of inputs) {
-    const result = reformatDate(input.date);
+    const result = reorderSpaces(input.text);
     console.log(result);
   }
 }
