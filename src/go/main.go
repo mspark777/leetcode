@@ -4,41 +4,51 @@ import (
 	"fmt"
 )
 
-func minOperations(logs []string) int {
-	result := 0
+func solve(releaseTimes []int, keysPressed []rune) rune {
+	n := len(releaseTimes)
+	longestPress := releaseTimes[0]
+	slowestKey := keysPressed[0]
 
-	for _, operation := range logs {
-		if operation == "../" {
-			if result > 0 {
-				result = max(result-1, 0)
-			}
-		} else if operation != "./" {
-			result += 1
+	for i := 1; i < n; i += 1 {
+		currentDuration := releaseTimes[i] - releaseTimes[i-1]
+		if currentDuration > longestPress ||
+			(currentDuration == longestPress && keysPressed[i] > slowestKey) {
+			longestPress = currentDuration
+			slowestKey = keysPressed[i]
 		}
 	}
 
-	return result
+	return slowestKey
+}
+
+func slowestKey(releaseTimes []int, keysPressed string) byte {
+	keysPressedRune := []rune(keysPressed)
+	return byte(solve(releaseTimes, keysPressedRune))
 }
 
 type input struct {
-	logs []string
+	releaseTimes []int
+	keysPressed  string
 }
 
 func main() {
 	inputs := []input{
 		{
-			logs: []string{"d1/", "d2/", "../", "d21/", "./"},
+			releaseTimes: []int{9, 29, 49, 50},
+			keysPressed:  "cbcd",
 		},
 		{
-			logs: []string{"d1/", "d2/", "./", "d3/", "../", "d31/"},
+			releaseTimes: []int{12, 23, 36, 46, 62},
+			keysPressed:  "spuda",
 		},
 		{
-			logs: []string{"d1/", "../", "../", "../"},
+			releaseTimes: []int{9, 29, 49, 50},
+			keysPressed:  "cbcd",
 		},
 	}
 
 	for _, input := range inputs {
-		result := minOperations(input.logs)
+		result := slowestKey(input.releaseTimes, input.keysPressed)
 		fmt.Println(result)
 	}
 }
