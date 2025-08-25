@@ -1,41 +1,41 @@
 struct Solution {}
 
 impl Solution {
-    pub fn trim_mean(arr: Vec<i32>) -> f64 {
-        let mut arr = arr;
-        arr.sort();
-        let len = arr.len();
-        let skip = len / 20;
-        let count = len - 2 * skip;
+    pub fn max_length_between_equal_characters(s: String) -> i32 {
+        let mut first_positions = std::collections::HashMap::<char, usize>::new();
+        let mut result = -1;
 
-        let sum = arr.iter().skip(skip).take(count).sum::<i32>();
-        sum as f64 / count as f64
+        for (i, c) in s.chars().enumerate() {
+            if let Some(&idx) = first_positions.get(&c) {
+                result = result.max((i - idx) as i32 - 1);
+            } else {
+                first_positions.insert(c, i);
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            arr: [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3].to_vec(),
+            s: "aa".to_string(),
         },
         Input {
-            arr: [6, 2, 7, 5, 1, 2, 0, 3, 10, 2, 5, 0, 5, 5, 0, 8, 7, 6, 8, 0].to_vec(),
+            s: "abca".to_string(),
         },
         Input {
-            arr: [
-                6, 0, 7, 0, 7, 5, 7, 8, 3, 4, 0, 7, 8, 1, 6, 8, 1, 1, 2, 4, 8, 1, 9, 5, 4, 3, 8, 5,
-                10, 8, 6, 6, 1, 0, 6, 10, 8, 2, 3, 4,
-            ]
-            .to_vec(),
+            s: "cbzxy".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::trim_mean(input.arr);
+        let result = Solution::max_length_between_equal_characters(input.s);
         println!("{:?}", result);
     }
 }
