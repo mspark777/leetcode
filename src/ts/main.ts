@@ -1,49 +1,50 @@
 import "@total-typescript/ts-reset";
 
-class ParkingSystem {
-  private spaces: number[];
-  constructor(big: number, medium: number, small: number) {
-    this.spaces = [big, medium, small];
-  }
+function canFormArray(arr: number[], pieces: number[][]): boolean {
+  const pieceMap = new Map(pieces.map((piece) => [piece[0], piece]));
+  let i = 0;
 
-  addCar(carType: number): boolean {
-    const idx = carType - 1;
-    const space = this.spaces[idx] ?? 0;
-    if (space <= 0) {
+  while (i < arr.length) {
+    const piece = pieceMap.get(arr[i]);
+    if (piece == null) {
       return false;
     }
 
-    this.spaces[idx] = space - 1;
-    return true;
-  }
-}
+    for (const [j, num] of piece.entries()) {
+      if (num !== arr[i + j]) {
+        return false;
+      }
+    }
 
-function reorderSpaces(text: string): string {
-  const splitted = text.split(" ");
-  const words = splitted.filter((word) => word !== "");
-  const spacePerWord = Math.floor((splitted.length - 1) / (words.length - 1));
-  const joined = words.join(
-    " ".repeat(Number.isFinite(spacePerWord) ? spacePerWord : 0),
-  );
-  return joined + " ".repeat(text.length - joined.length);
+    i += piece.length;
+  }
+
+  return true;
 }
 
 interface Input {
-  text: string;
+  arr: number[];
+  pieces: number[][];
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      text: "  this   is  a sentence ",
+      arr: [15, 88],
+      pieces: [[88], [15]],
     },
     {
-      text: " practice   makes   perfect",
+      arr: [49, 18, 16],
+      pieces: [[16, 18, 49]],
+    },
+    {
+      arr: [91, 4, 64, 78],
+      pieces: [[78], [4, 64], [91]],
     },
   ];
 
   for (const input of inputs) {
-    const result = reorderSpaces(input.text);
+    const result = canFormArray(input.arr, input.pieces);
     console.log(result);
   }
 }
