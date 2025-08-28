@@ -2,40 +2,26 @@ from typing import List
 
 
 class Solution:
-    def containsPattern(self, arr: List[int], m: int, k: int) -> bool:
-        count = 0
-        for i in range(0, len(arr) - m):
-            if arr[i] == arr[i + m]:
-                count += 1
-            else:
-                count = 0
-
-            if count == (m * (k - 1)):
-                return True
-
-        return False
+    def maximumWealth(self, accounts: List[List[int]]) -> int:
+        return max(map(sum, accounts))
 
 
 class Input:
-    arr: list[int]
-    m: int
-    k: int
+    accounts: list[list[int]]
 
-    def __init__(self, arr: list[int], m: int, k: int):
-        self.arr = arr
-        self.m = m
-        self.k = k
+    def __init__(self, accounts: list[list[int]]):
+        self.accounts = accounts
 
 
 def main():
     inputs = [
-        Input([1, 2, 4, 4, 4, 4], 1, 3),
-        Input([1, 2, 1, 2, 1, 1, 1, 3], 2, 2),
-        Input([1, 2, 1, 2, 1, 3], 2, 3),
+        Input([[1, 2, 3], [3, 2, 1]]),
+        Input([[1, 5], [7, 3], [3, 5]]),
+        Input([[2, 8, 7], [7, 1, 3], [1, 9, 5]]),
     ]
 
     for input in inputs:
-        result = Solution().containsPattern(input.arr, input.m, input.k)
+        result = Solution().maximumWealth(input.accounts)
         print(result)
 
 
