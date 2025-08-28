@@ -4,51 +4,36 @@ import (
 	"fmt"
 )
 
-func solve(releaseTimes []int, keysPressed []rune) rune {
-	n := len(releaseTimes)
-	longestPress := releaseTimes[0]
-	slowestKey := keysPressed[0]
+func decode(encoded []int, first int) []int {
+	result := make([]int, len(encoded)+1)
 
-	for i := 1; i < n; i += 1 {
-		currentDuration := releaseTimes[i] - releaseTimes[i-1]
-		if currentDuration > longestPress ||
-			(currentDuration == longestPress && keysPressed[i] > slowestKey) {
-			longestPress = currentDuration
-			slowestKey = keysPressed[i]
-		}
+	result[0] = first
+	for i := 0; i < len(encoded); i += 1 {
+		result[i+1] = result[i] ^ encoded[i]
 	}
 
-	return slowestKey
-}
-
-func slowestKey(releaseTimes []int, keysPressed string) byte {
-	keysPressedRune := []rune(keysPressed)
-	return byte(solve(releaseTimes, keysPressedRune))
+	return result
 }
 
 type input struct {
-	releaseTimes []int
-	keysPressed  string
+	encoded []int
+	first   int
 }
 
 func main() {
 	inputs := []input{
 		{
-			releaseTimes: []int{9, 29, 49, 50},
-			keysPressed:  "cbcd",
+			encoded: []int{1, 2, 3},
+			first:   1,
 		},
 		{
-			releaseTimes: []int{12, 23, 36, 46, 62},
-			keysPressed:  "spuda",
-		},
-		{
-			releaseTimes: []int{9, 29, 49, 50},
-			keysPressed:  "cbcd",
+			encoded: []int{6, 2, 7, 3},
+			first:   4,
 		},
 	}
 
 	for _, input := range inputs {
-		result := slowestKey(input.releaseTimes, input.keysPressed)
+		result := decode(input.encoded, input.first)
 		fmt.Println(result)
 	}
 }
