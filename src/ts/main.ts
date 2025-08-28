@@ -1,5 +1,32 @@
 import "@total-typescript/ts-reset";
 
+class OrderedStream {
+  pos: number;
+  buffer: Array<string | undefined>;
+
+  constructor(n: number) {
+    this.pos = 0;
+    this.buffer = new Array<string | undefined>(n).fill(undefined);
+  }
+
+  insert(idKey: number, value: string): string[] {
+    this.buffer[idKey - 1] = value;
+    const chunks: string[] = [];
+
+    while (this.pos < this.buffer.length) {
+      const chunk = this.buffer[this.pos];
+      if (chunk == null) {
+        break;
+      }
+
+      this.pos += 1;
+      chunks.push(chunk);
+    }
+
+    return chunks;
+  }
+}
+
 function canFormArray(arr: number[], pieces: number[][]): boolean {
   const pieceMap = new Map(pieces.map((piece) => [piece[0], piece]));
   let i = 0;
