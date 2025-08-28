@@ -1,12 +1,6 @@
 select
-    a1.machine_id,
-    round(avg(a1.timestamp - a2.timestamp)::numeric, 3) as processing_time
-from activity a1
-join
-    activity a2
-    on a1.machine_id = a2.machine_id
-    and a1.process_id = a2.process_id
-    and a1.activity_type = 'end'
-    and a2.activity_type = 'start'
-group by a1.machine_id
+    user_id, concat(upper(left(name, 1)), lower(right(name, length(name) - 1))) as name
+from users
+order by user_id
+;
 
