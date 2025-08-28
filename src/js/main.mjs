@@ -1,26 +1,24 @@
 /**
- * @param {number} n
- * @returns {Generator<number>}
+ * @param {string} sequence
+ * @param {string} word
+ * @return {number}
  */
-function* range(n) {
-  let i = 1 - n;
-  while (i < n) {
-    yield i;
-    i += 2;
-  }
-}
+var maxRepeating = function (sequence, word) {
+  let result = 0;
+  const words = [word];
 
-/**
- * @param {number} n
- * @return {number[]}
- */
-var sumZero = function (n) {
-  return [...range(n)];
+  while (sequence.includes(words.join(""))) {
+    result += 1;
+    words.push(word);
+  }
+
+  return result;
 };
 
 /**
  * @typedef Input
- * @property {number} n
+ * @property {string} sequence
+ * @property {string} word
  */
 
 /**
@@ -30,18 +28,21 @@ function main() {
   /** @type Input[] */
   const inputs = [
     {
-      n: 5,
+      sequence: "ababc",
+      word: "ab",
     },
     {
-      n: 3,
+      sequence: "ababc",
+      word: "ba",
     },
     {
-      n: 1,
+      sequence: "ababc",
+      word: "ac",
     },
   ];
 
   for (const input of inputs) {
-    const result = sumZero(input.n);
+    const result = maxRepeating(input.sequence, input.word);
     console.log(result);
   }
 }
