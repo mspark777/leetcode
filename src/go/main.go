@@ -4,36 +4,49 @@ import (
 	"fmt"
 )
 
-func decode(encoded []int, first int) []int {
-	result := make([]int, len(encoded)+1)
+func countGoodRectangles(rectangles [][]int) int {
+	result := 0
+	maxLen := 0
 
-	result[0] = first
-	for i := 0; i < len(encoded); i += 1 {
-		result[i+1] = result[i] ^ encoded[i]
+	for _, rectangle := range rectangles {
+		k := min(rectangle[0], rectangle[1])
+		if k > maxLen {
+			maxLen = k
+			result = 1
+		} else if k == maxLen {
+			result++
+		}
 	}
 
 	return result
 }
 
 type input struct {
-	encoded []int
-	first   int
+	rectangles [][]int
 }
 
 func main() {
 	inputs := []input{
 		{
-			encoded: []int{1, 2, 3},
-			first:   1,
+			rectangles: [][]int{
+				{5, 8},
+				{3, 9},
+				{5, 12},
+				{16, 5},
+			},
 		},
 		{
-			encoded: []int{6, 2, 7, 3},
-			first:   4,
+			rectangles: [][]int{
+				{2, 3},
+				{3, 7},
+				{4, 3},
+				{3, 7},
+			},
 		},
 	}
 
 	for _, input := range inputs {
-		result := decode(input.encoded, input.first)
+		result := countGoodRectangles(input.rectangles)
 		fmt.Println(result)
 	}
 }
