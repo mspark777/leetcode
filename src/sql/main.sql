@@ -1,10 +1,6 @@
-select
-    date_id,
-    make_name,
-    count(distinct lead_id) as unique_leads,
-    count(distinct partner_id) as unique_partners
-from dailysales
-group by date_id, make_name
-order by date_id
+select user_id, count(user_id) as followers_count
+from followers
+group by user_id
+order by user_id asc
 ;
 
