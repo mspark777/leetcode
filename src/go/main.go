@@ -4,49 +4,57 @@ import (
 	"fmt"
 )
 
-func countGoodRectangles(rectangles [][]int) int {
-	result := 0
-	maxLen := 0
+func maximumTime(time string) string {
+	chars := []rune(time)
 
-	for _, rectangle := range rectangles {
-		k := min(rectangle[0], rectangle[1])
-		if k > maxLen {
-			maxLen = k
-			result = 1
-		} else if k == maxLen {
-			result++
+	if chars[0] == '?' {
+		if chars[1] == '?' {
+			chars[0] = '2'
+		} else if chars[1] > '3' {
+			chars[0] = '1'
+		} else {
+			chars[0] = '2'
 		}
 	}
 
-	return result
+	if chars[1] == '?' {
+		if chars[0] > '1' {
+			chars[1] = '3'
+		} else {
+			chars[1] = '9'
+		}
+	}
+
+	if chars[3] == '?' {
+		chars[3] = '5'
+	}
+
+	if chars[4] == '?' {
+		chars[4] = '9'
+	}
+
+	return string(chars)
 }
 
 type input struct {
-	rectangles [][]int
+	time string
 }
 
 func main() {
 	inputs := []input{
 		{
-			rectangles: [][]int{
-				{5, 8},
-				{3, 9},
-				{5, 12},
-				{16, 5},
-			},
+			time: "2?:?0",
 		},
 		{
-			rectangles: [][]int{
-				{2, 3},
-				{3, 7},
-				{4, 3},
-				{3, 7},
-			},
+			time: "0?:3?",
+		},
+		{
+			time: "1?:22",
 		},
 	}
 
 	for _, input := range inputs {
-		result := countGoodRectangles(input.rectangles)
+		result := maximumTime(input.time)
 		fmt.Println(result)
 	}
 }
