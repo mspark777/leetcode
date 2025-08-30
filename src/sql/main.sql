@@ -1,8 +1,5 @@
-select
-    m.employee_id, m.name, count(*) as reports_count, round(avg(e.age)) as average_age
-from employees e
-join employees m on e.reports_to = m.employee_id
-group by m.employee_id, m.name
-order by m.employee_id
+select event_day as day, emp_id, sum(out_time - in_time) as total_time
+from employees
+group by emp_id, event_day
 ;
 
