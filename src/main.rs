@@ -1,69 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn reformat_number(number: String) -> String {
-        let nums = number
-            .chars()
-            .filter(|&c| c.is_digit(10))
-            .collect::<Vec<char>>();
-
-        let n = nums.len();
-        let mut result = Vec::<char>::with_capacity(n + (n / 3));
-
-        let mut i = 0usize;
-        while i < n {
-            let remains = n - i;
-            if remains > 4 {
-                result.push(nums[i]);
-                result.push(nums[i + 1]);
-                result.push(nums[i + 2]);
-                result.push('-');
-                i += 3;
-            } else if remains == 4 {
-                result.push(nums[i]);
-                result.push(nums[i + 1]);
-                result.push('-');
-                result.push(nums[i + 2]);
-                result.push(nums[i + 3]);
-            } else if remains == 3 {
-                result.push(nums[i]);
-                result.push(nums[i + 1]);
-                result.push(nums[i + 2]);
-            } else if remains == 2 {
-                result.push(nums[i]);
-                result.push(nums[i + 1]);
-            } else {
-                result.push(nums[i]);
-            }
-
-            if remains <= 4 {
-                break;
-            }
+    pub fn sum_of_unique(nums: Vec<i32>) -> i32 {
+        let mut counts = std::collections::HashMap::<i32, i32>::with_capacity(nums.len());
+        for num in nums.iter().cloned() {
+            counts.entry(num).and_modify(|v| *v += 1).or_insert(1);
         }
 
-        result.iter().collect()
+        counts
+            .iter()
+            .filter(|&(_, &count)| count == 1)
+            .map(|(&num, _)| num)
+            .sum()
     }
 }
 
 struct Input {
-    number: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            number: "1-23-45 6".to_string(),
+            nums: [1, 2, 3, 2].to_vec(),
         },
         Input {
-            number: "123 4-567".to_string(),
+            nums: [1, 1, 1, 1, 1].to_vec(),
         },
         Input {
-            number: "123 4-5678".to_string(),
+            nums: [1, 2, 3, 4, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::reformat_number(input.number);
+        let result = Solution::sum_of_unique(input.nums);
         println!("{:?}", result);
     }
 }
