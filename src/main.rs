@@ -1,39 +1,60 @@
 struct Solution {}
 
+use std::collections::HashSet;
+
 impl Solution {
-    pub fn sum_of_unique(nums: Vec<i32>) -> i32 {
-        let mut counts = std::collections::HashMap::<i32, i32>::with_capacity(nums.len());
-        for num in nums.iter().cloned() {
-            counts.entry(num).and_modify(|v| *v += 1).or_insert(1);
+    pub fn longest_nice_substring(s: String) -> String {
+        let mut max_len = 0usize;
+        let mut result: &[char] = &[];
+        let chars = s.chars().collect::<Vec<char>>();
+
+        for i in 0..chars.len() {
+            let mut ch_set = HashSet::<char>::with_capacity(52);
+            for (j, ch) in chars.iter().cloned().enumerate().skip(i) {
+                ch_set.insert(ch);
+                if Self::check(&ch_set) {
+                    let curr_len = j + 1 - i;
+                    if curr_len > max_len {
+                        max_len = curr_len;
+                        result = &chars[i..=j];
+                    }
+                }
+            }
         }
 
-        counts
-            .iter()
-            .filter(|&(_, &count)| count == 1)
-            .map(|(&num, _)| num)
-            .sum()
+        result.iter().collect()
+    }
+
+    fn check(set: &HashSet<char>) -> bool {
+        for ch in set.iter() {
+            let l = ch.to_ascii_lowercase();
+            let u = ch.to_ascii_uppercase();
+            if !(set.contains(&l) && set.contains(&u)) {
+                return false;
+            }
+        }
+
+        true
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 2].to_vec(),
+            s: "YazaAay".to_string(),
         },
         Input {
-            nums: [1, 1, 1, 1, 1].to_vec(),
+            s: "Bb".to_string(),
         },
-        Input {
-            nums: [1, 2, 3, 4, 5].to_vec(),
-        },
+        Input { s: "c".to_string() },
     ];
 
     for input in inputs {
-        let result = Solution::sum_of_unique(input.nums);
+        let result = Solution::longest_nice_substring(input.s);
         println!("{:?}", result);
     }
 }
