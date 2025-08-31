@@ -4,57 +4,57 @@ import (
 	"fmt"
 )
 
-func maximumTime(time string) string {
-	chars := []rune(time)
+func canChoose(groups [][]int, nums []int) bool {
+	i := 0
+	n := len(nums)
+	g := len(groups)
+	for j := 0; (i < g) && (j < n); j += 1 {
+		group := groups[i]
+		l := len(group)
+		match := true
+		if (j + l) > n {
+			return false
+		}
 
-	if chars[0] == '?' {
-		if chars[1] == '?' {
-			chars[0] = '2'
-		} else if chars[1] > '3' {
-			chars[0] = '1'
-		} else {
-			chars[0] = '2'
+		for k := 0; k < l; k += 1 {
+			if group[k] != nums[j+k] {
+				match = false
+				break
+			}
+		}
+
+		if match {
+			j += l - 1
+			i += 1
 		}
 	}
 
-	if chars[1] == '?' {
-		if chars[0] > '1' {
-			chars[1] = '3'
-		} else {
-			chars[1] = '9'
-		}
-	}
-
-	if chars[3] == '?' {
-		chars[3] = '5'
-	}
-
-	if chars[4] == '?' {
-		chars[4] = '9'
-	}
-
-	return string(chars)
+	return i == g
 }
 
 type input struct {
-	time string
+	groups [][]int
+	nums   []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			time: "2?:?0",
+			groups: [][]int{{1, -1, -1}, {3, -2, 0}},
+			nums:   []int{1, -1, 0, 1, -1, -1, 3, -2, 0},
 		},
 		{
-			time: "0?:3?",
+			groups: [][]int{{10, -2}, {1, 2, 3, 4}},
+			nums:   []int{1, 2, 3, 4, 10, -2},
 		},
 		{
-			time: "1?:22",
+			groups: [][]int{{1, 2, 3}, {3, 4}},
+			nums:   []int{7, 7, 1, 2, 3, 4, 7, 7},
 		},
 	}
 
 	for _, input := range inputs {
-		result := maximumTime(input.time)
+		result := canChoose(input.groups, input.nums)
 		fmt.Println(result)
 	}
 }
