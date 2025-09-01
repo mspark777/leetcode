@@ -1,60 +1,55 @@
 struct Solution {}
 
-use std::collections::HashSet;
-
 impl Solution {
-    pub fn longest_nice_substring(s: String) -> String {
-        let mut max_len = 0usize;
-        let mut result: &[char] = &[];
-        let chars = s.chars().collect::<Vec<char>>();
+    pub fn nearest_valid_point(x: i32, y: i32, points: Vec<Vec<i32>>) -> i32 {
+        let mut result = -1;
+        let mut smallest_distance = i32::MAX;
 
-        for i in 0..chars.len() {
-            let mut ch_set = HashSet::<char>::with_capacity(52);
-            for (j, ch) in chars.iter().cloned().enumerate().skip(i) {
-                ch_set.insert(ch);
-                if Self::check(&ch_set) {
-                    let curr_len = j + 1 - i;
-                    if curr_len > max_len {
-                        max_len = curr_len;
-                        result = &chars[i..=j];
-                    }
+        for (i, point) in points.iter().enumerate() {
+            let px = point[0];
+            let py = point[1];
+            if px == x || py == y {
+                let distance = (x - px).abs() + (y - py).abs();
+                if distance < smallest_distance {
+                    result = i as i32;
+                    smallest_distance = distance;
                 }
             }
         }
 
-        result.iter().collect()
-    }
-
-    fn check(set: &HashSet<char>) -> bool {
-        for ch in set.iter() {
-            let l = ch.to_ascii_lowercase();
-            let u = ch.to_ascii_uppercase();
-            if !(set.contains(&l) && set.contains(&u)) {
-                return false;
-            }
-        }
-
-        true
+        result
     }
 }
 
 struct Input {
-    s: String,
+    x: i32,
+    y: i32,
+    points: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "YazaAay".to_string(),
+            x: 3,
+            y: 4,
+            points: [[1, 2], [3, 1], [2, 4], [2, 3], [4, 4]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
         Input {
-            s: "Bb".to_string(),
+            x: 3,
+            y: 4,
+            points: [[3, 4]].map(|v| v.to_vec()).to_vec(),
         },
-        Input { s: "c".to_string() },
+        Input {
+            x: 3,
+            y: 4,
+            points: [[2, 3]].map(|v| v.to_vec()).to_vec(),
+        },
     ];
 
     for input in inputs {
-        let result = Solution::longest_nice_substring(input.s);
+        let result = Solution::nearest_valid_point(input.x, input.y, input.points);
         println!("{:?}", result);
     }
 }
