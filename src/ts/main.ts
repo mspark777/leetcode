@@ -1,44 +1,52 @@
 import "@total-typescript/ts-reset";
 
-function countBalls(lowLimit: number, highLimit: number): number {
-  const counts = new Map<number, number>();
-
-  for (let i = lowLimit; i <= highLimit; i += 1) {
-    let sum = 0;
-    let n = i;
-    while (n > 0) {
-      sum += n % 10;
-      n = Number(BigInt(n) / 10n);
+function countMatches(
+  items: string[][],
+  ruleKey: string,
+  ruleValue: string,
+): number {
+  return items.reduce((acc, [type, color, name]) => {
+    if (ruleKey === "type" && ruleValue === type) {
+      return acc + 1;
+    } else if (ruleKey === "color" && ruleValue === color) {
+      return acc + 1;
+    } else if (ruleKey === "name" && ruleValue === name) {
+      return acc + 1;
     }
-    counts.set(sum, (counts.get(sum) ?? 0) + 1);
-  }
-
-  return Math.max(...counts.values());
+    return acc;
+  }, 0);
 }
 
 interface Input {
-  lowLimit: number;
-  highLimit: number;
+  items: string[][];
+  ruleKey: string;
+  ruleValue: string;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      lowLimit: 1,
-      highLimit: 10,
+      items: [
+        ["phone", "blue", "pixel"],
+        ["computer", "silver", "lenovo"],
+        ["phone", "gold", "iphone"],
+      ],
+      ruleKey: "color",
+      ruleValue: "silver",
     },
     {
-      lowLimit: 5,
-      highLimit: 15,
-    },
-    {
-      lowLimit: 19,
-      highLimit: 28,
+      items: [
+        ["phone", "blue", "pixel"],
+        ["computer", "silver", "phone"],
+        ["phone", "gold", "iphone"],
+      ],
+      ruleKey: "type",
+      ruleValue: "phone",
     },
   ];
 
   for (const input of inputs) {
-    const result = countBalls(input.lowLimit, input.highLimit);
+    const result = countMatches(input.items, input.ruleKey, input.ruleValue);
     console.log(result);
   }
 }
