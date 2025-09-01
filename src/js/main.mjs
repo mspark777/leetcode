@@ -1,24 +1,14 @@
 /**
- * @param {string} sequence
- * @param {string} word
- * @return {number}
+ * @param {string} s
+ * @return {boolean}
  */
-var maxRepeating = function (sequence, word) {
-  let result = 0;
-  const words = [word];
-
-  while (sequence.includes(words.join(""))) {
-    result += 1;
-    words.push(word);
-  }
-
-  return result;
+var checkOnesSegment = function (s) {
+  return s.indexOf("01") === -1;
 };
 
 /**
  * @typedef Input
- * @property {string} sequence
- * @property {string} word
+ * @property {string} s
  */
 
 /**
@@ -28,21 +18,15 @@ function main() {
   /** @type Input[] */
   const inputs = [
     {
-      sequence: "ababc",
-      word: "ab",
+      s: "1001",
     },
     {
-      sequence: "ababc",
-      word: "ba",
-    },
-    {
-      sequence: "ababc",
-      word: "ac",
+      s: "110",
     },
   ];
 
   for (const input of inputs) {
-    const result = maxRepeating(input.sequence, input.word);
+    const result = checkOnesSegment(input.s);
     console.log(result);
   }
 }
