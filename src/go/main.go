@@ -4,36 +4,36 @@ import (
 	"fmt"
 )
 
-func findCenter(edges [][]int) int {
-	firstU := edges[0][0]
-	firstV := edges[0][1]
-	secondU := edges[1][0]
-	secondV := edges[1][1]
-
-	if firstU == secondU || firstU == secondV {
-		return firstU
+func minOperations(nums []int) int {
+	result := 0
+	last := 0
+	for _, num := range nums {
+		result += max(0, last-num+1)
+		last = max(num, last+1)
 	}
 
-	return firstV
+	return result
 }
 
 type input struct {
-	edges [][]int
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-			edges: [][]int{{1, 2}, {2, 3}, {4, 2}},
+			nums: []int{1, 1, 1},
 		},
 		{
-
-			edges: [][]int{{1, 2}, {5, 1}, {1, 3}, {1, 4}},
+			nums: []int{1, 5, 2, 4, 1},
+		},
+		{
+			nums: []int{8},
 		},
 	}
 
 	for _, input := range inputs {
-		result := findCenter(input.edges)
+		result := minOperations(input.nums)
 		fmt.Println(result)
 	}
 }
