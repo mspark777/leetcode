@@ -1,35 +1,25 @@
 class Solution:
-    def secondHighest(self, s: str) -> int:
-        first = -1
-        result = -1
-        for c in s:
-            if not c.isdigit():
-                continue
-            n = int(c)
-            if n > first:
-                result = first
-                first = n
-            elif n > result and n < first:
-                result = n
-
-        return result
+    def numDifferentIntegers(self, word: str) -> int:
+        s = "".join(c if c.isdigit() else " " for c in word)
+        return len(set(map(int, s.split())))
 
 
 class Input:
-    s: str
+    word: str
 
-    def __init__(self, s: str):
-        self.s = s
+    def __init__(self, word: str):
+        self.word = word
 
 
 def main():
     inputs = [
-        Input("dfa12321afd"),
-        Input("abc1111"),
+        Input("a123bc34d8ef34"),
+        Input("leet1234code234"),
+        Input("a1b01c001"),
     ]
 
     for input in inputs:
-        result = Solution().secondHighest(input.s)
+        result = Solution().numDifferentIntegers(input.word)
         print(result)
 
 
