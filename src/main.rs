@@ -1,55 +1,37 @@
 struct Solution {}
 
 impl Solution {
-    pub fn nearest_valid_point(x: i32, y: i32, points: Vec<Vec<i32>>) -> i32 {
-        let mut result = -1;
-        let mut smallest_distance = i32::MAX;
-
-        for (i, point) in points.iter().enumerate() {
-            let px = point[0];
-            let py = point[1];
-            if px == x || py == y {
-                let distance = (x - px).abs() + (y - py).abs();
-                if distance < smallest_distance {
-                    result = i as i32;
-                    smallest_distance = distance;
-                }
-            }
-        }
-
-        result
+    pub fn truncate_sentence(s: String, k: i32) -> String {
+        s.split_whitespace()
+            .take(k as usize)
+            .collect::<Vec<&str>>()
+            .join(" ")
     }
 }
 
 struct Input {
-    x: i32,
-    y: i32,
-    points: Vec<Vec<i32>>,
+    s: String,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            x: 3,
-            y: 4,
-            points: [[1, 2], [3, 1], [2, 4], [2, 3], [4, 4]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            s: "Hello how are you Contestant".to_string(),
+            k: 4,
         },
         Input {
-            x: 3,
-            y: 4,
-            points: [[3, 4]].map(|v| v.to_vec()).to_vec(),
+            s: "What is the solution to this problem".to_string(),
+            k: 4,
         },
         Input {
-            x: 3,
-            y: 4,
-            points: [[2, 3]].map(|v| v.to_vec()).to_vec(),
+            s: "chopper is not a tanuki".to_string(),
+            k: 5,
         },
     ];
 
     for input in inputs {
-        let result = Solution::nearest_valid_point(input.x, input.y, input.points);
+        let result = Solution::truncate_sentence(input.s, input.k);
         println!("{:?}", result);
     }
 }
