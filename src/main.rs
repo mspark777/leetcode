@@ -1,37 +1,33 @@
 struct Solution {}
 
 impl Solution {
-    pub fn truncate_sentence(s: String, k: i32) -> String {
-        s.split_whitespace()
-            .take(k as usize)
-            .collect::<Vec<&str>>()
+    pub fn sort_sentence(s: String) -> String {
+        let mut result = s.split_whitespace().collect::<Vec<_>>();
+        result.sort_unstable_by_key(|s| s.chars().last().unwrap() as u8);
+        result
+            .iter()
+            .map(|s| s[..s.len() - 1].to_string())
+            .collect::<Vec<_>>()
             .join(" ")
     }
 }
 
 struct Input {
     s: String,
-    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "Hello how are you Contestant".to_string(),
-            k: 4,
+            s: "is2 sentence4 This1 a3".to_string(),
         },
         Input {
-            s: "What is the solution to this problem".to_string(),
-            k: 4,
-        },
-        Input {
-            s: "chopper is not a tanuki".to_string(),
-            k: 5,
+            s: "Myself2 Me1 I4 and3".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::truncate_sentence(input.s, input.k);
+        let result = Solution::sort_sentence(input.s);
         println!("{:?}", result);
     }
 }
