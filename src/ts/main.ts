@@ -1,30 +1,49 @@
 import "@total-typescript/ts-reset";
 
-function squareIsWhite(coordinates: string): boolean {
-  const first = coordinates.charCodeAt(0) - "a".charCodeAt(0);
-  const second = Number(coordinates[1]);
-  return (first + second) % 2 === 0;
+function getMinDistance(nums: number[], target: number, start: number): number {
+  let left = start;
+  let right = start;
+  const last = nums.length - 1;
+  while (nums[left] !== target && nums[right] !== target) {
+    if (left > 0) {
+      left -= 1;
+    }
+
+    if (right < last) {
+      right += 1;
+    }
+  }
+
+  return Math.max(right - start, start - left);
 }
 
 interface Input {
-  coordinates: string;
+  nums: number[];
+  target: number;
+  start: number;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      coordinates: "a1",
+      nums: [1, 2, 3, 4, 5],
+      target: 5,
+      start: 3,
     },
     {
-      coordinates: "h3",
+      nums: [1],
+      target: 1,
+      start: 0,
     },
     {
-      coordinates: "c7",
+      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      target: 1,
+      start: 0,
     },
   ];
 
   for (const input of inputs) {
-    const result = squareIsWhite(input.coordinates);
+    const result = getMinDistance(input.nums, input.target, input.start);
     console.log(result);
   }
 }
