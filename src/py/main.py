@@ -1,25 +1,31 @@
+from typing import List
+
+
 class Solution:
-    def numDifferentIntegers(self, word: str) -> int:
-        s = "".join(c if c.isdigit() else " " for c in word)
-        return len(set(map(int, s.split())))
+    def maximumPopulation(self, logs: List[List[int]]) -> int:
+        years = [0] * 101
+        for birth, death in logs:
+            for year in range(birth, death):
+                years[year - 1950] += 1
+
+        return years.index(max(years)) + 1950
 
 
 class Input:
-    word: str
+    logs: list[list[int]]
 
-    def __init__(self, word: str):
-        self.word = word
+    def __init__(self, logs: list[list[int]]):
+        self.logs = logs
 
 
 def main():
     inputs = [
-        Input("a123bc34d8ef34"),
-        Input("leet1234code234"),
-        Input("a1b01c001"),
+        Input([[1993, 1999], [2000, 2010]]),
+        Input([[1950, 1961], [1960, 1971], [1970, 1981]]),
     ]
 
     for input in inputs:
-        result = Solution().numDifferentIntegers(input.word)
+        result = Solution().maximumPopulation(input.logs)
         print(result)
 
 
