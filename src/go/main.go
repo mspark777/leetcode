@@ -4,36 +4,36 @@ import (
 	"fmt"
 )
 
-func minOperations(nums []int) int {
+func sumBase(n int, k int) int {
 	result := 0
-	last := 0
-	for _, num := range nums {
-		result += max(0, last-num+1)
-		last = max(num, last+1)
+
+	for n > 0 {
+		result += n % k
+		n /= k
 	}
 
 	return result
 }
 
 type input struct {
-	nums []int
+	n int
+	k int
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums: []int{1, 1, 1},
+			n: 34,
+			k: 6,
 		},
 		{
-			nums: []int{1, 5, 2, 4, 1},
-		},
-		{
-			nums: []int{8},
+			n: 10,
+			k: 10,
 		},
 	}
 
 	for _, input := range inputs {
-		result := minOperations(input.nums)
+		result := sumBase(input.n, input.k)
 		fmt.Println(result)
 	}
 }
