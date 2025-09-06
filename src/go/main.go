@@ -4,36 +4,43 @@ import (
 	"fmt"
 )
 
-func sumBase(n int, k int) int {
+func countGoodSubstrings(s string) int {
 	result := 0
+	chars := []rune(s)
+	n := len(chars)
+	if n < 3 {
+		return result
+	}
 
-	for n > 0 {
-		result += n % k
-		n /= k
+	for i := 2; i < n; i += 1 {
+		a := chars[i-2]
+		b := chars[i-1]
+		c := chars[i]
+
+		if a != b && b != c && a != c {
+			result += 1
+		}
 	}
 
 	return result
 }
 
 type input struct {
-	n int
-	k int
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			n: 34,
-			k: 6,
+			s: "xyzzaz",
 		},
 		{
-			n: 10,
-			k: 10,
+			s: "aababcabc",
 		},
 	}
 
 	for _, input := range inputs {
-		result := sumBase(input.n, input.k)
+		result := countGoodSubstrings(input.s)
 		fmt.Println(result)
 	}
 }
