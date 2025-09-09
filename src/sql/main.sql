@@ -1,7 +1,5 @@
-select
-    employee_id,
-    case when employee_id % 2 = 1 and name !~ '^M' then salary else 0 end as bonus
-from employees
-order by employee_id
-;
+select user_id, max(time_stamp) last_stamp
+from logins
+where time_stamp::date between '2020-01-01' and '2020-12-31'
+group by user_id
 
