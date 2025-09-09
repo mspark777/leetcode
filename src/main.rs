@@ -1,53 +1,50 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_zero_ones(s: String) -> bool {
-        let mut zero_count = 0;
-        let mut one_count = 0;
-        let mut count = 0;
-        let mut last_ch = s.chars().next().unwrap();
-        for ch in s.chars() {
-            if last_ch == ch {
-                count += 1;
-                continue;
-            }
+    pub fn is_sum_equal(first_word: String, second_word: String, target_word: String) -> bool {
+        let first = Self::to_int(first_word.as_str());
+        let second = Self::to_int(second_word.as_str());
+        let target = Self::to_int(target_word.as_str());
 
-            last_ch = ch;
-            if ch == '1' {
-                zero_count = zero_count.max(count);
-            } else {
-                one_count = one_count.max(count);
-            }
-            count = 1;
-        }
+        (first + second) == target
+    }
 
-        if last_ch == '1' {
-            one_count.max(count) > zero_count
-        } else {
-            one_count > zero_count.max(count)
-        }
+    fn to_int(s: &str) -> i32 {
+        s.chars().fold(0, |n, ch| {
+            let cn = ch as i32;
+            let a = 'a' as i32;
+            (n * 10) + (cn - a)
+        })
     }
 }
 
 struct Input {
-    s: String,
+    first_word: String,
+    second_word: String,
+    target_word: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "1101".to_string(),
+            first_word: "acb".to_string(),
+            second_word: "cba".to_string(),
+            target_word: "cdb".to_string(),
         },
         Input {
-            s: "111000".to_string(),
+            first_word: "aaa".to_string(),
+            second_word: "a".to_string(),
+            target_word: "aab".to_string(),
         },
         Input {
-            s: "110100010".to_string(),
+            first_word: "aaa".to_string(),
+            second_word: "a".to_string(),
+            target_word: "aaaa".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::check_zero_ones(input.s);
+        let result = Solution::is_sum_equal(input.first_word, input.second_word, input.target_word);
         println!("{:?}", result);
     }
 }
