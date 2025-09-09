@@ -2,30 +2,32 @@ from typing import List
 
 
 class Solution:
-    def maximumPopulation(self, logs: List[List[int]]) -> int:
-        years = [0] * 101
-        for birth, death in logs:
-            for year in range(birth, death):
-                years[year - 1950] += 1
-
-        return years.index(max(years)) + 1950
+    def findRotation(self, mat: List[List[int]], target: List[List[int]]) -> bool:
+        for _ in range(4):
+            if mat == target:
+                return True
+            mat = [list(row) for row in zip(*mat[::-1])]
+        return False
 
 
 class Input:
-    logs: list[list[int]]
+    mat: list[list[int]]
+    target: list[list[int]]
 
-    def __init__(self, logs: list[list[int]]):
-        self.logs = logs
+    def __init__(self, mat: list[list[int]], target: list[list[int]]):
+        self.mat = mat
+        self.target = target
 
 
 def main():
     inputs = [
-        Input([[1993, 1999], [2000, 2010]]),
-        Input([[1950, 1961], [1960, 1971], [1970, 1981]]),
+        Input([[0, 1], [1, 0]], [[1, 0], [0, 1]]),
+        Input([[0, 1], [1, 1]], [[1, 0], [0, 1]]),
+        Input([[0, 0, 0], [0, 1, 0], [1, 1, 1]], [[1, 1, 1], [0, 1, 0], [0, 0, 0]]),
     ]
 
     for input in inputs:
-        result = Solution().maximumPopulation(input.logs)
+        result = Solution().findRotation(input.mat, input.target)
         print(result)
 
 
