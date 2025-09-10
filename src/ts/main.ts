@@ -1,49 +1,37 @@
 import "@total-typescript/ts-reset";
 
-function getMinDistance(nums: number[], target: number, start: number): number {
-  let left = start;
-  let right = start;
-  const last = nums.length - 1;
-  while (nums[left] !== target && nums[right] !== target) {
-    if (left > 0) {
-      left -= 1;
-    }
+function countTriples(n: number): number {
+  let result = 0;
 
-    if (right < last) {
-      right += 1;
+  for (let a = 1; a <= n; a += 1) {
+    for (let b = 1; b <= n; b += 1) {
+      const cSquared = a * a + b * b;
+      const c = Math.trunc(Math.sqrt(cSquared));
+      if (c * c === cSquared && c <= n) {
+        result += 1;
+      }
     }
   }
 
-  return Math.max(right - start, start - left);
+  return result;
 }
 
 interface Input {
-  nums: number[];
-  target: number;
-  start: number;
+  n: number;
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      nums: [1, 2, 3, 4, 5],
-      target: 5,
-      start: 3,
+      n: 5,
     },
     {
-      nums: [1],
-      target: 1,
-      start: 0,
-    },
-    {
-      nums: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      target: 1,
-      start: 0,
+      n: 10,
     },
   ];
 
   for (const input of inputs) {
-    const result = getMinDistance(input.nums, input.target, input.start);
+    const result = countTriples(input.n);
     console.log(result);
   }
 }
