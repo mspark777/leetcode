@@ -1,50 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_sum_equal(first_word: String, second_word: String, target_word: String) -> bool {
-        let first = Self::to_int(first_word.as_str());
-        let second = Self::to_int(second_word.as_str());
-        let target = Self::to_int(target_word.as_str());
+    pub fn can_be_increasing(nums: Vec<i32>) -> bool {
+        let mut changed = 0;
+        let mut temp = nums.clone();
 
-        (first + second) == target
-    }
+        for i in 1..nums.len() {
+            if temp[i - 1] >= temp[i] {
+                changed += 1;
+                if i > 1 && temp[i - 2] >= temp[i] {
+                    temp[i] = temp[i - 1];
+                }
+            }
 
-    fn to_int(s: &str) -> i32 {
-        s.chars().fold(0, |n, ch| {
-            let cn = ch as i32;
-            let a = 'a' as i32;
-            (n * 10) + (cn - a)
-        })
+            if changed > 1 {
+                break;
+            }
+        }
+
+        changed <= 1
     }
 }
 
 struct Input {
-    first_word: String,
-    second_word: String,
-    target_word: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            first_word: "acb".to_string(),
-            second_word: "cba".to_string(),
-            target_word: "cdb".to_string(),
+            nums: [1, 2, 10, 5, 7].to_vec(),
         },
         Input {
-            first_word: "aaa".to_string(),
-            second_word: "a".to_string(),
-            target_word: "aab".to_string(),
+            nums: [2, 3, 1, 2].to_vec(),
         },
         Input {
-            first_word: "aaa".to_string(),
-            second_word: "a".to_string(),
-            target_word: "aaaa".to_string(),
+            nums: [1, 1, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_sum_equal(input.first_word, input.second_word, input.target_word);
+        let result = Solution::can_be_increasing(input.nums);
         println!("{:?}", result);
     }
 }
