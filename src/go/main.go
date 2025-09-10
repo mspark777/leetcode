@@ -4,43 +4,49 @@ import (
 	"fmt"
 )
 
-func countGoodSubstrings(s string) int {
-	result := 0
-	chars := []rune(s)
-	n := len(chars)
-	if n < 3 {
-		return result
-	}
+func isCovered(ranges [][]int, left int, right int) bool {
+	for x := left; x <= right; x += 1 {
+		ok := false
+		for _, r := range ranges {
+			s := r[0]
+			e := r[1]
 
-	for i := 2; i < n; i += 1 {
-		a := chars[i-2]
-		b := chars[i-1]
-		c := chars[i]
+			if s <= x && x <= e {
+				ok = true
+				break
+			}
+		}
 
-		if a != b && b != c && a != c {
-			result += 1
+		if !ok {
+			return false
 		}
 	}
 
-	return result
+	return true
 }
 
 type input struct {
-	s string
+	ranges [][]int
+	left   int
+	right  int
 }
 
 func main() {
 	inputs := []input{
 		{
-			s: "xyzzaz",
+			ranges: [][]int{{1, 2}, {3, 4}, {5, 6}},
+			left:   2,
+			right:  5,
 		},
 		{
-			s: "aababcabc",
+			ranges: [][]int{{1, 10}, {10, 20}},
+			left:   21,
+			right:  21,
 		},
 	}
 
 	for _, input := range inputs {
-		result := countGoodSubstrings(input.s)
+		result := isCovered(input.ranges, input.left, input.right)
 		fmt.Println(result)
 	}
 }
