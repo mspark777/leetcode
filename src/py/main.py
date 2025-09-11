@@ -2,32 +2,35 @@ from typing import List
 
 
 class Solution:
-    def findRotation(self, mat: List[List[int]], target: List[List[int]]) -> bool:
-        for _ in range(4):
-            if mat == target:
+    def isPrefixString(self, s: str, words: List[str]) -> bool:
+        w = ""
+        for word in words:
+            w += word
+            if w == s:
                 return True
-            mat = [list(row) for row in zip(*mat[::-1])]
+            elif len(w) > len(s):
+                return False
+
         return False
 
 
 class Input:
-    mat: list[list[int]]
-    target: list[list[int]]
+    s: str
+    words: List[str]
 
-    def __init__(self, mat: list[list[int]], target: list[list[int]]):
-        self.mat = mat
-        self.target = target
+    def __init__(self, s: str, words: list[str]):
+        self.s = s
+        self.words = words
 
 
 def main():
     inputs = [
-        Input([[0, 1], [1, 0]], [[1, 0], [0, 1]]),
-        Input([[0, 1], [1, 1]], [[1, 0], [0, 1]]),
-        Input([[0, 0, 0], [0, 1, 0], [1, 1, 1]], [[1, 1, 1], [0, 1, 0], [0, 0, 0]]),
+        Input("iloveleetcode", ["i", "love", "leetcode", "apples"]),
+        Input("iloveleetcode", ["apples", "i", "love", "leetcode"]),
     ]
 
     for input in inputs:
-        result = Solution().findRotation(input.mat, input.target)
+        result = Solution().isPrefixString(input.s, input.words)
         print(result)
 
 
