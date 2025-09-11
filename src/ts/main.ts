@@ -1,37 +1,25 @@
 import "@total-typescript/ts-reset";
 
-function countTriples(n: number): number {
-  let result = 0;
-
-  for (let a = 1; a <= n; a += 1) {
-    for (let b = 1; b <= n; b += 1) {
-      const cSquared = a * a + b * b;
-      const c = Math.trunc(Math.sqrt(cSquared));
-      if (c * c === cSquared && c <= n) {
-        result += 1;
-      }
-    }
-  }
-
-  return result;
+function getConcatenation(nums: number[]): number[] {
+  return [...nums, ...nums];
 }
 
 interface Input {
-  n: number;
+  nums: number[];
 }
 
 function main(): void {
   const inputs: Input[] = [
     {
-      n: 5,
+      nums: [1, 2, 1],
     },
     {
-      n: 10,
+      nums: [1, 3, 2, 1],
     },
   ];
 
   for (const input of inputs) {
-    const result = countTriples(input.n);
+    const result = getConcatenation(input.nums);
     console.log(result);
   }
 }
