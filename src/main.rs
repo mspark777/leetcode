@@ -1,46 +1,37 @@
 struct Solution {}
 
 impl Solution {
-    pub fn can_be_increasing(nums: Vec<i32>) -> bool {
-        let mut changed = 0;
-        let mut temp = nums.clone();
-
-        for i in 1..nums.len() {
-            if temp[i - 1] >= temp[i] {
-                changed += 1;
-                if i > 1 && temp[i - 2] >= temp[i] {
-                    temp[i] = temp[i - 1];
-                }
-            }
-
-            if changed > 1 {
-                break;
-            }
-        }
-
-        changed <= 1
+    pub fn can_be_typed_words(text: String, broken_letters: String) -> i32 {
+        let brokens = std::collections::HashSet::<char>::from_iter(broken_letters.chars());
+        text.split_whitespace()
+            .filter(|word| word.chars().all(|c| !brokens.contains(&c)))
+            .count() as i32
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    text: String,
+    broken_letters: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 10, 5, 7].to_vec(),
+            text: "hello world".to_string(),
+            broken_letters: "ad".to_string(),
         },
         Input {
-            nums: [2, 3, 1, 2].to_vec(),
+            text: "leet code".to_string(),
+            broken_letters: "lt".to_string(),
         },
         Input {
-            nums: [1, 1, 1].to_vec(),
+            text: "leet code".to_string(),
+            broken_letters: "e".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_be_increasing(input.nums);
+        let result = Solution::can_be_typed_words(input.text, input.broken_letters);
         println!("{:?}", result);
     }
 }
