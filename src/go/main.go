@@ -4,20 +4,20 @@ import (
 	"fmt"
 )
 
-func isCovered(ranges [][]int, left int, right int) bool {
-	for x := left; x <= right; x += 1 {
-		ok := false
-		for _, r := range ranges {
-			s := r[0]
-			e := r[1]
+func areOccurrencesEqual(s string) bool {
+	counts := make(map[rune]int, 26)
 
-			if s <= x && x <= e {
-				ok = true
-				break
-			}
-		}
+	for _, c := range s {
+		counts[c] += 1
+	}
 
-		if !ok {
+	c := 0
+	for _, cnt := range counts {
+		if cnt == 0 {
+			continue
+		} else if c == 0 {
+			c = cnt
+		} else if c != cnt {
 			return false
 		}
 	}
@@ -26,27 +26,22 @@ func isCovered(ranges [][]int, left int, right int) bool {
 }
 
 type input struct {
-	ranges [][]int
-	left   int
-	right  int
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			ranges: [][]int{{1, 2}, {3, 4}, {5, 6}},
-			left:   2,
-			right:  5,
+
+			s: "abacbc",
 		},
 		{
-			ranges: [][]int{{1, 10}, {10, 20}},
-			left:   21,
-			right:  21,
+			s: "aaabb",
 		},
 	}
 
 	for _, input := range inputs {
-		result := isCovered(input.ranges, input.left, input.right)
+		result := areOccurrencesEqual(input.s)
 		fmt.Println(result)
 	}
 }
