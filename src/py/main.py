@@ -1,36 +1,32 @@
-from typing import List
-
-
 class Solution:
-    def isPrefixString(self, s: str, words: List[str]) -> bool:
-        w = ""
-        for word in words:
-            w += word
-            if w == s:
-                return True
-            elif len(w) > len(s):
-                return False
+    def minTimeToType(self, word: str) -> int:
+        result = len(word)
+        prev = "a"
 
-        return False
+        for ch in word:
+            diff = abs(ord(ch) - ord(prev))
+            result += min(diff, 26 - diff)
+            prev = ch
+
+        return result
 
 
 class Input:
-    s: str
-    words: List[str]
+    word: str
 
-    def __init__(self, s: str, words: list[str]):
-        self.s = s
-        self.words = words
+    def __init__(self, word: str):
+        self.word = word
 
 
 def main():
     inputs = [
-        Input("iloveleetcode", ["i", "love", "leetcode", "apples"]),
-        Input("iloveleetcode", ["apples", "i", "love", "leetcode"]),
+        Input("abc"),
+        Input("bza"),
+        Input("zjpc"),
     ]
 
     for input in inputs:
-        result = Solution().isPrefixString(input.s, input.words)
+        result = Solution().minTimeToType(input.word)
         print(result)
 
 
