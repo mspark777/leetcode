@@ -1,35 +1,27 @@
 /**
- * @param {number} n
- * @return {boolean}
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
  */
-var isThree = function (n) {
-  if (n === 1) {
-    return false;
+var minimumDifference = function (nums, k) {
+  if (nums.length < k) {
+    return 0;
   }
 
-  let count = 2;
-  const sqrt = Math.sqrt(n);
+  nums.sort((a, b) => a - b);
+  let result = Number.MAX_SAFE_INTEGER;
 
-  if (Number.isInteger(sqrt)) {
-    count += 1;
+  for (let i = 0; i < nums.length - k + 1; i++) {
+    result = Math.min(result, nums[i + k - 1] - nums[i]);
   }
 
-  for (let i = 2; i < sqrt; i += 1) {
-    if (n % i === 0) {
-      count += 2;
-    }
-
-    if (count > 3) {
-      break;
-    }
-  }
-
-  return count === 3;
+  return result;
 };
 
 /**
  * @typedef Input
- * @property {number} n
+ * @property {number[]} nums
+ * @property {number} k
  */
 
 /**
@@ -39,15 +31,17 @@ function main() {
   /** @type Input[] */
   const inputs = [
     {
-      n: 2,
+      nums: [90],
+      k: 1,
     },
     {
-      n: 4,
+      nums: [9, 4, 1, 7],
+      k: 2,
     },
   ];
 
   for (const input of inputs) {
-    const result = isThree(input.n);
+    const result = minimumDifference(input.nums, input.k);
     console.log(result);
   }
 }
