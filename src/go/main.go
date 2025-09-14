@@ -4,44 +4,48 @@ import (
 	"fmt"
 )
 
-func areOccurrencesEqual(s string) bool {
-	counts := make(map[rune]int, 26)
-
-	for _, c := range s {
-		counts[c] += 1
+func gcd(a, b int) int {
+	if b == 0 {
+		return a
 	}
+	return gcd(b, a%b)
+}
 
-	c := 0
-	for _, cnt := range counts {
-		if cnt == 0 {
-			continue
-		} else if c == 0 {
-			c = cnt
-		} else if c != cnt {
-			return false
+func findGCD(nums []int) int {
+	minN := nums[0]
+	maxN := nums[0]
+
+	for _, num := range nums {
+		if num < minN {
+			minN = num
+		}
+		if num > maxN {
+			maxN = num
 		}
 	}
 
-	return true
+	return gcd(minN, maxN)
 }
 
 type input struct {
-	s string
+	nums []int
 }
 
 func main() {
 	inputs := []input{
 		{
-
-			s: "abacbc",
+			nums: []int{2, 5, 6, 9, 10},
 		},
 		{
-			s: "aaabb",
+			nums: []int{7, 5, 6, 8, 3},
+		},
+		{
+			nums: []int{3, 3},
 		},
 	}
 
 	for _, input := range inputs {
-		result := areOccurrencesEqual(input.s)
+		result := findGCD(input.nums)
 		fmt.Println(result)
 	}
 }
