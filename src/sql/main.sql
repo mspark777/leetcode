@@ -1,6 +1,6 @@
-select coalesce(t1.employee_id, t2.employee_id) as employee_id
-from employees t1
-full join salaries t2 on t1.employee_id = t2.employee_id
-where t1.name is null or t2.salary is null
+select employee_id
+from employees
+where salary < 30000 and manager_id not in (select employee_id from employees)
 order by employee_id
+;
 
