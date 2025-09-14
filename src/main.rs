@@ -1,37 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn can_be_typed_words(text: String, broken_letters: String) -> i32 {
-        let brokens = std::collections::HashSet::<char>::from_iter(broken_letters.chars());
-        text.split_whitespace()
-            .filter(|word| word.chars().all(|c| !brokens.contains(&c)))
-            .count() as i32
+    pub fn num_of_strings(patterns: Vec<String>, word: String) -> i32 {
+        patterns.iter().fold(
+            0,
+            |acc, pattern| {
+                if word.contains(pattern) { acc + 1 } else { acc }
+            },
+        )
     }
 }
 
 struct Input {
-    text: String,
-    broken_letters: String,
+    patterns: Vec<String>,
+    word: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            text: "hello world".to_string(),
-            broken_letters: "ad".to_string(),
+            patterns: ["a", "abc", "bc", "d"].map(|s| s.to_string()).to_vec(),
+            word: "abc".to_string(),
         },
         Input {
-            text: "leet code".to_string(),
-            broken_letters: "lt".to_string(),
+            patterns: ["a", "b", "c"].map(|s| s.to_string()).to_vec(),
+            word: "aaaaabbbbb".to_string(),
         },
         Input {
-            text: "leet code".to_string(),
-            broken_letters: "e".to_string(),
+            patterns: ["a", "a", "a"].map(|s| s.to_string()).to_vec(),
+            word: "ab".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_be_typed_words(input.text, input.broken_letters);
+        let result = Solution::num_of_strings(input.patterns, input.word);
         println!("{:?}", result);
     }
 }
