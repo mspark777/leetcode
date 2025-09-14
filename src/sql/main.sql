@@ -1,5 +1,6 @@
-select user_id, max(time_stamp) last_stamp
-from logins
-where time_stamp::date between '2020-01-01' and '2020-12-31'
-group by user_id
+select coalesce(t1.employee_id, t2.employee_id) as employee_id
+from employees t1
+full join salaries t2 on t1.employee_id = t2.employee_id
+where t1.name is null or t2.salary is null
+order by employee_id
 
