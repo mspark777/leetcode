@@ -4,44 +4,43 @@ import (
 	"fmt"
 )
 
-func findMiddleIndex(nums []int) int {
-	right := 0
-	for _, num := range nums {
-		right += num
-	}
+func minimumMoves(s string) int {
+	result := 0
+	i := 0
 
-	left := 0
-	for i, num := range nums {
-		right -= num
-		if left == right {
-			return i
+	ch := []rune(s)
+
+	for i < len(ch) {
+		if ch[i] == 'X' {
+			result += 1
+			i += 3
+		} else {
+			i += 1
 		}
-
-		left += num
 	}
 
-	return -1
+	return result
 }
 
 type input struct {
-	nums []int
+	s string
 }
 
 func main() {
 	inputs := []input{
 		{
-			nums: []int{2, 3, -1, 8, 4},
+			s: "XXX",
 		},
 		{
-			nums: []int{1, -1, 4},
+			s: "XXOX",
 		},
 		{
-			nums: []int{2, 5},
+			s: "OOOO",
 		},
 	}
 
 	for _, input := range inputs {
-		result := findMiddleIndex(input.nums)
+		result := minimumMoves(input.s)
 		fmt.Println(result)
 	}
 }
