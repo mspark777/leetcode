@@ -1,49 +1,35 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_k_difference(nums: Vec<i32>, k: i32) -> i32 {
-        let mut counts = std::collections::HashMap::<i32, i32>::with_capacity(nums.len());
-        for num in nums.iter().cloned() {
-            counts
-                .entry(num)
-                .and_modify(|count| *count += 1)
-                .or_insert(1);
-        }
-
-        let mut result = 0;
-        for num in counts.keys().cloned() {
-            if let Some(target) = counts.get(&(num + k)) {
-                result += counts.get(&num).unwrap() * target;
-            }
-        }
-
-        result
+    pub fn final_value_after_operations(operations: Vec<String>) -> i32 {
+        operations
+            .iter()
+            .fold(0, |result, oper| match oper.chars().nth(1) {
+                Some('+') => result + 1,
+                _ => result - 1,
+            })
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    operations: Vec<String>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 2, 1].to_vec(),
-            k: 1,
+            operations: ["--X", "X++", "X++"].map(|s| s.to_string()).to_vec(),
         },
         Input {
-            nums: [1, 3].to_vec(),
-            k: 3,
+            operations: ["++X", "++X", "X++"].map(|s| s.to_string()).to_vec(),
         },
         Input {
-            nums: [3, 2, 1, 5, 4].to_vec(),
-            k: 2,
+            operations: ["X++", "++X", "--X", "X--"].map(|s| s.to_string()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_k_difference(input.nums, input.k);
+        let result = Solution::final_value_after_operations(input.operations);
         println!("{:?}", result);
     }
 }
