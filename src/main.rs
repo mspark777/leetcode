@@ -1,43 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn construct2_d_array(original: Vec<i32>, m: i32, n: i32) -> Vec<Vec<i32>> {
-        let m = m as usize;
-        let n = n as usize;
-        match original.len() == (m * n) {
-            true => original.chunks(n).map(|chunk| chunk.to_vec()).collect(),
-            _ => vec![],
+    pub fn are_numbers_ascending(s: String) -> bool {
+        let mut prev = 0;
+        let mut result = true;
+        for chunk in s.split_whitespace() {
+            if let Ok(num) = chunk.parse::<i32>() {
+                if num <= prev {
+                    result = false;
+                    break;
+                } else {
+                    prev = num;
+                }
+            }
         }
+
+        result
     }
 }
 
 struct Input {
-    original: Vec<i32>,
-    m: i32,
-    n: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            original: [1, 2, 3, 4].to_vec(),
-            m: 2,
-            n: 2,
+            s: "1 box has 3 blue 4 red 6 green and 12 yellow marbles".to_string(),
         },
         Input {
-            original: [1, 2, 3].to_vec(),
-            m: 1,
-            n: 3,
+            s: "hello world 5 x 5".to_string(),
         },
         Input {
-            original: [1, 2].to_vec(),
-            m: 1,
-            n: 1,
+            s: "sunset is at 7 51 pm overnight lows will be in the low 50 and 60 s".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::construct2_d_array(input.original, input.m, input.n);
+        let result = Solution::are_numbers_ascending(input.s);
         println!("{:?}", result);
     }
 }
