@@ -1,7 +1,11 @@
 import "@total-typescript/ts-reset";
 
-function getConcatenation(nums: number[]): number[] {
-  return [...nums, ...nums];
+function search(word: string): boolean {
+  return word.search(/^([a-z]+(-[a-z]+)?[.,!]?|[.,!])$/) > -1;
+}
+
+function countValidWords(sentence: string): number {
+  return sentence.split(" ").filter(search).length;
 }
 
 interface Input {
