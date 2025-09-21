@@ -1,43 +1,37 @@
 struct Solution {}
 
 impl Solution {
-    pub fn are_numbers_ascending(s: String) -> bool {
-        let mut prev = 0;
-        let mut result = true;
-        for chunk in s.split_whitespace() {
-            if let Ok(num) = chunk.parse::<i32>() {
-                if num <= prev {
-                    result = false;
-                    break;
-                } else {
-                    prev = num;
-                }
+    pub fn smallest_equal(nums: Vec<i32>) -> i32 {
+        for (i, num) in nums.iter().cloned().enumerate() {
+            let i = i as i32;
+            if i % 10 == num {
+                return i;
             }
         }
 
-        result
+        return -1;
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "1 box has 3 blue 4 red 6 green and 12 yellow marbles".to_string(),
+            nums: [0, 1, 2].to_vec(),
         },
         Input {
-            s: "hello world 5 x 5".to_string(),
+            nums: [4, 3, 2, 1].to_vec(),
         },
         Input {
-            s: "sunset is at 7 51 pm overnight lows will be in the low 50 and 60 s".to_string(),
+            nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::are_numbers_ascending(input.s);
+        let result = Solution::smallest_equal(input.nums);
         println!("{:?}", result);
     }
 }
