@@ -1,37 +1,66 @@
 struct Solution {}
 
 impl Solution {
-    pub fn smallest_equal(nums: Vec<i32>) -> i32 {
-        for (i, num) in nums.iter().cloned().enumerate() {
-            let i = i as i32;
-            if i % 10 == num {
-                return i;
+    pub fn count_vowel_substrings(word: String) -> i32 {
+        let s = word.chars().collect::<Vec<char>>();
+        return Self::at_most_k(&s, 5) - Self::at_most_k(&s, 4);
+    }
+
+    fn at_most_k(s: &Vec<char>, k: i32) -> i32 {
+        let k = k as usize;
+        let mut result = 0;
+        let mut i = 0usize;
+        let mut counts = std::collections::HashMap::<char, i32>::new();
+
+        for (j, ch) in s.iter().cloned().enumerate() {
+            if !Self::is_vowel(ch) {
+                i = j + 1;
+                counts.clear();
+                continue;
             }
+
+            counts.entry(ch).and_modify(|c| *c += 1).or_insert(1);
+            while counts.len() > k {
+                let left = s[i];
+                counts.entry(left).and_modify(|c| *c -= 1);
+                if let Some(&c) = counts.get(&left) {
+                    if c == 0 {
+                        counts.remove(&left);
+                    }
+                }
+                i += 1;
+            }
+
+            result += j + 1 - i;
         }
 
-        return -1;
+        result as i32
+    }
+
+    fn is_vowel(c: char) -> bool {
+        c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    word: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [0, 1, 2].to_vec(),
+            word: "aeiouu".to_string(),
         },
         Input {
-            nums: [4, 3, 2, 1].to_vec(),
+            word: "unicornarihan".to_string(),
         },
         Input {
-            nums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].to_vec(),
+            word: "cuaieuouac".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::smallest_equal(input.nums);
+        let result = Solution::count_vowel_substrings(input.word);
         println!("{:?}", result);
     }
 }
