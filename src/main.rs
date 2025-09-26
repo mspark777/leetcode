@@ -1,49 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_distance(colors: Vec<i32>) -> i32 {
-        let n = colors.len();
-        let &first = colors.first().unwrap();
-        let &last = colors.last().unwrap();
+    pub fn target_indices(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        let mut count = 0usize;
+        let mut less_than = 0;
 
-        colors
-            .iter()
-            .cloned()
-            .enumerate()
-            .fold(0usize, |result, (i, color)| {
-                let mut r = result;
-                if color != first {
-                    r = r.max(i);
-                }
+        for n in nums.iter().cloned() {
+            if n == target {
+                count += 1;
+            } else if n < target {
+                less_than += 1;
+            }
+        }
 
-                if color != last {
-                    r = r.max(n - i - 1);
-                }
+        let mut result = vec![0; count];
+        for i in 0..count {
+            result[i] = less_than;
+            less_than += 1;
+        }
 
-                r
-            }) as i32
+        result
     }
 }
 
 struct Input {
-    colors: Vec<i32>,
+    nums: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            colors: [1, 1, 1, 6, 1, 1, 1].to_vec(),
+            nums: [1, 2, 5, 2, 3].to_vec(),
+            target: 2,
         },
         Input {
-            colors: [1, 8, 3, 8, 3].to_vec(),
+            nums: [1, 2, 5, 2, 3].to_vec(),
+            target: 3,
         },
         Input {
-            colors: [0, 1].to_vec(),
+            nums: [1, 2, 5, 2, 3].to_vec(),
+            target: 5,
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_distance(input.colors);
+        let result = Solution::target_indices(input.nums, input.target);
         println!("{:?}", result);
     }
 }
