@@ -1,39 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_subsequence(nums: Vec<i32>, k: i32) -> Vec<i32> {
-        let mut sort_by_num = nums.iter().cloned().enumerate().collect::<Vec<_>>();
-        sort_by_num.sort_by_key(|v| -v.1);
+    pub fn count_points(rings: String) -> i32 {
+        let mut masks = vec![0u32; 10];
+        let colors = rings.chars().step_by(2);
+        let roads = rings.chars().skip(1).step_by(2);
+        for (color, road) in colors.zip(roads) {
+            let road_num = road.to_digit(10).unwrap() as usize;
+            let color_mask = match color {
+                'R' => 1u32,
+                'G' => 2u32,
+                'B' => 4u32,
+                _ => unreachable!(),
+            };
+            masks[road_num] |= color_mask;
+        }
 
-        let mut sort_by_idx = sort_by_num.iter().take(k as usize).collect::<Vec<_>>();
-        sort_by_idx.sort_by_key(|v| v.0);
-        sort_by_idx.iter().map(|v| v.1).collect()
+        let mut result = 0;
+        for mask in masks.iter().cloned() {
+            if mask == 7 {
+                result += 1;
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    rings: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [2, 1, 3, 3].to_vec(),
-            k: 2,
+            rings: "B0B6G0R6R0R6G9".to_string(),
         },
         Input {
-            nums: [-1, -2, 3, 4].to_vec(),
-            k: 3,
+            rings: "B0R0G0R9R0B0G0".to_string(),
         },
         Input {
-            nums: [3, 4, 3, 3].to_vec(),
-            k: 2,
+            rings: "G4".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_subsequence(input.nums, input.k);
+        let result = Solution::count_points(input.rings);
         println!("{:?}", result);
     }
 }
