@@ -1,20 +1,30 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_same_after_reversals(num: i32) -> bool {
-        (num == 0) || ((num % 10) != 0)
+    pub fn check_string(s: String) -> bool {
+        s.find("ba").is_none()
     }
 }
 
 struct Input {
-    num: i32,
+    s: String,
 }
 
 fn main() {
-    let inputs = [Input { num: 526 }, Input { num: 1800 }, Input { num: 0 }];
+    let inputs = [
+        Input {
+            s: "aaabbb".to_string(),
+        },
+        Input {
+            s: "abab".to_string(),
+        },
+        Input {
+            s: "bbb".to_string(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::is_same_after_reversals(input.num);
+        let result = Solution::check_string(input.s);
         println!("{:?}", result);
     }
 }
