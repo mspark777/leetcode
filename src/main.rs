@@ -1,26 +1,30 @@
 struct Solution {}
 
 impl Solution {
-    pub fn capitalize_title(title: String) -> String {
-        let mut result = title.chars().collect::<Vec<char>>();
-        let mut last = 0usize;
-        let n = result.len();
+    pub fn check_valid(matrix: Vec<Vec<i32>>) -> bool {
+        let n = matrix.len();
 
-        while last < n {
-            let start = last;
-            while (last < n) && (result[last] != ' ') {
-                result[last] = result[last].to_ascii_lowercase();
-                last += 1;
+        for row in 0..n {
+            let mut seen = std::collections::HashSet::<i32>::with_capacity(n);
+            for col in 0..n {
+                if seen.contains(&matrix[row][col]) {
+                    return false;
+                }
+                seen.insert(matrix[row][col]);
             }
-
-            if (last - start) > 2 {
-                result[start] = result[start].to_ascii_uppercase();
-            }
-
-            last += 1;
         }
 
-        result.iter().collect()
+        for col in 0..n {
+            let mut seen = std::collections::HashSet::<i32>::with_capacity(n);
+            for row in 0..n {
+                if seen.contains(&matrix[row][col]) {
+                    return false;
+                }
+                seen.insert(matrix[row][col]);
+            }
+        }
+
+        true
     }
 }
 
