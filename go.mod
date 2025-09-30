@@ -1,3 +1,3 @@
 module mspark777/lettcode
 
-go 1.22.1
+go 1.25.1
