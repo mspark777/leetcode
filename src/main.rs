@@ -1,52 +1,40 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_valid(matrix: Vec<Vec<i32>>) -> bool {
-        let n = matrix.len();
+    pub fn minimum_cost(cost: Vec<i32>) -> i32 {
+        let mut cost = cost;
+        cost.sort_unstable();
+        let n = cost.len() % 3;
 
-        for row in 0..n {
-            let mut seen = std::collections::HashSet::<i32>::with_capacity(n);
-            for col in 0..n {
-                if seen.contains(&matrix[row][col]) {
-                    return false;
-                }
-                seen.insert(matrix[row][col]);
-            }
-        }
-
-        for col in 0..n {
-            let mut seen = std::collections::HashSet::<i32>::with_capacity(n);
-            for row in 0..n {
-                if seen.contains(&matrix[row][col]) {
-                    return false;
-                }
-                seen.insert(matrix[row][col]);
-            }
-        }
-
-        true
+        cost.iter()
+            .cloned()
+            .enumerate()
+            .fold(0, |acc, (i, c)| match (i % 3) != n {
+                true => acc + c,
+                _ => acc,
+            })
     }
 }
 
 struct Input {
-    title: String,
+    cost: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            title: "capiTalIze tHe titLe".to_string(),
+            cost: [1, 2, 3].to_vec(),
         },
         Input {
-            title: "First leTTeR of EACH Word".to_string(),
+            cost: [6, 5, 7, 9, 2, 2].to_vec(),
         },
         Input {
-            title: "i lOve leetcode".to_string(),
+            cost: [5, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::capitalize_title(input.title);
+        let result = Solution::minimum_cost(input.cost);
         println!("{:?}", result);
     }
 }
