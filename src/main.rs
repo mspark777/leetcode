@@ -1,40 +1,27 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_final_value(nums: Vec<i32>, original: i32) -> i32 {
-        let set = nums
-            .iter()
-            .cloned()
-            .collect::<std::collections::HashSet<_>>();
+    pub fn minimum_sum(num: i32) -> i32 {
+        let mut digits: Vec<i32> = num
+            .to_string()
+            .chars()
+            .map(|c| c.to_digit(10).unwrap() as i32)
+            .collect();
+        digits.sort();
 
-        let mut result = original;
-        while set.contains(&result) {
-            result *= 2;
-        }
-
-        result
+        (digits[0] + digits[1]) * 10 + digits[2] + digits[3]
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    original: i32,
+    num: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [5, 3, 6, 1, 12].to_vec(),
-            original: 3,
-        },
-        Input {
-            nums: [2, 7, 9].to_vec(),
-            original: 4,
-        },
-    ];
+    let inputs = [Input { num: 2932 }, Input { num: 4009 }];
 
     for input in inputs {
-        let result = Solution::find_final_value(input.nums, input.original);
+        let result = Solution::minimum_sum(input.num);
         println!("{:?}", result);
     }
 }
