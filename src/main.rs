@@ -1,27 +1,18 @@
 struct Solution {}
 
 impl Solution {
-    pub fn sort_even_odd(nums: Vec<i32>) -> Vec<i32> {
-        let mut odd = Vec::<i32>::with_capacity(nums.len() / 2);
-        let mut even = Vec::<i32>::with_capacity(nums.len() / 2 + (nums.len() & 1));
-        for (i, n) in nums.iter().cloned().enumerate() {
-            if i & 1 == 1 {
-                odd.push(n);
+    pub fn count_operations(num1: i32, num2: i32) -> i32 {
+        let mut result = 0;
+        let mut num1 = num1;
+        let mut num2 = num2;
+
+        while (num1 != 0) && (num2 != 0) {
+            if num1 >= num2 {
+                num1 -= num2;
             } else {
-                even.push(n);
+                num2 -= num1;
             }
-        }
-
-        even.sort_unstable();
-        odd.sort_unstable_by_key(|n| -n);
-        let mut result = Vec::<i32>::with_capacity(nums.len());
-        for (e, o) in even.iter().cloned().zip(odd.iter().cloned()) {
-            result.push(e);
-            result.push(o);
-        }
-
-        if nums.len() & 1 == 1 {
-            result.push(*even.last().unwrap());
+            result += 1;
         }
 
         result
@@ -29,21 +20,15 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    num1: i32,
+    num2: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [4, 1, 2, 3].to_vec(),
-        },
-        Input {
-            nums: [2, 1].to_vec(),
-        },
-    ];
+    let inputs = [Input { num1: 2, num2: 3 }, Input { num1: 10, num2: 10 }];
 
     for input in inputs {
-        let result = Solution::sort_even_odd(input.nums);
+        let result = Solution::count_operations(input.num1, input.num2);
         println!("{:?}", result);
     }
 }
