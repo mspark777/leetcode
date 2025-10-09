@@ -1,46 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn most_frequent(nums: Vec<i32>, key: i32) -> i32 {
-        let mut map = std::collections::HashMap::<i32, i32>::new();
-        let mut max = 0;
-        let mut result = 0;
-        for i in 1..nums.len() {
-            let prev = nums[i - 1];
-            let num = nums[i];
-            if prev != key {
-                continue;
-            }
+    pub fn cells_in_range(s: String) -> Vec<String> {
+        let mut chars = s.chars();
+        let c1 = chars.next().unwrap() as u8;
+        let r1 = chars.next().unwrap() as u8;
+        chars.next();
+        let c2 = chars.next().unwrap() as u8;
+        let r2 = chars.next().unwrap() as u8;
 
-            let count = *map.entry(num).and_modify(|count| *count += 1).or_insert(1);
-            if count > max {
-                max = count;
-                result = num;
+        let n = (c2 - c1 + 1) * (r2 - r1 + 1);
+        let mut result = Vec::<String>::with_capacity(n as usize);
+
+        for c in c1..=c2 {
+            for r in r1..=r2 {
+                let cell = format!("{}{}", (c as char), (r as char));
+                result.push(cell);
             }
         }
+
         result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    key: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 100, 200, 1, 100].to_vec(),
-            key: 1,
+            s: "K1:L2".to_string(),
         },
         Input {
-            nums: [2, 2, 2, 2, 3].to_vec(),
-            key: 2,
+            s: "A1:F1".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::most_frequent(input.nums, input.key);
+        let result = Solution::cells_in_range(input.s);
         println!("{:?}", result);
     }
 }
