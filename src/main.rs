@@ -1,22 +1,21 @@
 struct Solution {}
 
 impl Solution {
-    pub fn cells_in_range(s: String) -> Vec<String> {
-        let mut chars = s.chars();
-        let c1 = chars.next().unwrap() as u8;
-        let r1 = chars.next().unwrap() as u8;
-        chars.next();
-        let c2 = chars.next().unwrap() as u8;
-        let r2 = chars.next().unwrap() as u8;
+    pub fn count_hill_valley(nums: Vec<i32>) -> i32 {
+        let mut result = 0;
+        let mut left = 0usize;
 
-        let n = (c2 - c1 + 1) * (r2 - r1 + 1);
-        let mut result = Vec::<String>::with_capacity(n as usize);
-
-        for c in c1..=c2 {
-            for r in r1..=r2 {
-                let cell = format!("{}{}", (c as char), (r as char));
-                result.push(cell);
+        for i in 1..(nums.len() - 1) {
+            if nums[i] == nums[i + 1] {
+                continue;
             }
+
+            if (nums[i] > nums[left] && nums[i] > nums[i + 1])
+                || (nums[i] < nums[left] && nums[i] < nums[i + 1])
+            {
+                result += 1;
+            }
+            left = i;
         }
 
         result
@@ -24,21 +23,21 @@ impl Solution {
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "K1:L2".to_string(),
+            nums: [2, 4, 1, 1, 6, 5].to_vec(),
         },
         Input {
-            s: "A1:F1".to_string(),
+            nums: [6, 6, 5, 5, 4, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::cells_in_range(input.s);
+        let result = Solution::count_hill_valley(input.nums);
         println!("{:?}", result);
     }
 }
