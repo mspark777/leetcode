@@ -1,56 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn convert_time(current: String, correct: String) -> i32 {
-        let curr = Self::to_int(current.as_str());
-        let correct = Self::to_int(correct.as_str());
-        let mut count = 0;
+    pub fn largest_integer(num: i32) -> i32 {
+        let mut even_queue = std::collections::BinaryHeap::new();
+        let mut odd_queue = std::collections::BinaryHeap::new();
+        let nums = num
+            .to_string()
+            .chars()
+            .map(|ch| (ch as i32) - (b'0' as i32))
+            .collect::<Vec<_>>();
 
-        let mut diff = correct - curr;
-        for by in [60, 15, 5] {
-            let temp = diff / by;
-            count += temp;
-            diff -= temp * by;
+        for n in nums.iter().cloned() {
+            if n & 1 == 1 {
+                odd_queue.push(n);
+            } else {
+                even_queue.push(n);
+            }
         }
 
-        count + diff
-    }
+        let mut result = 0;
+        for n in nums.iter().cloned() {
+            result *= 10;
+            if n & 1 == 1 {
+                result += odd_queue.pop().unwrap();
+            } else {
+                result += even_queue.pop().unwrap();
+            }
+        }
 
-    fn to_int(s: &str) -> i32 {
-        let mut chunks = s.split(':');
-        let left = match chunks.next() {
-            Some(v) => v.parse::<i32>().unwrap(),
-            _ => 0,
-        };
-
-        let right = match chunks.next() {
-            Some(v) => v.parse::<i32>().unwrap(),
-            _ => 0,
-        };
-
-        left * 60 + right
+        result
     }
 }
 
 struct Input {
-    current: String,
-    correct: String,
+    num: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            current: "02:30".to_string(),
-            correct: "04:35".to_string(),
-        },
-        Input {
-            current: "11:00".to_string(),
-            correct: "11:01".to_string(),
-        },
-    ];
+    let inputs = [Input { num: 1234 }, Input { num: 65875 }];
 
     for input in inputs {
-        let result = Solution::convert_time(input.current, input.correct);
+        let result = Solution::largest_integer(input.num);
         println!("{:?}", result);
     }
 }
