@@ -1,46 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn most_frequent(nums: Vec<i32>, key: i32) -> i32 {
-        let mut map = std::collections::HashMap::<i32, i32>::new();
-        let mut max = 0;
-        let mut result = 0;
-        for i in 1..nums.len() {
-            let prev = nums[i - 1];
-            let num = nums[i];
-            if prev != key {
-                continue;
-            }
-
-            let count = *map.entry(num).and_modify(|count| *count += 1).or_insert(1);
-            if count > max {
-                max = count;
-                result = num;
-            }
-        }
-        result
+    pub fn find_closest_number(nums: Vec<i32>) -> i32 {
+        nums.iter()
+            .cloned()
+            .fold((-100000, 100000), |(result, distance), cur| {
+                let d = cur.abs();
+                if d < distance {
+                    (cur, d)
+                } else if d == distance {
+                    (result.max(cur), d)
+                } else {
+                    (result, distance)
+                }
+            })
+            .0
     }
 }
 
 struct Input {
     nums: Vec<i32>,
-    key: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 100, 200, 1, 100].to_vec(),
-            key: 1,
+            nums: [-4, -2, 1, 4, 8].to_vec(),
         },
         Input {
-            nums: [2, 2, 2, 2, 3].to_vec(),
-            key: 2,
+            nums: [2, -1, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::most_frequent(input.nums, input.key);
+        let result = Solution::find_closest_number(input.nums);
         println!("{:?}", result);
     }
 }
