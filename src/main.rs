@@ -1,48 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn digit_sum(s: String, k: i32) -> String {
-        let k = k as usize;
-        let mut nums = s.chars().collect::<Vec<char>>();
-
-        while nums.len() > k {
-            let mut sums = Vec::<char>::with_capacity((nums.len() / k) + 1);
-            for chunk in nums.chunks(k) {
-                let sum = chunk
-                    .iter()
-                    .fold(0u32, |acc, x| acc + x.to_digit(10).unwrap());
-
-                for ch in sum.to_string().chars() {
-                    sums.push(ch);
-                }
+    pub fn intersection(nums: Vec<Vec<i32>>) -> Vec<i32> {
+        let mut counts = std::collections::HashMap::<i32, i32>::new();
+        for ns in nums.iter() {
+            for n in ns.iter().cloned() {
+                counts.entry(n).and_modify(|c| *c += 1).or_insert(1);
             }
-
-            nums = sums;
         }
 
-        nums.iter().collect()
+        let n = nums.len() as i32;
+        let mut result = Vec::<i32>::with_capacity(nums.len());
+        for (&num, &cnt) in counts.iter() {
+            if cnt == n {
+                result.push(num);
+            }
+        }
+
+        result.sort_unstable();
+        result.shrink_to_fit();
+        result
     }
 }
 
 struct Input {
-    s: String,
-    k: i32,
+    nums: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "11111222223".to_string(),
-            k: 3,
+            nums: vec![vec![3, 1, 2, 4, 5], vec![1, 2, 3, 4], vec![3, 4, 5, 6]],
         },
         Input {
-            s: "00000000".to_string(),
-            k: 3,
+            nums: vec![vec![1, 2, 3], vec![4, 5, 6]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::digit_sum(input.s, input.k);
+        let result = Solution::intersection(input.nums);
         println!("{:?}", result);
     }
 }
