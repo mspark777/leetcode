@@ -1,44 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn intersection(nums: Vec<Vec<i32>>) -> Vec<i32> {
-        let mut counts = std::collections::HashMap::<i32, i32>::new();
-        for ns in nums.iter() {
-            for n in ns.iter().cloned() {
-                counts.entry(n).and_modify(|c| *c += 1).or_insert(1);
+    pub fn count_prefixes(words: Vec<String>, s: String) -> i32 {
+        let mut result = 0;
+        for word in words.iter() {
+            if s.starts_with(word) {
+                result += 1;
             }
         }
 
-        let n = nums.len() as i32;
-        let mut result = Vec::<i32>::with_capacity(nums.len());
-        for (&num, &cnt) in counts.iter() {
-            if cnt == n {
-                result.push(num);
-            }
-        }
-
-        result.sort_unstable();
-        result.shrink_to_fit();
         result
     }
 }
 
 struct Input {
-    nums: Vec<Vec<i32>>,
+    words: Vec<String>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: vec![vec![3, 1, 2, 4, 5], vec![1, 2, 3, 4], vec![3, 4, 5, 6]],
+            words: ["a", "b", "c", "ab", "bc", "abc"]
+                .map(|s| s.to_string())
+                .to_vec(),
+            s: "abc".to_string(),
         },
         Input {
-            nums: vec![vec![1, 2, 3], vec![4, 5, 6]],
+            words: ["a", "a"].map(|s| s.to_string()).to_vec(),
+            s: "aa".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::intersection(input.nums);
+        let result = Solution::count_prefixes(input.words, input.s);
         println!("{:?}", result);
     }
 }
