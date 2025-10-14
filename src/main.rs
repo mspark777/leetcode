@@ -1,11 +1,20 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_prefixes(words: Vec<String>, s: String) -> i32 {
-        let mut result = 0;
-        for word in words.iter() {
-            if s.starts_with(word) {
-                result += 1;
+    pub fn remove_digit(number: String, digit: char) -> String {
+        let number = number.chars().collect::<Vec<char>>();
+        let mut result = String::new();
+
+        for (i, c) in number.iter().cloned().enumerate() {
+            if c != digit {
+                continue;
+            }
+
+            let left = &number[0..i];
+            let right = &number[i + 1..];
+            let temp = left.iter().chain(right.iter()).collect::<String>();
+            if result.cmp(&temp) == std::cmp::Ordering::Less {
+                result = temp;
             }
         }
 
@@ -14,26 +23,28 @@ impl Solution {
 }
 
 struct Input {
-    words: Vec<String>,
-    s: String,
+    number: String,
+    digit: char,
 }
 
 fn main() {
     let inputs = [
         Input {
-            words: ["a", "b", "c", "ab", "bc", "abc"]
-                .map(|s| s.to_string())
-                .to_vec(),
-            s: "abc".to_string(),
+            number: "123".to_string(),
+            digit: '3',
         },
         Input {
-            words: ["a", "a"].map(|s| s.to_string()).to_vec(),
-            s: "aa".to_string(),
+            number: "1231".to_string(),
+            digit: '1',
+        },
+        Input {
+            number: "551".to_string(),
+            digit: '5',
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_prefixes(input.words, input.s);
+        let result = Solution::remove_digit(input.number, input.digit);
         println!("{:?}", result);
     }
 }
