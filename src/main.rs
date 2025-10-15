@@ -1,21 +1,25 @@
 struct Solution {}
 
 impl Solution {
-    pub fn remove_digit(number: String, digit: char) -> String {
-        let number = number.chars().collect::<Vec<char>>();
-        let mut result = String::new();
-
-        for (i, c) in number.iter().cloned().enumerate() {
-            if c != digit {
-                continue;
+    pub fn divisor_substrings(num: i32, k: i32) -> i32 {
+        let mut result = 0;
+        let mut cur = 0;
+        let mut pow = 1;
+        let mut n = num;
+        let mut k = k;
+        while n > 0 {
+            cur += (n % 10) * pow;
+            k -= 1;
+            if k > 0 {
+                pow *= 10;
+            } else {
+                if cur > 0 && num % cur == 0 {
+                    result += 1
+                }
+                cur /= 10;
             }
 
-            let left = &number[0..i];
-            let right = &number[i + 1..];
-            let temp = left.iter().chain(right.iter()).collect::<String>();
-            if result.cmp(&temp) == std::cmp::Ordering::Less {
-                result = temp;
-            }
+            n /= 10;
         }
 
         result
@@ -23,28 +27,15 @@ impl Solution {
 }
 
 struct Input {
-    number: String,
-    digit: char,
+    num: i32,
+    k: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            number: "123".to_string(),
-            digit: '3',
-        },
-        Input {
-            number: "1231".to_string(),
-            digit: '1',
-        },
-        Input {
-            number: "551".to_string(),
-            digit: '5',
-        },
-    ];
+    let inputs = [Input { num: 240, k: 2 }, Input { num: 430043, k: 2 }];
 
     for input in inputs {
-        let result = Solution::remove_digit(input.number, input.digit);
+        let result = Solution::divisor_substrings(input.num, input.k);
         println!("{:?}", result);
     }
 }
