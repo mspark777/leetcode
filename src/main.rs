@@ -1,42 +1,40 @@
 struct Solution {}
 
 impl Solution {
-    pub fn percentage_letter(s: String, letter: char) -> i32 {
-        let mut len = 0;
-        let mut count = 0;
-        for c in s.chars() {
-            if letter == c {
-                count += 100;
-            }
-            len += 1;
+    pub fn digit_count(num: String) -> bool {
+        let mut counts = vec![0usize; 10];
+        for c in num.chars() {
+            let idx = c as usize - '0' as usize;
+            counts[idx] += 1;
         }
 
-        match count {
-            0 => 0,
-            _ => count / len,
+        for (i, c) in num.chars().enumerate() {
+            let count = c as usize - '0' as usize;
+            if counts[i] != count {
+                return false;
+            }
         }
+
+        return true;
     }
 }
 
 struct Input {
     s: String,
-    letter: char,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "foobar".to_string(),
-            letter: 'o',
+            s: "1210".to_string(),
         },
         Input {
-            s: "jjjj".to_string(),
-            letter: 'k',
+            s: "030".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::percentage_letter(input.s, input.letter);
+        let result = Solution::digit_count(input.s);
         println!("{:?}", result);
     }
 }
