@@ -1,40 +1,49 @@
 struct Solution {}
 
 impl Solution {
-    pub fn digit_count(num: String) -> bool {
-        let mut counts = vec![0usize; 10];
-        for c in num.chars() {
-            let idx = c as usize - '0' as usize;
-            counts[idx] += 1;
-        }
+    pub fn min_max_game(nums: Vec<i32>) -> i32 {
+        let mut buf0 = nums.clone();
+        let mut buf1 = nums.clone();
+        let mut n = nums.len();
+        let mut write = &mut buf0;
+        let mut read = &mut buf1;
 
-        for (i, c) in num.chars().enumerate() {
-            let count = c as usize - '0' as usize;
-            if counts[i] != count {
-                return false;
+        while n > 1 {
+            n /= 2;
+            for i in 0..n {
+                if i & 1 == 1 {
+                    write[i] = read[i * 2].max(read[i * 2 + 1]);
+                } else {
+                    write[i] = read[i * 2].min(read[i * 2 + 1]);
+                }
             }
+
+            let temp = write;
+            write = read;
+            read = temp;
         }
 
-        return true;
+        read[0]
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "1210".to_string(),
+            nums: [1, 3, 5, 2, 4, 8, 2, 2].to_vec(),
         },
+        Input { nums: [3].to_vec() },
         Input {
-            s: "030".to_string(),
+            nums: [93, 40].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::digit_count(input.s);
+        let result = Solution::min_max_game(input.nums);
         println!("{:?}", result);
     }
 }
