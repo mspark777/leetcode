@@ -1,49 +1,59 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_max_game(nums: Vec<i32>) -> i32 {
-        let mut buf0 = nums.clone();
-        let mut buf1 = nums.clone();
-        let mut n = nums.len();
-        let mut write = &mut buf0;
-        let mut read = &mut buf1;
-
-        while n > 1 {
-            n /= 2;
-            for i in 0..n {
-                if i & 1 == 1 {
-                    write[i] = read[i * 2].max(read[i * 2 + 1]);
-                } else {
-                    write[i] = read[i * 2].min(read[i * 2 + 1]);
-                }
-            }
-
-            let temp = write;
-            write = read;
-            read = temp;
+    pub fn rearrange_characters(s: String, target: String) -> i32 {
+        let mut s_counts = vec![0; 26];
+        for c in s.chars() {
+            let code = c as usize;
+            let a = 'a' as usize;
+            s_counts[code - a] += 1;
         }
 
-        read[0]
+        let mut target_counts = vec![0; 26];
+        for c in target.chars() {
+            let code = c as usize;
+            let a = 'a' as usize;
+            target_counts[code - a] += 1;
+        }
+
+        let mut result = i32::MAX;
+        for (s_cnt, t_cnt) in s_counts.iter().cloned().zip(target_counts.iter().cloned()) {
+            if t_cnt > 0 {
+                result = result.min(s_cnt / t_cnt);
+            }
+
+            if result == 0 {
+                break;
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
+    target: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 3, 5, 2, 4, 8, 2, 2].to_vec(),
+            s: "ilovecodingonleetcode".to_string(),
+            target: "code".to_string(),
         },
-        Input { nums: [3].to_vec() },
         Input {
-            nums: [93, 40].to_vec(),
+            s: "abcba".to_string(),
+            target: "abc".to_string(),
+        },
+        Input {
+            s: "abbaccaddaeea".to_string(),
+            target: "aaaaa".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_max_game(input.nums);
+        let result = Solution::rearrange_characters(input.s, input.target);
         println!("{:?}", result);
     }
 }
