@@ -1,59 +1,58 @@
 struct Solution {}
 
 impl Solution {
-    pub fn rearrange_characters(s: String, target: String) -> i32 {
-        let mut s_counts = vec![0; 26];
-        for c in s.chars() {
-            let code = c as usize;
-            let a = 'a' as usize;
-            s_counts[code - a] += 1;
-        }
+    pub fn strong_password_checker_ii(password: String) -> bool {
+        let mut n = 0usize;
+        let mut lowercase = false;
+        let mut uppercase = false;
+        let mut digit = false;
+        let mut special = false;
+        let mut prev: Option<char> = None;
 
-        let mut target_counts = vec![0; 26];
-        for c in target.chars() {
-            let code = c as usize;
-            let a = 'a' as usize;
-            target_counts[code - a] += 1;
-        }
-
-        let mut result = i32::MAX;
-        for (s_cnt, t_cnt) in s_counts.iter().cloned().zip(target_counts.iter().cloned()) {
-            if t_cnt > 0 {
-                result = result.min(s_cnt / t_cnt);
+        for c in password.chars() {
+            if c.is_ascii_lowercase() {
+                lowercase = true;
+            } else if c.is_ascii_uppercase() {
+                uppercase = true;
+            } else if c.is_ascii_digit() {
+                digit = true;
+            } else {
+                special = true;
             }
 
-            if result == 0 {
-                break;
+            if let Some(p) = prev {
+                if c == p {
+                    return false;
+                }
             }
+
+            prev = Some(c);
+            n += 1;
         }
 
-        result
+        return n >= 8 && lowercase && uppercase && digit && special;
     }
 }
 
 struct Input {
-    s: String,
-    target: String,
+    password: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "ilovecodingonleetcode".to_string(),
-            target: "code".to_string(),
+            password: "IloveLe3tcode!".to_string(),
         },
         Input {
-            s: "abcba".to_string(),
-            target: "abc".to_string(),
+            password: "Me+You--IsMyDream".to_string(),
         },
         Input {
-            s: "abbaccaddaeea".to_string(),
-            target: "aaaaa".to_string(),
+            password: "1aB!".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::rearrange_characters(input.s, input.target);
+        let result = Solution::strong_password_checker_ii(input.password);
         println!("{:?}", result);
     }
 }
