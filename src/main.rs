@@ -1,58 +1,49 @@
 struct Solution {}
 
 impl Solution {
-    pub fn strong_password_checker_ii(password: String) -> bool {
-        let mut n = 0usize;
-        let mut lowercase = false;
-        let mut uppercase = false;
-        let mut digit = false;
-        let mut special = false;
-        let mut prev: Option<char> = None;
+    pub fn calculate_tax(brackets: Vec<Vec<i32>>, income: i32) -> f64 {
+        let mut prev = 0;
+        let mut result = 0.0f64;
 
-        for c in password.chars() {
-            if c.is_ascii_lowercase() {
-                lowercase = true;
-            } else if c.is_ascii_uppercase() {
-                uppercase = true;
-            } else if c.is_ascii_digit() {
-                digit = true;
-            } else {
-                special = true;
+        for bracket in brackets.iter() {
+            let upper = bracket[0].min(income);
+            let percent = (bracket[1] as f64) / 100.0;
+            let range = upper - prev;
+            prev = upper;
+            result += range as f64 * percent;
+
+            if upper >= income {
+                break;
             }
-
-            if let Some(p) = prev {
-                if c == p {
-                    return false;
-                }
-            }
-
-            prev = Some(c);
-            n += 1;
         }
 
-        return n >= 8 && lowercase && uppercase && digit && special;
+        result
     }
 }
 
 struct Input {
-    password: String,
+    brackets: Vec<Vec<i32>>,
+    income: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            password: "IloveLe3tcode!".to_string(),
+            brackets: [[3, 50], [7, 10], [12, 25]].map(|v| v.to_vec()).to_vec(),
+            income: 10,
         },
         Input {
-            password: "Me+You--IsMyDream".to_string(),
+            brackets: [[1, 0], [4, 25], [5, 50]].map(|v| v.to_vec()).to_vec(),
+            income: 2,
         },
         Input {
-            password: "1aB!".to_string(),
+            brackets: [[2, 50]].map(|v| v.to_vec()).to_vec(),
+            income: 0,
         },
     ];
 
     for input in inputs {
-        let result = Solution::strong_password_checker_ii(input.password);
+        let result = Solution::calculate_tax(input.brackets, input.income);
         println!("{:?}", result);
     }
 }
