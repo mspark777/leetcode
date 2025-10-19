@@ -1,49 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn calculate_tax(brackets: Vec<Vec<i32>>, income: i32) -> f64 {
-        let mut prev = 0;
-        let mut result = 0.0f64;
-
-        for bracket in brackets.iter() {
-            let upper = bracket[0].min(income);
-            let percent = (bracket[1] as f64) / 100.0;
-            let range = upper - prev;
-            prev = upper;
-            result += range as f64 * percent;
-
-            if upper >= income {
-                break;
-            }
+    pub fn greatest_letter(s: String) -> String {
+        let mut mask = 0u64;
+        for ch in s.chars() {
+            let code = ch as u64;
+            let shift = code - 'A' as u64;
+            mask |= 1 << shift;
         }
 
-        result
+        mask &= mask >> 32;
+        if mask == 0 {
+            return String::new();
+        }
+
+        let msb_pos = (63 - mask.leading_zeros()) as u8;
+        return ((msb_pos + 'A' as u8) as char).to_string();
     }
 }
 
 struct Input {
-    brackets: Vec<Vec<i32>>,
-    income: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            brackets: [[3, 50], [7, 10], [12, 25]].map(|v| v.to_vec()).to_vec(),
-            income: 10,
+            s: "lEeTcOdE".to_string(),
         },
         Input {
-            brackets: [[1, 0], [4, 25], [5, 50]].map(|v| v.to_vec()).to_vec(),
-            income: 2,
+            s: "arRAzFif".to_string(),
         },
         Input {
-            brackets: [[2, 50]].map(|v| v.to_vec()).to_vec(),
-            income: 0,
+            s: "AbCdEfGhIjK".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::calculate_tax(input.brackets, input.income);
+        let result = Solution::greatest_letter(input.s);
         println!("{:?}", result);
     }
 }
