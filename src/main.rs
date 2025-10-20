@@ -1,48 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_asterisks(s: String) -> i32 {
-        let mut skip = false;
-        let mut result = 0;
-
-        for c in s.chars() {
-            if c == '|' {
-                skip = !skip;
-                continue;
-            }
-
-            if skip {
-                continue;
-            }
-
-            if c == '*' {
-                result += 1;
+    pub fn check_x_matrix(grid: Vec<Vec<i32>>) -> bool {
+        let n = grid.len();
+        let last = n - 1;
+        for (r, row) in grid.iter().enumerate() {
+            for (c, cell) in row.iter().cloned().enumerate() {
+                if (r == c) || (c == (last - r)) {
+                    if cell == 0 {
+                        return false;
+                    }
+                } else if cell != 0 {
+                    return false;
+                }
             }
         }
 
-        result
+        return true;
     }
 }
 
 struct Input {
-    s: String,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "l|*e*et|c**o|*de|".to_string(),
+            grid: vec![
+                vec![2, 0, 0, 1],
+                vec![0, 3, 1, 0],
+                vec![0, 5, 2, 0],
+                vec![4, 0, 0, 2],
+            ],
         },
         Input {
-            s: "iamprogrammer".to_string(),
-        },
-        Input {
-            s: "yo|uar|e**|b|e***au|tifu|l".to_string(),
+            grid: vec![vec![5, 7, 0], vec![0, 3, 1], vec![0, 5, 0]],
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_asterisks(input.s);
+        let result = Solution::check_x_matrix(input.grid);
         println!("{:?}", result);
     }
 }
