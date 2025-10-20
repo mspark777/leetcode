@@ -4,6 +4,7 @@ impl Solution {
     pub fn check_x_matrix(grid: Vec<Vec<i32>>) -> bool {
         let n = grid.len();
         let last = n - 1;
+
         for (r, row) in grid.iter().enumerate() {
             for (c, cell) in row.iter().cloned().enumerate() {
                 if (r == c) || (c == (last - r)) {
