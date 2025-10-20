@@ -1,21 +1,26 @@
 struct Solution {}
 
 impl Solution {
-    pub fn greatest_letter(s: String) -> String {
-        let mut mask = 0u64;
-        for ch in s.chars() {
-            let code = ch as u64;
-            let shift = code - 'A' as u64;
-            mask |= 1 << shift;
+    pub fn count_asterisks(s: String) -> i32 {
+        let mut skip = false;
+        let mut result = 0;
+
+        for c in s.chars() {
+            if c == '|' {
+                skip = !skip;
+                continue;
+            }
+
+            if skip {
+                continue;
+            }
+
+            if c == '*' {
+                result += 1;
+            }
         }
 
-        mask &= mask >> 32;
-        if mask == 0 {
-            return String::new();
-        }
-
-        let msb_pos = (63 - mask.leading_zeros()) as u8;
-        return ((msb_pos + 'A' as u8) as char).to_string();
+        result
     }
 }
 
@@ -26,18 +31,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            s: "lEeTcOdE".to_string(),
+            s: "l|*e*et|c**o|*de|".to_string(),
         },
         Input {
-            s: "arRAzFif".to_string(),
+            s: "iamprogrammer".to_string(),
         },
         Input {
-            s: "AbCdEfGhIjK".to_string(),
+            s: "yo|uar|e**|b|e***au|tifu|l".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::greatest_letter(input.s);
+        let result = Solution::count_asterisks(input.s);
         println!("{:?}", result);
     }
 }
