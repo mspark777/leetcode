@@ -1,37 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn fill_cups(amount: Vec<i32>) -> i32 {
-        let mut max_count = 0;
-        let mut sum = 0;
-        for a in amount.iter().cloned() {
-            max_count = max_count.max(a);
-            sum += a;
+    pub fn number_of_pairs(nums: Vec<i32>) -> Vec<i32> {
+        let mut counts = vec![0; 101];
+
+        for num in nums.iter().cloned() {
+            let idx = num as usize;
+            counts[idx] += 1;
         }
 
-        max_count.max((sum + 1) / 2)
+        let mut pairs = 0;
+        let mut left = nums.len() as i32;
+
+        for count in counts.iter().cloned() {
+            let pair = count / 2;
+            pairs += pair;
+            left -= pair * 2;
+        }
+
+        vec![pairs, left]
     }
 }
 
 struct Input {
-    amount: Vec<i32>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            amount: [1, 4, 2].to_vec(),
+            nums: [1, 3, 2, 1, 3, 2, 2].to_vec(),
         },
         Input {
-            amount: [5, 4, 4].to_vec(),
+            nums: [1, 1].to_vec(),
         },
-        Input {
-            amount: [5, 0, 0].to_vec(),
-        },
+        Input { nums: [0].to_vec() },
     ];
 
     for input in inputs {
-        let result = Solution::fill_cups(input.amount);
+        let result = Solution::number_of_pairs(input.nums);
         println!("{:?}", result);
     }
 }
