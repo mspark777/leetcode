@@ -1,47 +1,54 @@
 struct Solution {}
 
 impl Solution {
-    pub fn check_x_matrix(grid: Vec<Vec<i32>>) -> bool {
-        let n = grid.len();
-        let last = n - 1;
+    pub fn decode_message(key: String, message: String) -> String {
+        let mut ch_map = std::collections::HashMap::<char, char>::with_capacity(26);
+        let mut ch_code = 'a' as u8;
 
-        for (r, row) in grid.iter().enumerate() {
-            for (c, cell) in row.iter().cloned().enumerate() {
-                if (r == c) || (c == (last - r)) {
-                    if cell == 0 {
-                        return false;
-                    }
-                } else if cell != 0 {
-                    return false;
-                }
+        for key in key.chars() {
+            if key == ' ' {
+                continue;
+            } else if ch_map.contains_key(&key) {
+                continue;
+            } else {
+                let ch = ch_code as char;
+                ch_map.insert(key, ch);
+                ch_code += 1;
             }
         }
 
-        return true;
+        let mut result = Vec::<char>::with_capacity(message.len());
+        for msg in message.chars() {
+            if msg == ' ' {
+                result.push(msg);
+            } else if let Some(&ch) = ch_map.get(&msg) {
+                result.push(ch);
+            }
+        }
+
+        result.iter().collect()
     }
 }
 
 struct Input {
-    grid: Vec<Vec<i32>>,
+    key: String,
+    message: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            grid: vec![
-                vec![2, 0, 0, 1],
-                vec![0, 3, 1, 0],
-                vec![0, 5, 2, 0],
-                vec![4, 0, 0, 2],
-            ],
+            key: "the quick brown fox jumps over the lazy dog".to_string(),
+            message: "vkbs bs t suepuv".to_string(),
         },
         Input {
-            grid: vec![vec![5, 7, 0], vec![0, 3, 1], vec![0, 5, 0]],
+            key: "eljuxhpwnyrdgtqkviszcfmabo".to_string(),
+            message: "zwx hnfx lqantp mnoeius ycgk vcnjrdb".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::check_x_matrix(input.grid);
+        let result = Solution::decode_message(input.key, input.message);
         println!("{:?}", result);
     }
 }
