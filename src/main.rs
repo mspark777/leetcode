@@ -1,44 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn number_of_pairs(nums: Vec<i32>) -> Vec<i32> {
-        let mut counts = vec![0; 101];
-
-        for num in nums.iter().cloned() {
-            let idx = num as usize;
-            counts[idx] += 1;
+    pub fn best_hand(ranks: Vec<i32>, suits: Vec<char>) -> String {
+        let flush_set = std::collections::HashSet::<char>::from_iter(suits.iter().cloned());
+        if flush_set.len() == 1 {
+            return "Flush".to_string();
         }
 
-        let mut pairs = 0;
-        let mut left = nums.len() as i32;
-
-        for count in counts.iter().cloned() {
-            let pair = count / 2;
-            pairs += pair;
-            left -= pair * 2;
+        let mut same_ranks = std::collections::HashMap::<i32, i32>::with_capacity(ranks.len());
+        let mut same_count = 0;
+        for rank in ranks.iter().cloned() {
+            let count = same_ranks.entry(rank).and_modify(|e| *e += 1).or_insert(1);
+            same_count = same_count.max(*count);
         }
 
-        vec![pairs, left]
+        return match same_count {
+            2 => "Pair",
+            1 | 0 => "High Card",
+            _ => "Three of a Kind",
+        }
+        .to_string();
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    ranks: Vec<i32>,
+    suits: Vec<char>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 3, 2, 1, 3, 2, 2].to_vec(),
+            ranks: [13, 2, 3, 1, 9].to_vec(),
+            suits: ['a', 'a', 'a', 'a', 'a'].to_vec(),
         },
         Input {
-            nums: [1, 1].to_vec(),
+            ranks: [4, 4, 2, 4, 4].to_vec(),
+            suits: ['d', 'a', 'a', 'b', 'c'].to_vec(),
         },
-        Input { nums: [0].to_vec() },
+        Input {
+            ranks: [10, 10, 2, 12, 9].to_vec(),
+            suits: ['a', 'b', 'c', 'a', 'd'].to_vec(),
+        },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_pairs(input.nums);
+        let result = Solution::best_hand(input.ranks, input.suits);
         println!("{:?}", result);
     }
 }
