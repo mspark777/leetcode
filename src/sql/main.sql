@@ -1,6 +1,2 @@
-select employee_id
-from employees
-where salary < 30000 and manager_id not in (select employee_id from employees)
-order by employee_id
-;
+select teacher_id, count(distinct subject_id) as cnt from teacher group by teacher_id
 
