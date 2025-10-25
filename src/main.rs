@@ -1,40 +1,31 @@
 struct Solution {}
 
 impl Solution {
-    pub fn repeated_character(s: String) -> char {
-        let mut checks = vec![false; 26];
+    pub fn minimum_operations(nums: Vec<i32>) -> i32 {
+        let s = std::collections::HashSet::<i32>::from_iter(nums.iter().cloned());
 
-        for c in s.chars() {
-            let code = c as usize;
-            let a = 'a' as usize;
-            let idx = code - a;
-            if checks[idx] {
-                return c;
-            }
-
-            checks[idx] = true
-        }
-
-        return ' ';
+        let result = match s.contains(&0) {
+            true => s.len() - 1,
+            false => s.len(),
+        };
+        result as i32
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "abccbaacz".to_string(),
+            nums: [1, 5, 0, 3, 5].to_vec(),
         },
-        Input {
-            s: "abcdd".to_string(),
-        },
+        Input { nums: [0].to_vec() },
     ];
 
     for input in inputs {
-        let result = Solution::repeated_character(input.s);
+        let result = Solution::minimum_operations(input.nums);
         println!("{:?}", result);
     }
 }
