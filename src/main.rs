@@ -1,22 +1,26 @@
 struct Solution {}
 
 impl Solution {
-    pub fn arithmetic_triplets(nums: Vec<i32>, diff: i32) -> i32 {
-        let num_set = std::collections::HashSet::<i32>::from_iter(nums.iter().cloned());
-        let mut result = 0;
-        let last = *nums.last().unwrap();
+    pub fn minimum_recolors(blocks: String, k: i32) -> i32 {
+        let blocks = blocks.chars().collect::<Vec<char>>();
+        let k = k as usize;
+        let mut left = 0usize;
+        let mut whites = 0;
+        let mut result = i32::MAX;
 
-        for num in nums.iter().cloned() {
-            let j_num = num + diff;
-            let k_num = j_num + diff;
-            if k_num > last {
-                continue;
-            } else if j_num > last {
-                break;
+        for (right, color) in blocks.iter().cloned().enumerate() {
+            if color == 'W' {
+                whites += 1;
             }
 
-            if num_set.contains(&j_num) && num_set.contains(&k_num) {
-                result += 1;
+            let len = right + 1 - left;
+            if len == k {
+                result = result.min(whites);
+                if blocks[left] == 'W' {
+                    whites -= 1;
+                }
+
+                left += 1;
             }
         }
 
@@ -25,24 +29,24 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
-    dif: i32,
+    blocks: String,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [0, 1, 4, 6, 7, 10].to_vec(),
-            dif: 3,
+            blocks: "WBBWWBBWBW".to_string(),
+            k: 7,
         },
         Input {
-            nums: [4, 5, 6, 7, 8, 9].to_vec(),
-            dif: 2,
+            blocks: "WBWBBBW".to_string(),
+            k: 2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::arithmetic_triplets(input.nums, input.dif);
+        let result = Solution::minimum_recolors(input.blocks, input.k);
         println!("{:?}", result);
     }
 }
