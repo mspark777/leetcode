@@ -1,27 +1,33 @@
 struct Solution {}
 
 impl Solution {
-    pub fn minimum_recolors(blocks: String, k: i32) -> i32 {
-        let blocks = blocks.chars().collect::<Vec<char>>();
-        let k = k as usize;
-        let mut left = 0usize;
-        let mut whites = 0;
-        let mut result = i32::MAX;
+    pub fn min_number_of_hours(
+        initial_energy: i32,
+        initial_experience: i32,
+        energy: Vec<i32>,
+        experience: Vec<i32>,
+    ) -> i32 {
+        let mut current_energy = initial_energy;
+        let mut current_experience = initial_experience;
+        let mut result = 0;
 
-        for (right, color) in blocks.iter().cloned().enumerate() {
-            if color == 'W' {
-                whites += 1;
+        for (opponent_energy, opponent_experience) in
+            energy.iter().cloned().zip(experience.iter().cloned())
+        {
+            if opponent_energy >= current_energy {
+                let training = opponent_energy - current_energy + 1;
+                result += training;
+                current_energy += training;
             }
 
-            let len = right + 1 - left;
-            if len == k {
-                result = result.min(whites);
-                if blocks[left] == 'W' {
-                    whites -= 1;
-                }
-
-                left += 1;
+            if opponent_experience >= current_experience {
+                let training = opponent_experience - current_experience + 1;
+                result += training;
+                current_experience += training;
             }
+
+            current_energy -= opponent_energy;
+            current_experience += opponent_experience;
         }
 
         result
@@ -29,24 +35,35 @@ impl Solution {
 }
 
 struct Input {
-    blocks: String,
-    k: i32,
+    initial_energy: i32,
+    initial_experience: i32,
+    energy: Vec<i32>,
+    experience: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            blocks: "WBBWWBBWBW".to_string(),
-            k: 7,
+            initial_energy: 5,
+            initial_experience: 3,
+            energy: [1, 4, 3, 2].to_vec(),
+            experience: [2, 6, 3, 1].to_vec(),
         },
         Input {
-            blocks: "WBWBBBW".to_string(),
-            k: 2,
+            initial_energy: 2,
+            initial_experience: 4,
+            energy: [1].to_vec(),
+            experience: [3].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_recolors(input.blocks, input.k);
+        let result = Solution::min_number_of_hours(
+            input.initial_energy,
+            input.initial_experience,
+            input.energy,
+            input.experience,
+        );
         println!("{:?}", result);
     }
 }
