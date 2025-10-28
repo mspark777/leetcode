@@ -1,33 +1,28 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_number_of_hours(
-        initial_energy: i32,
-        initial_experience: i32,
-        energy: Vec<i32>,
-        experience: Vec<i32>,
-    ) -> i32 {
-        let mut current_energy = initial_energy;
-        let mut current_experience = initial_experience;
-        let mut result = 0;
+    pub fn answer_queries(nums: Vec<i32>, queries: Vec<i32>) -> Vec<i32> {
+        let mut accumulates = nums.clone();
+        accumulates.sort_unstable();
 
-        for (opponent_energy, opponent_experience) in
-            energy.iter().cloned().zip(experience.iter().cloned())
-        {
-            if opponent_energy >= current_energy {
-                let training = opponent_energy - current_energy + 1;
-                result += training;
-                current_energy += training;
+        for i in 1..accumulates.len() {
+            accumulates[i] += accumulates[i - 1];
+        }
+
+        let mut result = vec![0; queries.len()];
+        for (i, query) in queries.iter().cloned().enumerate() {
+            let mut left = 0usize;
+            let mut right = nums.len();
+
+            while left < right {
+                let midx = (left + right) / 2;
+                if accumulates[midx] <= query {
+                    left = midx + 1;
+                    result[i] = left as i32;
+                } else {
+                    right = midx;
+                }
             }
-
-            if opponent_experience >= current_experience {
-                let training = opponent_experience - current_experience + 1;
-                result += training;
-                current_experience += training;
-            }
-
-            current_energy -= opponent_energy;
-            current_experience += opponent_experience;
         }
 
         result
@@ -35,35 +30,24 @@ impl Solution {
 }
 
 struct Input {
-    initial_energy: i32,
-    initial_experience: i32,
-    energy: Vec<i32>,
-    experience: Vec<i32>,
+    nums: Vec<i32>,
+    queries: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            initial_energy: 5,
-            initial_experience: 3,
-            energy: [1, 4, 3, 2].to_vec(),
-            experience: [2, 6, 3, 1].to_vec(),
+            nums: [4, 5, 2, 1].to_vec(),
+            queries: [3, 10, 21].to_vec(),
         },
         Input {
-            initial_energy: 2,
-            initial_experience: 4,
-            energy: [1].to_vec(),
-            experience: [3].to_vec(),
+            nums: [2, 3, 4, 5].to_vec(),
+            queries: [1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_number_of_hours(
-            input.initial_energy,
-            input.initial_experience,
-            input.energy,
-            input.experience,
-        );
+        let result = Solution::answer_queries(input.nums, input.queries);
         println!("{:?}", result);
     }
 }
