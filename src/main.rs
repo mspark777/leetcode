@@ -1,56 +1,77 @@
 struct Solution {}
 
 impl Solution {
-    pub fn most_frequent_even(nums: Vec<i32>) -> i32 {
-        let mut counts = std::collections::HashMap::<i32, i32>::with_capacity(nums.len());
-        let mut max_count = -1;
-        let mut result = -1;
+    pub fn count_days_together(
+        arrive_alice: String,
+        leave_alice: String,
+        arrive_bob: String,
+        leave_bob: String,
+    ) -> i32 {
+        let alice_arrive = Self::to_offset(arrive_alice.as_str());
+        let alice_leave = Self::to_offset(leave_alice.as_str());
+        let bob_arrive = Self::to_offset(arrive_bob.as_str());
+        let bob_leave = Self::to_offset(leave_bob.as_str());
 
-        for num in nums.iter().cloned() {
-            if num & 1 == 1 {
-                continue;
-            }
+        let arrive = alice_arrive.max(bob_arrive);
+        let leave = alice_leave.min(bob_leave);
+        match arrive <= leave {
+            true => leave - arrive + 1,
+            _ => 0,
+        }
+    }
 
-            let count = *counts.entry(num).and_modify(|c| *c += 1).or_insert(1);
-            if result < 0 {
-                result = num;
-                max_count = count;
-                continue;
-            }
+    fn parse(s: &str) -> (usize, i32) {
+        let mut split = s.split('-');
+        let m = split.next().unwrap();
+        let d = split.next().unwrap();
 
-            if count == max_count {
-                if num < result {
-                    result = num;
-                }
-            } else if count > max_count {
-                max_count = count;
-                result = num;
-            }
+        let month = m.parse::<usize>().unwrap() - 1;
+        let day = d.parse::<i32>().unwrap();
+        (month, day)
+    }
+
+    fn to_offset(s: &str) -> i32 {
+        let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        let (month, day) = Self::parse(s);
+        let mut offset = day;
+        for d in days.iter().take(month) {
+            offset += d
         }
 
-        result
+        offset
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    arrive_alice: String,
+    leave_alice: String,
+    arrive_bob: String,
+    leave_bob: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [0, 1, 2, 2, 4, 4, 1].to_vec(),
+            arrive_alice: "08-15".to_string(),
+            leave_alice: "08-18".to_string(),
+            arrive_bob: "08-16".to_string(),
+            leave_bob: "08-19".to_string(),
         },
         Input {
-            nums: [4, 4, 4, 9, 2, 4].to_vec(),
-        },
-        Input {
-            nums: [29, 47, 21, 41, 13, 37, 25, 7].to_vec(),
+            arrive_alice: "10-01".to_string(),
+            leave_alice: "10-31".to_string(),
+            arrive_bob: "11-01".to_string(),
+            leave_bob: "12-31".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::most_frequent_even(input.nums);
+        let result = Solution::count_days_together(
+            input.arrive_alice,
+            input.leave_alice,
+            input.arrive_bob,
+            input.leave_bob,
+        );
         println!("{:?}", result);
     }
 }
