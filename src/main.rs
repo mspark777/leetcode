@@ -1,23 +1,60 @@
 struct Solution {}
 
 impl Solution {
-    pub fn smallest_even_multiple(n: i32) -> i32 {
-        match n & 1 {
-            1 => n * 2,
-            _ => n,
+    pub fn equal_frequency(word: String) -> bool {
+        let mut frequencies = vec![0; 26];
+        for ch in word.chars() {
+            let a = 'a' as usize;
+            let code = ch as usize;
+            let idx = code - a;
+            frequencies[idx] += 1;
         }
+
+        for (i, frequency) in frequencies.iter().cloned().enumerate() {
+            if frequency == 0 {
+                continue;
+            }
+
+            let mut set = std::collections::HashSet::<i32>::with_capacity(26);
+            for (j, freq) in frequencies.iter().cloned().enumerate() {
+                let mut f = freq;
+                if i == j {
+                    f -= 1;
+                }
+
+                if f > 0 {
+                    set.insert(f);
+                }
+            }
+
+            if set.len() == 1 {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
 struct Input {
-    n: i32,
+    word: String,
 }
 
 fn main() {
-    let inputs = [Input { n: 5 }, Input { n: 6 }];
+    let inputs = [
+        Input {
+            word: "abcc".to_string(),
+        },
+        Input {
+            word: "aazz".to_string(),
+        },
+        Input {
+            word: "bbac".to_string(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::smallest_even_multiple(input.n);
+        let result = Solution::equal_frequency(input.word);
         println!("{:?}", result);
     }
 }
