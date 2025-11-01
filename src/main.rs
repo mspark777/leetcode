@@ -1,46 +1,57 @@
 struct Solution {}
 
 impl Solution {
-    pub fn common_factors(a: i32, b: i32) -> i32 {
-        let gcd = Self::gcd(a, b);
+    pub fn hardest_worker(_n: i32, logs: Vec<Vec<i32>>) -> i32 {
+        let mut prev_leave_time = 0;
+        let mut longest_time = 0;
         let mut result = 0;
-        for i in 1..=gcd {
-            if (i * i) > gcd {
-                break;
-            }
+        for log in logs.iter() {
+            let id = log[0];
+            let leave_time = log[1];
 
-            if gcd % i == 0 {
-                result += 1;
-                if i != gcd / i {
-                    result += 1;
+            let time = leave_time - prev_leave_time;
+            prev_leave_time = leave_time;
+            if longest_time < time {
+                longest_time = time;
+                result = id;
+            } else if longest_time == time {
+                if result > id {
+                    result = id;
                 }
             }
         }
 
         result
     }
-
-    fn gcd(mut a: i32, mut b: i32) -> i32 {
-        while b != 0 {
-            let temp = b;
-            b = a % b;
-            a = temp;
-        }
-
-        a
-    }
 }
 
 struct Input {
-    a: i32,
-    b: i32,
+    n: i32,
+    logs: Vec<Vec<i32>>,
 }
 
 fn main() {
-    let inputs = [Input { a: 12, b: 6 }, Input { a: 25, b: 30 }];
+    let inputs = [
+        Input {
+            n: 10,
+            logs: [[0, 3], [2, 5], [0, 9], [1, 15]]
+                .map(|a| a.to_vec())
+                .to_vec(),
+        },
+        Input {
+            n: 26,
+            logs: [[1, 1], [3, 7], [2, 12], [7, 17]]
+                .map(|a| a.to_vec())
+                .to_vec(),
+        },
+        Input {
+            n: 2,
+            logs: [[0, 10], [1, 20]].map(|a| a.to_vec()).to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::common_factors(input.a, input.b);
+        let result = Solution::hardest_worker(input.n, input.logs);
         println!("{:?}", result);
     }
 }
