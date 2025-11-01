@@ -1,22 +1,34 @@
 struct Solution {}
 
 impl Solution {
-    pub fn hardest_worker(_n: i32, logs: Vec<Vec<i32>>) -> i32 {
-        let mut prev_leave_time = 0;
-        let mut longest_time = 0;
-        let mut result = 0;
-        for log in logs.iter() {
-            let id = log[0];
-            let leave_time = log[1];
+    pub fn count_time(time: String) -> i32 {
+        let time = time.chars().collect::<Vec<char>>();
+        let mut result = 1;
 
-            let time = leave_time - prev_leave_time;
-            prev_leave_time = leave_time;
-            if longest_time < time {
-                longest_time = time;
-                result = id;
-            } else if longest_time == time {
-                if result > id {
-                    result = id;
+        if time[4] == '?' {
+            result *= 10
+        }
+
+        if time[3] == '?' {
+            result *= 6
+        }
+
+        if (time[0] == '?') && (time[1] == '?') {
+            result *= 24
+        } else {
+            if time[1] == '?' {
+                if time[0] == '2' {
+                    result *= 4
+                } else {
+                    result *= 10
+                }
+            }
+
+            if time[0] == '?' {
+                if time[1] < '4' {
+                    result *= 3
+                } else {
+                    result *= 2
                 }
             }
         }
@@ -26,32 +38,24 @@ impl Solution {
 }
 
 struct Input {
-    n: i32,
-    logs: Vec<Vec<i32>>,
+    time: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            n: 10,
-            logs: [[0, 3], [2, 5], [0, 9], [1, 15]]
-                .map(|a| a.to_vec())
-                .to_vec(),
+            time: "?5:00".to_string(),
         },
         Input {
-            n: 26,
-            logs: [[1, 1], [3, 7], [2, 12], [7, 17]]
-                .map(|a| a.to_vec())
-                .to_vec(),
+            time: "0?:0?".to_string(),
         },
         Input {
-            n: 2,
-            logs: [[0, 10], [1, 20]].map(|a| a.to_vec()).to_vec(),
+            time: "??:??".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::hardest_worker(input.n, input.logs);
+        let result = Solution::count_time(input.time);
         println!("{:?}", result);
     }
 }
