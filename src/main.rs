@@ -1,60 +1,46 @@
 struct Solution {}
 
 impl Solution {
-    pub fn equal_frequency(word: String) -> bool {
-        let mut frequencies = vec![0; 26];
-        for ch in word.chars() {
-            let a = 'a' as usize;
-            let code = ch as usize;
-            let idx = code - a;
-            frequencies[idx] += 1;
-        }
-
-        for (i, frequency) in frequencies.iter().cloned().enumerate() {
-            if frequency == 0 {
-                continue;
+    pub fn common_factors(a: i32, b: i32) -> i32 {
+        let gcd = Self::gcd(a, b);
+        let mut result = 0;
+        for i in 1..=gcd {
+            if (i * i) > gcd {
+                break;
             }
 
-            let mut set = std::collections::HashSet::<i32>::with_capacity(26);
-            for (j, freq) in frequencies.iter().cloned().enumerate() {
-                let mut f = freq;
-                if i == j {
-                    f -= 1;
+            if gcd % i == 0 {
+                result += 1;
+                if i != gcd / i {
+                    result += 1;
                 }
-
-                if f > 0 {
-                    set.insert(f);
-                }
-            }
-
-            if set.len() == 1 {
-                return true;
             }
         }
 
-        return false;
+        result
+    }
+
+    fn gcd(mut a: i32, mut b: i32) -> i32 {
+        while b != 0 {
+            let temp = b;
+            b = a % b;
+            a = temp;
+        }
+
+        a
     }
 }
 
 struct Input {
-    word: String,
+    a: i32,
+    b: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            word: "abcc".to_string(),
-        },
-        Input {
-            word: "aazz".to_string(),
-        },
-        Input {
-            word: "bbac".to_string(),
-        },
-    ];
+    let inputs = [Input { a: 12, b: 6 }, Input { a: 25, b: 30 }];
 
     for input in inputs {
-        let result = Solution::equal_frequency(input.word);
+        let result = Solution::common_factors(input.a, input.b);
         println!("{:?}", result);
     }
 }
