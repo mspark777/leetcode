@@ -2,25 +2,14 @@ struct Solution {}
 
 impl Solution {
     pub fn have_conflict(event1: Vec<String>, event2: Vec<String>) -> bool {
-        let event1_start = Self::parse(event1[0].as_str());
-        let event1_end = Self::parse(event1[1].as_str());
+        let start = event1[0].as_str().max(event2[0].as_str());
+        let end = event1[0].as_str().min(event2[1].as_str());
 
-        let event2_start = Self::parse(event2[0].as_str());
-        let event2_end = Self::parse(event2[1].as_str());
-
-        let start = event1_start.max(event2_start);
-        let end = event1_end.min(event2_end);
-
-        start <= end
-    }
-
-    fn parse(s: &str) -> i32 {
-        let scales = [60, 1];
-        s.split(':')
-            .zip(scales.iter().cloned())
-            .fold(0, |acc, (chunk, scale)| {
-                acc + chunk.parse::<i32>().unwrap() * scale
-            })
+        match start.cmp(end) {
+            std::cmp::Ordering::Less => true,
+            std::cmp::Ordering::Equal => true,
+            _ => false,
+        }
     }
 }
 
