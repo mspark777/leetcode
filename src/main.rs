@@ -1,61 +1,56 @@
 struct Solution {}
 
 impl Solution {
-    pub fn count_time(time: String) -> i32 {
-        let time = time.chars().collect::<Vec<char>>();
-        let mut result = 1;
+    pub fn have_conflict(event1: Vec<String>, event2: Vec<String>) -> bool {
+        let event1_start = Self::parse(event1[0].as_str());
+        let event1_end = Self::parse(event1[1].as_str());
 
-        if time[4] == '?' {
-            result *= 10
-        }
+        let event2_start = Self::parse(event2[0].as_str());
+        let event2_end = Self::parse(event2[1].as_str());
 
-        if time[3] == '?' {
-            result *= 6
-        }
+        let start = event1_start.max(event2_start);
+        let end = event1_end.min(event2_end);
 
-        if (time[0] == '?') && (time[1] == '?') {
-            result *= 24
-        } else {
-            if time[1] == '?' {
-                if time[0] == '2' {
-                    result *= 4
-                } else {
-                    result *= 10
-                }
-            }
+        start <= end
+    }
 
-            if time[0] == '?' {
-                if time[1] < '4' {
-                    result *= 3
-                } else {
-                    result *= 2
-                }
-            }
-        }
-
-        result
+    fn parse(s: &str) -> i32 {
+        let scales = [60, 1];
+        s.split(':')
+            .zip(scales.iter().cloned())
+            .fold(0, |acc, (chunk, scale)| {
+                acc + chunk.parse::<i32>().unwrap() * scale
+            })
     }
 }
 
 struct Input {
-    time: String,
+    event1: Vec<String>,
+    event2: Vec<String>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            time: "?5:00".to_string(),
+            event1: ["01:15", "02:00"].map(|s| s.to_string()).to_vec(),
+            event2: ["02:00", "03:00"].map(|s| s.to_string()).to_vec(),
         },
         Input {
-            time: "0?:0?".to_string(),
+            event1: ["01:00", "02:00"].map(|s| s.to_string()).to_vec(),
+            event2: ["01:20", "03:00"].map(|s| s.to_string()).to_vec(),
         },
         Input {
-            time: "??:??".to_string(),
+            event1: ["10:00", "11:00"].map(|s| s.to_string()).to_vec(),
+            event2: ["14:00", "15:00"].map(|s| s.to_string()).to_vec(),
+        },
+        Input {
+            event1: ["05:10", "15:05"].map(|s| s.to_string()).to_vec(),
+            event2: ["14:59", "19:17"].map(|s| s.to_string()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_time(input.time);
+        let result = Solution::have_conflict(input.event1, input.event2);
         println!("{:?}", result);
     }
 }
