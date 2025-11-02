@@ -1,45 +1,54 @@
 struct Solution {}
 
 impl Solution {
-    pub fn have_conflict(event1: Vec<String>, event2: Vec<String>) -> bool {
-        let start = event1[0].as_str().max(event2[0].as_str());
-        let end = event1[0].as_str().min(event2[1].as_str());
+    pub fn odd_string(words: Vec<String>) -> String {
+        let mut counts = std::collections::HashMap::<String, i32>::with_capacity(words.len());
+        let mut word_map = std::collections::HashMap::<String, &str>::with_capacity(words.len());
 
-        match start.cmp(end) {
-            std::cmp::Ordering::Less => true,
-            std::cmp::Ordering::Equal => true,
-            _ => false,
+        for word in words.iter() {
+            let hash = word
+                .as_bytes()
+                .windows(2)
+                .map(|w| format!("{}_", ((w[1] as i32) - (w[0] as i32))))
+                .collect::<Vec<String>>()
+                .concat();
+
+            counts
+                .entry(hash.clone())
+                .and_modify(|c| *c += 1)
+                .or_insert(1);
+            word_map.insert(hash, word.as_str());
         }
+
+        for (hash, &count) in counts.iter() {
+            if count == 1 {
+                return word_map.get(hash).unwrap().to_string();
+            }
+        }
+
+        return String::new();
     }
 }
 
 struct Input {
-    event1: Vec<String>,
-    event2: Vec<String>,
+    words: Vec<String>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            event1: ["01:15", "02:00"].map(|s| s.to_string()).to_vec(),
-            event2: ["02:00", "03:00"].map(|s| s.to_string()).to_vec(),
+            words: ["adc", "wzy", "abc"].map(|s| s.to_string()).to_vec(),
         },
         Input {
-            event1: ["01:00", "02:00"].map(|s| s.to_string()).to_vec(),
-            event2: ["01:20", "03:00"].map(|s| s.to_string()).to_vec(),
+            words: ["aaa", "bob", "ccc", "ddd"].map(|s| s.to_string()).to_vec(),
         },
         Input {
-            event1: ["10:00", "11:00"].map(|s| s.to_string()).to_vec(),
-            event2: ["14:00", "15:00"].map(|s| s.to_string()).to_vec(),
-        },
-        Input {
-            event1: ["05:10", "15:05"].map(|s| s.to_string()).to_vec(),
-            event2: ["14:59", "19:17"].map(|s| s.to_string()).to_vec(),
+            words: ["abm", "bcn", "alm"].map(|s| s.to_string()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::have_conflict(input.event1, input.event2);
+        let result = Solution::odd_string(input.words);
         println!("{:?}", result);
     }
 }
