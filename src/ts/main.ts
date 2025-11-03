@@ -1,11 +1,16 @@
 import "@total-typescript/ts-reset";
 
-function search(word: string): boolean {
-  return word.search(/^([a-z]+(-[a-z]+)?[.,!]?|[.,!])$/) > -1;
-}
+function averageValue(nums: number[]): number {
+  const filtered = nums
+    .filter((n) => BigInt(n) % 2n === 0n)
+    .filter((n) => BigInt(n) % 3n === 0n);
+  if (filtered.length < 1) {
+    return 0;
+  }
 
-function countValidWords(sentence: string): number {
-  return sentence.split(" ").filter(search).length;
+  const avg = filtered.reduce((acc, num) => acc + num) / filtered.length;
+
+  return Math.floor(avg);
 }
 
 interface Input {
@@ -15,15 +20,18 @@ interface Input {
 function main(): void {
   const inputs: Input[] = [
     {
-      nums: [1, 2, 1],
+      nums: [1, 3, 6, 10, 12, 15],
     },
     {
-      nums: [1, 3, 2, 1],
+      nums: [1, 2, 4, 7, 10],
+    },
+    {
+      nums: [4, 4, 9, 10],
     },
   ];
 
   for (const input of inputs) {
-    const result = getConcatenation(input.nums);
+    const result = averageValue(input.nums);
     console.log(result);
   }
 }
