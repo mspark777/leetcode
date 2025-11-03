@@ -1,54 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn odd_string(words: Vec<String>) -> String {
-        let mut counts = std::collections::HashMap::<String, i32>::with_capacity(words.len());
-        let mut word_map = std::collections::HashMap::<String, &str>::with_capacity(words.len());
+    pub fn distinct_averages(nums: Vec<i32>) -> i32 {
+        let mut nums = nums;
+        nums.sort_unstable();
 
-        for word in words.iter() {
-            let hash = word
-                .as_bytes()
-                .windows(2)
-                .map(|w| format!("{}_", ((w[1] as i32) - (w[0] as i32))))
-                .collect::<Vec<String>>()
-                .concat();
-
-            counts
-                .entry(hash.clone())
-                .and_modify(|c| *c += 1)
-                .or_insert(1);
-            word_map.insert(hash, word.as_str());
-        }
-
-        for (hash, &count) in counts.iter() {
-            if count == 1 {
-                return word_map.get(hash).unwrap().to_string();
+        let mut sum_set = std::collections::HashSet::<String>::new();
+        let last = nums.len() - 1;
+        for l in 0..last {
+            let r = last - l;
+            if l >= r {
+                break;
             }
+
+            let min = nums[l];
+            let max = nums[r];
+            let sum = (max + min) as f64;
+            sum_set.insert((sum / 2.0).to_string());
         }
 
-        return String::new();
+        sum_set.len() as i32
     }
 }
 
 struct Input {
-    words: Vec<String>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            words: ["adc", "wzy", "abc"].map(|s| s.to_string()).to_vec(),
+            nums: [4, 1, 4, 0, 3, 5].to_vec(),
         },
         Input {
-            words: ["aaa", "bob", "ccc", "ddd"].map(|s| s.to_string()).to_vec(),
-        },
-        Input {
-            words: ["abm", "bcn", "alm"].map(|s| s.to_string()).to_vec(),
+            nums: [1, 100].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::odd_string(input.words);
+        let result = Solution::distinct_averages(input.nums);
         println!("{:?}", result);
     }
 }
