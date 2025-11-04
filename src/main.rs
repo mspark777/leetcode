@@ -1,20 +1,26 @@
 struct Solution {}
 
 impl Solution {
-    pub fn convert_temperature(celsius: f64) -> Vec<f64> {
-        vec![celsius + 273.15, celsius * 1.8 + 32.0]
+    pub fn number_of_cuts(n: i32) -> i32 {
+        match n & 1 {
+            0 => n / 2,
+            _ => match n {
+                1 => 0,
+                _ => n,
+            },
+        }
     }
 }
 
 struct Input {
-    celsius: f64,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [Input { celsius: 36.50 }, Input { celsius: 122.11 }];
+    let inputs = [Input { n: 4 }, Input { n: 3 }];
 
     for input in inputs {
-        let result = Solution::convert_temperature(input.celsius);
+        let result = Solution::number_of_cuts(input.n);
         println!("{:?}", result);
     }
 }
