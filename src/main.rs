@@ -1,26 +1,35 @@
 struct Solution {}
 
 impl Solution {
-    pub fn number_of_cuts(n: i32) -> i32 {
-        match n & 1 {
-            0 => n / 2,
-            _ => match n {
-                1 => 0,
-                _ => n,
-            },
-        }
+    pub fn maximum_value(strs: Vec<String>) -> i32 {
+        strs.iter()
+            .map(|s| match s.parse::<i32>() {
+                Ok(i) => i,
+                _ => s.len() as i32,
+            })
+            .max()
+            .unwrap_or(0)
     }
 }
 
 struct Input {
-    n: i32,
+    strs: Vec<String>,
 }
 
 fn main() {
-    let inputs = [Input { n: 4 }, Input { n: 3 }];
+    let inputs = [
+        Input {
+            strs: ["alic3", "bob", "3", "4", "00000"]
+                .map(|s| s.to_string())
+                .to_vec(),
+        },
+        Input {
+            strs: ["1", "01", "001", "0001"].map(|s| s.to_string()).to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::number_of_cuts(input.n);
+        let result = Solution::maximum_value(input.strs);
         println!("{:?}", result);
     }
 }
