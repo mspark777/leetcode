@@ -1,22 +1,20 @@
 struct Solution {}
 
 impl Solution {
-    pub fn similar_pairs(words: Vec<String>) -> i32 {
-        let mut result = 0;
-        let mut masks = std::collections::HashMap::<u32, i32>::new();
+    pub fn capture_forts(forts: Vec<i32>) -> i32 {
+        const ENEMY: i32 = 0;
 
-        for word in words.iter() {
-            let mut mask = 0u32;
-            for ch in word.chars() {
-                let a = 'a' as u32;
-                let code = ch as u32;
-                let shift = code - a;
-                mask |= 1 << shift;
+        let mut result = 0i32;
+        let mut j = 0usize;
+        let n = forts.len();
+        for i in 0..n {
+            if forts[i] != ENEMY {
+                if forts[j] == -forts[i] {
+                    result = result.max(((i - j) as i32) - 1)
+                }
+
+                j = i;
             }
-
-            let count = masks.entry(mask).or_insert(0);
-            result += *count;
-            *count += 1;
         }
 
         result
@@ -24,26 +22,21 @@ impl Solution {
 }
 
 struct Input {
-    words: Vec<String>,
+    forts: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            words: ["aba", "aabb", "abcd", "bac", "aabc"]
-                .map(|r| r.to_string())
-                .to_vec(),
+            forts: [1, 0, 0, -1, 0, 0, 0, 0, 1].to_vec(),
         },
         Input {
-            words: ["aabb", "ab", "ba"].map(|r| r.to_string()).to_vec(),
-        },
-        Input {
-            words: ["nba", "cba", "dba"].map(|r| r.to_string()).to_vec(),
+            forts: [0, 0, 1, -1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::similar_pairs(input.words);
+        let result = Solution::capture_forts(input.forts);
         println!("{:?}", result);
     }
 }
