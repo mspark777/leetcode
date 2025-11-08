@@ -1,58 +1,33 @@
 struct Solution {}
 
 impl Solution {
-    pub fn closest_target(words: Vec<String>, target: String, start_index: i32) -> i32 {
-        let n = words.len() as i32;
-        let mut shortest = i32::MAX;
+    pub fn count_digits(num: i32) -> i32 {
+        let mut result = 0;
+        let mut digits = num;
 
-        for (i, word) in words.iter().enumerate() {
-            if word.as_str() != target.as_str() {
+        while digits > 0 {
+            let digit = digits % 10;
+            digits /= 10;
+            if digit == 0 {
                 continue;
+            } else if (num % digit) == 0 {
+                result += 1;
             }
-
-            let i = i as i32;
-            let to_target = (start_index - i).abs();
-            let to_starting = (n - to_target).abs();
-
-            shortest = shortest.min(to_target).min(to_starting);
         }
 
-        match shortest {
-            i32::MAX => -1,
-            _ => shortest,
-        }
+        result
     }
 }
 
 struct Input {
-    words: Vec<String>,
-    target: String,
-    start_index: i32,
+    num: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            words: ["hello", "i", "am", "leetcode", "hello"]
-                .map(|s| s.to_string())
-                .to_vec(),
-            target: "hello".to_string(),
-            start_index: 1,
-        },
-        Input {
-            words: ["a", "b", "leetcode"].map(|s| s.to_string()).to_vec(),
-            target: "leetcode".to_string(),
-            start_index: 0,
-        },
-        Input {
-            words: ["i", "eat", "leetcode"].map(|s| s.to_string()).to_vec(),
-            target: "ate".to_string(),
-            start_index: 0,
-        },
-    ];
+    let inputs = [Input { num: 7 }, Input { num: 121 }, Input { num: 1248 }];
 
     for input in inputs {
-        let result = Solution::closest_target(input.words, input.target, input.start_index);
+        let result = Solution::count_digits(input.num);
         println!("{:?}", result);
     }
 }
