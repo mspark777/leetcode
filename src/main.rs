@@ -1,15 +1,8 @@
 struct Solution {}
 
 impl Solution {
-    pub fn alternate_digit_sum(n: i32) -> i32 {
-        let mut digits = n;
-        let mut result = 0;
-        while digits > 0 {
-            result = (digits % 10) - result;
-            digits /= 10;
-        }
-
-        result
+    pub fn distinct_integers(n: i32) -> i32 {
+        1.max(n - 1)
     }
 }
 
@@ -18,10 +11,10 @@ struct Input {
 }
 
 fn main() {
-    let inputs = [Input { n: 521 }, Input { n: 111 }, Input { n: 886996 }];
+    let inputs = [Input { n: 5 }, Input { n: 3 }, Input { n: 886996 }];
 
     for input in inputs {
-        let result = Solution::alternate_digit_sum(input.n);
+        let result = Solution::distinct_integers(input.n);
         println!("{:?}", result);
     }
 }
