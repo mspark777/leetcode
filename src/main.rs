@@ -1,43 +1,27 @@
 struct Solution {}
 
 impl Solution {
-    pub fn difference_of_sum(nums: Vec<i32>) -> i32 {
-        let mut element_sum = 0;
-        let mut digit_sum = 0;
-        for num in nums.iter().cloned() {
-            element_sum += num;
-            digit_sum += Self::digit_sum(num);
+    pub fn alternate_digit_sum(n: i32) -> i32 {
+        let mut digits = n;
+        let mut result = 0;
+        while digits > 0 {
+            result = (digits % 10) - result;
+            digits /= 10;
         }
 
-        (element_sum - digit_sum).abs()
-    }
-
-    fn digit_sum(mut num: i32) -> i32 {
-        let mut sum = 0;
-        while num > 0 {
-            sum += num % 10;
-            num /= 10;
-        }
-        sum
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [1, 15, 6, 3].to_vec(),
-        },
-        Input {
-            nums: [1, 2, 3, 4].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 521 }, Input { n: 111 }, Input { n: 886996 }];
 
     for input in inputs {
-        let result = Solution::difference_of_sum(input.nums);
+        let result = Solution::alternate_digit_sum(input.n);
         println!("{:?}", result);
     }
 }
