@@ -1,34 +1,21 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_the_array_conc_val(nums: Vec<i32>) -> i64 {
-        let n = nums.len();
-        let mut left = 0usize;
-        let mut right = n - 1;
-        let mut result = 0i64;
-
-        while left < right {
-            let num = Self::concat(nums[left], nums[right]);
-            result += num;
-            left += 1;
-            right -= 1;
+    pub fn left_right_difference(nums: Vec<i32>) -> Vec<i32> {
+        let mut result = vec![0; nums.len()];
+        let mut sum = 0;
+        for (i, num) in nums.iter().cloned().enumerate() {
+            result[i] = sum;
+            sum += num;
         }
 
-        if (n & 1) == 1 {
-            result += nums[left] as i64;
+        sum = 0;
+        for (i, num) in nums.iter().cloned().enumerate().rev() {
+            result[i] = (sum - result[i]).abs();
+            sum += num;
         }
 
         result
-    }
-
-    fn concat(left: i32, right: i32) -> i64 {
-        let mut pow = 10;
-        while pow <= right {
-            pow *= 10
-        }
-
-        let left = (left * pow) as i64;
-        left + (right as i64)
     }
 }
 
@@ -39,15 +26,13 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [7, 52, 2, 4].to_vec(),
+            nums: [10, 4, 8, 3].to_vec(),
         },
-        Input {
-            nums: [5, 14, 13, 8, 12].to_vec(),
-        },
+        Input { nums: [1].to_vec() },
     ];
 
     for input in inputs {
-        let result = Solution::find_the_array_conc_val(input.nums);
+        let result = Solution::left_right_difference(input.nums);
         println!("{:?}", result);
     }
 }
