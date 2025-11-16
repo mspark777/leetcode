@@ -1,38 +1,39 @@
 struct Solution {}
 
 impl Solution {
-    pub fn left_right_difference(nums: Vec<i32>) -> Vec<i32> {
-        let mut result = vec![0; nums.len()];
-        let mut sum = 0;
-        for (i, num) in nums.iter().cloned().enumerate() {
-            result[i] = sum;
-            sum += num;
+    pub fn split_num(num: i32) -> i32 {
+        let mut nums: Vec<i32> = num
+            .to_string()
+            .chars()
+            .map(|c| ((c as u8) - b'0') as i32)
+            .collect();
+        nums.sort_unstable();
+
+        let mut num1 = 0;
+        let mut num2 = 0;
+
+        for i in (1..nums.len()).step_by(2) {
+            num1 = num1 * 10 + nums[i - 1];
+            num2 = num2 * 10 + nums[i];
         }
 
-        sum = 0;
-        for (i, num) in nums.iter().cloned().enumerate().rev() {
-            result[i] = (sum - result[i]).abs();
-            sum += num;
+        if (nums.len() & 1) == 1 {
+            num1 = num1 * 10 + *nums.last().unwrap();
         }
 
-        result
+        num1 + num2
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    num: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [10, 4, 8, 3].to_vec(),
-        },
-        Input { nums: [1].to_vec() },
-    ];
+    let inputs = [Input { num: 4325 }, Input { num: 687 }];
 
     for input in inputs {
-        let result = Solution::left_right_difference(input.nums);
+        let result = Solution::split_num(input.num);
         println!("{:?}", result);
     }
 }
