@@ -1,39 +1,29 @@
 struct Solution {}
 
 impl Solution {
-    pub fn dist_money(money: i32, children: i32) -> i32 {
-        let money = money - children;
-        if money < 0 {
-            return -1;
-        } else if ((money / 7) == children) && ((money % 7) == 0) {
-            return children;
-        } else if ((money / 7) == (children - 1)) && ((money % 7) == 3) {
-            return children - 2;
+    pub fn even_odd_bit(n: i32) -> Vec<i32> {
+        let n = n as u32;
+        let mut result = vec![0, 0];
+        let mut idx = 1usize;
+        for shift in (0..=31).rev() {
+            result[idx] += ((n >> shift) & 1) as i32;
+
+            idx ^= 1;
         }
 
-        (children - 1).min(money / 7)
+        result
     }
 }
 
 struct Input {
-    money: i32,
-    children: i32,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            money: 20,
-            children: 3,
-        },
-        Input {
-            money: 16,
-            children: 2,
-        },
-    ];
+    let inputs = [Input { n: 50 }, Input { n: 2 }];
 
     for input in inputs {
-        let result = Solution::dist_money(input.money, input.children);
+        let result = Solution::even_odd_bit(input.n);
         println!("{:?}", result);
     }
 }
