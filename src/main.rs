@@ -1,49 +1,44 @@
 struct Solution {}
 
 impl Solution {
-    pub fn k_items_with_maximum_sum(
-        num_ones: i32,
-        num_zeros: i32,
-        _num_neg_ones: i32,
-        k: i32,
-    ) -> i32 {
-        match k <= (num_ones + num_zeros) {
-            true => num_ones.min(k),
-            false => num_ones * 2 + num_zeros - k,
+    pub fn min_number(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let nums1_set = std::collections::HashSet::<i32>::from_iter(nums1.iter().cloned());
+        let nums2_set = std::collections::HashSet::<i32>::from_iter(nums2.iter().cloned());
+
+        if let Some(m) = nums1_set.intersection(&nums2_set).min() {
+            return *m;
+        }
+
+        let min1 = nums1.iter().cloned().min().unwrap();
+        let min2 = nums2.iter().cloned().min().unwrap();
+
+        if min1 < min2 {
+            min1 * 10 + min2
+        } else {
+            min2 * 10 + min1
         }
     }
 }
 
 struct Input {
-    num_ones: i32,
-    num_zeros: i32,
-    num_neg_ones: i32,
-    k: i32,
+    nums1: Vec<i32>,
+    nums2: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            num_ones: 3,
-            num_zeros: 2,
-            num_neg_ones: 0,
-            k: 2,
+            nums1: [4, 1, 3].to_vec(),
+            nums2: [5, 7].to_vec(),
         },
         Input {
-            num_ones: 3,
-            num_zeros: 2,
-            num_neg_ones: 0,
-            k: 4,
+            nums1: [3, 5, 2, 6].to_vec(),
+            nums2: [3, 1, 7].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::k_items_with_maximum_sum(
-            input.num_ones,
-            input.num_zeros,
-            input.num_neg_ones,
-            input.k,
-        );
+        let result = Solution::min_number(input.nums1, input.nums2);
         println!("{:?}", result);
     }
 }
