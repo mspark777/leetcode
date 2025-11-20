@@ -1,44 +1,51 @@
 struct Solution {}
 
 impl Solution {
-    pub fn min_number(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
-        let nums1_set = std::collections::HashSet::<i32>::from_iter(nums1.iter().cloned());
-        let nums2_set = std::collections::HashSet::<i32>::from_iter(nums2.iter().cloned());
+    pub fn find_the_longest_balanced_substring(s: String) -> i32 {
+        let mut balanced = 0;
+        let mut count0 = 0;
+        let mut count1 = 0;
 
-        if let Some(m) = nums1_set.intersection(&nums2_set).min() {
-            return *m;
+        for ch in s.chars() {
+            if ch == '0' {
+                if count1 > 0 {
+                    count0 = 1;
+                } else {
+                    count0 += 1;
+                }
+                count1 = 0;
+            } else {
+                count1 += 1;
+            }
+
+            if count0 >= count1 {
+                balanced = balanced.max(count1);
+            }
         }
 
-        let min1 = nums1.iter().cloned().min().unwrap();
-        let min2 = nums2.iter().cloned().min().unwrap();
-
-        if min1 < min2 {
-            min1 * 10 + min2
-        } else {
-            min2 * 10 + min1
-        }
+        balanced * 2
     }
 }
 
 struct Input {
-    nums1: Vec<i32>,
-    nums2: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums1: [4, 1, 3].to_vec(),
-            nums2: [5, 7].to_vec(),
+            s: "01000111".to_string(),
         },
         Input {
-            nums1: [3, 5, 2, 6].to_vec(),
-            nums2: [3, 1, 7].to_vec(),
+            s: "00111".to_string(),
+        },
+        Input {
+            s: "111".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_number(input.nums1, input.nums2);
+        let result = Solution::find_the_longest_balanced_substring(input.s);
         println!("{:?}", result);
     }
 }
