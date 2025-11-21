@@ -1,51 +1,67 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_the_longest_balanced_substring(s: String) -> i32 {
-        let mut balanced = 0;
-        let mut count0 = 0;
-        let mut count1 = 0;
-
-        for ch in s.chars() {
-            if ch == '0' {
-                if count1 > 0 {
-                    count0 = 1;
-                } else {
-                    count0 += 1;
-                }
-                count1 = 0;
-            } else {
-                count1 += 1;
+    pub fn diagonal_prime(nums: Vec<Vec<i32>>) -> i32 {
+        let n = nums.len();
+        let mut result = 0;
+        for (i, row) in nums.iter().enumerate() {
+            let left = row[i];
+            if (left > result) && Self::is_prime(left) {
+                result = left;
             }
 
-            if count0 >= count1 {
-                balanced = balanced.max(count1);
+            let right = row[n - i - 1];
+            if (right > result) && Self::is_prime(right) {
+                result = right;
             }
         }
 
-        balanced * 2
+        result
+    }
+
+    fn is_prime(n: i32) -> bool {
+        if n < 2 {
+            return false;
+        } else if n == 2 {
+            return true;
+        } else if (n & 1) == 0 {
+            return false;
+        }
+
+        let n = n as i64;
+        for i in (3..n).step_by(2) {
+            let d = i * i;
+            if d > n {
+                break;
+            } else if (n % i) == 0 {
+                return false;
+            }
+        }
+
+        true
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "01000111".to_string(),
+            nums: [[1, 2, 3], [5, 6, 7], [9, 10, 11]]
+                .map(|a| a.to_vec())
+                .to_vec(),
         },
         Input {
-            s: "00111".to_string(),
-        },
-        Input {
-            s: "111".to_string(),
+            nums: [[1, 2, 3], [5, 17, 7], [9, 11, 10]]
+                .map(|a| a.to_vec())
+                .to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_the_longest_balanced_substring(input.s);
+        let result = Solution::diagonal_prime(input.nums);
         println!("{:?}", result);
     }
 }
