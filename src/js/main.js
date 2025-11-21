@@ -1,3 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
+/**
+ * @return {null|boolean|number|string|Array|Object}
+ */
+Array.prototype.last = function () {
+  return this.length > 0 ? this[this.length - 1] : -1;
+};
+
 /**
  * @param {number[]} nums
  * @param {number} k
