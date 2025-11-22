@@ -1,10 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 /**
- * @return {null|boolean|number|string|Array|Object}
+ * @param {number} n
+ * @return {Function} counter
  */
-Array.prototype.last = function () {
-  return this.length > 0 ? this[this.length - 1] : -1;
+var createCounter = function (n) {
+  return function () {
+    const result = n;
+    n += 1;
+    return result;
+  };
 };
 
 /**
