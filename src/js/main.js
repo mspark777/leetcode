@@ -1,10 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 /**
- * @param {number} millis
- * @return {Promise}
+ * @param {number[]} nums
+ * @param {Function} fn
+ * @param {number} init
+ * @return {number}
  */
-async function sleep(millis) {
-  return new Promise((resolve) => setTimeout(resolve, millis));
-}
+var reduce = function (nums, fn, init) {
+  if (nums.length < 1) {
+    return init;
+  }
+
+  let result = init;
+  for (const num of nums) {
+    result = fn(result, num);
+  }
+
+  return result;
+};
 
 /**
  * @param {number[]} nums
