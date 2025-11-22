@@ -1,14 +1,10 @@
 /**
- * @param {number} n
- * @return {Function} counter
+ * @param {number} millis
+ * @return {Promise}
  */
-var createCounter = function (n) {
-  return function () {
-    const result = n;
-    n += 1;
-    return result;
-  };
-};
+async function sleep(millis) {
+  return new Promise((resolve) => setTimeout(resolve, millis));
+}
 
 /**
  * @param {number[]} nums
