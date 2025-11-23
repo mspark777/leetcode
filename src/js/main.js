@@ -1,24 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {number[]} nums
- * @param {Function} fn
- * @param {number} init
- * @return {number}
+ * @param {Function[]} functions
+ * @return {Function}
  */
-var reduce = function (nums, fn, init) {
-  if (nums.length < 1) {
-    return init;
-  }
-
-  let result = init;
-  for (const num of nums) {
-    result = fn(result, num);
-  }
-
-  return result;
+var compose = function (functions) {
+  return function (x) {
+    return functions.reduceRight((acc, func) => func(acc), x);
+  };
 };
 
 /**
