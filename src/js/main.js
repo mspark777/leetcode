@@ -3,13 +3,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {Function[]} functions
- * @return {Function}
+ * @param {number[]} arr
+ * @param {Function} fn
+ * @return {number[]}
  */
-var compose = function (functions) {
-  return function (x) {
-    return functions.reduceRight((acc, func) => func(acc), x);
-  };
+var filter = function (arr, fn) {
+  const result = [];
+  for (const [i, n] of arr.entries()) {
+    if (fn(n, i)) {
+      result.push(n);
+    }
+  }
+
+  return result;
 };
 
 /**
