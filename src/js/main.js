@@ -7,12 +7,10 @@
  * @param {Function} fn
  * @return {number[]}
  */
-var filter = function (arr, fn) {
+var map = function (arr, fn) {
   const result = [];
-  for (const [i, n] of arr.entries()) {
-    if (fn(n, i)) {
-      result.push(n);
-    }
+  for (let [i, num] of arr.entries()) {
+    result.push(fn(num, i));
   }
 
   return result;
