@@ -1,67 +1,60 @@
 struct Solution {}
 
 impl Solution {
-    pub fn diagonal_prime(nums: Vec<Vec<i32>>) -> i32 {
-        let n = nums.len();
-        let mut result = 0;
-        for (i, row) in nums.iter().enumerate() {
-            let left = row[i];
-            if (left > result) && Self::is_prime(left) {
-                result = left;
+    pub fn find_column_width(grid: Vec<Vec<i32>>) -> Vec<i32> {
+        let n = grid[0].len();
+
+        let mut result = vec![0; n];
+        for i in 0..n {
+            let mut max_width = 0;
+            for row in grid.iter() {
+                max_width = max_width.max(Self::width(row[i]));
             }
 
-            let right = row[n - i - 1];
-            if (right > result) && Self::is_prime(right) {
-                result = right;
-            }
+            result[i] = max_width;
         }
 
         result
     }
 
-    fn is_prime(n: i32) -> bool {
-        if n < 2 {
-            return false;
-        } else if n == 2 {
-            return true;
-        } else if (n & 1) == 0 {
-            return false;
+    fn width(mut n: i32) -> i32 {
+        if n == 0 {
+            return 1;
         }
 
-        let n = n as i64;
-        for i in (3..n).step_by(2) {
-            let d = i * i;
-            if d > n {
-                break;
-            } else if (n % i) == 0 {
-                return false;
-            }
+        let mut l = 0;
+        if n < 0 {
+            l += 1;
+            n *= -1;
         }
 
-        true
+        while n > 0 {
+            n /= 10;
+            l += 1;
+        }
+
+        l
     }
 }
 
 struct Input {
-    nums: Vec<Vec<i32>>,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [[1, 2, 3], [5, 6, 7], [9, 10, 11]]
-                .map(|a| a.to_vec())
-                .to_vec(),
+            grid: [[1], [22], [333]].map(|a| a.to_vec()).to_vec(),
         },
         Input {
-            nums: [[1, 2, 3], [5, 17, 7], [9, 11, 10]]
+            grid: [[-15, 1, 3], [15, 7, 12], [5, 6, -2]]
                 .map(|a| a.to_vec())
                 .to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::diagonal_prime(input.nums);
+        let result = Solution::find_column_width(input.grid);
         println!("{:?}", result);
     }
 }
