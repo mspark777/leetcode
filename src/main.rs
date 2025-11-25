@@ -1,41 +1,49 @@
 struct Solution {}
 
 impl Solution {
-    pub fn row_and_maximum_ones(mat: Vec<Vec<i32>>) -> Vec<i32> {
-        let mut row_idx = 0usize;
-        let mut count_ones = 0usize;
+    pub fn max_div_score(nums: Vec<i32>, divisors: Vec<i32>) -> i32 {
+        let mut result = i32::MAX;
+        let mut max_score = i32::MIN;
 
-        for (i, row) in mat.iter().enumerate() {
-            let count = row.iter().copied().filter(|&n| n == 1).count();
-            if count > count_ones {
-                row_idx = i;
-                count_ones = count
+        for divisor in divisors.iter().copied() {
+            let score = nums.iter().fold(0, |acc, &n| match n % divisor {
+                0 => acc + 1,
+                _ => acc,
+            });
+
+            if (score > max_score) || ((score == max_score) && (divisor < result)) {
+                result = divisor;
+                max_score = score;
             }
         }
 
-        vec![row_idx as i32, count_ones as i32]
+        result
     }
 }
 
 struct Input {
-    mat: Vec<Vec<i32>>,
+    nums: Vec<i32>,
+    divisors: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            mat: [[0, 1], [1, 0]].map(|a| a.to_vec()).to_vec(),
+            nums: [2, 9, 15, 50].to_vec(),
+            divisors: [5, 3, 7, 2].to_vec(),
         },
         Input {
-            mat: [[0, 0, 0], [0, 1, 1]].map(|a| a.to_vec()).to_vec(),
+            nums: [4, 7, 9, 3, 9].to_vec(),
+            divisors: [5, 2, 3].to_vec(),
         },
         Input {
-            mat: [[0, 0], [1, 1], [0, 0]].map(|a| a.to_vec()).to_vec(),
+            nums: [20, 14, 21, 10].to_vec(),
+            divisors: [10, 16, 20].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::row_and_maximum_ones(input.mat);
+        let result = Solution::max_div_score(input.nums, input.divisors);
         println!("{:?}", result);
     }
 }
