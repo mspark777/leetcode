@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "rootDir": "./src/ts",
+    "outDir": "./dist",
     "target": "es2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -23,16 +24,8 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "lib": [
-      "es2022"
-    ],
-    "types": [
-      "@types/node"
-    ]
+    "lib": ["es2022"],
+    "types": ["@types/node"]
   },
-  "exclude": [
-    "node_module",
-    "dist",
-    "temp"
-  ]
+  "exclude": ["node_module", "dist", "temp"]
 }
