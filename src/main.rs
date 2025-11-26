@@ -1,49 +1,30 @@
 struct Solution {}
 
 impl Solution {
-    pub fn max_div_score(nums: Vec<i32>, divisors: Vec<i32>) -> i32 {
-        let mut result = i32::MAX;
-        let mut max_score = i32::MIN;
-
-        for divisor in divisors.iter().copied() {
-            let score = nums.iter().fold(0, |acc, &n| match n % divisor {
-                0 => acc + 1,
-                _ => acc,
-            });
-
-            if (score > max_score) || ((score == max_score) && (divisor < result)) {
-                result = divisor;
-                max_score = score;
-            }
-        }
-
-        result
+    pub fn find_delayed_arrival_time(arrival_time: i32, delayed_time: i32) -> i32 {
+        (arrival_time + delayed_time) % 24
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    divisors: Vec<i32>,
+    arrival_time: i32,
+    delayed_time: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [2, 9, 15, 50].to_vec(),
-            divisors: [5, 3, 7, 2].to_vec(),
+            arrival_time: 15,
+            delayed_time: 5,
         },
         Input {
-            nums: [4, 7, 9, 3, 9].to_vec(),
-            divisors: [5, 2, 3].to_vec(),
-        },
-        Input {
-            nums: [20, 14, 21, 10].to_vec(),
-            divisors: [10, 16, 20].to_vec(),
+            arrival_time: 13,
+            delayed_time: 11,
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_div_score(input.nums, input.divisors);
+        let result = Solution::find_delayed_arrival_time(input.arrival_time, input.delayed_time);
         println!("{:?}", result);
     }
 }
