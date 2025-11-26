@@ -1,30 +1,29 @@
 struct Solution {}
 
 impl Solution {
-    pub fn find_delayed_arrival_time(arrival_time: i32, delayed_time: i32) -> i32 {
-        (arrival_time + delayed_time) % 24
+    pub fn sum_of_multiples(n: i32) -> i32 {
+        (1..=n).filter(Self::check).sum()
+    }
+
+    fn check(n: &i32) -> bool {
+        let n = *n;
+        let mod3 = n % 3;
+        let mod5 = n % 5;
+        let mod7 = n % 7;
+
+        (mod3 == 0) || (mod5 == 0) || (mod7 == 0)
     }
 }
 
 struct Input {
-    arrival_time: i32,
-    delayed_time: i32,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            arrival_time: 15,
-            delayed_time: 5,
-        },
-        Input {
-            arrival_time: 13,
-            delayed_time: 11,
-        },
-    ];
+    let inputs = [Input { n: 7 }, Input { n: 10 }, Input { n: 9 }];
 
     for input in inputs {
-        let result = Solution::find_delayed_arrival_time(input.arrival_time, input.delayed_time);
+        let result = Solution::sum_of_multiples(input.n);
         println!("{:?}", result);
     }
 }
