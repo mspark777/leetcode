@@ -1,19 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {number[]} arr
- * @param {Function} fn
- * @return {number[]}
+ * @return {Generator<number>}
  */
-var map = function (arr, fn) {
-  const result = [];
-  for (let [i, num] of arr.entries()) {
-    result.push(fn(num, i));
-  }
+var fibGenerator = function* () {
+  let left = 0;
+  yield left;
+  let right = 1;
+  yield right;
 
-  return result;
+  for (;;) {
+    const next = left + right;
+    left = right;
+    right = next;
+    yield next;
+  }
 };
 
 /**
