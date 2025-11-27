@@ -1,29 +1,32 @@
 struct Solution {}
 
 impl Solution {
-    pub fn sum_of_multiples(n: i32) -> i32 {
-        (1..=n).filter(Self::check).sum()
-    }
+    pub fn maximize_sum(nums: Vec<i32>, k: i32) -> i32 {
+        let max = nums.iter().copied().max().unwrap_or(0);
 
-    fn check(n: &i32) -> bool {
-        let n = *n;
-        let mod3 = n % 3;
-        let mod5 = n % 5;
-        let mod7 = n % 7;
-
-        (mod3 == 0) || (mod5 == 0) || (mod7 == 0)
+        (max * k) + ((k * (k - 1)) / 2)
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
-    let inputs = [Input { n: 7 }, Input { n: 10 }, Input { n: 9 }];
+    let inputs = [
+        Input {
+            nums: [1, 2, 3, 4, 5].to_vec(),
+            k: 3,
+        },
+        Input {
+            nums: [5, 5, 5].to_vec(),
+            k: 2,
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::sum_of_multiples(input.n);
+        let result = Solution::maximize_sum(input.nums, input.k);
         println!("{:?}", result);
     }
 }
