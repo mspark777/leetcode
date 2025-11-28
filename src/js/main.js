@@ -6,14 +6,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {Function} fn
  * @return {Function}
  */
-var once = function (fn) {
+var createHelloWorld = function () {
   return function (...args) {
-    const result = fn(...args);
-    fn = () => undefined;
-    return result;
+    return "Hello World";
   };
 };
 
