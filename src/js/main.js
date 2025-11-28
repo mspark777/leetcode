@@ -1,34 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {integer} init
- * @return { increment: Function, decrement: Function, reset: Function }
+ * @param {Function} fn
+ * @return {Function}
  */
-var createCounter = function (init) {
-  let num = init;
-
-  const increment = () => {
-    num += 1;
-    return num;
-  };
-
-  const decrement = () => {
-    num -= 1;
-    return num;
-  };
-
-  const reset = () => {
-    num = init;
-    return num;
-  };
-
-  return {
-    increment,
-    decrement,
-    reset,
+var once = function (fn) {
+  return function (...args) {
+    const result = fn(...args);
+    fn = () => undefined;
+    return result;
   };
 };
 
