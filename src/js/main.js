@@ -1,20 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @return {Generator<number>}
+ * @param {integer} init
+ * @return { increment: Function, decrement: Function, reset: Function }
  */
-var fibGenerator = function* () {
-  let left = 0;
-  yield left;
-  let right = 1;
-  yield right;
+var createCounter = function (init) {
+  let num = init;
 
-  for (;;) {
-    const next = left + right;
-    left = right;
-    right = next;
-    yield next;
-  }
+  const increment = () => {
+    num += 1;
+    return num;
+  };
+
+  const decrement = () => {
+    num -= 1;
+    return num;
+  };
+
+  const reset = () => {
+    num = init;
+    return num;
+  };
+
+  return {
+    increment,
+    decrement,
+    reset,
+  };
 };
 
 /**
