@@ -1,21 +1,26 @@
 struct Solution {}
 
 impl Solution {
-    pub fn distinct_difference_array(nums: Vec<i32>) -> Vec<i32> {
-        let n = nums.len();
-        let mut result = vec![0; n];
-        let mut distincts = std::collections::HashSet::<i32>::with_capacity(n);
+    pub fn circular_game_losers(n: i32, k: i32) -> Vec<i32> {
+        let n = n as usize;
+        let k = k as usize;
+        let mut recevied_list = vec![false; n];
+        let mut who = 0usize;
+        let mut turn = 1usize;
 
-        for (i, num) in nums.iter().copied().enumerate() {
-            distincts.insert(num);
-            result[i] = distincts.len() as i32;
+        while !recevied_list[who] {
+            recevied_list[who] = true;
+            who = (who + (turn * k)) % n;
+            turn += 1;
         }
 
-        distincts.clear();
-
-        for (i, num) in nums.iter().copied().enumerate().rev() {
-            result[i] -= distincts.len() as i32;
-            distincts.insert(num);
+        let mut result = Vec::<i32>::with_capacity(n + 1 - turn);
+        for (i, received) in recevied_list.iter().copied().enumerate() {
+            if received {
+                continue;
+            }
+            let who = (i + 1) as i32;
+            result.push(who);
         }
 
         result
@@ -23,21 +28,15 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
+    k: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [1, 2, 3, 4, 5].to_vec(),
-        },
-        Input {
-            nums: [3, 2, 3, 4, 2].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 5, k: 2 }, Input { n: 4, k: 4 }];
 
     for input in inputs {
-        let result = Solution::distinct_difference_array(input.nums);
+        let result = Solution::circular_game_losers(input.n, input.k);
         println!("{:?}", result);
     }
 }
