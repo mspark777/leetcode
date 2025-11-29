@@ -6,12 +6,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @return {Function}
+ * @param {Array} arr
+ * @param {number} size
+ * @return {Array}
  */
-var createHelloWorld = function () {
-  return function (...args) {
-    return "Hello World";
-  };
+var chunk = function (arr, size) {
+  const result = [];
+  for (let i = 0; i < arr.length; i += size) {
+    const chunk = [];
+    for (let j = 0; j < size; j += 1) {
+      const k = i + j;
+      if (k < arr.length) {
+        chunk.push(arr[k]);
+      } else {
+        break;
+      }
+    }
+
+    result.push(chunk);
+  }
+
+  return result;
 };
 
 /**
