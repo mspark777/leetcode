@@ -1,42 +1,48 @@
 struct Solution {}
 
 impl Solution {
-    pub fn circular_game_losers(n: i32, k: i32) -> Vec<i32> {
-        let n = n as usize;
-        let k = k as usize;
-        let mut recevied_list = vec![false; n];
-        let mut who = 0usize;
-        let mut turn = 1usize;
+    pub fn make_smallest_palindrome(s: String) -> String {
+        let mut chars = s.chars().collect::<Vec<char>>();
+        let mut left = 0usize;
+        let mut right = chars.len() - 1;
 
-        while !recevied_list[who] {
-            recevied_list[who] = true;
-            who = (who + (turn * k)) % n;
-            turn += 1;
-        }
+        while left < right {
+            let lc = chars[left];
+            let rc = chars[right];
 
-        let mut result = Vec::<i32>::with_capacity(n + 1 - turn);
-        for (i, received) in recevied_list.iter().copied().enumerate() {
-            if received {
-                continue;
+            if lc < rc {
+                chars[right] = lc;
+            } else if lc > rc {
+                chars[left] = rc;
             }
-            let who = (i + 1) as i32;
-            result.push(who);
+
+            left += 1;
+            right -= 1;
         }
 
-        result
+        chars.iter().collect()
     }
 }
 
 struct Input {
-    n: i32,
-    k: i32,
+    s: String,
 }
 
 fn main() {
-    let inputs = [Input { n: 5, k: 2 }, Input { n: 4, k: 4 }];
+    let inputs = [
+        Input {
+            s: "egcfe".to_string(),
+        },
+        Input {
+            s: "abcd".to_string(),
+        },
+        Input {
+            s: "seven".to_string(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::circular_game_losers(input.n, input.k);
+        let result = Solution::make_smallest_palindrome(input.s);
         println!("{:?}", result);
     }
 }
