@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -6,28 +7,34 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {Array} arr
- * @param {number} size
- * @return {Array}
+ * @param {number[]} nums
+ * @return {void}
  */
-var chunk = function (arr, size) {
-  const result = [];
-  for (let i = 0; i < arr.length; i += size) {
-    const chunk = [];
-    for (let j = 0; j < size; j += 1) {
-      const k = i + j;
-      if (k < arr.length) {
-        chunk.push(arr[k]);
-      } else {
-        break;
-      }
-    }
-
-    result.push(chunk);
-  }
-
-  return result;
+var ArrayWrapper = function (nums) {
+  this.nums = nums;
 };
+
+/**
+ * @return {number}
+ */
+ArrayWrapper.prototype.valueOf = function () {
+  return this.nums.reduce((acc, cur) => acc + cur, 0);
+};
+
+/**
+ * @return {string}
+ */
+ArrayWrapper.prototype.toString = function () {
+  return `[${this.nums.join(",")}]`;
+};
+
+/**
+ * const obj1 = new ArrayWrapper([1,2]);
+ * const obj2 = new ArrayWrapper([3,4]);
+ * obj1 + obj2; // 10
+ * String(obj1); // "[1,2]"
+ * String(obj2); // "[3,4]"
+ */
 
 /**
  * @param {number[]} nums
@@ -42,7 +49,7 @@ var minimumDifference = function (nums, k) {
   nums.sort((a, b) => a - b);
   let result = Number.MAX_SAFE_INTEGER;
 
-  for (let i = 0; i < nums.length - k + 1; i++) {
+  for (let i = 0; i < nums.length - k + 1; i += 1) {
     result = Math.min(result, nums[i + k - 1] - nums[i]);
   }
 
