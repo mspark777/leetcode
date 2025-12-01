@@ -1,48 +1,36 @@
 struct Solution {}
 
 impl Solution {
-    pub fn make_smallest_palindrome(s: String) -> String {
-        let mut chars = s.chars().collect::<Vec<char>>();
-        let mut left = 0usize;
-        let mut right = chars.len() - 1;
-
-        while left < right {
-            let lc = chars[left];
-            let rc = chars[right];
-
-            if lc < rc {
-                chars[right] = lc;
-            } else if lc > rc {
-                chars[left] = rc;
+    pub fn remove_trailing_zeros(num: String) -> String {
+        let nums = num.chars().collect::<Vec<char>>();
+        let mut right = nums.len() - 1;
+        for (i, n) in nums.iter().copied().enumerate().rev() {
+            if n != '0' {
+                right = i;
+                break;
             }
-
-            left += 1;
-            right -= 1;
         }
 
-        chars.iter().collect()
+        nums[0..=right].iter().collect()
     }
 }
 
 struct Input {
-    s: String,
+    num: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "egcfe".to_string(),
+            num: "51230100".to_string(),
         },
         Input {
-            s: "abcd".to_string(),
-        },
-        Input {
-            s: "seven".to_string(),
+            num: "123".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::make_smallest_palindrome(input.s);
+        let result = Solution::remove_trailing_zeros(input.num);
         println!("{:?}", result);
     }
 }
