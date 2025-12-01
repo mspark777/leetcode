@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/only-throw-error */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -7,11 +8,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {...(null|boolean|number|string|Array|Object)} args
- * @return {number}
+ * @param {string} val
+ * @return {Object}
  */
-var argumentsLength = function (...args) {
-  return args.length;
+var expect = function (val) {
+  return {
+    toBe: (v) => {
+      if (v === val) {
+        return true;
+      } else {
+        throw "Not Equal";
+      }
+    },
+    notToBe: (v) => {
+      if (v !== val) {
+        return true;
+      } else {
+        throw "Equal";
+      }
+    },
+  };
 };
 
 /**
