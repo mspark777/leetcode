@@ -8,25 +8,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
- * @param {string} val
- * @return {Object}
+ * @param {Function} fn
+ * @param {Array} args
+ * @param {number} t
+ * @return {Function}
  */
-var expect = function (val) {
-  return {
-    toBe: (v) => {
-      if (v === val) {
-        return true;
-      } else {
-        throw "Not Equal";
-      }
-    },
-    notToBe: (v) => {
-      if (v !== val) {
-        return true;
-      } else {
-        throw "Equal";
-      }
-    },
+var cancellable = function (fn, args, t) {
+  let cancelled = false;
+  setTimeout(() => {
+    if (!cancelled) {
+      fn(...args);
+    }
+  }, t);
+
+  return () => {
+    cancelled = true;
   };
 };
 
