@@ -1,36 +1,30 @@
 struct Solution {}
 
 impl Solution {
-    pub fn remove_trailing_zeros(num: String) -> String {
-        let nums = num.chars().collect::<Vec<char>>();
-        let mut right = nums.len() - 1;
-        for (i, n) in nums.iter().copied().enumerate().rev() {
-            if n != '0' {
-                right = i;
-                break;
-            }
-        }
-
-        nums[0..=right].iter().collect()
+    pub fn minimized_string_length(s: String) -> i32 {
+        std::collections::HashSet::<char>::from_iter(s.chars()).len() as i32
     }
 }
 
 struct Input {
-    num: String,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            num: "51230100".to_string(),
+            s: "aaabc".to_string(),
         },
         Input {
-            num: "123".to_string(),
+            s: "cbbd".to_string(),
+        },
+        Input {
+            s: "baadccad".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::remove_trailing_zeros(input.num);
+        let result = Solution::minimized_string_length(input.s);
         println!("{:?}", result);
     }
 }
