@@ -1,11 +1,16 @@
 /**
- * @param {Array} arr
  * @param {Function} fn
- * @return {Array}
+ * @param {Array} args
+ * @param {number} t
+ * @return {Function}
  */
-var sortBy = function (arr, fn) {
-  arr.sort((a, b) => fn(a) - fn(b));
-  return arr;
+var cancellable = function (fn, args, t) {
+  const f = () => fn.apply(null, args);
+  f();
+  const id = setInterval(f, t);
+  return () => {
+    clearInterval(id);
+  };
 };
 
 /**
