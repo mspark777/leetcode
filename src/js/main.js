@@ -1,14 +1,13 @@
 /**
- * @param {Promise} promise1
- * @param {Promise} promise2
- * @return {Promise}
+ * @param {Array} arr
+ * @param {Function} fn
+ * @return {Array}
  */
-var addTwoPromises = async function (promise1, promise2) {
-  const num1 = await promise1;
-  const num2 = await promise2;
-
-  return num1 + num2;
+var sortBy = function (arr, fn) {
+  arr.sort((a, b) => fn(a) - fn(b));
+  return arr;
 };
+
 /**
  * @param {number[]} nums
  * @param {number} k
