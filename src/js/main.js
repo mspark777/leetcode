@@ -1,22 +1,14 @@
 /**
- * @param {Function} fn
- * @param {Array} args
- * @param {number} t
- * @return {Function}
+ * @param {Promise} promise1
+ * @param {Promise} promise2
+ * @return {Promise}
  */
-var cancellable = function (fn, args, t) {
-  let cancelled = false;
-  setTimeout(() => {
-    if (!cancelled) {
-      fn(...args);
-    }
-  }, t);
+var addTwoPromises = async function (promise1, promise2) {
+  const num1 = await promise1;
+  const num2 = await promise2;
 
-  return () => {
-    cancelled = true;
-  };
+  return num1 + num2;
 };
-
 /**
  * @param {number[]} nums
  * @param {number} k

@@ -44,6 +44,9 @@ export default defineConfig(
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
     },
   },
 );
