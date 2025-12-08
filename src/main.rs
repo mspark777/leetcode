@@ -1,37 +1,37 @@
 struct Solution {}
 
 impl Solution {
-    pub fn is_fascinating(n: i32) -> bool {
-        let nums = [n, n * 2, n * 3];
-        let mut visits = [false; 10];
-        visits[0] = true;
-
-        for mut digits in nums {
-            while digits > 0 {
-                let digit = (digits % 10) as usize;
-                digits /= 10;
-
-                if visits[digit] {
-                    return false;
-                } else {
-                    visits[digit] = true;
-                }
-            }
+    pub fn find_non_min_or_max(nums: Vec<i32>) -> i32 {
+        if nums.len() < 3 {
+            return -1;
         }
 
-        true
+        let max = nums.iter().copied().take(3).max().unwrap();
+        let min = nums.iter().copied().take(3).min().unwrap();
+
+        nums.iter().copied().take(3).sum::<i32>() - (max + min)
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 192 }, Input { n: 100 }];
+    let inputs = [
+        Input {
+            nums: [3, 2, 1, 4].to_vec(),
+        },
+        Input {
+            nums: [1, 2].to_vec(),
+        },
+        Input {
+            nums: [2, 1, 3].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::is_fascinating(input.n);
+        let result = Solution::find_non_min_or_max(input.nums);
         println!("{:?}", result);
     }
 }
