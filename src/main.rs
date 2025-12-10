@@ -1,43 +1,59 @@
 struct Solution {}
 
 impl Solution {
-    pub fn maximum_number_of_string_pairs(words: Vec<String>) -> i32 {
-        let mut word_set = std::collections::HashSet::<String>::with_capacity(words.len() / 2);
+    pub fn count_beautiful_pairs(nums: Vec<i32>) -> i32 {
         let mut result = 0;
-        for word in words {
-            if word_set.contains(&word) {
-                result += 1;
-            } else {
-                let rev = word.chars().rev().collect::<String>();
-                word_set.insert(rev);
+        for (i, x) in nums.iter().copied().enumerate() {
+            for y in nums.iter().skip(i + 1).copied() {
+                if Self::beautiful(x, y) {
+                    result += 1;
+                }
             }
         }
-
         result
+    }
+
+    fn beautiful(x: i32, y: i32) -> bool {
+        let first = Self::first(x);
+        let last = Self::last(y);
+        Self::gcd(first, last) == 1
+    }
+
+    fn gcd(x: i32, y: i32) -> i32 {
+        match y > 0 {
+            true => Self::gcd(y, x % y),
+            _ => x,
+        }
+    }
+
+    fn first(i: i32) -> i32 {
+        match i > 9 {
+            true => Self::first(i / 10),
+            _ => i,
+        }
+    }
+
+    fn last(i: i32) -> i32 {
+        i % 10
     }
 }
 
 struct Input {
-    words: Vec<String>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            words: ["cd", "ac", "dc", "ca", "zz"]
-                .map(|s| s.to_string())
-                .to_vec(),
+            nums: [2, 5, 1, 4].to_vec(),
         },
         Input {
-            words: ["ab", "ba", "cc"].map(|s| s.to_string()).to_vec(),
-        },
-        Input {
-            words: ["aa", "ab"].map(|s| s.to_string()).to_vec(),
+            nums: [11, 21, 12].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_number_of_string_pairs(input.words);
+        let result = Solution::count_beautiful_pairs(input.nums);
         println!("{:?}", result);
     }
 }
