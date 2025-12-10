@@ -1,30 +1,43 @@
 struct Solution {}
 
 impl Solution {
-    pub fn distance_traveled(main_tank: i32, additional_tank: i32) -> i32 {
-        (main_tank + additional_tank.min((main_tank - 1) / 4)) * 10
+    pub fn maximum_number_of_string_pairs(words: Vec<String>) -> i32 {
+        let mut word_set = std::collections::HashSet::<String>::with_capacity(words.len() / 2);
+        let mut result = 0;
+        for word in words {
+            if word_set.contains(&word) {
+                result += 1;
+            } else {
+                let rev = word.chars().rev().collect::<String>();
+                word_set.insert(rev);
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    main_tank: i32,
-    adadditional_tank: i32,
+    words: Vec<String>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            main_tank: 5,
-            adadditional_tank: 10,
+            words: ["cd", "ac", "dc", "ca", "zz"]
+                .map(|s| s.to_string())
+                .to_vec(),
         },
         Input {
-            main_tank: 1,
-            adadditional_tank: 2,
+            words: ["ab", "ba", "cc"].map(|s| s.to_string()).to_vec(),
+        },
+        Input {
+            words: ["aa", "ab"].map(|s| s.to_string()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::distance_traveled(input.main_tank, input.adadditional_tank);
+        let result = Solution::maximum_number_of_string_pairs(input.words);
         println!("{:?}", result);
     }
 }
