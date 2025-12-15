@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "./src/ts",
-    "outDir": "./dist",
     "target": "es2024",
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -15,12 +13,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "isolatedModules": true,
     "resolveJsonModule": false,
-    "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

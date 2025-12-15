@@ -22,31 +22,18 @@ export default defineConfig(
         project: "./tsconfig.json",
       },
     },
+    rules: {
+      "@typescript-eslint/explicit-function-return-type": "error",
+    },
   },
   {
     files: ["src/**/*.js"],
-    ignores: ["dist/*", "node_modules/*"],
     languageOptions: {
       sourceType: "module",
       globals: {
         ...globals.es2024,
         ...globals.node,
       },
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        project: "./tsconfig.json",
-      },
-    },
-    rules: {
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-extraneous-class": "off",
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/restrict-plus-operands": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
     },
   },
 );

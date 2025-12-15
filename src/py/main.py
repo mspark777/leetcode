@@ -13,9 +13,7 @@ class Solution:
             result += left * count * right
             left += count
 
-
         return result
-        
 
 
 class Input:
@@ -27,8 +25,8 @@ class Input:
 
 def main():
     inputs = [
-        Input([4,4,2,4,3]),
-        Input([1,1,1,1,1]),
+        Input([4, 4, 2, 4, 3]),
+        Input([1, 1, 1, 1, 1]),
     ]
 
     for input in inputs:
