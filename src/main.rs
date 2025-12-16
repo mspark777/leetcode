@@ -1,14 +1,22 @@
 struct Solution {}
 
 impl Solution {
-    pub fn sum_of_squares(nums: Vec<i32>) -> i32 {
-        let n = nums.len();
-        nums.iter()
-            .copied()
-            .enumerate()
-            .filter(|&(i, _)| n.is_multiple_of(i + 1))
-            .map(|(_, num)| num * num)
-            .sum()
+    pub fn is_good(nums: Vec<i32>) -> bool {
+        let max = nums.iter().copied().max().unwrap() as usize;
+        if nums.len() != (max + 1) {
+            return false;
+        }
+
+        let mut counts = vec![0; nums.len()];
+        for num in nums.iter().copied() {
+            let num = num as usize;
+            counts[num] += 1;
+            if (num != max) && (counts[num] > 1) {
+                return false;
+            }
+        }
+
+        counts[max] == 2
     }
 }
 
@@ -19,15 +27,21 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 4].to_vec(),
+            nums: [2, 1, 3].to_vec(),
         },
         Input {
-            nums: [2, 7, 1, 19, 18, 3].to_vec(),
+            nums: [1, 3, 3, 2].to_vec(),
+        },
+        Input {
+            nums: [1, 1].to_vec(),
+        },
+        Input {
+            nums: [3, 4, 4, 1, 2, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::sum_of_squares(input.nums);
+        let result = Solution::is_good(input.nums);
         println!("{:?}", result);
     }
 }
