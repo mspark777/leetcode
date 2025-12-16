@@ -1,21 +1,33 @@
 struct Solution {}
 
 impl Solution {
-    pub fn the_maximum_achievable_x(num: i32, t: i32) -> i32 {
-        num + t * 2
+    pub fn sum_of_squares(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        nums.iter()
+            .copied()
+            .enumerate()
+            .filter(|&(i, _)| n.is_multiple_of(i + 1))
+            .map(|(_, num)| num * num)
+            .sum()
     }
 }
 
 struct Input {
-    num: i32,
-    t: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { num: 5, t: 1 }, Input { num: 3, t: 2 }];
+    let inputs = [
+        Input {
+            nums: [1, 2, 3, 4].to_vec(),
+        },
+        Input {
+            nums: [2, 7, 1, 19, 18, 3].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::the_maximum_achievable_x(input.num, input.t);
+        let result = Solution::sum_of_squares(input.nums);
         println!("{:?}", result);
     }
 }
