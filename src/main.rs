@@ -1,41 +1,30 @@
 struct Solution;
 
 impl Solution {
-    pub fn split_words_by_separator(words: Vec<String>, separator: char) -> Vec<String> {
-        words
-            .iter()
-            .flat_map(|word| word.split(separator))
-            .filter(|&s| !s.is_empty())
-            .map(|s| s.to_string())
-            .collect()
+    pub fn number_of_employees_who_met_target(hours: Vec<i32>, target: i32) -> i32 {
+        hours.iter().copied().filter(|&h| h >= target).count() as i32
     }
 }
 
 struct Input {
-    words: Vec<String>,
-    separator: char,
+    hours: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            words: ["one.two.three", "four.five", "six"]
-                .map(|s| s.to_string())
-                .to_vec(),
-            separator: '.',
+            hours: [0, 1, 2, 3, 4].to_vec(),
+            target: 2,
         },
         Input {
-            words: ["$easy$", "$problem$"].map(|s| s.to_string()).to_vec(),
-            separator: '$',
-        },
-        Input {
-            words: ["|||"].map(|s| s.to_string()).to_vec(),
-            separator: '|',
+            hours: [5, 1, 4, 2, 2].to_vec(),
+            target: 6,
         },
     ];
 
     for input in inputs {
-        let result = Solution::split_words_by_separator(input.words, input.separator);
+        let result = Solution::number_of_employees_who_met_target(input.hours, input.target);
         println!("{:?}", result);
     }
 }
