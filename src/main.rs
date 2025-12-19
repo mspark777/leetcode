@@ -1,30 +1,31 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_of_employees_who_met_target(hours: Vec<i32>, target: i32) -> i32 {
-        hours.iter().copied().filter(|&h| h >= target).count() as i32
+    pub fn account_balance_after_purchase(purchase_amount: i32) -> i32 {
+        let mut rounded = purchase_amount + 5;
+        rounded -= rounded % 10;
+
+        100 - rounded
     }
 }
 
 struct Input {
-    hours: Vec<i32>,
-    target: i32,
+    purchase_amount: i32,
 }
 
 fn main() {
     let inputs = [
+        Input { purchase_amount: 9 },
         Input {
-            hours: [0, 1, 2, 3, 4].to_vec(),
-            target: 2,
+            purchase_amount: 15,
         },
         Input {
-            hours: [5, 1, 4, 2, 2].to_vec(),
-            target: 6,
+            purchase_amount: 10,
         },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_employees_who_met_target(input.hours, input.target);
+        let result = Solution::account_balance_after_purchase(input.purchase_amount);
         println!("{:?}", result);
     }
 }
