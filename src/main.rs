@@ -1,31 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn account_balance_after_purchase(purchase_amount: i32) -> i32 {
-        let mut rounded = purchase_amount + 5;
-        rounded -= rounded % 10;
+    pub fn final_string(s: String) -> String {
+        let mut chars = Vec::<char>::with_capacity(s.len());
+        for ch in s.chars() {
+            if ch == 'i' {
+                chars.reverse();
+            } else {
+                chars.push(ch);
+            }
+        }
 
-        100 - rounded
+        chars.iter().collect()
     }
 }
 
 struct Input {
-    purchase_amount: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
-        Input { purchase_amount: 9 },
         Input {
-            purchase_amount: 15,
+            s: "string".to_string(),
         },
         Input {
-            purchase_amount: 10,
+            s: "poiinter".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::account_balance_after_purchase(input.purchase_amount);
+        let result = Solution::final_string(input.s);
         println!("{:?}", result);
     }
 }
