@@ -8,7 +8,7 @@
     "start:ts": "tsx src/ts/main.ts"
   },
   "engines": {
-    "node": "24.11.1",
+    "node": "24.12.0",
     "npm": "11.6.2"
   },
   "keywords": [],
@@ -17,13 +17,13 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/node": "^24.10.4",
+    "@types/node": "^25.0.3",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
     "prettier": "^3.7.4",
     "tsx": "^4.21.0",
-    "typescript-eslint": "^8.49.0"
+    "typescript-eslint": "^8.50.0"
   }
 }
