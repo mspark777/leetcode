@@ -1,53 +1,38 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_sum(nums: Vec<i32>) -> i32 {
-        let mut result = -1;
-        let mut max_num = [0; 10];
-        for num in nums {
-            let max_digit = Self::max_digit(num);
-            if max_num[max_digit] != 0 {
-                result = result.max(max_num[max_digit] + num);
+    pub fn count_pairs(nums: Vec<i32>, target: i32) -> i32 {
+        let mut result = 0;
+        for (i, l) in nums.iter().copied().enumerate() {
+            for r in nums.iter().skip(i + 1).copied() {
+                if (l + r) < target {
+                    result += 1;
+                }
             }
-
-            max_num[max_digit] = max_num[max_digit].max(num);
         }
-
         result
-    }
-
-    fn max_digit(n: i32) -> usize {
-        let mut n = n as usize;
-        let mut m = 0usize;
-
-        while n > 0 {
-            m = m.max(n % 10);
-            n /= 10;
-        }
-
-        m
     }
 }
 
 struct Input {
     nums: Vec<i32>,
+    target: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [112, 131, 411].to_vec(),
+            nums: [-1, 1, 2, 3, 1].to_vec(),
+            target: 2,
         },
         Input {
-            nums: [2536, 1613, 3366, 162].to_vec(),
-        },
-        Input {
-            nums: [51, 71, 17, 24, 42].to_vec(),
+            nums: [-6, 2, 5, -2, -7, -1, 3].to_vec(),
+            target: -2,
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_sum(input.nums);
+        let result = Solution::count_pairs(input.nums, input.target);
         println!("{:?}", result);
     }
 }
