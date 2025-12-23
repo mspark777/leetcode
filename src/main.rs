@@ -1,38 +1,46 @@
 struct Solution;
 
 impl Solution {
-    pub fn count_pairs(nums: Vec<i32>, target: i32) -> i32 {
-        let mut result = 0;
-        for (i, l) in nums.iter().copied().enumerate() {
-            for r in nums.iter().skip(i + 1).copied() {
-                if (l + r) < target {
-                    result += 1;
-                }
-            }
+    pub fn is_acronym(words: Vec<String>, s: String) -> bool {
+        let mut word = words.iter();
+        let mut ch = s.chars();
+        loop {
+            match (word.next(), ch.next()) {
+                (Some(w), Some(c)) if w.chars().nth(0).unwrap_or(' ') == c => continue,
+                (None, None) => break,
+                _ => return false,
+            };
         }
-        result
+
+        true
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    target: i32,
+    words: Vec<String>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [-1, 1, 2, 3, 1].to_vec(),
-            target: 2,
+            words: ["alice", "bob", "charlie"].map(|s| s.to_string()).to_vec(),
+            s: "abc".to_string(),
         },
         Input {
-            nums: [-6, 2, 5, -2, -7, -1, 3].to_vec(),
-            target: -2,
+            words: ["an", "apple"].map(|s| s.to_string()).to_vec(),
+            s: "a".to_string(),
+        },
+        Input {
+            words: ["never", "gonna", "give", "up", "on", "you"]
+                .map(|s| s.to_string())
+                .to_vec(),
+            s: "ngguoy".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_pairs(input.nums, input.target);
+        let result = Solution::is_acronym(input.words, input.s);
         println!("{:?}", result);
     }
 }
