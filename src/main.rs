@@ -1,46 +1,46 @@
 struct Solution;
 
 impl Solution {
-    pub fn can_be_equal(s1: String, s2: String) -> bool {
-        let mut chars = s1.chars();
-        let s10 = chars.next().unwrap();
-        let s11 = chars.next().unwrap();
-        let s12 = chars.next().unwrap();
-        let s13 = chars.next().unwrap();
+    pub fn number_of_points(nums: Vec<Vec<i32>>) -> i32 {
+        let mut counts = vec![0; 102];
 
-        let mut chars = s2.chars();
-        let s20 = chars.next().unwrap();
-        let s21 = chars.next().unwrap();
-        let s22 = chars.next().unwrap();
-        let s23 = chars.next().unwrap();
+        for line in nums {
+            let start = line[0] as usize;
+            let end = line[1] as usize;
+            counts[start] += 1;
+            counts[end + 1] -= 1;
+        }
 
-        Self::check(s10, s12, s20, s22) && Self::check(s11, s13, s21, s23)
-    }
+        let mut result = 0;
+        let mut sum = 0;
 
-    fn check(a: char, b: char, c: char, d: char) -> bool {
-        (a == c && b == d) || (a == d && b == c)
+        for count in counts.iter().skip(1).take(100).copied() {
+            sum += count;
+            if sum != 0 {
+                result += 1;
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    s1: String,
-    s2: String,
+    nums: Vec<[i32; 2]>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s1: "abcd".to_string(),
-            s2: "cdab".to_string(),
+            nums: [[3, 6], [1, 5], [4, 7]].to_vec(),
         },
         Input {
-            s1: "abcd".to_string(),
-            s2: "dacb".to_string(),
+            nums: [[1, 3], [5, 8]].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_be_equal(input.s1, input.s2);
+        let result = Solution::number_of_points(input.nums.iter().map(|v| v.to_vec()).collect());
         println!("{:?}", result);
     }
 }
