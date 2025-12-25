@@ -1,46 +1,55 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_of_points(nums: Vec<Vec<i32>>) -> i32 {
-        let mut counts = vec![0; 102];
+    pub fn minimum_right_shifts(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut count = 0;
+        let mut point = 0usize;
+        let mut idx = 0usize;
 
-        for line in nums {
-            let start = line[0] as usize;
-            let end = line[1] as usize;
-            counts[start] += 1;
-            counts[end + 1] -= 1;
-        }
-
-        let mut result = 0;
-        let mut sum = 0;
-
-        for count in counts.iter().skip(1).take(100).copied() {
-            sum += count;
-            if sum != 0 {
-                result += 1;
+        for i in 1..n {
+            if nums[i] < nums[i - 1] {
+                idx = i;
+                point = n - i;
+                if count == 1 {
+                    return -1;
+                } else {
+                    count += 1;
+                }
             }
         }
 
-        result
+        if count == 0 {
+            return 0;
+        }
+
+        if (nums[0] < nums[n - 1]) || (nums[idx - 1] < nums[n - 1]) {
+            return -1;
+        }
+
+        point as i32
     }
 }
 
 struct Input {
-    nums: Vec<[i32; 2]>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [[3, 6], [1, 5], [4, 7]].to_vec(),
+            nums: [3, 4, 5, 1, 2].to_vec(),
         },
         Input {
-            nums: [[1, 3], [5, 8]].to_vec(),
+            nums: [1, 3, 5].to_vec(),
+        },
+        Input {
+            nums: [2, 1, 4].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_points(input.nums.iter().map(|v| v.to_vec()).collect());
+        let result = Solution::minimum_right_shifts(input.nums);
         println!("{:?}", result);
     }
 }
