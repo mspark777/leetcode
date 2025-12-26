@@ -1,38 +1,43 @@
 struct Solution;
 
 impl Solution {
-    pub fn sum_indices_with_k_set_bits(nums: Vec<i32>, k: i32) -> i32 {
-        let k = k as u32;
-        let mut result = 0;
-        for (i, num) in nums.into_iter().enumerate() {
-            if i.count_ones() == k {
-                result += num;
-            }
+    pub fn maximum_odd_binary_number(s: String) -> String {
+        let (n, ones) = s.chars().fold((0usize, 0usize), |(n, count), ch| match ch {
+            '1' => (n + 1, count + 1),
+            _ => (n + 1, count),
+        });
+        let mut result = String::with_capacity(n);
+
+        for _ in 1..ones {
+            result.push('1');
         }
 
+        let zeros = n - ones;
+        for _ in 0..zeros {
+            result.push('0');
+        }
+
+        result.push('1');
         result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [5, 10, 1, 5, 2].to_vec(),
-            k: 1,
+            s: "010".to_string(),
         },
         Input {
-            nums: [4, 3, 2, 1].to_vec(),
-            k: 2,
+            s: "0101".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::sum_indices_with_k_set_bits(input.nums, input.k);
+        let result = Solution::maximum_odd_binary_number(input.s);
         println!("{:?}", result);
     }
 }
