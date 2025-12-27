@@ -1,43 +1,47 @@
 struct Solution;
 
 impl Solution {
-    pub fn maximum_odd_binary_number(s: String) -> String {
-        let (n, ones) = s.chars().fold((0usize, 0usize), |(n, count), ch| match ch {
-            '1' => (n + 1, count + 1),
-            _ => (n + 1, count),
-        });
-        let mut result = String::with_capacity(n);
+    pub fn min_operations(nums: Vec<i32>, k: i32) -> i32 {
+        let mut collections = std::collections::HashSet::<i32>::with_capacity(k as usize);
+        let mut result = 0;
 
-        for _ in 1..ones {
-            result.push('1');
+        for num in nums.into_iter().rev() {
+            result += 1;
+            if num <= k {
+                collections.insert(num);
+            }
+
+            if collections.len() == k as usize {
+                break;
+            }
         }
-
-        let zeros = n - ones;
-        for _ in 0..zeros {
-            result.push('0');
-        }
-
-        result.push('1');
         result
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "010".to_string(),
+            nums: [3, 1, 5, 4, 2].to_vec(),
+            k: 2,
         },
         Input {
-            s: "0101".to_string(),
+            nums: [3, 1, 5, 4, 2].to_vec(),
+            k: 5,
+        },
+        Input {
+            nums: [3, 2, 5, 3, 1].to_vec(),
+            k: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_odd_binary_number(input.s);
+        let result = Solution::min_operations(input.nums, input.k);
         println!("{:?}", result);
     }
 }
