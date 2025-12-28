@@ -1,63 +1,57 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_indices(nums: Vec<i32>, index_difference: i32, value_difference: i32) -> Vec<i32> {
-        let mut min_idx = 0usize;
-        let mut max_idx = 0usize;
+    pub fn minimum_sum(nums: Vec<i32>) -> i32 {
         let n = nums.len();
-        let index_difference = index_difference as usize;
+        let mut left = vec![0; n];
+        let mut right = vec![0; n];
 
-        for i in index_difference..n {
-            let j = i - index_difference;
-            if nums[j] < nums[min_idx] {
-                min_idx = j
-            }
+        left[0] = nums[0];
+        right[n - 1] = nums[n - 1];
 
-            if nums[j] > nums[max_idx] {
-                max_idx = j
-            }
+        for i in 1..n {
+            left[i] = left[i - 1].min(nums[i])
+        }
 
-            if (nums[i] - nums[min_idx]) >= value_difference {
-                return vec![min_idx as i32, i as i32];
-            }
+        for i in (0..(n - 1)).rev() {
+            right[i] = right[i + 1].min(nums[i])
+        }
 
-            if (nums[max_idx] - nums[i]) >= value_difference {
-                return vec![max_idx as i32, i as i32];
+        const MAX_SUM: i32 = 2_000_000_000;
+        let mut min_sum = MAX_SUM;
+
+        for i in 1..(n - 1) {
+            if (left[i] < nums[i]) && (right[i] < nums[i]) {
+                min_sum = min_sum.min(left[i] + nums[i] + right[i]);
             }
         }
 
-        vec![-1, -1]
+        match min_sum == MAX_SUM {
+            true => -1,
+            _ => min_sum,
+        }
     }
 }
 
 struct Input {
     nums: Vec<i32>,
-    index_difference: i32,
-    value_difference: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [5, 1, 4, 1].to_vec(),
-            index_difference: 2,
-            value_difference: 4,
+            nums: [8, 6, 1, 5, 3].to_vec(),
         },
         Input {
-            nums: [2, 1].to_vec(),
-            index_difference: 0,
-            value_difference: 0,
+            nums: [5, 4, 8, 7, 10, 2].to_vec(),
         },
         Input {
-            nums: [1, 2, 3].to_vec(),
-            index_difference: 2,
-            value_difference: 4,
+            nums: [6, 5, 4, 3, 4, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result =
-            Solution::find_indices(input.nums, input.index_difference, input.value_difference);
+        let result = Solution::minimum_sum(input.nums);
         println!("{:?}", result);
     }
 }
