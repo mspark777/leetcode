@@ -1,49 +1,40 @@
 struct Solution;
 
 impl Solution {
-    pub fn distribute_candies(n: i32, limit: i32) -> i32 {
-        let all_cases = ((n + 2) * (n + 1)) / 2;
+    pub fn maximum_strong_pair_xor(nums: Vec<i32>) -> i32 {
+        let mut result = 0;
 
-        if (3 * limit) < n {
-            return 0;
+        for x in nums.iter().copied() {
+            for y in nums.iter().copied() {
+                if (x - y).abs() <= x.min(y) {
+                    result = result.max(x ^ y);
+                }
+            }
         }
 
-        if (3 * limit) == n {
-            return 1;
-        }
-
-        let exclude_one = n - (limit + 1) + 2;
-        let one_limit = match exclude_one > 1 {
-            true => 3 * ((exclude_one * (exclude_one - 1)) / 2),
-            _ => 0,
-        };
-
-        let exclude_two = n - 2 * (limit + 1) + 2;
-        let two_limit = match exclude_two > 1 {
-            true => 3 * ((exclude_two * (exclude_two - 1)) / 2),
-            _ => 0,
-        };
-
-        let exclude_three = n - 3 * (limit + 1) + 2;
-        let three_limit = match exclude_three > 1 {
-            true => (exclude_three * (exclude_three - 1)) / 2,
-            _ => 0,
-        };
-
-        all_cases - one_limit + two_limit - three_limit
+        result
     }
 }
 
 struct Input {
-    n: i32,
-    limit: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 5, limit: 2 }, Input { n: 3, limit: 3 }];
+    let inputs = [
+        Input {
+            nums: [1, 2, 3, 4, 5].to_vec(),
+        },
+        Input {
+            nums: [10, 100].to_vec(),
+        },
+        Input {
+            nums: [5, 6, 25, 30].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::distribute_candies(input.n, input.limit);
+        let result = Solution::maximum_strong_pair_xor(input.nums);
         println!("{:?}", result);
     }
 }
