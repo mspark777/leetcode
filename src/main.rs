@@ -1,40 +1,43 @@
 struct Solution;
 
 impl Solution {
-    pub fn maximum_strong_pair_xor(nums: Vec<i32>) -> i32 {
-        let mut result = 0;
+    pub fn find_minimum_operations(s1: String, s2: String, s3: String) -> i32 {
+        let count = s1
+            .chars()
+            .zip(s2.chars())
+            .zip(s3.chars())
+            .take_while(|((c1, c2), c3)| c1 == c2 && c1 == c3)
+            .count();
 
-        for x in nums.iter().copied() {
-            for y in nums.iter().copied() {
-                if (x - y).abs() <= x.min(y) {
-                    result = result.max(x ^ y);
-                }
-            }
+        match count {
+            1.. => (s1.len() + s2.len() + s3.len() - 3 * count) as i32,
+            _ => -1,
         }
-
-        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s1: String,
+    s2: String,
+    s3: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 4, 5].to_vec(),
+            s1: "abc".to_string(),
+            s2: "abb".to_string(),
+            s3: "ab".to_string(),
         },
         Input {
-            nums: [10, 100].to_vec(),
-        },
-        Input {
-            nums: [5, 6, 25, 30].to_vec(),
+            s1: "dac".to_string(),
+            s2: "bac".to_string(),
+            s3: "cac".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_strong_pair_xor(input.nums);
+        let result = Solution::find_minimum_operations(input.s1, input.s2, input.s3);
         println!("{:?}", result);
     }
 }
