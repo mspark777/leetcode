@@ -1,43 +1,48 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_minimum_operations(s1: String, s2: String, s3: String) -> i32 {
-        let count = s1
-            .chars()
-            .zip(s2.chars())
-            .zip(s3.chars())
-            .take_while(|((c1, c2), c3)| c1 == c2 && c1 == c3)
-            .count();
-
-        match count {
-            1.. => (s1.len() + s2.len() + s3.len() - 3 * count) as i32,
-            _ => -1,
+    pub fn are_similar(mat: Vec<Vec<i32>>, k: i32) -> bool {
+        let k = k as usize;
+        for row in mat.iter() {
+            for (i, cell) in row.iter().copied().enumerate() {
+                let j = (i + row.len() + k) % row.len();
+                if cell != row[j] {
+                    return false;
+                }
+            }
         }
+
+        true
     }
 }
 
 struct Input {
-    s1: String,
-    s2: String,
-    s3: String,
+    mat: Vec<Vec<i32>>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s1: "abc".to_string(),
-            s2: "abb".to_string(),
-            s3: "ab".to_string(),
+            mat: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+                .map(|r| r.to_vec())
+                .to_vec(),
+            k: 4,
         },
         Input {
-            s1: "dac".to_string(),
-            s2: "bac".to_string(),
-            s3: "cac".to_string(),
+            mat: [[1, 2, 1, 2], [5, 5, 5, 5], [6, 3, 6, 3]]
+                .map(|r| r.to_vec())
+                .to_vec(),
+            k: 2,
+        },
+        Input {
+            mat: [[2, 2], [2, 2]].map(|r| r.to_vec()).to_vec(),
+            k: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_minimum_operations(input.s1, input.s2, input.s3);
+        let result = Solution::are_similar(input.mat, input.k);
         println!("{:?}", result);
     }
 }
