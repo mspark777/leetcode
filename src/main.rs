@@ -1,38 +1,48 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_peaks(mountain: Vec<i32>) -> Vec<i32> {
-        let mut result = Vec::<i32>::new();
-        for i in 1..(mountain.len() - 1) {
-            let left = mountain[i - 1];
-            let middle = mountain[i];
-            let right = mountain[i + 1];
+    pub fn find_intersection_values(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+        vec![Self::count(&nums1, &nums2), Self::count(&nums2, &nums1)]
+    }
 
-            if (left < middle) && (middle > right) {
-                result.push(i as i32);
+    fn count(left: &[i32], right: &[i32]) -> i32 {
+        use std::collections::HashSet;
+
+        let set = HashSet::<i32>::from_iter(right.iter().copied());
+        let mut count = 0;
+        for num in left {
+            if set.contains(num) {
+                count += 1;
             }
         }
 
-        result
+        count
     }
 }
 
 struct Input {
-    mountain: Vec<i32>,
+    nums1: Vec<i32>,
+    nums2: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            mountain: [2, 4, 4].to_vec(),
+            nums1: [2, 3, 2].to_vec(),
+            nums2: [1, 2].to_vec(),
         },
         Input {
-            mountain: [1, 4, 3, 8, 5].to_vec(),
+            nums1: [4, 3, 2, 3, 1].to_vec(),
+            nums2: [2, 2, 5, 2, 3, 6].to_vec(),
+        },
+        Input {
+            nums1: [3, 4, 2, 3].to_vec(),
+            nums2: [1, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_peaks(input.mountain);
+        let result = Solution::find_intersection_values(input.nums1, input.nums2);
         println!("{:?}", result);
     }
 }
