@@ -1,48 +1,38 @@
 struct Solution;
 
 impl Solution {
-    pub fn are_similar(mat: Vec<Vec<i32>>, k: i32) -> bool {
-        let k = k as usize;
-        for row in mat.iter() {
-            for (i, cell) in row.iter().copied().enumerate() {
-                let j = (i + row.len() + k) % row.len();
-                if cell != row[j] {
-                    return false;
-                }
+    pub fn find_peaks(mountain: Vec<i32>) -> Vec<i32> {
+        let mut result = Vec::<i32>::new();
+        for i in 1..(mountain.len() - 1) {
+            let left = mountain[i - 1];
+            let middle = mountain[i];
+            let right = mountain[i + 1];
+
+            if (left < middle) && (middle > right) {
+                result.push(i as i32);
             }
         }
 
-        true
+        result
     }
 }
 
 struct Input {
-    mat: Vec<Vec<i32>>,
-    k: i32,
+    mountain: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            mat: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-                .map(|r| r.to_vec())
-                .to_vec(),
-            k: 4,
+            mountain: [2, 4, 4].to_vec(),
         },
         Input {
-            mat: [[1, 2, 1, 2], [5, 5, 5, 5], [6, 3, 6, 3]]
-                .map(|r| r.to_vec())
-                .to_vec(),
-            k: 2,
-        },
-        Input {
-            mat: [[2, 2], [2, 2]].map(|r| r.to_vec()).to_vec(),
-            k: 3,
+            mountain: [1, 4, 3, 8, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::are_similar(input.mat, input.k);
+        let result = Solution::find_peaks(input.mountain);
         println!("{:?}", result);
     }
 }
