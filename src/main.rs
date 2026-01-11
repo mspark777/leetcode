@@ -1,19 +1,19 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_game(nums: Vec<i32>) -> Vec<i32> {
-        let mut result = nums.clone();
-        result.sort();
+    pub fn has_trailing_zeros(nums: Vec<i32>) -> bool {
+        let mut count = 0;
+        for num in nums {
+            if num & 1 == 0 {
+                count += 1;
+            }
 
-        for i in (1..result.len()).step_by(2) {
-            let left = result[i - 1];
-            let right = result[i];
-
-            result[i - 1] = right;
-            result[i] = left;
+            if count > 1 {
+                break;
+            }
         }
 
-        result
+        count > 1
     }
 }
 
@@ -24,15 +24,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [5, 4, 2, 3].to_vec(),
+            nums: [1, 2, 3, 4, 5].to_vec(),
         },
         Input {
-            nums: [2, 5].to_vec(),
+            nums: [2, 4, 8, 16].to_vec(),
+        },
+        Input {
+            nums: [1, 3, 5, 7, 9].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::number_game(input.nums);
+        let result = Solution::has_trailing_zeros(input.nums);
         println!("{:?}", result);
     }
 }
