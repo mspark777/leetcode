@@ -1,26 +1,21 @@
 struct Solution;
 
 impl Solution {
-    pub fn missing_integer(nums: Vec<i32>) -> i32 {
-        let mut result = nums[0];
+    pub fn area_of_max_diagonal(dimensions: Vec<Vec<i32>>) -> i32 {
+        let mut max_diagonal = 0;
+        let mut result = 0;
 
-        if nums.len() == 1 {
-            return result + 1;
-        }
+        for rect in dimensions {
+            let length = rect[0];
+            let width = rect[1];
+            let diagonal = length * length + width * width;
+            let area = length * width;
 
-        let n = nums.len();
-        let mut nums = nums;
-        for i in 1..n {
-            if (nums[i - 1] + 1) == nums[i] {
-                result += nums[i];
-            } else {
-                nums.sort();
-                for num in nums.iter().copied() {
-                    if num == result {
-                        result += 1;
-                    }
-                }
-                break;
+            if diagonal > max_diagonal {
+                max_diagonal = diagonal;
+                result = area;
+            } else if diagonal == max_diagonal {
+                result = result.max(area);
             }
         }
 
@@ -29,21 +24,21 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    dimensions: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 2, 5].to_vec(),
+            dimensions: [[9, 3], [8, 6]].map(|v| v.to_vec()).to_vec(),
         },
         Input {
-            nums: [3, 4, 5, 1, 12, 14, 13].to_vec(),
+            dimensions: [[3, 4], [4, 3]].map(|v| v.to_vec()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::missing_integer(input.nums);
+        let result = Solution::area_of_max_diagonal(input.dimensions);
         println!("{:?}", result);
     }
 }
