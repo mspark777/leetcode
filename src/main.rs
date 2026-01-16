@@ -1,14 +1,20 @@
 struct Solution;
 
 impl Solution {
-    pub fn return_to_boundary_count(nums: Vec<i32>) -> i32 {
-        let mut position = 0;
-        let mut result = 0;
+    pub fn modified_matrix(matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        let mut result = matrix.clone();
+        let n = matrix[0].len();
 
-        for num in nums {
-            position += num;
-            if position == 0 {
-                result += 1;
+        for c in 0..n {
+            let mut max_value = -1;
+            for row in matrix.iter() {
+                max_value = max_value.max(row[c]);
+            }
+
+            for row in result.iter_mut() {
+                if row[c] == -1 {
+                    row[c] = max_value;
+                }
             }
         }
 
@@ -17,21 +23,23 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    matrix: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [2, 3, -5].to_vec(),
+            matrix: [[1, 2, -1], [4, -1, 6], [7, 8, 9]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
         Input {
-            nums: [3, 2, -3, -4].to_vec(),
+            matrix: [[3, -1], [5, 2]].map(|v| v.to_vec()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::return_to_boundary_count(input.nums);
+        let result = Solution::modified_matrix(input.matrix);
         println!("{:?}", result);
     }
 }
