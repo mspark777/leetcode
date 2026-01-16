@@ -1,13 +1,13 @@
 struct Solution;
 
 impl Solution {
-    pub fn count_key_changes(s: String) -> i32 {
+    pub fn return_to_boundary_count(nums: Vec<i32>) -> i32 {
+        let mut position = 0;
         let mut result = 0;
 
-        for (left, right) in s.chars().zip(s.chars().skip(1)) {
-            let l = left.to_ascii_lowercase();
-            let r = right.to_ascii_lowercase();
-            if l != r {
+        for num in nums {
+            position += num;
+            if position == 0 {
                 result += 1;
             }
         }
@@ -17,21 +17,21 @@ impl Solution {
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "aAbBcC".to_string(),
+            nums: [2, 3, -5].to_vec(),
         },
         Input {
-            s: "AaAaAaaA".to_string(),
+            nums: [3, 2, -3, -4].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_key_changes(input.s);
+        let result = Solution::return_to_boundary_count(input.nums);
         println!("{:?}", result);
     }
 }
