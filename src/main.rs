@@ -1,20 +1,17 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_operations(nums: Vec<i32>) -> i32 {
-        let mut result = 1;
-        let sum = nums[0] + nums[1];
-
-        for i in (3..nums.len()).step_by(2) {
-            let s = nums[i - 1] + nums[i];
-            if sum == s {
-                result += 1
-            } else {
-                break;
+    pub fn is_possible_to_split(nums: Vec<i32>) -> bool {
+        let mut counts = vec![0; 100];
+        for num in nums {
+            let idx = (num - 1) as usize;
+            counts[idx] += 1;
+            if counts[idx] > 2 {
+                return false;
             }
         }
 
-        result
+        true
     }
 }
 
@@ -25,18 +22,15 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [3, 2, 1, 4, 5].to_vec(),
+            nums: [1, 1, 2, 2, 3, 4].to_vec(),
         },
         Input {
-            nums: [1, 5, 3, 3, 4, 1, 3, 2, 2, 3].to_vec(),
-        },
-        Input {
-            nums: [5, 3].to_vec(),
+            nums: [1, 1, 1, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_operations(input.nums);
+        let result = Solution::is_possible_to_split(input.nums);
         println!("{:?}", result);
     }
 }
