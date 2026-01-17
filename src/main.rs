@@ -1,20 +1,16 @@
 struct Solution;
 
 impl Solution {
-    pub fn modified_matrix(matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-        let mut result = matrix.clone();
-        let n = matrix[0].len();
+    pub fn max_operations(nums: Vec<i32>) -> i32 {
+        let mut result = 1;
+        let sum = nums[0] + nums[1];
 
-        for c in 0..n {
-            let mut max_value = -1;
-            for row in matrix.iter() {
-                max_value = max_value.max(row[c]);
-            }
-
-            for row in result.iter_mut() {
-                if row[c] == -1 {
-                    row[c] = max_value;
-                }
+        for i in (3..nums.len()).step_by(2) {
+            let s = nums[i - 1] + nums[i];
+            if sum == s {
+                result += 1
+            } else {
+                break;
             }
         }
 
@@ -23,23 +19,24 @@ impl Solution {
 }
 
 struct Input {
-    matrix: Vec<Vec<i32>>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            matrix: [[1, 2, -1], [4, -1, 6], [7, 8, 9]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            nums: [3, 2, 1, 4, 5].to_vec(),
         },
         Input {
-            matrix: [[3, -1], [5, 2]].map(|v| v.to_vec()).to_vec(),
+            nums: [1, 5, 3, 3, 4, 1, 3, 2, 2, 3].to_vec(),
+        },
+        Input {
+            nums: [5, 3].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::modified_matrix(input.matrix);
+        let result = Solution::max_operations(input.nums);
         println!("{:?}", result);
     }
 }
