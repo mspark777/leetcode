@@ -1,44 +1,46 @@
 struct Solution;
 
 impl Solution {
-    pub fn minimum_boxes(apple: Vec<i32>, capacity: Vec<i32>) -> i32 {
-        let mut boxes = capacity;
-        boxes.sort_unstable();
+    pub fn sum_of_encrypted_int(nums: Vec<i32>) -> i32 {
+        nums.iter().copied().map(Self::encrypt).sum()
+    }
 
-        let mut apple_count = apple.iter().sum::<i32>();
-        let mut result = 0;
+    fn encrypt(mut num: i32) -> i32 {
+        let mut digits = 0;
+        let mut largest = 0;
 
-        for b in boxes.iter().rev().copied() {
-            apple_count -= b;
-            result += 1;
-            if apple_count < 1 {
-                break;
-            }
+        while num > 0 {
+            digits += 1;
+            largest = largest.max(num % 10);
+            num /= 10;
         }
 
-        result
+        let mut encrypted = 0;
+        for _ in 0..digits {
+            encrypted *= 10;
+            encrypted += largest;
+        }
+
+        encrypted
     }
 }
 
 struct Input {
-    apple: Vec<i32>,
-    capacity: Vec<i32>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            apple: [1, 3, 2].to_vec(),
-            capacity: [4, 3, 1, 5, 2].to_vec(),
+            nums: [1, 2, 3].to_vec(),
         },
         Input {
-            apple: [5, 5, 5].to_vec(),
-            capacity: [2, 4, 2, 7].to_vec(),
+            nums: [10, 21, 31].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_boxes(input.apple, input.capacity);
+        let result = Solution::sum_of_encrypted_int(input.nums);
         println!("{:?}", result);
     }
 }
