@@ -1,20 +1,27 @@
 struct Solution;
 
 impl Solution {
-    pub fn is_substring_present(s: String) -> bool {
-        use std::collections::HashSet;
-        let mut seen = HashSet::<u32>::with_capacity(100);
+    pub fn maximum_length_substring(s: String) -> i32 {
+        let s = s.chars().collect::<Vec<char>>();
+        let mut frequencies = [0; 26];
+        let mut left = 0usize;
+        let mut result = 0;
 
-        for (left, right) in s.chars().zip(s.chars().skip(1)) {
-            let l = (left as u32) & 0x1f;
-            let r = (right as u32) & 0x1f;
-            seen.insert(l << 5 | r);
-            if seen.contains(&(l | r << 5)) {
-                return true;
+        for right in 0..s.len() {
+            let idx = (s[right] as usize) - ('a' as usize);
+            frequencies[idx] += 1;
+
+            while frequencies[idx] > 2 {
+                let i = (s[left] as usize) - ('a' as usize);
+                frequencies[i] -= 1;
+                left += 1;
             }
+
+            let l = right + 1 - left;
+            result = result.max(l as i32);
         }
 
-        false
+        result
     }
 }
 
@@ -25,18 +32,15 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            s: "leetcode".to_string(),
+            s: "bcbbbcba".to_string(),
         },
         Input {
-            s: "abcba".to_string(),
-        },
-        Input {
-            s: "abcd".to_string(),
+            s: "aaaa".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_substring_present(input.s);
+        let result = Solution::maximum_length_substring(input.s);
         println!("{:?}", result);
     }
 }
