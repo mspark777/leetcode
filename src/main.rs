@@ -1,46 +1,42 @@
 struct Solution;
 
 impl Solution {
-    pub fn sum_of_encrypted_int(nums: Vec<i32>) -> i32 {
-        nums.iter().copied().map(Self::encrypt).sum()
-    }
+    pub fn is_substring_present(s: String) -> bool {
+        use std::collections::HashSet;
+        let mut seen = HashSet::<u32>::with_capacity(100);
 
-    fn encrypt(mut num: i32) -> i32 {
-        let mut digits = 0;
-        let mut largest = 0;
-
-        while num > 0 {
-            digits += 1;
-            largest = largest.max(num % 10);
-            num /= 10;
+        for (left, right) in s.chars().zip(s.chars().skip(1)) {
+            let l = (left as u32) & 0x1f;
+            let r = (right as u32) & 0x1f;
+            seen.insert(l << 5 | r);
+            if seen.contains(&(l | r << 5)) {
+                return true;
+            }
         }
 
-        let mut encrypted = 0;
-        for _ in 0..digits {
-            encrypted *= 10;
-            encrypted += largest;
-        }
-
-        encrypted
+        false
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3].to_vec(),
+            s: "leetcode".to_string(),
         },
         Input {
-            nums: [10, 21, 31].to_vec(),
+            s: "abcba".to_string(),
+        },
+        Input {
+            s: "abcd".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::sum_of_encrypted_int(input.nums);
+        let result = Solution::is_substring_present(input.s);
         println!("{:?}", result);
     }
 }
