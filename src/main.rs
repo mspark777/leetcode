@@ -1,46 +1,50 @@
 struct Solution;
 
 impl Solution {
-    pub fn maximum_length_substring(s: String) -> i32 {
-        let s = s.chars().collect::<Vec<char>>();
-        let mut frequencies = [0; 26];
-        let mut left = 0usize;
-        let mut result = 0;
+    pub fn minimum_subarray_length(nums: Vec<i32>, k: i32) -> i32 {
+        let mut len = usize::MAX;
 
-        for right in 0..s.len() {
-            let idx = (s[right] as usize) - ('a' as usize);
-            frequencies[idx] += 1;
-
-            while frequencies[idx] > 2 {
-                let i = (s[left] as usize) - ('a' as usize);
-                frequencies[i] -= 1;
-                left += 1;
+        for i in 0..nums.len() {
+            let mut current = 0;
+            for (j, num) in nums.iter().copied().enumerate().skip(i) {
+                current |= num;
+                if current >= k {
+                    len = len.min(j + 1 - i);
+                    break;
+                }
             }
-
-            let l = right + 1 - left;
-            result = result.max(l as i32);
         }
 
-        result
+        match len {
+            usize::MAX => -1,
+            _ => len as i32,
+        }
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "bcbbbcba".to_string(),
+            nums: [1, 2, 3].to_vec(),
+            k: 2,
         },
         Input {
-            s: "aaaa".to_string(),
+            nums: [2, 1, 8].to_vec(),
+            k: 10,
+        },
+        Input {
+            nums: [1, 2].to_vec(),
+            k: 0,
         },
     ];
 
     for input in inputs {
-        let result = Solution::maximum_length_substring(input.s);
+        let result = Solution::minimum_subarray_length(input.nums, input.k);
         println!("{:?}", result);
     }
 }
