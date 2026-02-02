@@ -1,15 +1,34 @@
 struct Solution;
 
 impl Solution {
-    pub fn score_of_string(s: String) -> i32 {
-        let mut result = 0;
-        for (left, right) in s.chars().zip(s.chars().skip(1)) {
-            let l = left as i32;
-            let r = right as i32;
-            result += (l - r).abs();
+    pub fn find_latest_time(s: String) -> String {
+        let mut digits = s.chars().collect::<Vec<char>>();
+
+        if digits[0] == '?' {
+            if (digits[1] != '0') && (digits[1] != '1') && (digits[1] != '?') {
+                digits[0] = '0';
+            } else {
+                digits[0] = '1';
+            }
         }
 
-        result
+        if digits[1] == '?' {
+            if digits[0] == '1' {
+                digits[1] = '1';
+            } else {
+                digits[1] = '9';
+            }
+        }
+
+        if digits[3] == '?' {
+            digits[3] = '5';
+        }
+
+        if digits[4] == '?' {
+            digits[4] = '9';
+        }
+
+        digits.iter().collect()
     }
 }
 
@@ -20,15 +39,15 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            s: "hello".to_string(),
+            s: "1?:?4".to_string(),
         },
         Input {
-            s: "zaz".to_string(),
+            s: "0?:5?".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::score_of_string(input.s);
+        let result = Solution::find_latest_time(input.s);
         println!("{:?}", result);
     }
 }
