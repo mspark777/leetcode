@@ -1,53 +1,55 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_latest_time(s: String) -> String {
-        let mut digits = s.chars().collect::<Vec<char>>();
+    pub fn number_of_special_chars(word: String) -> i32 {
+        let mut lowers = 0u32;
+        let mut uppers = 0u32;
 
-        if digits[0] == '?' {
-            if (digits[1] != '0') && (digits[1] != '1') && (digits[1] != '?') {
-                digits[0] = '0';
+        for ch in word.chars() {
+            let code = ch as u32;
+            if ch.is_ascii_lowercase() {
+                let a = 'a' as u32;
+                lowers |= 1 << (code - a);
             } else {
-                digits[0] = '1';
+                let a = 'A' as u32;
+                uppers |= 1 << (code - a);
             }
         }
 
-        if digits[1] == '?' {
-            if digits[0] == '1' {
-                digits[1] = '1';
-            } else {
-                digits[1] = '9';
+        let mut result = 0;
+
+        for i in 0..26u32 {
+            let mask = 1 << i;
+            let l = lowers & mask;
+            let u = uppers & mask;
+            if (l & u) != 0 {
+                result += 1;
             }
         }
 
-        if digits[3] == '?' {
-            digits[3] = '5';
-        }
-
-        if digits[4] == '?' {
-            digits[4] = '9';
-        }
-
-        digits.iter().collect()
+        result
     }
 }
 
 struct Input {
-    s: String,
+    word: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "1?:?4".to_string(),
+            word: "aaAbcBC".to_string(),
         },
         Input {
-            s: "0?:5?".to_string(),
+            word: "abc".to_string(),
+        },
+        Input {
+            word: "abBCab".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_latest_time(input.s);
+        let result = Solution::number_of_special_chars(input.word);
         println!("{:?}", result);
     }
 }
