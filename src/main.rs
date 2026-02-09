@@ -1,54 +1,42 @@
 struct Solution;
 
 impl Solution {
-    pub fn can_make_square(grid: Vec<Vec<char>>) -> bool {
-        for i in 0..2 {
-            for j in 0..2 {
-                let a = grid[i][j];
-                let b = grid[i][j + 1];
-                let c = grid[i + 1][j];
-                let d = grid[i + 1][j + 1];
-
-                let ok = ((a == b) && (b == c))
-                    || ((a == b) && (b == d) && (c != d))
-                    || ((a == c) && (c == d) && (b != d))
-                    || ((d == b) && (b == c) && (a != d));
-
-                if ok {
-                    return true;
-                }
-            }
+    pub fn added_integer(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let mut sum1 = 0;
+        let mut sum2 = 0;
+        for (n1, n2) in nums1.iter().copied().zip(nums2.iter().copied()) {
+            sum1 += n1;
+            sum2 += n2;
         }
 
-        false
+        let n = nums1.len() as i32;
+        (sum2 - sum1) / n
     }
 }
 
 struct Input {
-    grid: Vec<Vec<char>>,
+    nums1: Vec<i32>,
+    nums2: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            grid: [['B', 'W', 'B'], ['B', 'W', 'W'], ['B', 'W', 'B']]
-                .map(|a| a.to_vec())
-                .to_vec(),
+            nums1: [2, 6, 4].to_vec(),
+            nums2: [9, 7, 5].to_vec(),
         },
         Input {
-            grid: [['B', 'W', 'B'], ['W', 'B', 'W'], ['B', 'W', 'B']]
-                .map(|a| a.to_vec())
-                .to_vec(),
+            nums1: [10].to_vec(),
+            nums2: [5].to_vec(),
         },
         Input {
-            grid: [['B', 'W', 'B'], ['B', 'W', 'W'], ['B', 'W', 'W']]
-                .map(|a| a.to_vec())
-                .to_vec(),
+            nums1: [1, 1, 1, 1].to_vec(),
+            nums2: [1, 1, 1, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_make_square(input.grid);
+        let result = Solution::added_integer(input.nums1, input.nums2);
         println!("{:?}", result);
     }
 }
