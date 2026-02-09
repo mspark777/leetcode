@@ -1,55 +1,54 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_of_special_chars(word: String) -> i32 {
-        let mut lowers = 0u32;
-        let mut uppers = 0u32;
+    pub fn can_make_square(grid: Vec<Vec<char>>) -> bool {
+        for i in 0..2 {
+            for j in 0..2 {
+                let a = grid[i][j];
+                let b = grid[i][j + 1];
+                let c = grid[i + 1][j];
+                let d = grid[i + 1][j + 1];
 
-        for ch in word.chars() {
-            let code = ch as u32;
-            if ch.is_ascii_lowercase() {
-                let a = 'a' as u32;
-                lowers |= 1 << (code - a);
-            } else {
-                let a = 'A' as u32;
-                uppers |= 1 << (code - a);
+                let ok = ((a == b) && (b == c))
+                    || ((a == b) && (b == d) && (c != d))
+                    || ((a == c) && (c == d) && (b != d))
+                    || ((d == b) && (b == c) && (a != d));
+
+                if ok {
+                    return true;
+                }
             }
         }
 
-        let mut result = 0;
-
-        for i in 0..26u32 {
-            let mask = 1 << i;
-            let l = lowers & mask;
-            let u = uppers & mask;
-            if (l & u) != 0 {
-                result += 1;
-            }
-        }
-
-        result
+        false
     }
 }
 
 struct Input {
-    word: String,
+    grid: Vec<Vec<char>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            word: "aaAbcBC".to_string(),
+            grid: [['B', 'W', 'B'], ['B', 'W', 'W'], ['B', 'W', 'B']]
+                .map(|a| a.to_vec())
+                .to_vec(),
         },
         Input {
-            word: "abc".to_string(),
+            grid: [['B', 'W', 'B'], ['W', 'B', 'W'], ['B', 'W', 'B']]
+                .map(|a| a.to_vec())
+                .to_vec(),
         },
         Input {
-            word: "abBCab".to_string(),
+            grid: [['B', 'W', 'B'], ['B', 'W', 'W'], ['B', 'W', 'W']]
+                .map(|a| a.to_vec())
+                .to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_special_chars(input.word);
+        let result = Solution::can_make_square(input.grid);
         println!("{:?}", result);
     }
 }
