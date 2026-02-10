@@ -1,42 +1,45 @@
 struct Solution;
 
 impl Solution {
-    pub fn added_integer(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
-        let mut sum1 = 0;
-        let mut sum2 = 0;
-        for (n1, n2) in nums1.iter().copied().zip(nums2.iter().copied()) {
-            sum1 += n1;
-            sum2 += n2;
+    pub fn satisfies_conditions(grid: Vec<Vec<i32>>) -> bool {
+        let n = grid.len() - 1;
+        let m = grid[0].len() - 1;
+
+        for r in 0..=n {
+            for c in 0..=m {
+                let cell = grid[r][c];
+                let right = if c != m { grid[r][c + 1] } else { cell + 1 };
+                let bottom = if r != n { grid[r + 1][c] } else { cell };
+
+                if (cell != bottom) || (cell == right) {
+                    return false;
+                }
+            }
         }
 
-        let n = nums1.len() as i32;
-        (sum2 - sum1) / n
+        true
     }
 }
 
 struct Input {
-    nums1: Vec<i32>,
-    nums2: Vec<i32>,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums1: [2, 6, 4].to_vec(),
-            nums2: [9, 7, 5].to_vec(),
+            grid: [[1, 0, 2], [1, 0, 2]].map(|v| v.to_vec()).to_vec(),
         },
         Input {
-            nums1: [10].to_vec(),
-            nums2: [5].to_vec(),
+            grid: [[1, 1, 1], [0, 0, 0]].map(|v| v.to_vec()).to_vec(),
         },
         Input {
-            nums1: [1, 1, 1, 1].to_vec(),
-            nums2: [1, 1, 1, 1].to_vec(),
+            grid: [[1], [2], [3]].map(|v| v.to_vec()).to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::added_integer(input.nums1, input.nums2);
+        let result = Solution::satisfies_conditions(input.grid);
         println!("{:?}", result);
     }
 }
