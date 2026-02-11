@@ -1,19 +1,15 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_permutation_difference(s: String, t: String) -> i32 {
-        use std::collections::HashMap;
-        let mut index_map = HashMap::<char, i32>::new();
-        for (i, ch) in t.chars().enumerate() {
-            index_map.insert(ch, i as i32);
-        }
-
+    pub fn duplicate_numbers_xor(nums: Vec<i32>) -> i32 {
+        let mut flags = 0u64;
         let mut result = 0;
-        for (i, ch) in s.chars().enumerate() {
-            let i = i as i32;
-            let &idx = index_map.get(&ch).unwrap();
-
-            result += (i - idx).abs();
+        for num in nums {
+            let flag = 1u64 << num;
+            match flags & flag {
+                0 => flags |= flag,
+                _ => result ^= num,
+            };
         }
 
         result
@@ -21,24 +17,24 @@ impl Solution {
 }
 
 struct Input {
-    s: String,
-    t: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "abc".to_string(),
-            t: "bac".to_string(),
+            nums: [1, 2, 1, 3].to_vec(),
         },
         Input {
-            s: "abcde".to_string(),
-            t: "edbac".to_string(),
+            nums: [1, 2, 3].to_vec(),
+        },
+        Input {
+            nums: [1, 2, 2, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_permutation_difference(input.s, input.t);
+        let result = Solution::duplicate_numbers_xor(input.nums);
         println!("{:?}", result);
     }
 }
