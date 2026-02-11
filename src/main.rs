@@ -1,45 +1,44 @@
 struct Solution;
 
 impl Solution {
-    pub fn satisfies_conditions(grid: Vec<Vec<i32>>) -> bool {
-        let n = grid.len() - 1;
-        let m = grid[0].len() - 1;
-
-        for r in 0..=n {
-            for c in 0..=m {
-                let cell = grid[r][c];
-                let right = if c != m { grid[r][c + 1] } else { cell + 1 };
-                let bottom = if r != n { grid[r + 1][c] } else { cell };
-
-                if (cell != bottom) || (cell == right) {
-                    return false;
-                }
-            }
+    pub fn find_permutation_difference(s: String, t: String) -> i32 {
+        use std::collections::HashMap;
+        let mut index_map = HashMap::<char, i32>::new();
+        for (i, ch) in t.chars().enumerate() {
+            index_map.insert(ch, i as i32);
         }
 
-        true
+        let mut result = 0;
+        for (i, ch) in s.chars().enumerate() {
+            let i = i as i32;
+            let &idx = index_map.get(&ch).unwrap();
+
+            result += (i - idx).abs();
+        }
+
+        result
     }
 }
 
 struct Input {
-    grid: Vec<Vec<i32>>,
+    s: String,
+    t: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            grid: [[1, 0, 2], [1, 0, 2]].map(|v| v.to_vec()).to_vec(),
+            s: "abc".to_string(),
+            t: "bac".to_string(),
         },
         Input {
-            grid: [[1, 1, 1], [0, 0, 0]].map(|v| v.to_vec()).to_vec(),
-        },
-        Input {
-            grid: [[1], [2], [3]].map(|v| v.to_vec()).to_vec(),
+            s: "abcde".to_string(),
+            t: "edbac".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::satisfies_conditions(input.grid);
+        let result = Solution::find_permutation_difference(input.s, input.t);
         println!("{:?}", result);
     }
 }
