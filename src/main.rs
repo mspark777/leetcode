@@ -1,15 +1,15 @@
 struct Solution;
 
 impl Solution {
-    pub fn duplicate_numbers_xor(nums: Vec<i32>) -> i32 {
-        let mut flags = 0u64;
+    pub fn number_of_pairs(nums1: Vec<i32>, nums2: Vec<i32>, k: i32) -> i32 {
         let mut result = 0;
-        for num in nums {
-            let flag = 1u64 << num;
-            match flags & flag {
-                0 => flags |= flag,
-                _ => result ^= num,
-            };
+        for n1 in nums1 {
+            for n2 in nums2.iter().copied() {
+                let n = n2 * k;
+                if (n1 % n) == 0 {
+                    result += 1;
+                }
+            }
         }
 
         result
@@ -17,24 +17,27 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    nums1: Vec<i32>,
+    nums2: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 1, 3].to_vec(),
+            nums1: [1, 3, 4].to_vec(),
+            nums2: [1, 3, 4].to_vec(),
+            k: 1,
         },
         Input {
-            nums: [1, 2, 3].to_vec(),
-        },
-        Input {
-            nums: [1, 2, 2, 1].to_vec(),
+            nums1: [1, 2, 4, 12].to_vec(),
+            nums2: [2, 4].to_vec(),
+            k: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::duplicate_numbers_xor(input.nums);
+        let result = Solution::number_of_pairs(input.nums1, input.nums2, input.k);
         println!("{:?}", result);
     }
 }
