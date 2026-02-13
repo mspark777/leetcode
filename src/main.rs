@@ -1,42 +1,32 @@
 struct Solution;
 
 impl Solution {
-    pub fn minimum_chairs(s: String) -> i32 {
-        let mut result = 0;
-        let mut count = 0;
+    pub fn number_of_child(n: i32, k: i32) -> i32 {
+        let n = n - 1;
+        let rounds = k / n;
+        let rem = k % n;
 
-        for ch in s.chars() {
-            match ch {
-                'E' => count += 1,
-                _ => count -= 1,
-            };
-
-            result = result.max(count)
+        match rounds & 1 {
+            1 => n - rem,
+            _ => rem,
         }
-
-        result
     }
 }
 
 struct Input {
-    s: String,
+    n: i32,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            s: "EEEEEEE".to_string(),
-        },
-        Input {
-            s: "ELELEEL".to_string(),
-        },
-        Input {
-            s: "ELEELEELLL".to_string(),
-        },
+        Input { n: 3, k: 5 },
+        Input { n: 5, k: 6 },
+        Input { n: 4, k: 2 },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_chairs(input.s);
+        let result = Solution::number_of_child(input.n, input.k);
         println!("{:?}", result);
     }
 }
