@@ -1,32 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_of_child(n: i32, k: i32) -> i32 {
-        let n = n - 1;
-        let rounds = k / n;
-        let rem = k % n;
+    pub fn count_complete_day_pairs(hours: Vec<i32>) -> i32 {
+        let mut counts = [0; 24];
+        let mut result = 0;
 
-        match rounds & 1 {
-            1 => n - rem,
-            _ => rem,
+        for hour in hours {
+            let h = (hour % 24) as usize;
+            result += counts[(24 - h) % 24];
+            counts[h] += 1;
         }
+
+        result
     }
 }
 
 struct Input {
-    n: i32,
-    k: i32,
+    hours: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
-        Input { n: 3, k: 5 },
-        Input { n: 5, k: 6 },
-        Input { n: 4, k: 2 },
+        Input {
+            hours: [12, 12, 30, 24, 24].to_vec(),
+        },
+        Input {
+            hours: [72, 48, 24, 3].to_vec(),
+        },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_child(input.n, input.k);
+        let result = Solution::count_complete_day_pairs(input.hours);
         println!("{:?}", result);
     }
 }
