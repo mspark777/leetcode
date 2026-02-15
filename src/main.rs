@@ -1,22 +1,21 @@
 struct Solution;
 
 impl Solution {
-    pub fn minimum_average(nums: Vec<i32>) -> f64 {
-        let mut nums = nums;
-        nums.sort();
+    pub fn max_height_of_triangle(red: i32, blue: i32) -> i32 {
+        Self::height(red, blue).max(Self::height(blue, red))
+    }
 
-        let n = nums.len();
-        let mut left = 0usize;
-        let mut right = n - 1;
-        let mut result = 101.0f64;
+    fn height(color1: i32, color2: i32) -> i32 {
+        let mut row = 1;
+        let mut result = 0;
+        let mut idx = 0usize;
+        let mut colors = [color1, color2];
 
-        while left < right {
-            let l = nums[left] as f64;
-            let r = nums[right] as f64;
-            left += 1;
-            right -= 1;
-
-            result = result.min((l + r) / 2.0);
+        while colors[idx] >= row {
+            result += 1;
+            colors[idx] -= row;
+            row += 1;
+            idx ^= 1;
         }
 
         result
@@ -24,24 +23,20 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    red: i32,
+    blue: i32,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            nums: [7, 8, 3, 4, 15, 13, 4, 1].to_vec(),
-        },
-        Input {
-            nums: [1, 9, 8, 3, 10, 5].to_vec(),
-        },
-        Input {
-            nums: [1, 2, 3, 7, 8, 9].to_vec(),
-        },
+        Input { red: 2, blue: 4 },
+        Input { red: 2, blue: 1 },
+        Input { red: 1, blue: 1 },
+        Input { red: 10, blue: 1 },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_average(input.nums);
+        let result = Solution::max_height_of_triangle(input.red, input.blue);
         println!("{:?}", result);
     }
 }
