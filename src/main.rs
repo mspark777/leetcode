@@ -1,21 +1,19 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_height_of_triangle(red: i32, blue: i32) -> i32 {
-        Self::height(red, blue).max(Self::height(blue, red))
-    }
-
-    fn height(color1: i32, color2: i32) -> i32 {
-        let mut row = 1;
+    pub fn number_of_alternating_groups(colors: Vec<i32>) -> i32 {
+        let n = colors.len();
         let mut result = 0;
-        let mut idx = 0usize;
-        let mut colors = [color1, color2];
+        for (i, current) in colors.iter().copied().enumerate() {
+            let i1 = (i + 1) % n;
+            let i2 = (i + 2) % n;
+            let next1 = colors[i1];
+            let next2 = colors[i2];
 
-        while colors[idx] >= row {
-            result += 1;
-            colors[idx] -= row;
-            row += 1;
-            idx ^= 1;
+            match (current, next1, next2) {
+                (1, 0, 1) | (0, 1, 0) => result += 1,
+                _ => continue,
+            };
         }
 
         result
@@ -23,20 +21,21 @@ impl Solution {
 }
 
 struct Input {
-    red: i32,
-    blue: i32,
+    colors: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
-        Input { red: 2, blue: 4 },
-        Input { red: 2, blue: 1 },
-        Input { red: 1, blue: 1 },
-        Input { red: 10, blue: 1 },
+        Input {
+            colors: [1, 1, 1].to_vec(),
+        },
+        Input {
+            colors: [0, 1, 0, 0, 1].to_vec(),
+        },
     ];
 
     for input in inputs {
-        let result = Solution::max_height_of_triangle(input.red, input.blue);
+        let result = Solution::number_of_alternating_groups(input.colors);
         println!("{:?}", result);
     }
 }
