@@ -1,41 +1,40 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_of_alternating_groups(colors: Vec<i32>) -> i32 {
-        let n = colors.len();
-        let mut result = 0;
-        for (i, current) in colors.iter().copied().enumerate() {
-            let i1 = (i + 1) % n;
-            let i2 = (i + 2) % n;
-            let next1 = colors[i1];
-            let next2 = colors[i2];
+    pub fn get_encrypted_string(s: String, k: i32) -> String {
+        let chars = s.chars().collect::<Vec<char>>();
+        let mut result = Vec::<char>::with_capacity(chars.len());
+        let n = chars.len();
+        let k = k as usize;
 
-            match (current, next1, next2) {
-                (1, 0, 1) | (0, 1, 0) => result += 1,
-                _ => continue,
-            };
+        for i in 0..n {
+            let j = (i + k) % n;
+            result.push(chars[j]);
         }
 
-        result
+        result.iter().collect()
     }
 }
 
 struct Input {
-    colors: Vec<i32>,
+    s: String,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            colors: [1, 1, 1].to_vec(),
+            s: "dart".to_string(),
+            k: 3,
         },
         Input {
-            colors: [0, 1, 0, 0, 1].to_vec(),
+            s: "aaa".to_string(),
+            k: 1,
         },
     ];
 
     for input in inputs {
-        let result = Solution::number_of_alternating_groups(input.colors);
+        let result = Solution::get_encrypted_string(input.s, input.k);
         println!("{:?}", result);
     }
 }
