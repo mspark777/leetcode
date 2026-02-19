@@ -1,40 +1,24 @@
 struct Solution;
 
 impl Solution {
-    pub fn get_smallest_string(s: String) -> String {
-        let mut result = s.chars().collect::<Vec<char>>();
-        let n = result.len();
-        for i in 1..n {
-            let left = result[i - 1] as u8;
-            let right = result[i] as u8;
-
-            if ((left & 1) == (right & 1)) && (left > right) {
-                result[i - 1] = right as char;
-                result[i] = left as char;
-                break;
-            }
+    pub fn winning_player(x: i32, y: i32) -> String {
+        match x.min(y >> 2) & 1 {
+            1 => "Alice".to_string(),
+            _ => "Bob".to_string(),
         }
-
-        result.iter().collect()
     }
 }
 
 struct Input {
-    s: String,
+    x: i32,
+    y: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            s: "45320".to_string(),
-        },
-        Input {
-            s: "001".to_string(),
-        },
-    ];
+    let inputs = [Input { x: 2, y: 7 }, Input { x: 4, y: 11 }];
 
     for input in inputs {
-        let result = Solution::get_smallest_string(input.s);
+        let result = Solution::winning_player(input.x, input.y);
         println!("{:?}", result);
     }
 }
