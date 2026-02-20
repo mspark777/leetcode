@@ -1,32 +1,35 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_changes(n: i32, k: i32) -> i32 {
-        let k = k ^ n;
-        let cnt = k.count_ones();
+    pub fn can_alice_win(nums: Vec<i32>) -> bool {
+        let sum = nums.into_iter().fold((0, 0), |acc, n| match n > 9 {
+            true => (acc.0, acc.1 + n),
+            _ => (acc.0 + n, acc.1),
+        });
 
-        let k = k & n;
-        match cnt == k.count_ones() {
-            true => cnt as i32,
-            _ => -1,
-        }
+        sum.0 != sum.1
     }
 }
 
 struct Input {
-    n: i32,
-    k: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
-        Input { n: 13, k: 4 },
-        Input { n: 21, k: 21 },
-        Input { n: 14, k: 13 },
+        Input {
+            nums: [1, 2, 3, 4, 10].to_vec(),
+        },
+        Input {
+            nums: [1, 2, 3, 4, 5, 14].to_vec(),
+        },
+        Input {
+            nums: [5, 5, 5, 25].to_vec(),
+        },
     ];
 
     for input in inputs {
-        let result = Solution::min_changes(input.n, input.k);
+        let result = Solution::can_alice_win(input.nums);
         println!("{:?}", result);
     }
 }
