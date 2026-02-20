@@ -1,35 +1,60 @@
 struct Solution;
 
 impl Solution {
-    pub fn can_alice_win(nums: Vec<i32>) -> bool {
-        let sum = nums.into_iter().fold((0, 0), |acc, n| match n > 9 {
-            true => (acc.0, acc.1 + n),
-            _ => (acc.0 + n, acc.1),
-        });
+    pub fn winning_player_count(n: i32, pick: Vec<Vec<i32>>) -> i32 {
+        let n = n as usize;
+        let mut counts = vec![[0usize; 11]; n + 1];
 
-        sum.0 != sum.1
+        for p in pick {
+            let x = p[0] as usize;
+            let y = p[1] as usize;
+
+            counts[x][y] += 1;
+        }
+
+        let mut result = 0;
+        for (i, count) in counts.into_iter().enumerate() {
+            for cnt in count {
+                if cnt > i {
+                    result += 1;
+                    break;
+                }
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
+    pick: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 4, 10].to_vec(),
+            n: 4,
+            pick: [[0, 0], [1, 0], [1, 0], [2, 1], [2, 1], [2, 0]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
         Input {
-            nums: [1, 2, 3, 4, 5, 14].to_vec(),
+            n: 5,
+            pick: [[1, 1], [1, 2], [1, 3], [1, 4]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
         Input {
-            nums: [5, 5, 5, 25].to_vec(),
+            n: 5,
+            pick: [[1, 1], [2, 4], [2, 4], [2, 4]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::can_alice_win(input.nums);
+        let result = Solution::winning_player_count(input.n, input.pick);
         println!("{:?}", result);
     }
 }
