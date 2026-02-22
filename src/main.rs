@@ -1,34 +1,16 @@
 struct Solution;
 
 impl Solution {
-    pub fn count_k_constraint_substrings(s: String, k: i32) -> i32 {
-        let s = s.chars().collect::<Vec<char>>();
-        let n = s.len();
-        let mut left = 0usize;
-        let mut right = 0usize;
-        let mut ones = 0;
-        let mut zeros = 0;
+    pub fn generate_key(num1: i32, num2: i32, num3: i32) -> i32 {
+        let mut div = 1;
         let mut result = 0;
 
-        while right < n {
-            if s[right] == '0' {
-                zeros += 1;
-            } else {
-                ones += 1;
-            }
-
-            while (zeros > k) && (ones > k) {
-                if s[left] == '0' {
-                    zeros -= 1;
-                } else {
-                    ones -= 1;
-                }
-
-                left += 1;
-            }
-
-            result += (right + 1 - left) as i32;
-            right += 1;
+        while (num1 >= div) || (num2 >= div) || (num3 >= div) {
+            let n1 = (num1 / div) % 10;
+            let n2 = (num2 / div) % 10;
+            let n3 = (num3 / div) % 10;
+            result += div * n1.min(n2).min(n3);
+            div *= 10;
         }
 
         result
@@ -36,28 +18,32 @@ impl Solution {
 }
 
 struct Input {
-    s: String,
-    k: i32,
+    num1: i32,
+    num2: i32,
+    num3: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "10101".to_string(),
-            k: 1,
+            num1: 1,
+            num2: 10,
+            num3: 1000,
         },
         Input {
-            s: "1010101".to_string(),
-            k: 2,
+            num1: 987,
+            num2: 879,
+            num3: 798,
         },
         Input {
-            s: "11111".to_string(),
-            k: 1,
+            num1: 1,
+            num2: 2,
+            num3: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::count_k_constraint_substrings(input.s, input.k);
+        let result = Solution::generate_key(input.num1, input.num2, input.num3);
         println!("{:?}", result);
     }
 }
