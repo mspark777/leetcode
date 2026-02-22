@@ -1,44 +1,63 @@
 struct Solution;
 
 impl Solution {
-    pub fn final_position_of_snake(n: i32, commands: Vec<String>) -> i32 {
-        let mut r = 0;
-        let mut c = 0;
-        for command in commands {
-            if command == "UP" {
-                r -= 1;
-            } else if command == "DOWN" {
-                r += 1;
-            } else if command == "RIGHT" {
-                c += 1;
-            } else if command == "LEFT" {
-                c -= 1;
+    pub fn count_k_constraint_substrings(s: String, k: i32) -> i32 {
+        let s = s.chars().collect::<Vec<char>>();
+        let n = s.len();
+        let mut left = 0usize;
+        let mut right = 0usize;
+        let mut ones = 0;
+        let mut zeros = 0;
+        let mut result = 0;
+
+        while right < n {
+            if s[right] == '0' {
+                zeros += 1;
+            } else {
+                ones += 1;
             }
+
+            while (zeros > k) && (ones > k) {
+                if s[left] == '0' {
+                    zeros -= 1;
+                } else {
+                    ones -= 1;
+                }
+
+                left += 1;
+            }
+
+            result += (right + 1 - left) as i32;
+            right += 1;
         }
 
-        r * n + c
+        result
     }
 }
 
 struct Input {
-    n: i32,
-    commands: Vec<String>,
+    s: String,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            n: 2,
-            commands: ["RIGHT", "DOWN"].map(|s| s.to_string()).to_vec(),
+            s: "10101".to_string(),
+            k: 1,
         },
         Input {
-            n: 3,
-            commands: ["DOWN", "RIGHT", "UP"].map(|s| s.to_string()).to_vec(),
+            s: "1010101".to_string(),
+            k: 2,
+        },
+        Input {
+            s: "11111".to_string(),
+            k: 1,
         },
     ];
 
     for input in inputs {
-        let result = Solution::final_position_of_snake(input.n, input.commands);
+        let result = Solution::count_k_constraint_substrings(input.s, input.k);
         println!("{:?}", result);
     }
 }
