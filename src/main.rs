@@ -1,31 +1,41 @@
 struct Solution;
 
 impl Solution {
-    pub fn convert_date_to_binary(date: String) -> String {
-        date.split('-')
-            .map(|s| s.parse::<u32>().unwrap())
-            .map(|n| format!("{:b}", n))
-            .collect::<Vec<String>>()
-            .join("-")
+    pub fn stable_mountains(height: Vec<i32>, threshold: i32) -> Vec<i32> {
+        let mut result = Vec::<i32>::new();
+        for i in 1..height.len() {
+            if height[i - 1] > threshold {
+                result.push(i as i32);
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    date: String,
+    height: Vec<i32>,
+    threshold: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            date: "2080-02-29".to_string(),
+            height: [1, 2, 3, 4, 5].to_vec(),
+            threshold: 2,
         },
         Input {
-            date: "1900-01-01".to_string(),
+            height: [10, 1, 10, 1, 10].to_vec(),
+            threshold: 3,
+        },
+        Input {
+            height: [10, 1, 10, 1, 10].to_vec(),
+            threshold: 10,
         },
     ];
 
     for input in inputs {
-        let result = Solution::convert_date_to_binary(input.date);
+        let result = Solution::stable_mountains(input.height, input.threshold);
         println!("{:?}", result);
     }
 }
