@@ -1,22 +1,18 @@
 struct Solution;
 
 impl Solution {
-    pub fn get_sneaky_numbers(nums: Vec<i32>) -> Vec<i32> {
-        let mut sum = 0.0;
-        let mut squared_sum = 0.0;
-        for n in nums.iter().copied() {
-            let f = n as f64;
-            sum += f;
-            squared_sum += f * f;
+    pub fn min_element(nums: Vec<i32>) -> i32 {
+        nums.into_iter().map(Self::sum_digits).min().unwrap()
+    }
+
+    fn sum_digits(mut n: i32) -> i32 {
+        let mut sum = 0;
+        while n > 0 {
+            sum += n % 10;
+            n /= 10;
         }
 
-        let n = nums.len() as i32 - 2;
-        let sum2 = sum - (n * (n - 1) / 2) as f64;
-        let squared_sum2 = squared_sum - (n * (n - 1) * (2 * n - 1) / 6) as f64;
-        let t = (2.0 * squared_sum2 - sum2 * sum2).sqrt();
-        let x1 = (sum2 - t) / 2.0;
-        let x2 = (sum2 + t) / 2.0;
-        vec![x1 as i32, x2 as i32]
+        sum
     }
 }
 
@@ -27,18 +23,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [0, 1, 1, 0].to_vec(),
+            nums: [10, 12, 13, 14].to_vec(),
         },
         Input {
-            nums: [0, 3, 2, 1, 3, 2].to_vec(),
+            nums: [1, 2, 3, 4].to_vec(),
         },
         Input {
-            nums: [7, 1, 5, 4, 3, 4, 6, 0, 9, 5, 8, 2].to_vec(),
+            nums: [999, 19, 199].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::get_sneaky_numbers(input.nums);
+        let result = Solution::min_element(input.nums);
         println!("{:?}", result);
     }
 }
