@@ -1,36 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn is_balanced(num: String) -> bool {
-        let sum = num
-            .chars()
-            .map(|ch| (ch as i32) - ('0' as i32))
-            .enumerate()
-            .fold(0, |acc, (i, ch)| match i & 1 {
-                1 => acc + ch,
-                _ => acc - ch,
-            });
+    pub fn smallest_number(mut n: i32, t: i32) -> i32 {
+        loop {
+            let mut x = n;
+            let mut product = 1;
+            while x > 0 {
+                product *= x % 10;
+                x /= 10;
+            }
 
-        sum == 0
+            if (product % t) == 0 {
+                break;
+            }
+
+            n += 1;
+        }
+
+        n
     }
 }
 
 struct Input {
-    num: String,
+    n: i32,
+    t: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            num: "1234".to_string(),
-        },
-        Input {
-            num: "24123".to_string(),
-        },
-    ];
+    let inputs = [Input { n: 10, t: 2 }, Input { n: 15, t: 3 }];
 
     for input in inputs {
-        let result = Solution::is_balanced(input.num);
+        let result = Solution::smallest_number(input.n, input.t);
         println!("{:?}", result);
     }
 }
