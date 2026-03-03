@@ -1,24 +1,22 @@
 struct Solution;
 
 impl Solution {
-    pub fn button_with_longest_time(events: Vec<Vec<i32>>) -> i32 {
-        let mut result = events[0][0];
-        let mut prev_time = events[0][1];
-        let mut max_time = prev_time;
+    pub fn minimum_operations(grid: Vec<Vec<i32>>) -> i32 {
+        let mut result = 0;
+        let mut grid = grid;
+        let n = grid.len();
+        let m = grid[0].len();
 
-        for event in events.iter().skip(1) {
-            let index = event[0];
-            let time = event[1];
-            let taken = time - prev_time;
-
-            if max_time < taken {
-                result = index;
-                max_time = taken;
-            } else if max_time == taken {
-                result = result.min(index);
+        #[allow(clippy::needless_range_loop)]
+        for c in 0..m {
+            for r in 1..n {
+                let cur = grid[r][c];
+                let next = grid[r - 1][c] + 1;
+                if cur < next {
+                    result += next - cur;
+                    grid[r][c] = next;
+                }
             }
-
-            prev_time = time;
         }
 
         result
@@ -26,23 +24,25 @@ impl Solution {
 }
 
 struct Input {
-    events: Vec<Vec<i32>>,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            events: [[1, 2], [2, 5], [3, 9], [1, 15]]
+            grid: [[3, 2], [1, 3], [3, 4], [0, 1]]
                 .map(|v| v.to_vec())
                 .to_vec(),
         },
         Input {
-            events: [[10, 5], [1, 7]].map(|v| v.to_vec()).to_vec(),
+            grid: [[3, 2, 1], [2, 1, 0], [1, 2, 3]]
+                .map(|v| v.to_vec())
+                .to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::button_with_longest_time(input.events);
+        let result = Solution::minimum_operations(input.grid);
         println!("{:?}", result);
     }
 }
