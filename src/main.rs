@@ -1,48 +1,39 @@
 struct Solution;
 
 impl Solution {
-    pub fn minimum_operations(grid: Vec<Vec<i32>>) -> i32 {
-        let mut result = 0;
-        let mut grid = grid;
-        let n = grid.len();
-        let m = grid[0].len();
+    pub fn has_match(s: String, p: String) -> bool {
+        let (left, right) = p.split_once("*").unwrap();
 
-        #[allow(clippy::needless_range_loop)]
-        for c in 0..m {
-            for r in 1..n {
-                let cur = grid[r][c];
-                let next = grid[r - 1][c] + 1;
-                if cur < next {
-                    result += next - cur;
-                    grid[r][c] = next;
-                }
-            }
+        match (s.find(left), s.rfind(right)) {
+            (Some(i), Some(j)) => i + left.len() <= j,
+            _ => false,
         }
-
-        result
     }
 }
 
 struct Input {
-    grid: Vec<Vec<i32>>,
+    s: String,
+    p: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            grid: [[3, 2], [1, 3], [3, 4], [0, 1]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            s: "leetcode".to_string(),
+            p: "ee*e".to_string(),
         },
         Input {
-            grid: [[3, 2, 1], [2, 1, 0], [1, 2, 3]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            s: "car".to_string(),
+            p: "s*v".to_string(),
+        },
+        Input {
+            s: "luck".to_string(),
+            p: "u*".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::minimum_operations(input.grid);
+        let result = Solution::has_match(input.s, input.p);
         println!("{:?}", result);
     }
 }
