@@ -1,19 +1,13 @@
 struct Solution;
 
 impl Solution {
-    pub fn subarray_sum(nums: Vec<i32>) -> i32 {
-        let mut result = 0;
-        for (i, num) in nums.iter().copied().enumerate() {
-            let j = i as i32;
-            let start = 0.max(j - num);
-            result += nums
-                .iter()
-                .skip(start as usize)
-                .take((j - start + 1).max(0) as usize)
-                .sum::<i32>();
-        }
+    pub fn count_partitions(nums: Vec<i32>) -> i32 {
+        let result = match nums.iter().sum::<i32>() & 1 {
+            0 => nums.len() - 1,
+            _ => 0,
+        };
 
-        result
+        result as i32
     }
 }
 
@@ -24,15 +18,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [2, 3, 1].to_vec(),
+            nums: [10, 10, 3, 7, 6].to_vec(),
         },
         Input {
-            nums: [3, 1, 1, 2].to_vec(),
+            nums: [1, 2, 2].to_vec(),
+        },
+        Input {
+            nums: [2, 4, 6, 8].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::subarray_sum(input.nums);
+        let result = Solution::count_partitions(input.nums);
         println!("{:?}", result);
     }
 }
