@@ -1,52 +1,49 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_valid_pair(s: String) -> String {
-        use std::collections::HashMap;
+    pub fn sum_of_good_numbers(nums: Vec<i32>, k: i32) -> i32 {
+        let k = k as usize;
+        let n = nums.len();
+        let mut result = 0;
+        for (i, num) in nums.iter().copied().enumerate() {
+            let left = match i < k {
+                true => true,
+                _ => num > nums[i - k],
+            };
 
-        let mut counts = HashMap::<char, i32>::new();
-        for ch in s.chars() {
-            counts.entry(ch).and_modify(|c| *c += 1).or_insert(1);
-        }
+            let right = match (i + k) < n {
+                true => num > nums[i + k],
+                _ => true,
+            };
 
-        for (left, right) in s.chars().zip(s.chars().skip(1)) {
-            if left == right {
-                continue;
-            }
-
-            let lcount = counts.get(&left).copied().unwrap_or_default();
-            let rcount = counts.get(&right).copied().unwrap_or_default();
-            let lnum = (left as i32) - ('0' as i32);
-            let rnum = (right as i32) - ('0' as i32);
-
-            if (lnum == lcount) && (rnum == rcount) {
-                return format!("{}{}", left, right);
+            if left && right {
+                result += num;
             }
         }
 
-        String::new()
+        result
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "2523533".to_string(),
+            nums: [1, 3, 2, 1, 5, 4].to_vec(),
+            k: 2,
         },
         Input {
-            s: "221".to_string(),
-        },
-        Input {
-            s: "22".to_string(),
+            nums: [2, 1].to_vec(),
+            k: 1,
         },
     ];
 
     for input in inputs {
-        let result = Solution::find_valid_pair(input.s);
+        let result = Solution::sum_of_good_numbers(input.nums, input.k);
         println!("{:?}", result);
     }
 }
