@@ -1,47 +1,41 @@
 struct Solution;
 
 impl Solution {
-    pub fn has_special_substring(s: String, k: i32) -> bool {
-        let k = k as usize;
-        let mut n = 0usize;
-        let mut i = 0usize;
-        let mut left = s.chars().next().unwrap();
+    pub fn has_same_digits(s: String) -> bool {
+        let mut nums = s
+            .chars()
+            .map(|ch| (ch as i32) - ('0' as i32))
+            .collect::<Vec<i32>>();
 
-        for (j, right) in s.chars().enumerate() {
-            n += 1;
-            if left == right {
-                continue;
-            } else if (j - i) == k {
-                return true;
-            }
-
-            left = right;
-            i = j;
+        while nums.len() > 2 {
+            nums = nums
+                .iter()
+                .copied()
+                .zip(nums.iter().copied().skip(1))
+                .map(|(left, right)| (left + right) % 10)
+                .collect();
         }
 
-        (n - i) == k
+        nums[0] == nums[1]
     }
 }
 
 struct Input {
     s: String,
-    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "aaabaaa".to_string(),
-            k: 3,
+            s: "3902".to_string(),
         },
         Input {
-            s: "abc".to_string(),
-            k: 2,
+            s: "34789".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::has_special_substring(input.s, input.k);
+        let result = Solution::has_same_digits(input.s);
         println!("{:?}", result);
     }
 }
