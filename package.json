@@ -13,8 +13,8 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/node": "^25.3.3",
-    "eslint": "^10.0.2",
+    "@types/node": "^25.3.5",
+    "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.4.0",
