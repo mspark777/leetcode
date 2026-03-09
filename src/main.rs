@@ -1,41 +1,39 @@
 struct Solution;
 
 impl Solution {
-    pub fn has_same_digits(s: String) -> bool {
-        let mut nums = s
-            .chars()
-            .map(|ch| (ch as i32) - ('0' as i32))
-            .collect::<Vec<i32>>();
-
-        while nums.len() > 2 {
-            nums = nums
-                .iter()
-                .copied()
-                .zip(nums.iter().copied().skip(1))
-                .map(|(left, right)| (left + right) % 10)
-                .collect();
+    pub fn transform_array(nums: Vec<i32>) -> Vec<i32> {
+        let n = nums.len();
+        let mut counts = [0usize; 2];
+        for num in nums {
+            let idx = (num & 1) as usize;
+            counts[idx] += 1;
         }
 
-        nums[0] == nums[1]
+        let mut result = vec![0; n];
+        for n in result.iter_mut().skip(counts[0]).take(counts[1]) {
+            *n = 1;
+        }
+
+        result
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "3902".to_string(),
+            nums: [4, 3, 2, 1].to_vec(),
         },
         Input {
-            s: "34789".to_string(),
+            nums: [1, 5, 1, 4, 2].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::has_same_digits(input.s);
+        let result = Solution::transform_array(input.nums);
         println!("{:?}", result);
     }
 }
