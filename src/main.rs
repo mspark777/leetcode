@@ -1,39 +1,47 @@
 struct Solution;
 
 impl Solution {
-    pub fn transform_array(nums: Vec<i32>) -> Vec<i32> {
-        let n = nums.len();
-        let mut counts = [0usize; 2];
-        for num in nums {
-            let idx = (num & 1) as usize;
-            counts[idx] += 1;
+    pub fn largest_integer(nums: Vec<i32>, k: i32) -> i32 {
+        let n = nums.len() as i32;
+        let mut frequencies = vec![0; 51];
+        for (i, num) in nums.iter().copied().enumerate() {
+            let i = i as i32;
+            frequencies[num as usize] += k.min(i + 1).min(n - i);
         }
 
-        let mut result = vec![0; n];
-        for n in result.iter_mut().skip(counts[0]).take(counts[1]) {
-            *n = 1;
+        for (i, frequency) in frequencies.into_iter().enumerate().rev() {
+            if (frequency == 1) || ((k == n) && (frequency > 0)) {
+                return i as i32;
+            }
         }
 
-        result
+        -1
     }
 }
 
 struct Input {
     nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [4, 3, 2, 1].to_vec(),
+            nums: [3, 9, 2, 1, 7].to_vec(),
+            k: 3,
         },
         Input {
-            nums: [1, 5, 1, 4, 2].to_vec(),
+            nums: [3, 9, 7, 2, 1, 7].to_vec(),
+            k: 4,
+        },
+        Input {
+            nums: [0, 0].to_vec(),
+            k: 1,
         },
     ];
 
     for input in inputs {
-        let result = Solution::transform_array(input.nums);
+        let result = Solution::largest_integer(input.nums, input.k);
         println!("{:?}", result);
     }
 }
