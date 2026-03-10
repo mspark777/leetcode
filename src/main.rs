@@ -1,33 +1,34 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_containers(n: i32, w: i32, max_weight: i32) -> i32 {
-        (n * n).min(max_weight / w)
+    pub fn reverse_degree(s: String) -> i32 {
+        let last = ('z' as usize) + 1;
+        let mut result = 0usize;
+        for (i, ch) in s.chars().enumerate() {
+            let idx = last - (ch as usize);
+            result += idx * (i + 1);
+        }
+
+        result as i32
     }
 }
 
 struct Input {
-    n: i32,
-    w: i32,
-    max_weight: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            n: 2,
-            w: 3,
-            max_weight: 15,
+            s: "abc".to_string(),
         },
         Input {
-            n: 3,
-            w: 5,
-            max_weight: 20,
+            s: "zaza".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_containers(input.n, input.w, input.max_weight);
+        let result = Solution::reverse_degree(input.s);
         println!("{:?}", result);
     }
 }
