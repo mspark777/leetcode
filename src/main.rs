@@ -1,47 +1,86 @@
 struct Solution;
 
 impl Solution {
-    pub fn largest_integer(nums: Vec<i32>, k: i32) -> i32 {
-        let n = nums.len() as i32;
-        let mut frequencies = vec![0; 51];
-        for (i, num) in nums.iter().copied().enumerate() {
-            let i = i as i32;
-            frequencies[num as usize] += k.min(i + 1).min(n - i);
+    pub fn total_numbers(digits: Vec<i32>) -> i32 {
+        let mut frequencies = [0; 10];
+
+        for digit in digits.iter().copied() {
+            let d = digit as usize;
+            frequencies[d] += 1;
         }
 
-        for (i, frequency) in frequencies.into_iter().enumerate().rev() {
-            if (frequency == 1) || ((k == n) && (frequency > 0)) {
-                return i as i32;
+        let mut zero = 0;
+        let mut even = 0;
+        let mut all = 0;
+
+        for (i, frequency) in frequencies.iter().copied().enumerate() {
+            if frequency < 1 {
+                continue;
+            }
+
+            if i == 0 {
+                zero += 1;
+            }
+
+            if (i & 1) == 0 {
+                even += 1;
+            }
+
+            all += 1;
+        }
+
+        let mut result = even * (all - 1) * (all - 2);
+        if zero == 1 {
+            result -= (even - 1) * (all - 2);
+        }
+
+        for (i, frequency) in frequencies.iter().copied().enumerate() {
+            if frequency < 2 {
+                continue;
+            }
+
+            if i == 0 {
+                result += all - 1;
+            } else if (i & 1) == 1 {
+                result += even;
+            } else {
+                result += 3 * (even - 1) - zero;
+                result += 2 * (all - even);
             }
         }
 
-        -1
+        for frequency in frequencies.iter().skip(2).step_by(2).copied() {
+            if frequency >= 3 {
+                result += 1;
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    digits: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [3, 9, 2, 1, 7].to_vec(),
-            k: 3,
+            digits: [1, 2, 3, 4].to_vec(),
         },
         Input {
-            nums: [3, 9, 7, 2, 1, 7].to_vec(),
-            k: 4,
+            digits: [0, 2, 2].to_vec(),
         },
         Input {
-            nums: [0, 0].to_vec(),
-            k: 1,
+            digits: [6, 6, 6].to_vec(),
+        },
+        Input {
+            digits: [1, 3, 5].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::largest_integer(input.nums, input.k);
+        let result = Solution::total_numbers(input.digits);
         println!("{:?}", result);
     }
 }
