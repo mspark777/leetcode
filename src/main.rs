@@ -1,11 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_costs(cost: Vec<i32>) -> Vec<i32> {
-        let n = cost.len();
-        let mut result = vec![cost[0]; n];
-        for i in 1..n {
-            result[i] = result[i - 1].min(cost[i]);
+    pub fn minimum_pair_removal(nums: Vec<i32>) -> i32 {
+        let mut result = 0;
+        let mut nums = nums;
+
+        while nums.len() > 1 {
+            let mut is_ascending = true;
+            let mut min_sum = i32::MAX;
+            let n = nums.len();
+            let mut target_index = n;
+
+            for i in 0..(n - 1) {
+                let left = nums[i];
+                let right = nums[i + 1];
+                let sum = left + right;
+                if left > right {
+                    is_ascending = false;
+                }
+                if sum < min_sum {
+                    min_sum = sum;
+                    target_index = i;
+                }
+            }
+
+            if is_ascending {
+                break;
+            }
+
+            result += 1;
+            nums[target_index] = min_sum;
+            nums.remove(target_index + 1);
         }
 
         result
@@ -13,21 +38,21 @@ impl Solution {
 }
 
 struct Input {
-    cost: Vec<i32>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            cost: [5, 3, 4, 1, 3, 2].to_vec(),
+            nums: [5, 2, 3, 1].to_vec(),
         },
         Input {
-            cost: [1, 2, 4, 6, 7].to_vec(),
+            nums: [1, 2, 2].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_costs(input.cost);
+        let result = Solution::minimum_pair_removal(input.nums);
         println!("{:?}", result);
     }
 }
