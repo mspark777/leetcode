@@ -1,34 +1,33 @@
 struct Solution;
 
 impl Solution {
-    pub fn reverse_degree(s: String) -> i32 {
-        let last = ('z' as usize) + 1;
-        let mut result = 0usize;
-        for (i, ch) in s.chars().enumerate() {
-            let idx = last - (ch as usize);
-            result += idx * (i + 1);
+    pub fn min_costs(cost: Vec<i32>) -> Vec<i32> {
+        let n = cost.len();
+        let mut result = vec![cost[0]; n];
+        for i in 1..n {
+            result[i] = result[i - 1].min(cost[i]);
         }
 
-        result as i32
+        result
     }
 }
 
 struct Input {
-    s: String,
+    cost: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "abc".to_string(),
+            cost: [5, 3, 4, 1, 3, 2].to_vec(),
         },
         Input {
-            s: "zaza".to_string(),
+            cost: [1, 2, 4, 6, 7].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::reverse_degree(input.s);
+        let result = Solution::min_costs(input.cost);
         println!("{:?}", result);
     }
 }
