@@ -1,35 +1,39 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_closest(x: i32, y: i32, z: i32) -> i32 {
-        let steps1 = (x - z).abs();
-        let steps2 = (y - z).abs();
+    pub fn max_product(n: i32) -> i32 {
+        let mut first = 0;
+        let mut second = 0;
+        let mut result = 0;
+        let mut n = n;
 
-        if steps1 < steps2 {
-            1
-        } else if steps1 > steps2 {
-            2
-        } else {
-            0
+        while n > 0 {
+            let digit = n % 10;
+            n /= 10;
+
+            if digit > first {
+                second = first;
+                first = digit;
+            } else if digit > second {
+                second = digit;
+            }
+
+            result = result.max(first * second);
         }
+
+        result
     }
 }
 
 struct Input {
-    x: i32,
-    y: i32,
-    z: i32,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input { x: 2, y: 7, z: 4 },
-        Input { x: 2, y: 5, z: 6 },
-        Input { x: 1, y: 5, z: 3 },
-    ];
+    let inputs = [Input { n: 31 }, Input { n: 22 }, Input { n: 124 }];
 
     for input in inputs {
-        let result = Solution::find_closest(input.x, input.y, input.z);
+        let result = Solution::max_product(input.n);
         println!("{:?}", result);
     }
 }
