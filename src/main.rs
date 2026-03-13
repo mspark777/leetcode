@@ -1,34 +1,35 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_operations(nums: Vec<i32>, k: i32) -> i32 {
-        nums.iter().sum::<i32>() % k
+    pub fn find_closest(x: i32, y: i32, z: i32) -> i32 {
+        let steps1 = (x - z).abs();
+        let steps2 = (y - z).abs();
+
+        if steps1 < steps2 {
+            1
+        } else if steps1 > steps2 {
+            2
+        } else {
+            0
+        }
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    x: i32,
+    y: i32,
+    z: i32,
 }
 
 fn main() {
     let inputs = [
-        Input {
-            nums: [3, 9, 7].to_vec(),
-            k: 5,
-        },
-        Input {
-            nums: [4, 1, 3].to_vec(),
-            k: 4,
-        },
-        Input {
-            nums: [3, 2].to_vec(),
-            k: 6,
-        },
+        Input { x: 2, y: 7, z: 4 },
+        Input { x: 2, y: 5, z: 6 },
+        Input { x: 1, y: 5, z: 3 },
     ];
 
     for input in inputs {
-        let result = Solution::min_operations(input.nums, input.k);
+        let result = Solution::find_closest(input.x, input.y, input.z);
         println!("{:?}", result);
     }
 }
