@@ -1,60 +1,44 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_deletion(s: String, k: i32) -> i32 {
-        const A: usize = 'a' as usize;
-        let mut frequencies = [0i32; 26];
-        let mut distincts = 0;
+    pub fn smallest_index(nums: Vec<i32>) -> i32 {
+        nums.into_iter()
+            .enumerate()
+            .find(|&(i, n)| Self::digit_sum(n) == i)
+            .map(|(i, _)| i as i32)
+            .unwrap_or(-1)
+    }
 
-        for ch in s.chars() {
-            let code = ch as usize;
-            let idx = code - A;
-
-            frequencies[idx] += 1;
-
-            if frequencies[idx] == 1 {
-                distincts += 1;
-            }
+    fn digit_sum(mut n: i32) -> usize {
+        let mut sum = 0;
+        while n > 0 {
+            sum += n % 10;
+            n /= 10;
         }
 
-        let k = k as usize;
-        if k >= distincts {
-            return 0;
-        }
-
-        frequencies.sort();
-        frequencies
-            .iter()
-            .copied()
-            .filter(|&n| n > 0)
-            .take(distincts - k)
-            .sum()
+        sum as usize
     }
 }
 
 struct Input {
-    s: String,
-    k: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "abc".to_string(),
-            k: 2,
+            nums: [1, 3, 2].to_vec(),
         },
         Input {
-            s: "aabb".to_string(),
-            k: 2,
+            nums: [1, 10, 11].to_vec(),
         },
         Input {
-            s: "yyyzz".to_string(),
-            k: 1,
+            nums: [1, 2, 3].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::min_deletion(input.s, input.k);
+        let result = Solution::smallest_index(input.nums);
         println!("{:?}", result);
     }
 }
