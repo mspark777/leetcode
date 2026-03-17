@@ -1,18 +1,28 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_cutting_cost(n: i32, m: i32, k: i32) -> i64 {
-        let n = n as i64;
-        let m = m as i64;
-        let k = k as i64;
-        let mut result = 0i64;
+    pub fn generate_tag(caption: String) -> String {
+        const LOWER: i32 = 0;
+        const UPPER: i32 = 1;
+        const MAX_LEN: usize = 100;
 
-        if n > k {
-            result += (n - k) * k;
-        }
+        let mut result = String::with_capacity(caption.len().min(MAX_LEN));
+        result.push('#');
 
-        if m > k {
-            result += (m - k) * k;
+        let mut current = LOWER;
+        for ch in caption.trim().chars() {
+            if ch == ' ' {
+                current = UPPER;
+            } else if current == LOWER {
+                result.push(ch.to_ascii_lowercase());
+            } else {
+                current = LOWER;
+                result.push(ch.to_ascii_uppercase());
+            }
+
+            if result.len() >= MAX_LEN {
+                break;
+            }
         }
 
         result
@@ -20,16 +30,20 @@ impl Solution {
 }
 
 struct Input {
-    n: i32,
-    m: i32,
-    k: i32,
+    caption: String,
 }
 
 fn main() {
-    let inputs = [Input { n: 6, m: 5, k: 5 }, Input { n: 4, m: 4, k: 6 }];
+    let inputs = [Input {
+        caption: "Leetcode daily streak achieved".to_string(),
+    }, Input {
+        caption: "can I Go There".to_string(),
+    }, Input {
+        caption: "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh".to_string()
+    }];
 
     for input in inputs {
-        let result = Solution::min_cutting_cost(input.n, input.m, input.k);
+        let result = Solution::generate_tag(input.caption);
         println!("{:?}", result);
     }
 }
