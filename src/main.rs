@@ -1,33 +1,14 @@
 struct Solution;
 
 impl Solution {
-    pub fn get_least_frequent_digit(n: i32) -> i32 {
-        let mut num = n;
-        let mut counts = [-1; 10];
+    pub fn recover_order(order: Vec<i32>, friends: Vec<i32>) -> Vec<i32> {
+        use std::collections::HashSet;
 
-        while num > 0 {
-            let digit = num % 10;
-            let idx = digit as usize;
-            counts[idx] += 1;
-            num /= 10;
-        }
-
-        let mut result = 0;
-        let mut min_frequency = i32::MAX;
-        for (i, c) in counts.into_iter().enumerate() {
-            if c == -1 {
-                continue;
-            }
-
-            let i = i as i32;
-            let c = c + 1;
-            if c == 1 {
-                return i;
-            }
-
-            if c < min_frequency {
-                min_frequency = c;
-                result = i;
+        let friend_set = HashSet::<i32>::from_iter(friends);
+        let mut result = Vec::<i32>::with_capacity(friend_set.len());
+        for id in order {
+            if friend_set.contains(&id) {
+                result.push(id);
             }
         }
 
@@ -36,14 +17,24 @@ impl Solution {
 }
 
 struct Input {
-    n: i32,
+    order: Vec<i32>,
+    friends: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 1553322 }, Input { n: 723344511 }];
+    let inputs = [
+        Input {
+            order: [3, 1, 2, 5, 4].to_vec(),
+            friends: [1, 3, 4].to_vec(),
+        },
+        Input {
+            order: [1, 4, 5, 3, 2].to_vec(),
+            friends: [2, 5].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::get_least_frequent_digit(input.n);
+        let result = Solution::recover_order(input.order, input.friends);
         println!("{:?}", result);
     }
 }
