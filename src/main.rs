@@ -1,53 +1,33 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_k_distinct(nums: Vec<i32>, k: i32) -> Vec<i32> {
-        use std::collections::HashSet;
-
-        let k = k as usize;
-        let mut nums = nums;
-
-        nums.sort_by_key(|n| -n);
-        let mut checked = HashSet::<i32>::from_iter(nums.iter().copied());
-        let mut result = Vec::<i32>::with_capacity(checked.len());
-        for num in nums {
-            if checked.contains(&num) {
-                result.push(num);
-                checked.remove(&num);
-
-                if result.len() >= k {
-                    break;
-                }
-            }
-        }
-
-        result
+    pub fn even_number_bitwise_o_rs(nums: Vec<i32>) -> i32 {
+        nums.into_iter().fold(0, |result, num| match num & 1 {
+            0 => result | num,
+            _ => result,
+        })
     }
 }
 
 struct Input {
     nums: Vec<i32>,
-    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [84, 93, 100, 77, 90].to_vec(),
-            k: 3,
+            nums: [1, 2, 3, 4, 5, 6].to_vec(),
         },
         Input {
-            nums: [84, 93, 100, 77, 93].to_vec(),
-            k: 3,
+            nums: [7, 9, 11].to_vec(),
         },
         Input {
-            nums: [1, 1, 1, 2, 2, 2].to_vec(),
-            k: 6,
+            nums: [1, 8, 16].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::max_k_distinct(input.nums, input.k);
+        let result = Solution::even_number_bitwise_o_rs(input.nums);
         println!("{:?}", result);
     }
 }
