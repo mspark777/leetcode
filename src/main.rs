@@ -1,47 +1,34 @@
 struct Solution;
 
 impl Solution {
-    pub fn majority_frequency_group(s: String) -> String {
-        let mut freqs = [0; 26];
-        for c in s.bytes() {
-            freqs[(c - b'a') as usize] += 1;
-        }
-        let mut fprim = vec![0; 101];
-        for f in freqs.iter() {
-            fprim[*f as usize] += 1;
-        }
-        let max_prim = fprim[1..].iter().max().unwrap();
-        let freq_grp = fprim.iter().rposition(|x| x == max_prim).unwrap() as i32;
-        let mut res = String::new();
-        for (idx, f) in freqs.iter().enumerate() {
-            if *f == freq_grp {
-                res.push((idx as u8 + b'a') as char)
+    pub fn decimal_representation(n: i32) -> Vec<i32> {
+        let mut result = Vec::<i32>::new();
+        let mut n = n;
+        let mut power = 1;
+        while n > 0 {
+            let digit = n % 10;
+            n /= 10;
+
+            if digit != 0 {
+                result.push(digit * power);
             }
+            power *= 10;
         }
 
-        res
+        result.reverse();
+        result
     }
 }
 
 struct Input {
-    s: String,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            s: "aaabbbccdddde".to_string(),
-        },
-        Input {
-            s: "abcd".to_string(),
-        },
-        Input {
-            s: "pfpfgi".to_string(),
-        },
-    ];
+    let inputs = [Input { n: 537 }, Input { n: 102 }, Input { n: 6 }];
 
     for input in inputs {
-        let result = Solution::majority_frequency_group(input.s);
+        let result = Solution::decimal_representation(input.n);
         println!("{:?}", result);
     }
 }
