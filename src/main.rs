@@ -1,32 +1,50 @@
 struct Solution;
 
 impl Solution {
-    pub fn alternating_sum(nums: Vec<i32>) -> i32 {
-        nums.into_iter()
-            .enumerate()
-            .fold(0, |acc, (i, num)| match i & 1 {
-                1 => acc - num,
-                _ => acc + num,
-            })
+    pub fn score_balance(s: String) -> bool {
+        const A: i32 = 'a' as i32;
+        let mut total = 0;
+        for ch in s.chars() {
+            let code = ch as i32;
+            let score = code + 1 - A;
+            total += score;
+        }
+
+        if (total & 1) == 1 {
+            return false;
+        }
+
+        let target = total / 2;
+        for ch in s.chars() {
+            let code = ch as i32;
+            let score = code + 1 - A;
+            total -= score;
+
+            if target == total {
+                return true;
+            }
+        }
+
+        false
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 3, 5, 7].to_vec(),
+            s: "adcb".to_string(),
         },
         Input {
-            nums: [100].to_vec(),
+            s: "bace".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::alternating_sum(input.nums);
+        let result = Solution::score_balance(input.s);
         println!("{:?}", result);
     }
 }
