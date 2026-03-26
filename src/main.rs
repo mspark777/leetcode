@@ -1,34 +1,32 @@
 struct Solution;
 
 impl Solution {
-    pub fn decimal_representation(n: i32) -> Vec<i32> {
-        let mut result = Vec::<i32>::new();
-        let mut n = n;
-        let mut power = 1;
-        while n > 0 {
-            let digit = n % 10;
-            n /= 10;
-
-            if digit != 0 {
-                result.push(digit * power);
-            }
-            power *= 10;
-        }
-
-        result.reverse();
-        result
+    pub fn alternating_sum(nums: Vec<i32>) -> i32 {
+        nums.into_iter()
+            .enumerate()
+            .fold(0, |acc, (i, num)| match i & 1 {
+                1 => acc - num,
+                _ => acc + num,
+            })
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 537 }, Input { n: 102 }, Input { n: 6 }];
+    let inputs = [
+        Input {
+            nums: [1, 3, 5, 7].to_vec(),
+        },
+        Input {
+            nums: [100].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::decimal_representation(input.n);
+        let result = Solution::alternating_sum(input.nums);
         println!("{:?}", result);
     }
 }
