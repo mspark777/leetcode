@@ -1,50 +1,47 @@
 struct Solution;
 
 impl Solution {
-    pub fn score_balance(s: String) -> bool {
-        const A: i32 = 'a' as i32;
-        let mut total = 0;
-        for ch in s.chars() {
-            let code = ch as i32;
-            let score = code + 1 - A;
-            total += score;
+    pub fn sum_divisible_by_k(nums: Vec<i32>, k: i32) -> i32 {
+        let mut counts = [0; 101];
+        for num in nums {
+            let idx = num as usize;
+            counts[idx] += 1;
         }
 
-        if (total & 1) == 1 {
-            return false;
-        }
-
-        let target = total / 2;
-        for ch in s.chars() {
-            let code = ch as i32;
-            let score = code + 1 - A;
-            total -= score;
-
-            if target == total {
-                return true;
+        let mut result = 0;
+        for (i, count) in counts.into_iter().enumerate().skip(1) {
+            if (count > 0) && ((count % k) == 0) {
+                result += (i as i32) * count;
             }
         }
 
-        false
+        result
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "adcb".to_string(),
+            nums: [1, 2, 2, 3, 3, 3, 3, 4].to_vec(),
+            k: 2,
         },
         Input {
-            s: "bace".to_string(),
+            nums: [1, 2, 3, 4, 5].to_vec(),
+            k: 2,
+        },
+        Input {
+            nums: [4, 4, 4, 1, 2, 3].to_vec(),
+            k: 3,
         },
     ];
 
     for input in inputs {
-        let result = Solution::score_balance(input.s);
+        let result = Solution::sum_divisible_by_k(input.nums, input.k);
         println!("{:?}", result);
     }
 }
