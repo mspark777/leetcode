@@ -1,39 +1,50 @@
 struct Solution;
 
 impl Solution {
-    pub fn missing_multiple(nums: Vec<i32>, k: i32) -> i32 {
+    pub fn find_missing_elements(nums: Vec<i32>) -> Vec<i32> {
         use std::collections::HashSet;
-        let num_set = HashSet::<i32>::from_iter(nums);
 
-        for i in (k..201).step_by(k as usize) {
+        let mut nums = nums;
+        let n = nums.len();
+        nums.sort();
+
+        let range = nums[0]..nums[n - 1];
+        let num_set = HashSet::<i32>::from_iter(nums);
+        let missing_count = range.len() + 1 - num_set.len();
+        if missing_count == 0 {
+            return vec![];
+        }
+
+        let mut result = Vec::<i32>::with_capacity(missing_count);
+        for i in range {
             if !num_set.contains(&i) {
-                return i;
+                result.push(i);
             }
         }
 
-        0
+        result
     }
 }
 
 struct Input {
     nums: Vec<i32>,
-    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [8, 2, 3, 4, 6].to_vec(),
-            k: 2,
+            nums: [1, 4, 2, 5].to_vec(),
         },
         Input {
-            nums: [1, 4, 7, 10, 15].to_vec(),
-            k: 5,
+            nums: [7, 8, 6, 9].to_vec(),
+        },
+        Input {
+            nums: [5, 1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::missing_multiple(input.nums, input.k);
+        let result = Solution::find_missing_elements(input.nums);
         println!("{:?}", result);
     }
 }
