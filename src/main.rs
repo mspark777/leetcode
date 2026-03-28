@@ -1,34 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn remove_zeros(n: i64) -> i64 {
-        let mut n = n;
-        let mut power = 1i64;
-        let mut result = 0i64;
+    pub fn min_moves(nums: Vec<i32>) -> i32 {
+        let mut max_num = 0;
+        let mut sum = 0;
+        let n = nums.len() as i32;
 
-        while n > 0 {
-            let digit = n % 10;
-            n /= 10;
-
-            if digit != 0 {
-                result += digit * power;
-                power *= 10;
-            }
+        for num in nums {
+            sum += num;
+            max_num = max_num.max(num);
         }
 
-        result
+        (max_num * n) - sum
     }
 }
 
 struct Input {
-    n: i64,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 1020030 }, Input { n: 1 }];
+    let inputs = [
+        Input {
+            nums: [2, 1, 3].to_vec(),
+        },
+        Input {
+            nums: [4, 4, 5].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::remove_zeros(input.n);
+        let result = Solution::min_moves(input.nums);
         println!("{:?}", result);
     }
 }
