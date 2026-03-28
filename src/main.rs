@@ -1,24 +1,18 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_missing_elements(nums: Vec<i32>) -> Vec<i32> {
-        use std::collections::HashSet;
+    pub fn remove_zeros(n: i64) -> i64 {
+        let mut n = n;
+        let mut power = 1i64;
+        let mut result = 0i64;
 
-        let mut nums = nums;
-        let n = nums.len();
-        nums.sort();
+        while n > 0 {
+            let digit = n % 10;
+            n /= 10;
 
-        let range = nums[0]..nums[n - 1];
-        let num_set = HashSet::<i32>::from_iter(nums);
-        let missing_count = range.len() + 1 - num_set.len();
-        if missing_count == 0 {
-            return vec![];
-        }
-
-        let mut result = Vec::<i32>::with_capacity(missing_count);
-        for i in range {
-            if !num_set.contains(&i) {
-                result.push(i);
+            if digit != 0 {
+                result += digit * power;
+                power *= 10;
             }
         }
 
@@ -27,24 +21,14 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i64,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [1, 4, 2, 5].to_vec(),
-        },
-        Input {
-            nums: [7, 8, 6, 9].to_vec(),
-        },
-        Input {
-            nums: [5, 1].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 1020030 }, Input { n: 1 }];
 
     for input in inputs {
-        let result = Solution::find_missing_elements(input.nums);
+        let result = Solution::remove_zeros(input.n);
         println!("{:?}", result);
     }
 }
