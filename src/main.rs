@@ -1,44 +1,22 @@
 struct Solution;
 
 impl Solution {
-    pub fn maximize_expression_of_three(nums: Vec<i32>) -> i32 {
-        let mut a = i32::MIN;
-        let mut b = i32::MIN;
-        let mut c = i32::MAX;
-
-        for num in nums {
-            if a < num {
-                b = a;
-                a = num;
-            } else if b < num {
-                b = num;
-            }
-
-            if c > num {
-                c = num;
-            }
-        }
-
-        a + b - c
+    pub fn minimum_flips(n: i32) -> i32 {
+        let n = n as u32;
+        let rev = n.reverse_bits() >> n.leading_zeros();
+        (n ^ rev).count_ones() as i32
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [1, 4, 2, 5].to_vec(),
-        },
-        Input {
-            nums: [-2, 0, 5, -2, 4].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 7 }, Input { n: 10 }];
 
     for input in inputs {
-        let result = Solution::maximize_expression_of_three(input.nums);
+        let result = Solution::minimum_flips(input.n);
         println!("{:?}", result);
     }
 }
