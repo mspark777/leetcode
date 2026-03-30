@@ -1,36 +1,40 @@
 struct Solution;
 
 impl Solution {
-    pub fn sum_and_multiply(n: i32) -> i64 {
-        let mut power = 1i64;
-        let mut n = n as i64;
-        let mut x = 0i64;
-        let mut sum = 0i64;
+    pub fn sort_by_reflection(nums: Vec<i32>) -> Vec<i32> {
+        let mut nums = nums;
 
-        while n > 0 {
-            let digit = n % 10;
-            n /= 10;
+        nums.sort_by(|&a, &b| Self::compare(a as u32, b as u32));
+        nums
+    }
 
-            if digit != 0 {
-                sum += digit;
-                x += digit * power;
-                power *= 10;
-            }
+    fn compare(left: u32, right: u32) -> std::cmp::Ordering {
+        let l = left.reverse_bits() >> left.leading_zeros();
+        let r = right.reverse_bits() >> right.leading_zeros();
+
+        match l.cmp(&r) {
+            std::cmp::Ordering::Equal => left.cmp(&right),
+            ord => ord,
         }
-
-        x * sum
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 10203004 }, Input { n: 1000 }];
+    let inputs = [
+        Input {
+            nums: [4, 5, 4].to_vec(),
+        },
+        Input {
+            nums: [3, 6, 5, 8].to_vec(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::sum_and_multiply(input.n);
+        let result = Solution::sort_by_reflection(input.nums);
         println!("{:?}", result);
     }
 }
