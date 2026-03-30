@@ -1,33 +1,46 @@
 struct Solution;
 
 impl Solution {
-    pub fn mirror_distance(n: i32) -> i32 {
-        (n - Self::reverse(n)).abs()
-    }
+    pub fn reverse_prefix(s: String, k: i32) -> String {
+        let k = k as usize;
+        let h = k / 2;
+        let mut chars = s.chars().collect::<Vec<char>>();
 
-    fn reverse(mut n: i32) -> i32 {
-        let mut r = 0;
+        for i in 0..h {
+            let left = chars[i];
+            let right = chars[k - i - 1];
 
-        while n > 0 {
-            let d = n % 10;
-            n /= 10;
-
-            r = r * 10 + d;
+            chars[i] = right;
+            chars[k - i - 1] = left;
         }
 
-        r
+        chars.iter().collect()
     }
 }
 
 struct Input {
-    n: i32,
+    s: String,
+    k: i32,
 }
 
 fn main() {
-    let inputs = [Input { n: 25 }, Input { n: 10 }, Input { n: 7 }];
+    let inputs = [
+        Input {
+            s: "abcd".to_string(),
+            k: 2,
+        },
+        Input {
+            s: "xyz".to_string(),
+            k: 3,
+        },
+        Input {
+            s: "key".to_string(),
+            k: 1,
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::mirror_distance(input.n);
+        let result = Solution::reverse_prefix(input.s, input.k);
         println!("{:?}", result);
     }
 }
