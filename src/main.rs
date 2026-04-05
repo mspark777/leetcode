@@ -1,23 +1,37 @@
 struct Solution;
 
+enum Kind {
+    Vowel,
+    Consonant,
+    Other,
+}
+
 impl Solution {
-    pub fn residue_prefixes(s: String) -> i32 {
-        use std::collections::HashSet;
-
-        let mut counts = HashSet::<char>::new();
-        let mut result = 0;
-        for (i, ch) in s.chars().enumerate() {
-            counts.insert(ch);
-            if counts.len() == ((i + 1) % 3) {
-                result += 1;
-            }
-
-            if counts.len() > 2 {
-                break;
-            }
+    pub fn vowel_consonant_score(s: String) -> i32 {
+        let mut consonants = 0;
+        let mut vowels = 0;
+        for ch in s.chars() {
+            match Self::check(ch) {
+                Kind::Vowel => vowels += 1,
+                Kind::Consonant => consonants += 1,
+                _ => (),
+            };
         }
 
-        result
+        let score = match consonants > 0 {
+            true => (vowels as f64) / (consonants as f64),
+            _ => 0.0f64,
+        };
+
+        score.floor() as i32
+    }
+
+    fn check(ch: char) -> Kind {
+        match ch {
+            '0'..='9' | ' ' => Kind::Other,
+            'a' | 'e' | 'i' | 'o' | 'u' => Kind::Vowel,
+            _ => Kind::Consonant,
+        }
     }
 }
 
@@ -28,18 +42,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            s: "abc".to_string(),
+            s: "cooear".to_string(),
         },
         Input {
-            s: "dd".to_string(),
+            s: "axeyizou".to_string(),
         },
         Input {
-            s: "bob".to_string(),
+            s: "au 123".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::residue_prefixes(input.s);
+        let result = Solution::vowel_consonant_score(input.s);
         println!("{:?}", result);
     }
 }
