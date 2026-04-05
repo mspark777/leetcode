@@ -1,19 +1,23 @@
 struct Solution;
 
 impl Solution {
-    pub fn largest_even(s: String) -> String {
-        let len = s.len();
-        let mut skip = 0usize;
+    pub fn residue_prefixes(s: String) -> i32 {
+        use std::collections::HashSet;
 
-        for ch in s.chars().rev() {
-            if ch == '2' {
+        let mut counts = HashSet::<char>::new();
+        let mut result = 0;
+        for (i, ch) in s.chars().enumerate() {
+            counts.insert(ch);
+            if counts.len() == ((i + 1) % 3) {
+                result += 1;
+            }
+
+            if counts.len() > 2 {
                 break;
-            } else {
-                skip += 1;
             }
         }
 
-        s.chars().take(len - skip).collect()
+        result
     }
 }
 
@@ -24,19 +28,18 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            s: "1112".to_string(),
+            s: "abc".to_string(),
         },
         Input {
-            s: "221".to_string(),
+            s: "dd".to_string(),
         },
-        Input { s: "1".to_string() },
         Input {
-            s: "11".to_string(),
+            s: "bob".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::largest_even(input.s);
+        let result = Solution::residue_prefixes(input.s);
         println!("{:?}", result);
     }
 }
