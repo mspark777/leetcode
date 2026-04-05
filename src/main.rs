@@ -1,46 +1,42 @@
 struct Solution;
 
 impl Solution {
-    pub fn reverse_prefix(s: String, k: i32) -> String {
-        let k = k as usize;
-        let h = k / 2;
-        let mut chars = s.chars().collect::<Vec<char>>();
+    pub fn largest_even(s: String) -> String {
+        let len = s.len();
+        let mut skip = 0usize;
 
-        for i in 0..h {
-            let left = chars[i];
-            let right = chars[k - i - 1];
-
-            chars[i] = right;
-            chars[k - i - 1] = left;
+        for ch in s.chars().rev() {
+            if ch == '2' {
+                break;
+            } else {
+                skip += 1;
+            }
         }
 
-        chars.iter().collect()
+        s.chars().take(len - skip).collect()
     }
 }
 
 struct Input {
     s: String,
-    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "abcd".to_string(),
-            k: 2,
+            s: "1112".to_string(),
         },
         Input {
-            s: "xyz".to_string(),
-            k: 3,
+            s: "221".to_string(),
         },
+        Input { s: "1".to_string() },
         Input {
-            s: "key".to_string(),
-            k: 1,
+            s: "11".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::reverse_prefix(input.s, input.k);
+        let result = Solution::largest_even(input.s);
         println!("{:?}", result);
     }
 }
