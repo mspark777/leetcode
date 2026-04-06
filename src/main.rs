@@ -1,70 +1,21 @@
 struct Solution;
 
 impl Solution {
-    pub fn reverse_by_type(s: String) -> String {
-        let mut s = s.chars().collect::<Vec<char>>();
-        let mut left = 0usize;
-        let mut right = s.len() - 1;
-
-        while left < right {
-            let l = s[left].is_ascii_lowercase();
-            let r = s[right].is_ascii_lowercase();
-
-            if l && r {
-                let tl = s[left];
-                let rl = s[right];
-                s[left] = rl;
-                s[right] = tl;
-                left += 1;
-                right -= 1;
-            } else if l {
-                right -= 1;
-            } else {
-                left += 1;
-            }
-        }
-
-        left = 0;
-        right = s.len() - 1;
-        while left < right {
-            let l = !s[left].is_ascii_lowercase();
-            let r = !s[right].is_ascii_lowercase();
-
-            if l && r {
-                let tl = s[left];
-                let rl = s[right];
-                s[left] = rl;
-                s[right] = tl;
-                left += 1;
-                right -= 1;
-            } else if l {
-                right -= 1;
-            } else {
-                left += 1;
-            }
-        }
-
-        s.iter().collect()
+    pub fn count_monobit(n: i32) -> i32 {
+        let n = (n as f64) + 1.0;
+        (n.log2() as i32) + 1
     }
 }
 
 struct Input {
-    s: String,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            s: ")ebc#da@f(".to_string(),
-        },
-        Input { s: "z".to_string() },
-        Input {
-            s: "!@#$%^&*()".to_string(),
-        },
-    ];
+    let inputs = [Input { n: 1 }, Input { n: 4 }];
 
     for input in inputs {
-        let result = Solution::reverse_by_type(input.s);
+        let result = Solution::count_monobit(input.n);
         println!("{:?}", result);
     }
 }
