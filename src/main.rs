@@ -1,37 +1,50 @@
 struct Solution;
 
-enum Kind {
-    Vowel,
-    Consonant,
-    Other,
-}
-
 impl Solution {
-    pub fn vowel_consonant_score(s: String) -> i32 {
-        let mut consonants = 0;
-        let mut vowels = 0;
-        for ch in s.chars() {
-            match Self::check(ch) {
-                Kind::Vowel => vowels += 1,
-                Kind::Consonant => consonants += 1,
-                _ => (),
-            };
+    pub fn reverse_by_type(s: String) -> String {
+        let mut s = s.chars().collect::<Vec<char>>();
+        let mut left = 0usize;
+        let mut right = s.len() - 1;
+
+        while left < right {
+            let l = s[left].is_ascii_lowercase();
+            let r = s[right].is_ascii_lowercase();
+
+            if l && r {
+                let tl = s[left];
+                let rl = s[right];
+                s[left] = rl;
+                s[right] = tl;
+                left += 1;
+                right -= 1;
+            } else if l {
+                right -= 1;
+            } else {
+                left += 1;
+            }
         }
 
-        let score = match consonants > 0 {
-            true => (vowels as f64) / (consonants as f64),
-            _ => 0.0f64,
-        };
+        left = 0;
+        right = s.len() - 1;
+        while left < right {
+            let l = !s[left].is_ascii_lowercase();
+            let r = !s[right].is_ascii_lowercase();
 
-        score.floor() as i32
-    }
-
-    fn check(ch: char) -> Kind {
-        match ch {
-            '0'..='9' | ' ' => Kind::Other,
-            'a' | 'e' | 'i' | 'o' | 'u' => Kind::Vowel,
-            _ => Kind::Consonant,
+            if l && r {
+                let tl = s[left];
+                let rl = s[right];
+                s[left] = rl;
+                s[right] = tl;
+                left += 1;
+                right -= 1;
+            } else if l {
+                right -= 1;
+            } else {
+                left += 1;
+            }
         }
+
+        s.iter().collect()
     }
 }
 
@@ -42,18 +55,16 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            s: "cooear".to_string(),
+            s: ")ebc#da@f(".to_string(),
         },
+        Input { s: "z".to_string() },
         Input {
-            s: "axeyizou".to_string(),
-        },
-        Input {
-            s: "au 123".to_string(),
+            s: "!@#$%^&*()".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::vowel_consonant_score(input.s);
+        let result = Solution::reverse_by_type(input.s);
         println!("{:?}", result);
     }
 }
