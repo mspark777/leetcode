@@ -1,65 +1,39 @@
 struct Solution;
 
 impl Solution {
-    pub fn map_word_weights(words: Vec<String>, weights: Vec<i32>) -> String {
-        let mut mapped_list = Vec::<char>::with_capacity(words.len());
+    pub fn toggle_light_bulbs(bulbs: Vec<i32>) -> Vec<i32> {
+        let mut lights = vec![false; 100];
 
-        for word in words {
-            let weight = word
-                .chars()
-                .fold(0, |acc, ch| acc + Self::weight(&weights, ch))
-                % 26;
-
-            let ch = Self::mapped(weight);
-            mapped_list.push(ch);
+        for bulb in bulbs {
+            let idx = (bulb - 1) as usize;
+            lights[idx] = !lights[idx];
         }
 
-        mapped_list.into_iter().collect()
-    }
-
-    fn weight(weights: &[i32], ch: char) -> i32 {
-        let idx = ((ch as u8) - b'a') as usize;
-        weights[idx]
-    }
-
-    fn mapped(weight: i32) -> char {
-        let idx = (25 - weight) as u8;
-        (b'a' + idx) as char
+        lights
+            .into_iter()
+            .enumerate()
+            .filter(|&(_, l)| l)
+            .map(|(i, _)| (i + 1) as i32)
+            .collect()
     }
 }
 
 struct Input {
-    words: Vec<String>,
-    weights: Vec<i32>,
+    bulbs: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            words: ["abcd", "def", "xyz"].map(|s| s.to_string()).to_vec(),
-            weights: [
-                5, 3, 12, 14, 1, 2, 3, 2, 10, 6, 6, 9, 7, 8, 7, 10, 8, 9, 6, 9, 9, 8, 3, 7, 7, 2,
-            ]
-            .to_vec(),
+            bulbs: [10, 30, 20, 10].to_vec(),
         },
         Input {
-            words: ["abcd", "def", "xyz"].map(|s| s.to_string()).to_vec(),
-            weights: [
-                5, 3, 12, 14, 1, 2, 3, 2, 10, 6, 6, 9, 7, 8, 7, 10, 8, 9, 6, 9, 9, 8, 3, 7, 7, 2,
-            ]
-            .to_vec(),
-        },
-        Input {
-            words: ["abcd", "def", "xyz"].map(|s| s.to_string()).to_vec(),
-            weights: [
-                5, 3, 12, 14, 1, 2, 3, 2, 10, 6, 6, 9, 7, 8, 7, 10, 8, 9, 6, 9, 9, 8, 3, 7, 7, 2,
-            ]
-            .to_vec(),
+            bulbs: [100, 100].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::map_word_weights(input.words, input.weights);
+        let result = Solution::toggle_light_bulbs(input.bulbs);
         println!("{:?}", result);
     }
 }
