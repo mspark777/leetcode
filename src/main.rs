@@ -1,37 +1,44 @@
 struct Solution;
 
 impl Solution {
-    pub fn minimum_index(capacity: Vec<i32>, item_size: i32) -> i32 {
-        let mut result = -1;
-        let mut min_capacity = 101;
-        for (i, c) in capacity.into_iter().enumerate() {
-            if item_size > c {
+    pub fn first_unique_even(nums: Vec<i32>) -> i32 {
+        let mut counts = [0; 100];
+
+        for num in nums.iter().copied() {
+            if (num & 1) == 1 {
                 continue;
             }
 
-            if c < min_capacity {
-                min_capacity = c;
-                result = i as i32;
+            let idx = (num as usize) - 1;
+            counts[idx] += 1;
+        }
+
+        for num in nums {
+            if (num & 1) == 1 {
+                continue;
+            }
+
+            let idx = (num as usize) - 1;
+            if counts[idx] == 1 {
+                return num;
             }
         }
 
-        result
+        -1
     }
 }
 
 struct Input {
-    capacity: Vec<i32>,
-    item_size: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        capacity: [1, 5, 3, 7].to_vec(),
-        item_size: 3,
+        nums: [3, 4, 2, 5, 4, 6].to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::minimum_index(input.capacity, input.item_size);
+        let result = Solution::first_unique_even(input.nums);
         println!("{:?}", result);
     }
 }
