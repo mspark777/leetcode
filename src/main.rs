@@ -1,43 +1,37 @@
 struct Solution;
 
 impl Solution {
-    pub fn trim_trailing_vowels(s: String) -> String {
-        let chars = s.chars().collect::<Vec<char>>();
-        let mut right = -1;
-        for (i, ch) in chars.into_iter().enumerate().rev() {
-            if !Self::is_vowel(ch) {
-                right = i as i32;
-                break;
+    pub fn minimum_index(capacity: Vec<i32>, item_size: i32) -> i32 {
+        let mut result = -1;
+        let mut min_capacity = 101;
+        for (i, c) in capacity.into_iter().enumerate() {
+            if item_size > c {
+                continue;
+            }
+
+            if c < min_capacity {
+                min_capacity = c;
+                result = i as i32;
             }
         }
 
-        match right {
-            -1 => String::new(),
-            _ => s.chars().take((right + 1) as usize).collect(),
-        }
-    }
-
-    fn is_vowel(ch: char) -> bool {
-        matches!(ch, 'a' | 'e' | 'i' | 'o' | 'u')
+        result
     }
 }
 
 struct Input {
-    s: String,
+    capacity: Vec<i32>,
+    item_size: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            s: "idea".to_string(),
-        },
-        Input {
-            s: "day".to_string(),
-        },
-    ];
+    let inputs = [Input {
+        capacity: [1, 5, 3, 7].to_vec(),
+        item_size: 3,
+    }];
 
     for input in inputs {
-        let result = Solution::trim_trailing_vowels(input.s);
+        let result = Solution::minimum_index(input.capacity, input.item_size);
         println!("{:?}", result);
     }
 }
