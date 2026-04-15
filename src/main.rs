@@ -1,51 +1,53 @@
 struct Solution;
 
 impl Solution {
-    pub fn rob(nums: Vec<i32>) -> i32 {
-        let n = nums.len();
-        if n == 1 {
-            return nums[0];
+    pub fn maximal_square(matrix: Vec<Vec<char>>) -> i32 {
+        if matrix.is_empty() {
+            return 0;
         }
 
-        let exclude_first = Self::start(&nums, 1, n - 1);
-        let exclude_last = Self::start(&nums, 0, n - 2);
+        let n = matrix[0].len();
+        let mut dp = vec![0; n];
+        let mut size = 0;
+        let mut pre_cell = 0;
+        for (r, row) in matrix.iter().enumerate() {
+            for (c, cell) in row.iter().copied().enumerate() {
+                let cell = ((cell as u8) - b'0') as i32;
+                let temp = dp[c];
 
-        exclude_first.max(exclude_last)
-    }
+                if (r == 0) || (c == 0) || (cell == 0) {
+                    dp[c] = cell
+                } else {
+                    dp[c] = pre_cell.min(dp[c].min(dp[c - 1])) + 1;
+                }
 
-    fn start(nums: &[i32], left: usize, right: usize) -> i32 {
-        let mut prev1 = 0;
-        let mut prev2 = 0;
-
-        for num in nums.iter().skip(left).take(right + 1).copied() {
-            let curr = prev1.max(prev2 + num);
-            prev2 = prev1;
-            prev1 = curr;
+                size = dp[c].max(size);
+                pre_cell = temp;
+            }
         }
 
-        prev1
+        size * size
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    matrix: Vec<Vec<char>>,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [2, 3, 2].to_vec(),
-        },
-        Input {
-            nums: [1, 2, 3, 1].to_vec(),
-        },
-        Input {
-            nums: [1, 2, 3].to_vec(),
-        },
-    ];
+    let inputs = [Input {
+        matrix: [
+            ['1', '0', '1', '0', '0'],
+            ['1', '0', '1', '1', '1'],
+            ['1', '1', '1', '1', '1'],
+            ['1', '0', '0', '1', '0'],
+        ]
+        .map(|v| v.to_vec())
+        .to_vec(),
+    }];
 
     for input in inputs {
-        let result = Solution::rob(input.nums);
+        let result = Solution::maximal_square(input.matrix);
         println!("{:?}", result);
     }
 }
