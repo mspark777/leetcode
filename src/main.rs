@@ -1,53 +1,57 @@
 struct Solution;
 
 impl Solution {
-    pub fn maximal_square(matrix: Vec<Vec<char>>) -> i32 {
-        if matrix.is_empty() {
-            return 0;
-        }
+    pub fn calculate(s: String) -> i32 {
+        let n = s.len();
+        let mut current = 0;
+        let mut last = 0;
+        let mut result = 0;
+        let mut sign = '+';
+        for (i, ch) in s.chars().enumerate() {
+            if ch.is_ascii_digit() {
+                let code = ch as u8;
+                current = current * 10 + ((code - b'0') as i32);
+            }
 
-        let n = matrix[0].len();
-        let mut dp = vec![0; n];
-        let mut size = 0;
-        let mut pre_cell = 0;
-        for (r, row) in matrix.iter().enumerate() {
-            for (c, cell) in row.iter().copied().enumerate() {
-                let cell = ((cell as u8) - b'0') as i32;
-                let temp = dp[c];
-
-                if (r == 0) || (c == 0) || (cell == 0) {
-                    dp[c] = cell
-                } else {
-                    dp[c] = pre_cell.min(dp[c].min(dp[c - 1])) + 1;
+            if (!ch.is_ascii_digit() && !ch.is_ascii_whitespace()) || ((i + 1) == n) {
+                if (sign == '+') || (sign == '-') {
+                    result += last;
+                    last = match sign {
+                        '+' => current,
+                        _ => -current,
+                    };
+                } else if sign == '*' {
+                    last *= current;
+                } else if sign == '/' {
+                    last /= current;
                 }
 
-                size = dp[c].max(size);
-                pre_cell = temp;
+                sign = ch;
+                current = 0;
             }
         }
 
-        size * size
+        result += last;
+        result
     }
 }
 
 struct Input {
-    matrix: Vec<Vec<char>>,
+    s: String,
 }
 
 fn main() {
-    let inputs = [Input {
-        matrix: [
-            ['1', '0', '1', '0', '0'],
-            ['1', '0', '1', '1', '1'],
-            ['1', '1', '1', '1', '1'],
-            ['1', '0', '0', '1', '0'],
-        ]
-        .map(|v| v.to_vec())
-        .to_vec(),
-    }];
+    let inputs = [
+        Input {
+            s: "3+2*2".to_string(),
+        },
+        Input {
+            s: " 3+5 / 2 ".to_string(),
+        },
+    ];
 
     for input in inputs {
-        let result = Solution::maximal_square(input.matrix);
+        let result = Solution::calculate(input.s);
         println!("{:?}", result);
     }
 }
