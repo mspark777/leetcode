@@ -1,38 +1,51 @@
 struct Solution;
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
 impl Solution {
-    pub fn calculate(s: String) -> i32 {
-        let n = s.len();
-        let mut current = 0;
-        let mut last = 0;
+    pub fn kth_smallest(root: Option<Rc<RefCell<TreeNode>>>, k: i32) -> i32 {
+        let mut count = k;
         let mut result = 0;
-        let mut sign = '+';
-        for (i, ch) in s.chars().enumerate() {
-            if ch.is_ascii_digit() {
-                let code = ch as u8;
-                current = current * 10 + ((code - b'0') as i32);
-            }
 
-            if (!ch.is_ascii_digit() && !ch.is_ascii_whitespace()) || ((i + 1) == n) {
-                if (sign == '+') || (sign == '-') {
-                    result += last;
-                    last = match sign {
-                        '+' => current,
-                        _ => -current,
-                    };
-                } else if sign == '*' {
-                    last *= current;
-                } else if sign == '/' {
-                    last /= current;
-                }
+        Self::inorder(root.as_ref(), &mut count, &mut result);
+        result
+    }
 
-                sign = ch;
-                current = 0;
-            }
+    fn inorder(node: Option<&Rc<RefCell<TreeNode>>>, count: &mut i32, result: &mut i32) {
+        let node = match node {
+            Some(n) => n,
+            _ => return,
+        };
+
+        if *count == 0 {
+            return;
         }
 
-        result += last;
-        result
+        Self::inorder(node.borrow().left.as_ref(), count, result);
+        *count -= 1;
+        if *count == 0 {
+            *result = node.borrow().val;
+        }
+
+        Self::inorder(node.borrow().right.as_ref(), count, result);
     }
 }
 
