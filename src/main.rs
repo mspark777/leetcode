@@ -1,59 +1,77 @@
 struct Solution;
 
 impl Solution {
-    pub fn get_hint(secret: String, guess: String) -> String {
-        let mut bulls = 0;
-        let mut cows = 0;
-        let mut counts = [0; 10];
-
-        for (sec, gue) in secret.chars().zip(guess.chars()) {
-            if sec == gue {
-                bulls += 1;
-                continue;
+    pub fn is_additive_number(num: String) -> bool {
+        let n = num.len();
+        for i in 1..=(n / 2) {
+            let mut j = 1;
+            while j.max(i) <= (n - i - j) {
+                if Self::is_valid(&num, i, j) {
+                    return true;
+                } else {
+                    j += 1;
+                }
             }
-
-            let s = Self::to_idx(sec);
-            if counts[s] < 0 {
-                cows += 1;
-            }
-
-            let g = Self::to_idx(gue);
-            if counts[g] > 0 {
-                cows += 1;
-            }
-
-            counts[s] += 1;
-            counts[g] -= 1;
         }
 
-        format!("{}A{}B", bulls, cows)
+        false
     }
 
-    fn to_idx(ch: char) -> usize {
-        let code = (ch as u8) - b'0';
-        code as usize
+    fn is_valid(num: &str, i: usize, j: usize) -> bool {
+        if (num.chars().nth(0).unwrap() == '0') && (i > 1) {
+            return false;
+        }
+
+        if (num.chars().nth(i).unwrap() == '0') && (j > 1) {
+            return false;
+        }
+
+        let mut x1 = num
+            .chars()
+            .take(i)
+            .collect::<String>()
+            .parse::<i64>()
+            .unwrap();
+        let mut x2 = num
+            .chars()
+            .skip(i)
+            .take(j)
+            .collect::<String>()
+            .parse::<i64>()
+            .unwrap();
+
+        let mut start = i + j;
+        while start != num.len() {
+            x2 += x1;
+            x1 = x2 - x1;
+            let sum = x2.to_string();
+            if !num[start..].starts_with(&sum) {
+                return false;
+            }
+
+            start += sum.len();
+        }
+
+        true
     }
 }
 
 struct Input {
-    secret: String,
-    guess: String,
+    num: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            secret: "1807".to_string(),
-            guess: "7810".to_string(),
+            num: "112358".to_string(),
         },
         Input {
-            secret: "1123".to_string(),
-            guess: "0111".to_string(),
+            num: "199100199".to_string(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::get_hint(input.secret, input.guess);
+        let result = Solution::is_additive_number(input.num);
         println!("{:?}", result);
     }
 }
