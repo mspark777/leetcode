@@ -1,63 +1,59 @@
 struct Solution;
 
 impl Solution {
-    pub fn game_of_life(board: &mut [Vec<i32>]) {
-        let m = board.len() as i32;
-        let n = board[0].len() as i32;
+    pub fn get_hint(secret: String, guess: String) -> String {
+        let mut bulls = 0;
+        let mut cows = 0;
+        let mut counts = [0; 10];
 
-        for i in 0..m {
-            for j in 0..n {
-                let lives = Self::live_neighbors(board, i, j, m, n);
-                let i = i as usize;
-                let j = j as usize;
-                if (board[i][j] == 1) && (2..=3).contains(&lives) {
-                    board[i][j] = 3;
-                }
-
-                if (board[i][j] == 0) && (lives == 3) {
-                    board[i][j] = 2;
-                }
+        for (sec, gue) in secret.chars().zip(guess.chars()) {
+            if sec == gue {
+                bulls += 1;
+                continue;
             }
+
+            let s = Self::to_idx(sec);
+            if counts[s] < 0 {
+                cows += 1;
+            }
+
+            let g = Self::to_idx(gue);
+            if counts[g] > 0 {
+                cows += 1;
+            }
+
+            counts[s] += 1;
+            counts[g] -= 1;
         }
 
-        for i in 0..m {
-            for j in 0..n {
-                board[i as usize][j as usize] >>= 1;
-            }
-        }
+        format!("{}A{}B", bulls, cows)
     }
 
-    fn live_neighbors(board: &[Vec<i32>], i: i32, j: i32, m: i32, n: i32) -> i32 {
-        let mut lives = 0;
-
-        for x in 0.max(i - 1)..=(i + 1).min(m - 1) {
-            for y in 0.max(j - 1)..=(j + 1).min(n - 1) {
-                lives += board[x as usize][y as usize] & 1;
-            }
-        }
-        lives -= board[i as usize][j as usize] & 1;
-        lives
+    fn to_idx(ch: char) -> usize {
+        let code = (ch as u8) - b'0';
+        code as usize
     }
 }
 
 struct Input {
-    board: Vec<Vec<i32>>,
+    secret: String,
+    guess: String,
 }
 
 fn main() {
-    let mut inputs = [
+    let inputs = [
         Input {
-            board: [[0, 1, 0], [0, 0, 1], [1, 1, 1], [0, 0, 0]]
-                .map(|v| v.to_vec())
-                .to_vec(),
+            secret: "1807".to_string(),
+            guess: "7810".to_string(),
         },
         Input {
-            board: [[1, 1], [1, 0]].map(|v| v.to_vec()).to_vec(),
+            secret: "1123".to_string(),
+            guess: "0111".to_string(),
         },
     ];
 
-    for input in inputs.iter_mut() {
-        Solution::game_of_life(&mut input.board);
-        println!("{:?}", input.board);
+    for input in inputs {
+        let result = Solution::get_hint(input.secret, input.guess);
+        println!("{:?}", result);
     }
 }
