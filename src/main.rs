@@ -1,77 +1,40 @@
 struct Solution;
 
 impl Solution {
-    pub fn is_additive_number(num: String) -> bool {
-        let n = num.len();
-        for i in 1..=(n / 2) {
-            let mut j = 1;
-            while j.max(i) <= (n - i - j) {
-                if Self::is_valid(&num, i, j) {
-                    return true;
-                } else {
-                    j += 1;
-                }
+    pub fn max_profit(prices: Vec<i32>) -> i32 {
+        let mut dp = [[0; 2]; 3];
+
+        for (day, price) in prices.into_iter().enumerate().rev() {
+            for buy in 0..2usize {
+                let first = dp[(day + 1) % 3][buy];
+                let second = match buy {
+                    1 => dp[(day + 1) % 3][0] - price,
+                    _ => dp[(day + 2) % 3][1] + price,
+                };
+                dp[day % 3][buy] = first.max(second);
             }
         }
 
-        false
-    }
-
-    fn is_valid(num: &str, i: usize, j: usize) -> bool {
-        if (num.chars().nth(0).unwrap() == '0') && (i > 1) {
-            return false;
-        }
-
-        if (num.chars().nth(i).unwrap() == '0') && (j > 1) {
-            return false;
-        }
-
-        let mut x1 = num
-            .chars()
-            .take(i)
-            .collect::<String>()
-            .parse::<i64>()
-            .unwrap();
-        let mut x2 = num
-            .chars()
-            .skip(i)
-            .take(j)
-            .collect::<String>()
-            .parse::<i64>()
-            .unwrap();
-
-        let mut start = i + j;
-        while start != num.len() {
-            x2 += x1;
-            x1 = x2 - x1;
-            let sum = x2.to_string();
-            if !num[start..].starts_with(&sum) {
-                return false;
-            }
-
-            start += sum.len();
-        }
-
-        true
+        dp[0][1]
     }
 }
 
 struct Input {
-    num: String,
+    prices: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            num: "112358".to_string(),
+            prices: [1, 2, 3, 0, 2].to_vec(),
         },
         Input {
-            num: "199100199".to_string(),
+            prices: [1].to_vec(),
         },
     ];
 
     for input in inputs {
-        let result = Solution::is_additive_number(input.num);
+        let result = Solution::max_profit(input.prices);
         println!("{:?}", result);
     }
 }
