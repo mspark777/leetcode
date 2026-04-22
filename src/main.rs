@@ -1,53 +1,39 @@
 struct Solution;
 
 impl Solution {
-    #[allow(clippy::ptr_arg)]
-    pub fn wiggle_sort(nums: &mut Vec<i32>) {
-        use std::collections::BinaryHeap;
-
-        let n = nums.len();
-        let mut queue = BinaryHeap::<i32>::from_iter(nums.iter().copied());
-
-        let mut i = 1usize;
-        while let Some(&num) = queue.peek() {
-            if i >= n {
-                break;
+    pub fn is_valid_serialization(preorder: String) -> bool {
+        let mut nodes = 1;
+        for node in preorder.split(',').map(|s| s.as_bytes()) {
+            if node[0] == b',' {
+                continue;
             }
 
-            nums[i] = num;
-            i += 2;
-            queue.pop();
-        }
+            nodes -= 1;
 
-        i = 0usize;
-        while let Some(&num) = queue.peek() {
-            if i >= n {
-                break;
+            if nodes < 0 {
+                return false;
             }
 
-            nums[i] = num;
-            i += 2;
-            queue.pop();
+            if node[0] != b'#' {
+                nodes += 2
+            }
         }
+
+        nodes == 0
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    preorder: String,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [1, 5, 1, 1, 6, 4].to_vec(),
-        },
-        Input {
-            nums: [1, 3, 2, 2, 3, 1].to_vec(),
-        },
-    ];
+    let inputs = [Input {
+        preorder: "9,#,92,#,#".to_string(),
+    }];
 
-    for mut input in inputs.into_iter() {
-        Solution::wiggle_sort(&mut input.nums);
-        println!("{:?}", input.nums);
+    for input in inputs.into_iter() {
+        let result = Solution::is_valid_serialization(input.preorder);
+        println!("{:?}", result);
     }
 }
