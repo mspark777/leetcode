@@ -1,38 +1,53 @@
 struct Solution;
 
 impl Solution {
-    pub fn coin_change(coins: Vec<i32>, amount: i32) -> i32 {
-        let mut dp = vec![amount + 1; (amount + 1) as usize];
-        dp[0] = 0;
+    #[allow(clippy::ptr_arg)]
+    pub fn wiggle_sort(nums: &mut Vec<i32>) {
+        use std::collections::BinaryHeap;
 
-        for i in 1..=amount {
-            for coin in coins.iter().copied() {
-                if (i - coin) >= 0 {
-                    dp[i as usize] = dp[i as usize].min(1 + dp[(i - coin) as usize]);
-                }
+        let n = nums.len();
+        let mut queue = BinaryHeap::<i32>::from_iter(nums.iter().copied());
+
+        let mut i = 1usize;
+        while let Some(&num) = queue.peek() {
+            if i >= n {
+                break;
             }
+
+            nums[i] = num;
+            i += 2;
+            queue.pop();
         }
 
-        match dp[amount as usize] > amount {
-            true => -1,
-            _ => dp[amount as usize],
+        i = 0usize;
+        while let Some(&num) = queue.peek() {
+            if i >= n {
+                break;
+            }
+
+            nums[i] = num;
+            i += 2;
+            queue.pop();
         }
     }
 }
 
 struct Input {
-    coins: Vec<i32>,
-    amount: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input {
-        coins: [1, 2, 5].to_vec(),
-        amount: 11,
-    }];
+    let inputs = [
+        Input {
+            nums: [1, 5, 1, 1, 6, 4].to_vec(),
+        },
+        Input {
+            nums: [1, 3, 2, 2, 3, 1].to_vec(),
+        },
+    ];
 
-    for input in inputs {
-        let result = Solution::coin_change(input.coins, input.amount);
-        println!("{:?}", result);
+    for mut input in inputs.into_iter() {
+        Solution::wiggle_sort(&mut input.nums);
+        println!("{:?}", input.nums);
     }
 }
