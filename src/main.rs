@@ -1,3 +1,65 @@
+use std::collections::HashMap;
+use std::collections::HashSet;
+
+struct Twitter {
+    tweets: Vec<(i32, i32)>,
+    users: HashMap<i32, HashSet<i32>>,
+}
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl Twitter {
+    fn new() -> Self {
+        Self {
+            tweets: vec![],
+            users: HashMap::new(),
+        }
+    }
+
+    fn post_tweet(&mut self, user_id: i32, tweet_id: i32) {
+        self.tweets.push((user_id, tweet_id));
+    }
+
+    fn get_news_feed(&self, user_id: i32) -> Vec<i32> {
+        let empty = HashSet::<i32>::new();
+        let followees = match self.users.get(&user_id) {
+            Some(list) => list,
+            _ => &empty,
+        };
+
+        let mut list = Vec::<i32>::with_capacity(10);
+        for (user, tweet) in self.tweets.iter().rev().copied() {
+            if user == user_id {
+                list.push(tweet);
+            } else if followees.contains(&user) {
+                list.push(tweet);
+            }
+
+            if list.len() >= 10 {
+                break;
+            }
+        }
+
+        list
+    }
+
+    fn follow(&mut self, follower_id: i32, followee_id: i32) {
+        let followees = self
+            .users
+            .entry(follower_id)
+            .or_insert_with(|| HashSet::new());
+        followees.insert(followee_id);
+    }
+
+    fn unfollow(&mut self, follower_id: i32, followee_id: i32) {
+        if let Some(followees) = self.users.get_mut(&follower_id) {
+            followees.remove(&followee_id);
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
     pub val: i32,
