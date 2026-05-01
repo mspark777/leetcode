@@ -1,51 +1,27 @@
 struct Solution;
 
 impl Solution {
-    pub fn can_measure_water(x: i32, y: i32, target: i32) -> bool {
-        if (x + y) < target {
-            return false;
+    pub fn get_sum(mut a: i32, mut b: i32) -> i32 {
+        while b != 0 {
+            let temp = a & b;
+            a ^= b;
+            b = temp << 1;
         }
 
-        if (x == target) || (y == target) || ((x + y) == target) {
-            return true;
-        }
-
-        (target % Self::gcd(x, y)) == 0
-    }
-
-    fn gcd(mut x: i32, mut y: i32) -> i32 {
-        while y != 0 {
-            let temp = y;
-            y = x % y;
-            x = temp;
-        }
-
-        x
+        a
     }
 }
 
 struct Input {
-    x: i32,
-    y: i32,
-    target: i32,
+    a: i32,
+    b: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            x: 3,
-            y: 5,
-            target: 4,
-        },
-        Input {
-            x: 2,
-            y: 6,
-            target: 5,
-        },
-    ];
+    let inputs = [Input { a: 1, b: 2 }, Input { a: 2, b: 3 }];
 
     for input in inputs.into_iter() {
-        let result = Solution::can_measure_water(input.x, input.y, input.target);
+        let result = Solution::get_sum(input.a, input.b);
         println!("{:?}", result);
     }
 }
