@@ -1,35 +1,49 @@
 struct Solution;
 
 impl Solution {
-    pub fn get_money_amount(n: i32) -> i32 {
-        let n = n as usize;
-        let mut dp = vec![vec![0i32; n + 1]; n + 1];
-
-        for len in 2..=n {
-            for start in 1..=(n + 1 - len) {
-                let mut minres = i32::MAX;
-                for piv in (start + (len - 1) / 2)..(start + len - 1) {
-                    let res = (piv as i32) + dp[start][piv - 1].max(dp[piv + 1][start + len - 1]);
-                    minres = minres.min(res as i32);
-                }
-
-                dp[start][start + len - 1] = minres;
-            }
+    const MOD: i32 = 1337;
+    pub fn super_pow(a: i32, b: Vec<i32>) -> i32 {
+        if (a == 1) || (b[0] == 0) {
+            return 1;
         }
 
-        dp[1][n]
+        let a = a % Self::MOD;
+        let mut xs = [0; 10];
+        xs[0] = 1;
+        for i in 1..10 {
+            xs[i] = (xs[i - 1] * a) % Self::MOD;
+        }
+        let mut x0 = 1;
+        for x in b {
+            x0 = x0 * x0 % Self::MOD;
+            let x1 = x0 * x0 % Self::MOD;
+            x0 = x0 * x1 % Self::MOD;
+            x0 = x0 * x1 % Self::MOD;
+            x0 = x0 * xs[x as usize] % Self::MOD;
+        }
+        x0
     }
 }
 
 struct Input {
-    n: i32,
+    a: i32,
+    b: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 10 }, Input { n: 1 }, Input { n: 2 }];
+    let inputs = [
+        Input {
+            a: 2,
+            b: [3].to_vec(),
+        },
+        Input {
+            a: 2,
+            b: [1, 0].to_vec(),
+        },
+    ];
 
     for input in inputs.into_iter() {
-        let result = Solution::get_money_amount(input.n);
+        let result = Solution::super_pow(input.a, input.b);
         println!("{:?}", result);
     }
 }
