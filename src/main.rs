@@ -1,62 +1,69 @@
-use rand::Rng;
+struct Solution;
 
-struct Solution {
-    nums: Vec<i32>,
+#[derive(Debug, PartialEq, Eq)]
+pub enum NestedInteger {
+    Int(i32),
+    List(Vec<NestedInteger>),
 }
 
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
 impl Solution {
-    fn new(nums: Vec<i32>) -> Self {
-        Self { nums }
-    }
+    pub fn deserialize(s: String) -> NestedInteger {
+        if s.starts_with('[') {
+            let mut parts = Vec::<String>::new();
+            let mut acc = String::new();
+            let mut count = 0;
+            let inner = s
+                .strip_prefix('[')
+                .unwrap()
+                .strip_suffix(']')
+                .unwrap()
+                .chars();
+            for ch in inner {
+                if count == 0 && ch == ',' {
+                    parts.push(acc);
+                    acc = String::new();
+                    continue;
+                }
 
-    fn reset(&self) -> Vec<i32> {
-        self.nums.clone()
-    }
+                if ch == '[' {
+                    count += 1;
+                } else if ch == ']' {
+                    count -= 1;
+                }
 
-    fn shuffle(&self) -> Vec<i32> {
-        let mut rng = rand::thread_rng();
-        let mut shuffled = self.reset();
-        let n = shuffled.len();
+                acc.push(ch);
+            }
+            parts.push(acc);
 
-        for i in 0..n {
-            let j = rng.gen_range(0..n);
-            shuffled.swap(i, j);
+            NestedInteger::List(
+                parts
+                    .iter()
+                    .filter(|s| !s.is_empty())
+                    .map(|s| Self::deserialize(s.to_string()))
+                    .collect(),
+            )
+        } else {
+            NestedInteger::Int(s.parse().unwrap())
         }
-
-        shuffled
     }
 }
-
-/**
- * Your Solution object will be instantiated and called as such:
- * let obj = Solution::new(nums);
- * let ret_1: Vec<i32> = obj.reset();
- * let ret_2: Vec<i32> = obj.shuffle();
- */
 
 struct Input {
-    a: i32,
-    b: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            a: 2,
-            b: [3].to_vec(),
+            s: "324".to_string(),
         },
         Input {
-            a: 2,
-            b: [1, 0].to_vec(),
+            s: "[123,[456,[789]]]".to_string(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::super_pow(input.a, input.b);
+        let result = Solution::deserialize(input.s);
         println!("{:?}", result);
     }
 }
