@@ -1,29 +1,42 @@
-struct Solution;
+use rand::Rng;
 
+struct Solution {
+    nums: Vec<i32>,
+}
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
 impl Solution {
-    const MOD: i32 = 1337;
-    pub fn super_pow(a: i32, b: Vec<i32>) -> i32 {
-        if (a == 1) || (b[0] == 0) {
-            return 1;
+    fn new(nums: Vec<i32>) -> Self {
+        Self { nums }
+    }
+
+    fn reset(&self) -> Vec<i32> {
+        self.nums.clone()
+    }
+
+    fn shuffle(&self) -> Vec<i32> {
+        let mut rng = rand::thread_rng();
+        let mut shuffled = self.reset();
+        let n = shuffled.len();
+
+        for i in 0..n {
+            let j = rng.gen_range(0..n);
+            shuffled.swap(i, j);
         }
 
-        let a = a % Self::MOD;
-        let mut xs = [0; 10];
-        xs[0] = 1;
-        for i in 1..10 {
-            xs[i] = (xs[i - 1] * a) % Self::MOD;
-        }
-        let mut x0 = 1;
-        for x in b {
-            x0 = x0 * x0 % Self::MOD;
-            let x1 = x0 * x0 % Self::MOD;
-            x0 = x0 * x1 % Self::MOD;
-            x0 = x0 * x1 % Self::MOD;
-            x0 = x0 * xs[x as usize] % Self::MOD;
-        }
-        x0
+        shuffled
     }
 }
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * let obj = Solution::new(nums);
+ * let ret_1: Vec<i32> = obj.reset();
+ * let ret_2: Vec<i32> = obj.shuffle();
+ */
 
 struct Input {
     a: i32,
