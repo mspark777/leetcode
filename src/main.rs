@@ -1,51 +1,45 @@
 struct Solution;
 
+#[derive(Eq, PartialEq)]
+enum OpType {
+    Left,
+    Right,
+}
+
 impl Solution {
-    pub fn length_longest_path(input: String) -> i32 {
-        use std::collections::HashMap;
+    pub fn last_remaining(n: i32) -> i32 {
+        let mut n = n;
+        let mut diff = 1;
+        let mut result = 1;
+        let mut op_type = OpType::Right;
+        while n != 1 {
+            result = match op_type {
+                OpType::Right => result + diff,
+                OpType::Left if (n & 1) == 1 => result + diff,
+                _ => result,
+            };
 
-        let mut depth_map = HashMap::<usize, usize>::new();
-        let mut max_len = 0;
-
-        for line in input.split('\n') {
-            let level = line
-                .as_bytes()
-                .iter()
-                .enumerate()
-                .rev()
-                .find(|b| (*b.1) == b'\t')
-                .map(|b| b.0 + 1)
-                .unwrap_or_default();
-            let name = &line[level..];
-            let level_len = depth_map.get(&level).copied().unwrap_or_default();
-
-            if name.chars().find(|&c| c == '.').is_some() {
-                max_len = max_len.max(level_len + name.len());
-            } else {
-                depth_map.insert(level + 1, level_len + name.len() + 1);
-            }
+            n /= 2;
+            op_type = match op_type {
+                OpType::Left => OpType::Right,
+                OpType::Right => OpType::Left,
+            };
+            diff *= 2;
         }
 
-        max_len as i32
+        result
     }
 }
 
 struct Input {
-    input: String,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            input: "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext".to_string()
-        },
-        Input {
-            input:"dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext".to_string()
-        },
-    ];
+    let inputs = [Input { n: 9 }, Input { n: 1 }];
 
     for input in inputs.into_iter() {
-        let result = Solution::length_longest_path(input.input);
+        let result = Solution::last_remaining(input.n);
         println!("{:?}", result);
     }
 }
