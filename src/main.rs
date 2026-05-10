@@ -1,27 +1,40 @@
-struct Solution;
+struct Solution {
+    nums: Vec<i32>,
+}
 
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
 impl Solution {
-    pub fn integer_replacement(n: i32) -> i32 {
-        let mut n = n as i64;
-        let mut result = 0;
+    fn new(nums: Vec<i32>) -> Self {
+        Self { nums }
+    }
 
-        while n > 1 {
-            if n == 3 {
-                n -= 1;
-            } else if (n & 1) == 0 {
-                n /= 2;
-            } else if (n % 4) == 1 {
-                n -= 1;
-            } else {
-                n += 1;
+    fn pick(&self, target: i32) -> i32 {
+        let mut idx = 0usize;
+        let mut count = 0;
+        for (i, num) in self.nums.iter().copied().enumerate() {
+            if num != target {
+                continue;
             }
 
-            result += 1;
+            count += 1;
+
+            if (rand::random::<i32>() % count) == 0 {
+                idx = i;
+            }
         }
 
-        result
+        idx as i32
     }
 }
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * let obj = Solution::new(nums);
+ * let ret_1: i32 = obj.pick(target);
+ */
 
 struct Input {
     n: i32,
