@@ -1,19 +1,22 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_rotate_function(nums: Vec<i32>) -> i32 {
-        let n = nums.len() as i32;
-        let mut f = 0;
-        let mut num_sum = 0;
-        for (i, num) in nums.iter().copied().enumerate() {
-            num_sum += num;
-            f += (i as i32) * num;
-        }
+    pub fn integer_replacement(n: i32) -> i32 {
+        let mut n = n as i64;
+        let mut result = 0;
 
-        let mut result = f;
-        for num in nums.iter().copied().rev() {
-            f += num_sum - n * num;
-            result = result.max(f);
+        while n > 1 {
+            if n == 3 {
+                n -= 1;
+            } else if (n & 1) == 0 {
+                n /= 2;
+            } else if (n % 4) == 1 {
+                n -= 1;
+            } else {
+                n += 1;
+            }
+
+            result += 1;
         }
 
         result
@@ -21,21 +24,14 @@ impl Solution {
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [4, 3, 2, 6].to_vec(),
-        },
-        Input {
-            nums: [100].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 8 }, Input { n: 7 }];
 
     for input in inputs.into_iter() {
-        let result = Solution::max_rotate_function(input.nums);
+        let result = Solution::integer_replacement(input.n);
         println!("{:?}", result);
     }
 }
