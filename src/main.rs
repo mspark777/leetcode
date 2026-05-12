@@ -1,25 +1,35 @@
 struct Solution;
 
 impl Solution {
-    pub fn number_of_arithmetic_slices(nums: Vec<i32>) -> i32 {
+    pub fn find_maximum_xor(mut nums: Vec<i32>) -> i32 {
+        nums.sort_unstable();
+        nums.dedup();
+
+        let nums = nums.into_iter().map(|n| n as u32).collect::<Vec<u32>>();
         let n = nums.len();
-        let mut result = 0;
-        let mut curr = 0;
+        let mut l = 0;
+        let mut r = n - 1;
+        let mut result = nums[0] ^ nums[n - 1];
+        let mut upper = 1;
+        while upper <= nums[n - 1] {
+            upper <<= 1;
+        }
 
-        for i in 2..n {
-            let n0 = nums[i - 2];
-            let n1 = nums[i - 1];
-            let n2 = nums[i];
-
-            if (n2 - n1) == (n1 - n0) {
-                curr += 1;
-                result += curr;
+        upper -= 1;
+        while l + 1 < r {
+            let a = nums[l];
+            let b = nums[l + 1];
+            let c = nums[r - 1];
+            let d = nums[r];
+            result = result.max(a ^ b).max(a ^ c).max(b ^ d).max(c ^ d);
+            if a + d < upper {
+                l += 1;
             } else {
-                curr = 0;
+                r -= 1;
             }
         }
 
-        result
+        result as i32
     }
 }
 
@@ -30,13 +40,15 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 4].to_vec(),
+            nums: [3, 10, 5, 25, 2, 8].to_vec(),
         },
-        Input { nums: [1].to_vec() },
+        Input {
+            nums: [14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70].to_vec(),
+        },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::number_of_arithmetic_slices(input.nums);
+        let result = Solution::find_maximum_xor(input.nums);
         println!("{:?}", result);
     }
 }
