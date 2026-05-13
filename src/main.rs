@@ -1,54 +1,65 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_maximum_xor(mut nums: Vec<i32>) -> i32 {
-        nums.sort_unstable();
-        nums.dedup();
+    pub fn original_digits(s: String) -> String {
+        use std::collections::HashMap;
 
-        let nums = nums.into_iter().map(|n| n as u32).collect::<Vec<u32>>();
-        let n = nums.len();
-        let mut l = 0;
-        let mut r = n - 1;
-        let mut result = nums[0] ^ nums[n - 1];
-        let mut upper = 1;
-        while upper <= nums[n - 1] {
-            upper <<= 1;
+        let mut counts = HashMap::<char, i32>::new();
+        for ch in s.chars() {
+            counts.entry(ch).and_modify(|c| *c += 1).or_insert(1);
         }
 
-        upper -= 1;
-        while l + 1 < r {
-            let a = nums[l];
-            let b = nums[l + 1];
-            let c = nums[r - 1];
-            let d = nums[r];
-            result = result.max(a ^ b).max(a ^ c).max(b ^ d).max(c ^ d);
-            if a + d < upper {
-                l += 1;
-            } else {
-                r -= 1;
-            }
+        let idx_map = [
+            ('z', 0),
+            ('w', 2),
+            ('u', 4),
+            ('x', 6),
+            ('g', 8),
+            ('o', 1),
+            ('h', 3),
+            ('f', 5),
+            ('s', 7),
+            ('i', 9),
+        ];
+        let mut repeats = [0; 10];
+        for (l, i) in idx_map.into_iter() {
+            repeats[i] = counts.get(&l).copied().unwrap_or_default();
         }
 
-        result as i32
+        repeats[1] -= repeats[0] + repeats[2] + repeats[4];
+        repeats[3] -= repeats[8];
+        repeats[5] -= repeats[4];
+        repeats[7] -= repeats[6];
+        repeats[9] -= repeats[5] + repeats[6] + repeats[8];
+
+        repeats
+            .into_iter()
+            .enumerate()
+            .map(|(i, r)| match r > 0 {
+                true => i.to_string().repeat(r as usize),
+                _ => String::new(),
+            })
+            .collect::<Vec<String>>()
+            .join("")
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [3, 10, 5, 25, 2, 8].to_vec(),
+            s: "owoztneoer".to_string(),
         },
         Input {
-            nums: [14, 70, 53, 83, 49, 91, 36, 80, 92, 51, 66, 70].to_vec(),
+            s: "fivefuro".to_string(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::find_maximum_xor(input.nums);
+        let result = Solution::original_digits(input.s);
         println!("{:?}", result);
     }
 }
