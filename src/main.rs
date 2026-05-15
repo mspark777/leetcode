@@ -1,26 +1,57 @@
 struct Solution;
 
-impl Solution {
-    pub fn find_right_interval(intervals: Vec<Vec<i32>>) -> Vec<i32> {
-        use std::collections::BTreeMap;
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
-        let mut btree = BTreeMap::<i32, usize>::new();
-        for (i, interval) in intervals.iter().enumerate() {
-            let start = interval[0];
-            btree.insert(start, i);
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
         }
+    }
+}
 
-        let mut result = Vec::<i32>::with_capacity(intervals.len());
-        for interval in intervals.iter() {
-            let end = interval[1];
-            if let Some(node) = btree.range(end..).next() {
-                let idx = *node.1 as i32;
-                result.push(idx);
-            } else {
-                result.push(-1);
+use std::cell::RefCell;
+use std::rc::Rc;
+impl Solution {
+    pub fn path_sum(root: Option<Rc<RefCell<TreeNode>>>, target_sum: i32) -> i32 {
+        Self::recurse(root.clone(), target_sum as i64, vec![].as_mut())
+    }
+
+    pub fn recurse(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        target_sum: i64,
+        vec: &mut Vec<i64>,
+    ) -> i32 {
+        let node = match root {
+            Some(node) => node,
+            _ => return 0,
+        };
+
+        let node = node.borrow();
+        let mut count = 0;
+        vec.push(0);
+        for x in vec.iter_mut() {
+            *x += node.val as i64;
+            if *x == target_sum {
+                count += 1;
             }
         }
-        result
+        count = count
+            + Self::recurse(node.left.clone(), target_sum, vec)
+            + Self::recurse(node.right.clone(), target_sum, vec);
+        vec.pop();
+        for x in vec.iter_mut() {
+            *x -= node.val as i64
+        }
+        count
     }
 }
 
