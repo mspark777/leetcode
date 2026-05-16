@@ -1,27 +1,29 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_anagrams(s: String, p: String) -> Vec<i32> {
-        const SIZE: usize = 26;
+    pub fn number_of_boomerangs(points: Vec<Vec<i32>>) -> i32 {
+        use std::collections::HashMap;
 
-        let idx = |c: char| ((c as u8) - b'a') as usize;
+        let mut result = 0;
 
-        let mut anagram = [0u8; SIZE];
-        for c in p.chars() {
-            anagram[idx(c)] += 1;
-        }
-
-        let mut result = Vec::<i32>::new();
-        let mut window = [0u8; SIZE];
-        let s = s.chars().collect::<Vec<char>>();
-        for right in 0..s.len() {
-            window[idx(s[right])] += 1;
-            if right >= p.len() - 1 {
-                let left = right + 1 - p.len();
-                if anagram == window {
-                    result.push(left as i32);
+        for (i, a) in points.iter().enumerate() {
+            let mut distance_map = HashMap::<i32, i32>::new();
+            for (j, b) in points.iter().enumerate() {
+                if i == j {
+                    continue;
                 }
-                window[idx(s[left])] -= 1;
+
+                let dx = a[0] - b[0];
+                let dy = a[1] - b[1];
+                let distance = dx * dx + dy * dy;
+                distance_map
+                    .entry(distance)
+                    .and_modify(|c| *c += 1)
+                    .or_insert(1);
+            }
+
+            for count in distance_map.values().copied() {
+                result += count * (count - 1);
             }
         }
 
@@ -30,24 +32,24 @@ impl Solution {
 }
 
 struct Input {
-    s: String,
-    p: String,
+    points: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            s: "cbaebabacd".to_string(),
-            p: "abc".to_string(),
+            points: [[0, 0], [1, 0], [2, 0]].map(|v| v.to_vec()).to_vec(),
         },
         Input {
-            s: "abab".to_string(),
-            p: "ab".to_string(),
+            points: [[1, 1], [2, 2], [3, 3]].map(|v| v.to_vec()).to_vec(),
+        },
+        Input {
+            points: [[1, 1]].map(|v| v.to_vec()).to_vec(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::find_anagrams(input.s, input.p);
+        let result = Solution::number_of_boomerangs(input.points);
         println!("{:?}", result);
     }
 }
