@@ -1,5 +1,6 @@
 struct Solution;
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
     pub val: i32,
     pub left: Option<Rc<RefCell<TreeNode>>>,
@@ -19,72 +20,47 @@ impl TreeNode {
 
 use std::cell::RefCell;
 use std::rc::Rc;
-struct Codec {}
-
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
-impl Codec {
-    fn new() -> Self {
-        Self {}
-    }
-
-    fn serialize(&self, root: Option<Rc<RefCell<TreeNode>>>) -> String {
-        match root {
-            Some(node) => {
-                format!(
-                    "{},{},{}",
-                    node.borrow().val,
-                    Self::serialize(self, node.borrow().left.clone()),
-                    Self::serialize(self, node.borrow().right.clone())
-                )
-            }
-            _ => String::new(),
-        }
-    }
-
-    fn deserialize(&self, data: String) -> Option<Rc<RefCell<TreeNode>>> {
-        let pre_order = data
-            .split(",")
-            .filter_map(|s| s.parse::<i32>().ok())
-            .collect::<Vec<i32>>();
-        let mut in_order = pre_order.clone();
-        in_order.sort();
-
-        match pre_order.is_empty() {
-            true => None,
-            _ => Self::mk(&pre_order, &in_order, 0, 0, in_order.len()),
-        }
-    }
-
-    fn mk(
-        pre_order: &[i32],
-        in_order: &[i32],
-        i: usize,
-        l: usize,
-        r: usize,
+impl Solution {
+    pub fn delete_node(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        key: i32,
     ) -> Option<Rc<RefCell<TreeNode>>> {
-        let mut tree = TreeNode::new(pre_order[i]);
-        let j = in_order.binary_search(&pre_order[i]).unwrap();
-        if j > l {
-            tree.left = Self::mk(pre_order, in_order, i + 1, l, j);
+        match root {
+            Some(r) => {
+                if r.borrow().val.cmp(&key).is_eq() {
+                    let mut r = r.borrow_mut();
+                    if r.left.as_ref().is_none() && r.right.as_ref().is_none() {
+                        return None;
+                    } else if r.left.as_ref().is_some() && r.right.as_ref().is_none() {
+                        return r.left.take();
+                    } else if r.left.as_ref().is_none() && r.right.as_ref().is_some() {
+                        return r.right.take();
+                    } else {
+                        let mini = Self::min(r.right.clone()).unwrap().borrow().val;
+                        r.val = mini;
+                        r.right = Self::delete_node(r.right.clone(), mini);
+                    }
+                } else if r.borrow().val.cmp(&key).is_gt() {
+                    let mut t = r.borrow_mut();
+                    t.left = Self::delete_node(t.left.clone(), key);
+                } else {
+                    let mut t = r.borrow_mut();
+                    t.right = Self::delete_node(t.right.clone(), key)
+                }
+                Some(r)
+            }
+            None => None,
         }
-
-        if j < (r - 1) {
-            tree.right = Self::mk(pre_order, in_order, i + 1 + j - l, j + 1, r);
+    }
+    fn min(mut root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+        let mut temp = None;
+        while root.as_ref().is_some() {
+            temp = root.clone();
+            root = root.unwrap().borrow_mut().left.clone();
         }
-
-        Some(Rc::new(RefCell::new(tree)))
+        temp.clone()
     }
 }
-
-/**
- * Your Codec object will be instantiated and called as such:
- * let obj = Codec::new();
- * let data: String = obj.serialize(strs);
- * let ans: Option<Rc<RefCell<TreeNode>>> = obj.deserialize(data);
- */
 
 struct Input {
     points: Vec<Vec<i32>>,
