@@ -1,35 +1,90 @@
 struct Solution;
 
-impl Solution {
-    pub fn number_of_boomerangs(points: Vec<Vec<i32>>) -> i32 {
-        use std::collections::HashMap;
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
-        let mut result = 0;
-
-        for (i, a) in points.iter().enumerate() {
-            let mut distance_map = HashMap::<i32, i32>::new();
-            for (j, b) in points.iter().enumerate() {
-                if i == j {
-                    continue;
-                }
-
-                let dx = a[0] - b[0];
-                let dy = a[1] - b[1];
-                let distance = dx * dx + dy * dy;
-                distance_map
-                    .entry(distance)
-                    .and_modify(|c| *c += 1)
-                    .or_insert(1);
-            }
-
-            for count in distance_map.values().copied() {
-                result += count * (count - 1);
-            }
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
         }
-
-        result
     }
 }
+
+use std::cell::RefCell;
+use std::rc::Rc;
+struct Codec {}
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl Codec {
+    fn new() -> Self {
+        Self {}
+    }
+
+    fn serialize(&self, root: Option<Rc<RefCell<TreeNode>>>) -> String {
+        match root {
+            Some(node) => {
+                format!(
+                    "{},{},{}",
+                    node.borrow().val,
+                    Self::serialize(self, node.borrow().left.clone()),
+                    Self::serialize(self, node.borrow().right.clone())
+                )
+            }
+            _ => String::new(),
+        }
+    }
+
+    fn deserialize(&self, data: String) -> Option<Rc<RefCell<TreeNode>>> {
+        let pre_order = data
+            .split(",")
+            .filter_map(|s| s.parse::<i32>().ok())
+            .collect::<Vec<i32>>();
+        let mut in_order = pre_order.clone();
+        in_order.sort();
+
+        match pre_order.is_empty() {
+            true => None,
+            _ => Self::mk(&pre_order, &in_order, 0, 0, in_order.len()),
+        }
+    }
+
+    fn mk(
+        pre_order: &[i32],
+        in_order: &[i32],
+        i: usize,
+        l: usize,
+        r: usize,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        let mut tree = TreeNode::new(pre_order[i]);
+        let j = in_order.binary_search(&pre_order[i]).unwrap();
+        if j > l {
+            tree.left = Self::mk(pre_order, in_order, i + 1, l, j);
+        }
+
+        if j < (r - 1) {
+            tree.right = Self::mk(pre_order, in_order, i + 1 + j - l, j + 1, r);
+        }
+
+        Some(Rc::new(RefCell::new(tree)))
+    }
+}
+
+/**
+ * Your Codec object will be instantiated and called as such:
+ * let obj = Codec::new();
+ * let data: String = obj.serialize(strs);
+ * let ans: Option<Rc<RefCell<TreeNode>>> = obj.deserialize(data);
+ */
 
 struct Input {
     points: Vec<Vec<i32>>,
