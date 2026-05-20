@@ -1,61 +1,75 @@
 struct Solution;
 
+use std::collections::HashMap;
+
 impl Solution {
-    pub fn find132pattern(nums: Vec<i32>) -> bool {
-        let mut nums = nums;
-        let n = nums.len();
-        if n < 3 {
+    pub fn can_i_win(max_choosable_integer: i32, desired_total: i32) -> bool {
+        if desired_total <= 0 {
+            return true;
+        }
+
+        if (max_choosable_integer * (max_choosable_integer + 1)) / 2 < desired_total {
             return false;
         }
 
-        let mut min_array = vec![0; n];
-        min_array[0] = nums[0];
+        Self::is_next_player_winning(0, max_choosable_integer, desired_total, &mut HashMap::new())
+    }
 
-        for i in 1..n {
-            min_array[i] = min_array[i - 1].min(nums[i]);
+    fn is_next_player_winning(
+        mut selected: i32,
+        max_choose: i32,
+        total: i32,
+        memo: &mut HashMap<i32, bool>,
+    ) -> bool {
+        if total <= 0 {
+            return false;
         }
 
-        let mut k = n;
-        for j in (1..n).rev() {
-            if nums[j] <= min_array[j] {
-                continue;
-            }
-
-            while (k < n) && (nums[k] <= min_array[j]) {
-                k += 1;
-            }
-
-            if (k < n) && (nums[k] < nums[j]) {
-                return true;
-            }
-
-            k -= 1;
-            nums[k] = nums[j];
+        let state = selected;
+        if let Some(&value) = memo.get(&state) {
+            return value;
         }
 
-        false
+        let mut curr_player_wins = false;
+        for i in 0..max_choose {
+            if (selected & (1 << i)) == 0 {
+                selected |= 1 << i;
+                if !Self::is_next_player_winning(selected, max_choose, total - (i + 1), memo) {
+                    curr_player_wins = true;
+                    break;
+                }
+                selected &= !(1 << i);
+            }
+        }
+
+        memo.insert(state, curr_player_wins);
+        curr_player_wins
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    max_choosable_integer: i32,
+    desired_total: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 2, 3, 4].to_vec(),
+            max_choosable_integer: 10,
+            desired_total: 11,
         },
         Input {
-            nums: [3, 1, 4, 2].to_vec(),
+            max_choosable_integer: 10,
+            desired_total: 0,
         },
         Input {
-            nums: [-1, 3, 2, 0].to_vec(),
+            max_choosable_integer: 10,
+            desired_total: 1,
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::find132pattern(input.nums);
+        let result = Solution::can_i_win(input.max_choosable_integer, input.desired_total);
         println!("{:?}", result);
     }
 }
