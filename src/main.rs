@@ -1,52 +1,40 @@
 struct Solution;
 
+use std::net::IpAddr;
+
 impl Solution {
-    pub fn find_substring_in_wrapround_string(s: String) -> i32 {
-        let mut max_len = [0; 26];
-        let mut current_max = 0;
-        let s = s.as_bytes();
-        let n = s.len();
-
-        for i in 0..n {
-            if i > 0 {
-                let curr = s[i] as i32;
-                let prev = s[i - 1] as i32;
-                if ((curr - prev) == 1) || ((prev - curr) == 25) {
-                    current_max += 1;
-                } else {
-                    current_max = 1;
-                }
-            } else {
-                current_max = 1;
-            }
-
-            let index = (s[i] - b'a') as usize;
-            if current_max > max_len[index] {
-                max_len[index] = current_max;
-            }
+    pub fn valid_ip_address(query_ip: String) -> String {
+        if query_ip.contains("::") {
+            return "Neither".to_string();
         }
 
-        max_len.iter().sum()
+        match query_ip.parse::<IpAddr>() {
+            Ok(IpAddr::V4(_)) => "IPv4".to_string(),
+            Ok(IpAddr::V6(_)) => "IPv6".to_string(),
+            _ => "Neither".to_string(),
+        }
     }
 }
 
 struct Input {
-    s: String,
+    query_ip: String,
 }
 
 fn main() {
     let inputs = [
-        Input { s: "a".to_string() },
         Input {
-            s: "cac".to_string(),
+            query_ip: "172.16.254.1".to_string(),
         },
         Input {
-            s: "zab".to_string(),
+            query_ip: "2001:0db8:85a3:0:0:8A2E:0370:7334".to_string(),
+        },
+        Input {
+            query_ip: "256.256.256.256".to_string(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::find_substring_in_wrapround_string(input.s);
+        let result = Solution::valid_ip_address(input.query_ip);
         println!("{:?}", result);
     }
 }
