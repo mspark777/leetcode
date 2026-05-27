@@ -1,75 +1,52 @@
 struct Solution;
 
-use std::collections::HashMap;
-
 impl Solution {
-    pub fn can_i_win(max_choosable_integer: i32, desired_total: i32) -> bool {
-        if desired_total <= 0 {
-            return true;
-        }
+    pub fn find_substring_in_wrapround_string(s: String) -> i32 {
+        let mut max_len = [0; 26];
+        let mut current_max = 0;
+        let s = s.as_bytes();
+        let n = s.len();
 
-        if (max_choosable_integer * (max_choosable_integer + 1)) / 2 < desired_total {
-            return false;
-        }
-
-        Self::is_next_player_winning(0, max_choosable_integer, desired_total, &mut HashMap::new())
-    }
-
-    fn is_next_player_winning(
-        mut selected: i32,
-        max_choose: i32,
-        total: i32,
-        memo: &mut HashMap<i32, bool>,
-    ) -> bool {
-        if total <= 0 {
-            return false;
-        }
-
-        let state = selected;
-        if let Some(&value) = memo.get(&state) {
-            return value;
-        }
-
-        let mut curr_player_wins = false;
-        for i in 0..max_choose {
-            if (selected & (1 << i)) == 0 {
-                selected |= 1 << i;
-                if !Self::is_next_player_winning(selected, max_choose, total - (i + 1), memo) {
-                    curr_player_wins = true;
-                    break;
+        for i in 0..n {
+            if i > 0 {
+                let curr = s[i] as i32;
+                let prev = s[i - 1] as i32;
+                if ((curr - prev) == 1) || ((prev - curr) == 25) {
+                    current_max += 1;
+                } else {
+                    current_max = 1;
                 }
-                selected &= !(1 << i);
+            } else {
+                current_max = 1;
+            }
+
+            let index = (s[i] - b'a') as usize;
+            if current_max > max_len[index] {
+                max_len[index] = current_max;
             }
         }
 
-        memo.insert(state, curr_player_wins);
-        curr_player_wins
+        max_len.iter().sum()
     }
 }
 
 struct Input {
-    max_choosable_integer: i32,
-    desired_total: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [
+        Input { s: "a".to_string() },
         Input {
-            max_choosable_integer: 10,
-            desired_total: 11,
+            s: "cac".to_string(),
         },
         Input {
-            max_choosable_integer: 10,
-            desired_total: 0,
-        },
-        Input {
-            max_choosable_integer: 10,
-            desired_total: 1,
+            s: "zab".to_string(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::can_i_win(input.max_choosable_integer, input.desired_total);
+        let result = Solution::find_substring_in_wrapround_string(input.s);
         println!("{:?}", result);
     }
 }
