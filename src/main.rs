@@ -1,18 +1,17 @@
+fn rand7() -> i32 {
+    7
+}
+
 struct Solution;
 
-use std::net::IpAddr;
-
 impl Solution {
-    pub fn valid_ip_address(query_ip: String) -> String {
-        if query_ip.contains("::") {
-            return "Neither".to_string();
+    pub fn rand10() -> i32 {
+        let mut r = 0;
+        while r < 17 {
+            r = rand7() * 7 + rand7();
         }
 
-        match query_ip.parse::<IpAddr>() {
-            Ok(IpAddr::V4(_)) => "IPv4".to_string(),
-            Ok(IpAddr::V6(_)) => "IPv6".to_string(),
-            _ => "Neither".to_string(),
-        }
+        (r % 10) + 1
     }
 }
 
