@@ -1,63 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_radius(houses: Vec<i32>, heaters: Vec<i32>) -> i32 {
-        let n = heaters.len();
-        let mut heaters = heaters;
-        heaters.sort();
-
+    pub fn total_hamming_distance(nums: Vec<i32>) -> i32 {
+        let n = nums.len() as i32;
         let mut result = 0;
-
-        for house in houses {
-            let closest = match heaters.binary_search(&house) {
-                Ok(i) => heaters[i],
-                Err(i) => {
-                    if i == 0 {
-                        heaters[0]
-                    } else if i == n {
-                        heaters[n - 1]
-                    } else {
-                        let left = heaters[i - 1];
-                        let right = heaters[i];
-                        if (house - left).abs() <= (house - right).abs() {
-                            left
-                        } else {
-                            right
-                        }
-                    }
-                }
-            };
-
-            result = (house - closest).abs().max(result);
+        for i in 0..32 {
+            let mut count = 0;
+            for num in nums.iter().copied() {
+                count += (num >> i) & 1;
+            }
+            result += count * (n - count);
         }
-
         result
     }
 }
 
 struct Input {
-    houses: Vec<i32>,
-    heaters: Vec<i32>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            houses: [1, 2, 3].to_vec(),
-            heaters: [2].to_vec(),
+            nums: [4, 14, 2].to_vec(),
         },
         Input {
-            houses: [1, 2, 3, 4].to_vec(),
-            heaters: [1, 4].to_vec(),
-        },
-        Input {
-            houses: [1, 5].to_vec(),
-            heaters: [2].to_vec(),
+            nums: [4, 14, 4].to_vec(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::find_radius(input.houses, input.heaters);
+        let result = Solution::total_hamming_distance(input.nums);
         println!("{:?}", result);
     }
 }
