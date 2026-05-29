@@ -1,39 +1,63 @@
-fn rand7() -> i32 {
-    7
-}
-
 struct Solution;
 
 impl Solution {
-    pub fn rand10() -> i32 {
-        let mut r = 0;
-        while r < 17 {
-            r = rand7() * 7 + rand7();
+    pub fn find_radius(houses: Vec<i32>, heaters: Vec<i32>) -> i32 {
+        let n = heaters.len();
+        let mut heaters = heaters;
+        heaters.sort();
+
+        let mut result = 0;
+
+        for house in houses {
+            let closest = match heaters.binary_search(&house) {
+                Ok(i) => heaters[i],
+                Err(i) => {
+                    if i == 0 {
+                        heaters[0]
+                    } else if i == n {
+                        heaters[n - 1]
+                    } else {
+                        let left = heaters[i - 1];
+                        let right = heaters[i];
+                        if (house - left).abs() <= (house - right).abs() {
+                            left
+                        } else {
+                            right
+                        }
+                    }
+                }
+            };
+
+            result = (house - closest).abs().max(result);
         }
 
-        (r % 10) + 1
+        result
     }
 }
 
 struct Input {
-    query_ip: String,
+    houses: Vec<i32>,
+    heaters: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            query_ip: "172.16.254.1".to_string(),
+            houses: [1, 2, 3].to_vec(),
+            heaters: [2].to_vec(),
         },
         Input {
-            query_ip: "2001:0db8:85a3:0:0:8A2E:0370:7334".to_string(),
+            houses: [1, 2, 3, 4].to_vec(),
+            heaters: [1, 4].to_vec(),
         },
         Input {
-            query_ip: "256.256.256.256".to_string(),
+            houses: [1, 5].to_vec(),
+            heaters: [2].to_vec(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::valid_ip_address(input.query_ip);
+        let result = Solution::find_radius(input.houses, input.heaters);
         println!("{:?}", result);
     }
 }
