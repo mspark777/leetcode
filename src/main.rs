@@ -1,17 +1,33 @@
-struct Solution;
+use rand::{Rng, rngs::ThreadRng};
 
+struct Solution {
+    radius: f64,
+    x_center: f64,
+    y_center: f64,
+    rng: ThreadRng,
+}
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
 impl Solution {
-    pub fn total_hamming_distance(nums: Vec<i32>) -> i32 {
-        let n = nums.len() as i32;
-        let mut result = 0;
-        for i in 0..32 {
-            let mut count = 0;
-            for num in nums.iter().copied() {
-                count += (num >> i) & 1;
-            }
-            result += count * (n - count);
+    fn new(radius: f64, x_center: f64, y_center: f64) -> Self {
+        Self {
+            radius,
+            x_center,
+            y_center,
+            rng: ThreadRng::default(),
         }
-        result
+    }
+
+    fn rand_point(&mut self) -> Vec<f64> {
+        let r = self.rng.r#gen::<f64>().sqrt() * self.radius;
+        let theta = self.rng.r#gen::<f64>() * 2.0 * std::f64::consts::PI;
+
+        let x = self.x_center + r * theta.cos();
+        let y = self.y_center + r * theta.sin();
+        vec![x, y]
     }
 }
 
