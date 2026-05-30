@@ -1,52 +1,56 @@
-use rand::{Rng, rngs::ThreadRng};
+struct Solution;
 
-struct Solution {
-    radius: f64,
-    x_center: f64,
-    y_center: f64,
-    rng: ThreadRng,
-}
-
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
 impl Solution {
-    fn new(radius: f64, x_center: f64, y_center: f64) -> Self {
-        Self {
-            radius,
-            x_center,
-            y_center,
-            rng: ThreadRng::default(),
+    pub fn magical_string(n: i32) -> i32 {
+        if n <= 0 {
+            return 0;
         }
-    }
+        if n <= 3 {
+            return 1;
+        }
 
-    fn rand_point(&mut self) -> Vec<f64> {
-        let r = self.rng.r#gen::<f64>().sqrt() * self.radius;
-        let theta = self.rng.r#gen::<f64>() * 2.0 * std::f64::consts::PI;
+        let n = n as usize;
+        let mut s = vec![0u8; n];
+        s[0] = 0;
+        s[1] = 1;
+        s[2] = 1;
 
-        let x = self.x_center + r * theta.cos();
-        let y = self.y_center + r * theta.sin();
-        vec![x, y]
+        let mut read = 2;
+        let mut write = 3;
+        let mut next_value = 0;
+        let mut result = 1;
+
+        while write < n {
+            let repeat = s[read] + 1;
+            for _ in 0..repeat {
+                if write >= n {
+                    break;
+                }
+
+                s[write] = next_value;
+                write += 1;
+                if next_value == 0 {
+                    result += 1;
+                }
+            }
+
+            next_value ^= 1;
+            read += 1;
+        }
+
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            nums: [4, 14, 2].to_vec(),
-        },
-        Input {
-            nums: [4, 14, 4].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 6 }, Input { n: 1 }];
 
     for input in inputs.into_iter() {
-        let result = Solution::total_hamming_distance(input.nums);
+        let result = Solution::magical_string(input.n);
         println!("{:?}", result);
     }
 }
