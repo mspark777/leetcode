@@ -1,56 +1,39 @@
-use rand::Rng;
-use std::collections::BTreeMap;
+struct Solution;
 
-struct Solution {
-    total_sum: i32,
-    mp: BTreeMap<i32, Vec<i32>>,
-}
-
-/**
- * `&self` means the method takes an immutable reference.
- * If you need a mutable reference, change it to `&mut self` instead.
- */
 impl Solution {
-    fn new(rects: Vec<Vec<i32>>) -> Self {
-        let mut mp = BTreeMap::new();
-        let mut total_sum = 0;
+    pub fn next_greater_elements(nums: Vec<i32>) -> Vec<i32> {
+        let n = nums.len();
+        let mut stack = Vec::<usize>::new();
+        let mut result = vec![-1; n];
 
-        for rec in rects {
-            let x1 = rec[0];
-            let y1 = rec[1];
-            let x2 = rec[2];
-            let y2 = rec[3];
-            total_sum += (x2 - x1 + 1) * (y2 - y1 + 1);
-            mp.insert(total_sum, rec);
+        for i in 0..(2 * n - 1) {
+            while !stack.is_empty() && (nums[*stack.last().unwrap()] < nums[i % n]) {
+                result[*stack.last().unwrap()] = nums[i % n];
+                stack.pop();
+            }
+            stack.push(i % n);
         }
 
-        Self { total_sum, mp }
-    }
-
-    fn pick(&self) -> Vec<i32> {
-        let mut rng = rand::thread_rng();
-        let area = rng.gen_range(0..=self.total_sum);
-        let rec = self.mp.range(area..).next().unwrap().1;
-        let x1 = rec[0];
-        let y1 = rec[1];
-        let x2 = rec[2];
-        let y2 = rec[3];
-        let x = rng.gen_range(x1..=x2);
-        let y = rng.gen_range(y1..=y2);
-
-        vec![x, y]
+        result
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 6 }, Input { n: 1 }];
+    let inputs = [
+        Input {
+            nums: [1, 2, 1].to_vec(),
+        },
+        Input {
+            nums: [1, 2, 3, 4, 3].to_vec(),
+        },
+    ];
 
     for input in inputs.into_iter() {
-        let result = Solution::magical_string(input.n);
+        let result = Solution::next_greater_elements(input.nums);
         println!("{:?}", result);
     }
 }
