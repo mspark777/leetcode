@@ -1,44 +1,44 @@
-struct Solution;
+use rand::Rng;
+use std::collections::BTreeMap;
 
+struct Solution {
+    total_sum: i32,
+    mp: BTreeMap<i32, Vec<i32>>,
+}
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
 impl Solution {
-    pub fn magical_string(n: i32) -> i32 {
-        if n <= 0 {
-            return 0;
-        }
-        if n <= 3 {
-            return 1;
-        }
+    fn new(rects: Vec<Vec<i32>>) -> Self {
+        let mut mp = BTreeMap::new();
+        let mut total_sum = 0;
 
-        let n = n as usize;
-        let mut s = vec![0u8; n];
-        s[0] = 0;
-        s[1] = 1;
-        s[2] = 1;
-
-        let mut read = 2;
-        let mut write = 3;
-        let mut next_value = 0;
-        let mut result = 1;
-
-        while write < n {
-            let repeat = s[read] + 1;
-            for _ in 0..repeat {
-                if write >= n {
-                    break;
-                }
-
-                s[write] = next_value;
-                write += 1;
-                if next_value == 0 {
-                    result += 1;
-                }
-            }
-
-            next_value ^= 1;
-            read += 1;
+        for rec in rects {
+            let x1 = rec[0];
+            let y1 = rec[1];
+            let x2 = rec[2];
+            let y2 = rec[3];
+            total_sum += (x2 - x1 + 1) * (y2 - y1 + 1);
+            mp.insert(total_sum, rec);
         }
 
-        result
+        Self { total_sum, mp }
+    }
+
+    fn pick(&self) -> Vec<i32> {
+        let mut rng = rand::thread_rng();
+        let area = rng.gen_range(0..=self.total_sum);
+        let rec = self.mp.range(area..).next().unwrap().1;
+        let x1 = rec[0];
+        let y1 = rec[1];
+        let x2 = rec[2];
+        let y2 = rec[3];
+        let x = rng.gen_range(x1..=x2);
+        let y = rng.gen_range(y1..=y2);
+
+        vec![x, y]
     }
 }
 
