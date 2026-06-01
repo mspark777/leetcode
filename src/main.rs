@@ -1,65 +1,41 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
+use rand::prelude::*;
+
+struct Solution {
+    rows: i32,
+    cols: i32,
+    rng: ThreadRng,
+    flipped: std::collections::HashSet<i32>,
 }
 
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
-struct Solution;
-
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
 impl Solution {
-    pub fn solve(
-        root: Option<Rc<RefCell<TreeNode>>>,
-        map: &mut HashMap<i32, i32>,
-        max_freq: &mut i32,
-    ) -> i32 {
-        if root.is_none() {
-            return 0;
+    fn new(m: i32, n: i32) -> Self {
+        Self {
+            rows: m,
+            cols: n,
+            rng: rand::thread_rng(),
+            flipped: std::collections::HashSet::new(),
         }
-
-        let mut sum = 0;
-        let root = root.as_ref().unwrap().borrow();
-        sum += root.val;
-        sum += Solution::solve(root.left.clone(), map, max_freq);
-        sum += Solution::solve(root.right.clone(), map, max_freq);
-
-        *map.entry(sum).or_insert(0) += 1;
-
-        if let Some(freq) = map.get(&sum) {
-            *max_freq = std::cmp::max(*freq, *max_freq);
-        }
-
-        sum
     }
 
-    pub fn find_frequent_tree_sum(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<i32> {
-        let mut map = HashMap::<i32, i32>::new();
-        let mut max_freq = 0;
-        Solution::solve(root.clone(), &mut map, &mut max_freq);
+    fn flip(&mut self) -> Vec<i32> {
+        let mut random: i32 = self.rng.gen_range(0..(self.rows * self.cols));
 
-        let mut result = Vec::<i32>::new();
-        for (key, val) in map {
-            if val == max_freq {
-                result.push(key);
-            }
+        while self.flipped.contains(&random) {
+            random += 1;
+            random = random % (self.rows * self.cols);
         }
 
-        result
+        self.flipped.insert(random);
+
+        vec![random / self.cols, random % self.cols]
+    }
+
+    fn reset(&mut self) {
+        self.flipped.clear();
     }
 }
 
