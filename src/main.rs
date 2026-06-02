@@ -1,23 +1,28 @@
 struct Solution;
 
-fn not_subseq(a: &str, b: &str) -> bool {
-    let mut it = b.chars();
-    a.chars().any(|c| it.all(|x| x != c))
-}
-
 impl Solution {
-    pub fn find_lu_slength(strs: Vec<String>) -> i32 {
-        (0..strs.len())
-            .filter(|&i| (0..strs.len()).all(|j| i == j || not_subseq(&strs[i], &strs[j])))
-            .map(|i| strs[i].len() as i32)
-            .max()
-            .unwrap_or(-1)
+    pub fn find_longest_word(s: String, mut d: Vec<String>) -> String {
+        d.sort_unstable_by(|a, b| b.len().cmp(&a.len()).then_with(|| a.cmp(b)));
+        for s2 in d {
+            let mut s2_iter = s2.chars().peekable();
+            for c in s.chars() {
+                if let Some(&c2) = s2_iter.peek() {
+                    if c == c2 {
+                        s2_iter.next();
+                    }
+                } else {
+                    break;
+                }
+            }
+            if s2_iter.peek().is_none() {
+                return s2;
+            }
+        }
+        String::new()
     }
 }
 
-struct Input {
-    strs: Vec<String>,
-}
+struct Input {}
 
 fn main() {
     let inputs = [
