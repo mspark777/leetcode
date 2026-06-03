@@ -1,30 +1,35 @@
-struct Solution;
+use rand::Rng;
+use std::collections::BTreeMap;
 
+struct Solution {
+    btm: BTreeMap<i32, i32>,
+    n: i32,
+}
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
 impl Solution {
-    pub fn count_arrangement(n: i32) -> i32 {
-        let n = n as usize;
-        let mut visited = vec![false; n + 1];
-        let mut result = 0;
-        Self::calculate(n, 1, &mut visited, &mut result);
-
-        result
+    fn new(w: Vec<i32>) -> Self {
+        let mut btm: BTreeMap<i32, i32> = BTreeMap::new();
+        let mut n = 0;
+        for (i, weight) in w.into_iter().enumerate() {
+            n += weight;
+            btm.insert(n, i as i32);
+        }
+        Self { btm, n }
     }
 
-    fn calculate(n: usize, pos: usize, visited: &mut [bool], result: &mut i32) {
-        if pos > n {
-            *result += 1;
-            return;
-        }
-
-        for i in 1..=n {
-            if visited[i] {
-                continue;
-            } else if pos.is_multiple_of(i) || i.is_multiple_of(pos) {
-                visited[i] = true;
-                Self::calculate(n, pos + 1, visited, result);
-                visited[i] = false;
-            }
-        }
+    fn pick_index(&self) -> i32 {
+        let mut rng = rand::thread_rng();
+        let m: i32 = rng.gen_range(0..self.n);
+        self.btm
+            .range(m + 1..)
+            .next()
+            .map(|v| v.1)
+            .copied()
+            .unwrap_or(-1)
     }
 }
 
