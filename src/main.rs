@@ -1,3 +1,36 @@
+use std::collections::HashMap;
+
+struct Codec {
+    encode_map: HashMap<String, String>,
+    docode_map: HashMap<String, String>,
+    base: String,
+}
+
+impl Codec {
+    fn new() -> Self {
+        Self {
+            encode_map: HashMap::new(),
+            docode_map: HashMap::new(),
+            base: "http://tinyurl.com/".to_string(),
+        }
+    }
+
+    fn encode(&mut self, long_url: String) -> String {
+        if let Some(short) = self.encode_map.get(&long_url) {
+            short.clone()
+        } else {
+            let short = format!("{}{}", self.base, self.encode_map.len() + 1);
+            self.encode_map.insert(long_url.clone(), short.clone());
+            self.docode_map.insert(short.clone(), long_url);
+            short
+        }
+    }
+
+    fn decode(&self, short_url: String) -> String {
+        self.docode_map[&short_url].clone()
+    }
+}
+
 struct Solution;
 
 use std::collections::HashSet;
