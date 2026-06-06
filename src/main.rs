@@ -1,22 +1,43 @@
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
 struct Solution;
 
+use std::cell::RefCell;
+use std::rc::Rc;
 impl Solution {
-    pub fn complex_number_multiply(num1: String, num2: String) -> String {
-        let num1 = Self::split(num1);
-        let num2 = Self::split(num2);
-
-        let real = num1.0 * num2.0 - num1.1 * num2.1;
-        let imagine = num1.0 * num2.1 + num2.0 * num1.1;
-        format!("{}+{}i", real, imagine)
+    pub fn convert_bst(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+        let mut sum: i32 = 0;
+        Self::dfs(root.clone(), &mut sum);
+        root
     }
 
-    fn split(num: String) -> (i32, i32) {
-        let mut splitted = num.split('+');
-        let real = splitted.next().unwrap();
-        let imagine = splitted.next().unwrap();
-        let imagine = &imagine[0..(imagine.len() - 1)];
+    fn dfs(node: Option<Rc<RefCell<TreeNode>>>, sum: &mut i32) {
+        if let Some(node) = node {
+            Self::some(node, sum)
+        }
+    }
 
-        (real.parse().unwrap(), imagine.parse().unwrap())
+    fn some(node: Rc<RefCell<TreeNode>>, sum: &mut i32) {
+        Self::dfs(node.borrow().right.clone(), sum);
+        node.borrow_mut().val += *sum;
+        *sum = node.borrow().val;
+        Self::dfs(node.borrow().left.clone(), sum);
     }
 }
 
