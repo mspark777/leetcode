@@ -1,59 +1,40 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
 struct Solution;
 
-use std::cell::RefCell;
-use std::rc::Rc;
 impl Solution {
-    pub fn convert_bst(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-        let mut sum: i32 = 0;
-        Self::dfs(root.clone(), &mut sum);
-        root
-    }
-
-    fn dfs(node: Option<Rc<RefCell<TreeNode>>>, sum: &mut i32) {
-        if let Some(node) = node {
-            Self::some(node, sum)
+    pub fn find_min_difference(time_points: Vec<String>) -> i32 {
+        if time_points.len() > 1440 {
+            return 0;
         }
+
+        let mut minutes = time_points
+            .iter()
+            .map(|s| Self::parse(s.as_str()))
+            .collect::<Vec<i32>>();
+
+        minutes.sort_unstable();
+        minutes.push(minutes[0] + 1440);
+        minutes.windows(2).map(|w| w[1] - w[0]).min().unwrap()
     }
 
-    fn some(node: Rc<RefCell<TreeNode>>, sum: &mut i32) {
-        Self::dfs(node.borrow().right.clone(), sum);
-        node.borrow_mut().val += *sum;
-        *sum = node.borrow().val;
-        Self::dfs(node.borrow().left.clone(), sum);
+    fn parse(s: &str) -> i32 {
+        let h = s[..2].parse::<i32>().unwrap();
+        let m = s[3..].parse::<i32>().unwrap();
+
+        h * 60 + m
     }
 }
 
 struct Input {
-    num1: String,
-    num2: String,
+    time_points: Vec<String>,
 }
 
 fn main() {
     let inputs = [Input {
-        num1: "1+1i".to_string(),
-        num2: "1+1i".to_string(),
+        time_points: ["23:59", "00:00"].map(|s| s.to_string()).to_vec(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::complex_number_multiply(input.num1, input.num2);
+        let result = Solution::find_min_difference(input.time_points);
         println!("{:?}", result);
     }
 }
