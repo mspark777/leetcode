@@ -1,36 +1,50 @@
 struct Solution;
 
 impl Solution {
-    pub fn optimal_division(nums: Vec<i32>) -> String {
-        match nums.len() {
-            0 => String::new(),
-            1 => nums[0].to_string(),
-            2 => format!("{}/{}", nums[0], nums[1]),
-            _ => format!(
-                "{}/({})",
-                nums[0],
-                nums[1..]
-                    .iter()
-                    .copied()
-                    .map(|n| n.to_string())
-                    .collect::<Vec<String>>()
-                    .join("/")
-            ),
-        }
+    pub fn least_bricks(wall: Vec<Vec<i32>>) -> i32 {
+        use std::collections::HashMap;
+
+        let c = wall
+            .iter()
+            .fold(HashMap::new(), |mut acc, row| {
+                row.iter()
+                    .take(row.len() - 1)
+                    .scan(0, |state, &x| {
+                        *state += x;
+                        Some(*state)
+                    })
+                    .for_each(|x| {
+                        acc.entry(x).and_modify(|c| *c += 1).or_insert(1);
+                    });
+                acc
+            })
+            .values()
+            .max()
+            .copied()
+            .unwrap_or(0);
+
+        (wall.len() as i32) - c
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    wall: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [Input {
-        nums: [1000, 100, 10, 2].to_vec(),
+        wall: vec![
+            vec![1, 2, 2, 1],
+            vec![3, 1, 2],
+            vec![1, 3, 2],
+            vec![2, 4],
+            vec![3, 1, 2],
+            vec![1, 3, 1, 1],
+        ],
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::optimal_division(input.nums);
+        let result = Solution::least_bricks(input.wall);
         println!("{:?}", result);
     }
 }
