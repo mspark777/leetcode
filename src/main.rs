@@ -1,52 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn find_circle_num(is_connected: Vec<Vec<i32>>) -> i32 {
-        let n = is_connected.len();
-        if n == 0 {
-            return 0;
-        }
-
-        let mut seen = vec![false; n];
-        let mut result = 0;
-
-        for row in 0..n {
-            if !seen[row] {
-                result += 1;
-                Self::dfs(&is_connected, row, &mut seen);
-            }
-        }
-
-        result
-    }
-
-    fn dfs(graph: &[Vec<i32>], v: usize, seen: &mut [bool]) {
-        if seen[v] {
-            return;
-        }
-
-        seen[v] = true;
-        for (i, connected) in graph[v].iter().copied().enumerate() {
-            if !seen[i] && (connected == 1) {
-                Self::dfs(graph, i, seen);
-            }
+    pub fn optimal_division(nums: Vec<i32>) -> String {
+        match nums.len() {
+            0 => String::new(),
+            1 => nums[0].to_string(),
+            2 => format!("{}/{}", nums[0], nums[1]),
+            _ => format!(
+                "{}/({})",
+                nums[0],
+                nums[1..]
+                    .iter()
+                    .copied()
+                    .map(|n| n.to_string())
+                    .collect::<Vec<String>>()
+                    .join("/")
+            ),
         }
     }
 }
 
 struct Input {
-    is_connected: Vec<Vec<i32>>,
+    nums: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        is_connected: [[1, 1, 0], [1, 1, 0], [0, 0, 1]]
-            .map(|v| v.to_vec())
-            .to_vec(),
+        nums: [1000, 100, 10, 2].to_vec(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::find_circle_num(input.is_connected);
+        let result = Solution::optimal_division(input.nums);
         println!("{:?}", result);
     }
 }
