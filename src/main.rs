@@ -1,21 +1,26 @@
 struct Solution;
 
 impl Solution {
-    pub fn subarray_sum(nums: Vec<i32>, k: i32) -> i32 {
-        use std::collections::HashMap;
-
+    pub fn array_nesting(nums: Vec<i32>) -> i32 {
         let mut result = 0;
-        let mut sum = 0;
-        let mut sums = HashMap::<i32, i32>::new();
-        sums.insert(0, 1);
+        let mut nums = nums;
+        let n = nums.len();
 
-        for num in nums {
-            sum += num;
-            if let Some(cnt) = sums.get(&(sum - k)) {
-                result += cnt;
+        for i in 0..n {
+            if nums[i] == i32::MAX {
+                continue;
             }
 
-            sums.entry(sum).and_modify(|cnt| *cnt += 1).or_insert(1);
+            let mut start = nums[i];
+            let mut count = 0;
+            while nums[start as usize] != i32::MAX {
+                let temp = start;
+                start = nums[start as usize];
+
+                count += 1;
+                nums[temp as usize] = i32::MAX;
+            }
+            result = result.max(count);
         }
 
         result
@@ -24,23 +29,20 @@ impl Solution {
 
 struct Input {
     nums: Vec<i32>,
-    k: i32,
 }
 
 fn main() {
     let inputs = [
         Input {
-            nums: [1, 1, 1].to_vec(),
-            k: 2,
+            nums: [5, 4, 0, 3, 1, 6, 2].to_vec(),
         },
         Input {
-            nums: [1, 2, 3].to_vec(),
-            k: 3,
+            nums: [0, 1, 2].to_vec(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::subarray_sum(input.nums, input.k);
+        let result = Solution::array_nesting(input.nums);
         println!("{:?}", result);
     }
 }
