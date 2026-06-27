@@ -1,29 +1,23 @@
 struct Solution;
 
 impl Solution {
-    pub fn array_nesting(nums: Vec<i32>) -> i32 {
-        let mut result = 0;
-        let mut nums = nums;
-        let n = nums.len();
+    pub fn valid_square(p1: Vec<i32>, p2: Vec<i32>, p3: Vec<i32>, p4: Vec<i32>) -> bool {
+        Self::check(&p1, &p2, &p3, &p4)
+            || Self::check(&p1, &p3, &p2, &p4)
+            || Self::check(&p1, &p2, &p4, &p3)
+    }
 
-        for i in 0..n {
-            if nums[i] == i32::MAX {
-                continue;
-            }
+    fn dist(p1: &[i32], p2: &[i32]) -> i32 {
+        (p2[1] - p1[1]) * (p2[1] - p1[1]) + (p2[0] - p1[0]) * (p2[0] - p1[0])
+    }
 
-            let mut start = nums[i];
-            let mut count = 0;
-            while nums[start as usize] != i32::MAX {
-                let temp = start;
-                start = nums[start as usize];
-
-                count += 1;
-                nums[temp as usize] = i32::MAX;
-            }
-            result = result.max(count);
-        }
-
-        result
+    fn check(p1: &[i32], p2: &[i32], p3: &[i32], p4: &[i32]) -> bool {
+        Self::dist(p1, p2) > 0
+            && Self::dist(p1, p3) > 0
+            && Self::dist(p1, p2) == Self::dist(p2, p3)
+            && Self::dist(p2, p3) == Self::dist(p3, p4)
+            && Self::dist(p3, p4) == Self::dist(p4, p1)
+            && Self::dist(p1, p3) == Self::dist(p2, p4)
     }
 }
 
