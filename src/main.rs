@@ -1,23 +1,31 @@
 struct Solution;
 
 impl Solution {
-    pub fn valid_square(p1: Vec<i32>, p2: Vec<i32>, p3: Vec<i32>, p4: Vec<i32>) -> bool {
-        Self::check(&p1, &p2, &p3, &p4)
-            || Self::check(&p1, &p3, &p2, &p4)
-            || Self::check(&p1, &p2, &p4, &p3)
-    }
+    pub fn triangle_number(nums: Vec<i32>) -> i32 {
+        let mut result = 0;
+        let mut nums = nums;
+        let n = nums.len();
 
-    fn dist(p1: &[i32], p2: &[i32]) -> i32 {
-        (p2[1] - p1[1]) * (p2[1] - p1[1]) + (p2[0] - p1[0]) * (p2[0] - p1[0])
-    }
+        nums.sort();
+        for i in 0..((n as i32) - 2) {
+            let i = i as usize;
+            if nums[i] == 0 {
+                continue;
+            }
 
-    fn check(p1: &[i32], p2: &[i32], p3: &[i32], p4: &[i32]) -> bool {
-        Self::dist(p1, p2) > 0
-            && Self::dist(p1, p3) > 0
-            && Self::dist(p1, p2) == Self::dist(p2, p3)
-            && Self::dist(p2, p3) == Self::dist(p3, p4)
-            && Self::dist(p3, p4) == Self::dist(p4, p1)
-            && Self::dist(p1, p3) == Self::dist(p2, p4)
+            let mut k = i + 2;
+            for j in (i + 1)..(n - 1) {
+                while (k < n) && ((nums[i] + nums[j]) > nums[k]) {
+                    k += 1;
+                }
+
+                let ik = k as i32;
+                let ij = j as i32;
+                result += ik - ij - 1;
+            }
+        }
+
+        result
     }
 }
 
@@ -28,15 +36,16 @@ struct Input {
 fn main() {
     let inputs = [
         Input {
-            nums: [5, 4, 0, 3, 1, 6, 2].to_vec(),
+            nums: [2, 2, 3, 4].to_vec(),
         },
         Input {
-            nums: [0, 1, 2].to_vec(),
+            nums: [4, 2, 3, 4].to_vec(),
         },
+        Input { nums: [1].to_vec() },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::array_nesting(input.nums);
+        let result = Solution::triangle_number(input.nums);
         println!("{:?}", result);
     }
 }
