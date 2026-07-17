@@ -1,54 +1,59 @@
 struct Solution;
 
+use std::collections::HashMap;
+
 impl Solution {
-    pub fn exclusive_time(n: i32, logs: Vec<String>) -> Vec<i32> {
-        let n = n as usize;
-        let mut stack = Vec::<i32>::new();
-        let mut result = vec![0; n];
-        let mut s = logs[0].split(':').collect::<Vec<_>>();
+    pub fn shopping_offers(price: Vec<i32>, special: Vec<Vec<i32>>, needs: Vec<i32>) -> i32 {
+        Self::best(needs, &special, &price, &mut HashMap::new())
+    }
 
-        stack.push(s[0].parse().unwrap());
-        let mut prev = s[2].parse::<i32>().unwrap();
-
-        let mut i = 1;
-        while i < logs.len() {
-            s = logs[i].split(':').collect();
-            if s[1] == "start" {
-                if !stack.is_empty() {
-                    result[stack.last().copied().unwrap() as usize] +=
-                        s[2].parse::<i32>().unwrap() - prev;
-                }
-
-                stack.push(s[0].parse().unwrap());
-                prev = s[2].parse::<i32>().unwrap();
-            } else {
-                result[stack.last().copied().unwrap() as usize] +=
-                    s[2].parse::<i32>().unwrap() - prev + 1;
-                stack.pop();
-                prev = s[2].parse::<i32>().unwrap() + 1;
-            }
-            i += 1;
+    fn best(
+        needs: Vec<i32>,
+        special: &[Vec<i32>],
+        price: &[i32],
+        mem: &mut HashMap<Vec<i32>, i32>,
+    ) -> i32 {
+        if let Some(val) = mem.get(&needs) {
+            return *val;
         }
-
-        result
+        let mut pos = Vec::new();
+        pos.push(
+            needs
+                .iter()
+                .zip(price.iter())
+                .map(|(n, p)| n * p)
+                .sum::<i32>(),
+        );
+        for spec in special {
+            if needs.iter().zip(spec.iter()).all(|(n, s)| s <= n) {
+                let mut cur = needs.clone();
+                for (i, (_n, s)) in needs.iter().zip(spec.iter()).enumerate() {
+                    cur[i] -= s;
+                }
+                pos.push(spec.last().unwrap() + Self::best(cur, special, price, mem));
+            }
+        }
+        let val = pos.into_iter().min().unwrap();
+        mem.insert(needs, val);
+        val
     }
 }
 
 struct Input {
-    n: i32,
-    logs: Vec<String>,
+    price: Vec<i32>,
+    special: Vec<Vec<i32>>,
+    needs: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        n: 2,
-        logs: ["0:start:0", "1:start:2", "1:end:5", "0:end:6"]
-            .map(|v| v.to_string())
-            .to_vec(),
+        price: [2, 5].to_vec(),
+        special: [[3, 0, 5], [1, 2, 10]].map(|v| v.to_vec()).to_vec(),
+        needs: [3, 2].to_vec(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::exclusive_time(input.n, input.logs);
+        let result = Solution::shopping_offers(input.price, input.special, input.needs);
         println!("{:?}", result);
     }
 }
