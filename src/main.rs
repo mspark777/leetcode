@@ -1,59 +1,65 @@
 struct Solution;
 
-use std::collections::HashMap;
-
 impl Solution {
-    pub fn shopping_offers(price: Vec<i32>, special: Vec<Vec<i32>>, needs: Vec<i32>) -> i32 {
-        Self::best(needs, &special, &price, &mut HashMap::new())
-    }
+    pub fn solve_equation(equation: String) -> String {
+        let equations = equation.as_bytes();
+        let len = equations.len();
+        let mut tmp = 0;
+        let mut lr = 1;
+        let mut a = 0;
+        let mut b = 0;
+        let mut sign = 1;
+        let mut calc = 0;
 
-    fn best(
-        needs: Vec<i32>,
-        special: &[Vec<i32>],
-        price: &[i32],
-        mem: &mut HashMap<Vec<i32>, i32>,
-    ) -> i32 {
-        if let Some(val) = mem.get(&needs) {
-            return *val;
-        }
-        let mut pos = Vec::new();
-        pos.push(
-            needs
-                .iter()
-                .zip(price.iter())
-                .map(|(n, p)| n * p)
-                .sum::<i32>(),
-        );
-        for spec in special {
-            if needs.iter().zip(spec.iter()).all(|(n, s)| s <= n) {
-                let mut cur = needs.clone();
-                for (i, (_n, s)) in needs.iter().zip(spec.iter()).enumerate() {
-                    cur[i] -= s;
+        for (idx, equation) in equations.iter().copied().enumerate() {
+            if equation.is_ascii_digit() {
+                tmp = tmp * 10 + (equation - b'0') as i32;
+                calc += 1;
+            }
+            if equation == b'x' {
+                if tmp == 0 && calc == 0 {
+                    a += sign * lr;
                 }
-                pos.push(spec.last().unwrap() + Self::best(cur, special, price, mem));
+                a += sign * lr * tmp;
+                calc = 0;
+                tmp = 0;
+            }
+            if equation == b'-' || equation == b'+' || equation == b'=' || idx == len - 1 {
+                b += sign * lr * tmp;
+                calc = 0;
+                tmp = 0;
+                if equation == b'-' {
+                    sign = -1;
+                } else if equation == b'+' {
+                    sign = 1;
+                } else if equation == b'=' {
+                    lr = -1;
+                    sign = 1;
+                }
             }
         }
-        let val = pos.into_iter().min().unwrap();
-        mem.insert(needs, val);
-        val
+
+        if a != 0 {
+            format!("x={}", -b / a)
+        } else if b == 0 {
+            "Infinite solutions".to_string()
+        } else {
+            "No solution".to_string()
+        }
     }
 }
 
 struct Input {
-    price: Vec<i32>,
-    special: Vec<Vec<i32>>,
-    needs: Vec<i32>,
+    equation: String,
 }
 
 fn main() {
     let inputs = [Input {
-        price: [2, 5].to_vec(),
-        special: [[3, 0, 5], [1, 2, 10]].map(|v| v.to_vec()).to_vec(),
-        needs: [3, 2].to_vec(),
+        equation: "x+5-3+x=6+x-2".to_string(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::shopping_offers(input.price, input.special, input.needs);
+        let result = Solution::solve_equation(input.equation);
         println!("{:?}", result);
     }
 }
