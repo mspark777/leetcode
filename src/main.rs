@@ -1,23 +1,61 @@
 struct Solution;
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+
 impl Solution {
-    pub fn count_substrings(s: String) -> i32 {
-        let n = s.len();
-        let s = s.as_bytes();
-        (0..n)
-            .map(|i| Self::count(s, i, i, n) + Self::count(s, i, i + 1, n))
-            .sum()
+    pub fn construct_maximum_binary_tree(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+        match nums
+            .iter()
+            .copied()
+            .enumerate()
+            .max_by_key(|&(_idx, val)| val)
+        {
+            None => None,
+            Some((idx, val)) => Self::build(&nums[..idx], &nums[idx + 1..], val),
+        }
     }
 
-    fn count(s: &[u8], i: usize, j: usize, n: usize) -> i32 {
-        (0..=i)
-            .rev()
-            .zip(j..n)
-            .try_fold(0, |a, (i, j)| match s[i] == s[j] {
-                true => Ok(a + 1),
-                _ => Err(a),
-            })
-            .unwrap_or_else(|a| a)
+    fn build(left: &[i32], right: &[i32], val: i32) -> Option<Rc<RefCell<TreeNode>>> {
+        let left = match left
+            .iter()
+            .copied()
+            .enumerate()
+            .max_by_key(|&(_idx, val)| val)
+        {
+            None => None,
+            Some((idx, val)) => Self::build(&left[..idx], &left[idx + 1..], val),
+        };
+
+        let right = match right
+            .iter()
+            .copied()
+            .enumerate()
+            .max_by_key(|&(_idx, val)| val)
+        {
+            None => None,
+            Some((idx, val)) => Self::build(&right[..idx], &right[idx + 1..], val),
+        };
+
+        Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
     }
 }
 
