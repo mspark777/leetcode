@@ -20,42 +20,50 @@ impl TreeNode {
 
 use std::cell::RefCell;
 use std::rc::Rc;
-
+type TypeNode = Option<Rc<RefCell<TreeNode>>>;
 impl Solution {
-    pub fn construct_maximum_binary_tree(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
-        match nums
-            .iter()
-            .copied()
-            .enumerate()
-            .max_by_key(|&(_idx, val)| val)
-        {
-            None => None,
-            Some((idx, val)) => Self::build(&nums[..idx], &nums[idx + 1..], val),
+    pub fn print_tree(root: TypeNode) -> Vec<Vec<String>> {
+        let height = Self::dfs(root.clone());
+        let n = 2usize.pow(height) - 1;
+        let mut tree = vec![vec![String::new(); n]; height as usize];
+        Self::print(root.clone(), &mut tree, height, 0, 0, true);
+        tree
+    }
+
+    fn dfs(root: TypeNode) -> u32 {
+        match root {
+            None => 0,
+            Some(node) => {
+                let node = node.borrow();
+                1 + Self::dfs(node.left.clone()).max(Self::dfs(node.right.clone()))
+            }
         }
     }
 
-    fn build(left: &[i32], right: &[i32], val: i32) -> Option<Rc<RefCell<TreeNode>>> {
-        let left = match left
-            .iter()
-            .copied()
-            .enumerate()
-            .max_by_key(|&(_idx, val)| val)
-        {
-            None => None,
-            Some((idx, val)) => Self::build(&left[..idx], &left[idx + 1..], val),
-        };
-
-        let right = match right
-            .iter()
-            .copied()
-            .enumerate()
-            .max_by_key(|&(_idx, val)| val)
-        {
-            None => None,
-            Some((idx, val)) => Self::build(&right[..idx], &right[idx + 1..], val),
-        };
-
-        Some(Rc::new(RefCell::new(TreeNode { val, left, right })))
+    fn print(
+        root: TypeNode,
+        tree: &mut Vec<Vec<String>>,
+        h: u32,
+        r: u32,
+        pc: u32,
+        left_child: bool,
+    ) {
+        match root {
+            None => {}
+            Some(node) => {
+                let node = node.borrow();
+                let c = if r == 0 {
+                    2u32.pow(h - 1) - 1
+                } else if left_child {
+                    pc - 2u32.pow(h - r - 1)
+                } else {
+                    pc + 2u32.pow(h - r - 1)
+                };
+                tree[r as usize][c as usize] = format!("{}", node.val);
+                Self::print(node.left.clone(), tree, h, r + 1, c, true);
+                Self::print(node.right.clone(), tree, h, r + 1, c, false);
+            }
+        }
     }
 }
 
