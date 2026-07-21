@@ -1,34 +1,48 @@
 struct Solution;
 
 impl Solution {
-    pub fn flip_lights(n: i32, presses: i32) -> i32 {
-        let n = n.min(3);
+    pub fn find_number_of_lis(nums: Vec<i32>) -> i32 {
+        let n = nums.len();
+        let mut lengths = vec![1; n];
+        let mut counts = vec![1; n];
 
-        match presses {
-            0 => 1,
-            1 if n == 1 => 2,
-            1 if n == 2 => 3,
-            1 => 4,
-            2 if n == 1 => 2,
-            2 if n == 2 => 4,
-            2 => 7,
-            _ if n == 1 => 2,
-            _ if n == 2 => 4,
-            _ => 8,
+        for i in 0..n {
+            for j in 0..i {
+                if nums[j] < nums[i] {
+                    if (lengths[j] + 1) > lengths[i] {
+                        lengths[i] = lengths[j] + 1;
+                        counts[i] = 0;
+                    }
+                    if (lengths[j] + 1) == lengths[i] {
+                        counts[i] += counts[j];
+                    }
+                }
+            }
         }
+
+        let max_length = lengths.iter().copied().max().unwrap();
+        let mut result = 0;
+        for (i, l) in lengths.into_iter().enumerate() {
+            if l == max_length {
+                result += counts[i];
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    n: i32,
-    presses: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 1, presses: 1 }];
+    let inputs = [Input {
+        nums: [1, 3, 5, 4, 7].to_vec(),
+    }];
 
     for input in inputs.into_iter() {
-        let result = Solution::flip_lights(input.n, input.presses);
+        let result = Solution::find_number_of_lis(input.nums);
         println!("{:?}", result);
     }
 }
