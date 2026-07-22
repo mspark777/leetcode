@@ -1,3 +1,72 @@
+use std::collections::HashMap;
+
+#[derive(Default)]
+struct Node {
+    chars: HashMap<u8, Node>,
+    word: bool,
+}
+
+impl Node {
+    fn insert(&mut self, s: &str) {
+        let s = s.as_bytes();
+        let mut n = self;
+
+        for b in s.iter().copied() {
+            n = n.chars.entry(b).or_default();
+        }
+
+        n.word = true;
+    }
+
+    fn search_with_misses(&self, word: &str, misses: usize) -> bool {
+        let w = word.as_bytes();
+        if w.is_empty() {
+            return self.word && misses == 0;
+        }
+
+        if let Some(node) = self.chars.get(&w[0])
+            && node.search_with_misses(&word[1..], misses)
+        {
+            return true;
+        }
+
+        if misses > 0 {
+            for (&ch, node) in self.chars.iter() {
+                if ch == w[0] {
+                    continue;
+                }
+
+                if node.search_with_misses(&word[1..], misses - 1) {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+}
+
+#[derive(Default)]
+struct MagicDictionary {
+    trie: Node,
+}
+
+impl MagicDictionary {
+    fn new() -> Self {
+        Default::default()
+    }
+
+    fn build_dict(&mut self, dictionary: Vec<String>) {
+        for s in dictionary.iter() {
+            self.trie.insert(s.as_str())
+        }
+    }
+
+    fn search(&self, search_word: String) -> bool {
+        self.trie.search_with_misses(&search_word, 1)
+    }
+}
+
 struct Solution;
 
 impl Solution {
