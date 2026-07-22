@@ -1,71 +1,73 @@
-use std::collections::HashMap;
-
 #[derive(Default)]
 struct Node {
-    chars: HashMap<u8, Node>,
-    word: bool,
+    sum: i32,
+    val: i32,
+    children: [Option<Box<Node>>; 26],
 }
 
-impl Node {
-    fn insert(&mut self, s: &str) {
-        let s = s.as_bytes();
-        let mut n = self;
+struct MapSum {
+    root: Node,
+}
 
-        for b in s.iter().copied() {
-            n = n.chars.entry(b).or_default();
-        }
-
-        n.word = true;
+impl MapSum {
+    fn new() -> Self {
+        let root = Node::default();
+        Self { root }
     }
 
-    fn search_with_misses(&self, word: &str, misses: usize) -> bool {
-        let w = word.as_bytes();
-        if w.is_empty() {
-            return self.word && misses == 0;
-        }
-
-        if let Some(node) = self.chars.get(&w[0])
-            && node.search_with_misses(&word[1..], misses)
-        {
-            return true;
-        }
-
-        if misses > 0 {
-            for (&ch, node) in self.chars.iter() {
-                if ch == w[0] {
-                    continue;
+    fn insert(&mut self, key: String, val: i32) {
+        let mut old_val = 0;
+        let mut n = &self.root;
+        for c in key.bytes() {
+            let b = (c - b'a') as usize;
+            match &n.children[b] {
+                Some(node) => {
+                    n = node;
+                    old_val = n.val;
                 }
-
-                if node.search_with_misses(&word[1..], misses - 1) {
-                    return true;
+                _ => {
+                    old_val = 0;
+                    break;
                 }
             }
         }
 
-        false
-    }
-}
-
-#[derive(Default)]
-struct MagicDictionary {
-    trie: Node,
-}
-
-impl MagicDictionary {
-    fn new() -> Self {
-        Default::default()
-    }
-
-    fn build_dict(&mut self, dictionary: Vec<String>) {
-        for s in dictionary.iter() {
-            self.trie.insert(s.as_str())
+        let mut n = &mut self.root;
+        n.sum += val - old_val;
+        for b in key.bytes() {
+            let c = (b - b'a') as usize;
+            match &mut n.children[c] {
+                m @ None => {
+                    *m = Some(Box::new(Node::default()));
+                    n = m.as_mut().unwrap();
+                }
+                Some(node) => n = node,
+            }
+            n.sum += val - old_val;
         }
+        n.val = val;
     }
 
-    fn search(&self, search_word: String) -> bool {
-        self.trie.search_with_misses(&search_word, 1)
+    fn sum(&self, prefix: String) -> i32 {
+        let mut n = &self.root;
+        for c in prefix.bytes() {
+            let b = (c - b'a') as usize;
+            match &n.children[b] {
+                Some(node) => n = &node,
+                _ => return 0,
+            }
+        }
+
+        n.sum
     }
 }
+
+/**
+ * Your MapSum object will be instantiated and called as such:
+ * let obj = MapSum::new();
+ * obj.insert(key, val);
+ * let ret_2: i32 = obj.sum(prefix);
+ */
 
 struct Solution;
 
