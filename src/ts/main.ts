@@ -1,82 +1,37 @@
 import "@total-typescript/ts-reset";
 
-class _Node {
-  val: boolean;
-  isLeaf: boolean;
-  topLeft: _Node | null;
-  topRight: _Node | null;
-  bottomLeft: _Node | null;
-  bottomRight: _Node | null;
-  constructor(
-    val?: boolean,
-    isLeaf?: boolean,
-    topLeft?: _Node,
-    topRight?: _Node,
-    bottomLeft?: _Node,
-    bottomRight?: _Node,
-  ) {
-    this.val = val === undefined ? false : val;
-    this.isLeaf = isLeaf === undefined ? false : isLeaf;
-    this.topLeft = topLeft === undefined ? null : topLeft;
-    this.topRight = topRight === undefined ? null : topRight;
-    this.bottomLeft = bottomLeft === undefined ? null : bottomLeft;
-    this.bottomRight = bottomRight === undefined ? null : bottomRight;
+class Employee {
+  id: number;
+  importance: number;
+  subordinates: number[];
+  constructor(id: number, importance: number, subordinates: number[]) {
+    this.id = id;
+    this.importance = importance;
+    this.subordinates = subordinates;
   }
 }
 
-function intersect(
-  quadTree1: _Node | null,
-  quadTree2: _Node | null,
-): _Node | null {
-  if (quadTree1 == null) {
-    return quadTree2;
+function dfs(id: number, map: Map<number, Employee>): number {
+  const employee = map.get(id);
+  if (employee == null) {
+    throw new Error();
   }
 
-  if (quadTree2 == null) {
-    return quadTree1;
+  let importance = employee.importance;
+  for (const subId of employee.subordinates) {
+    importance += dfs(subId, map);
   }
 
-  if (quadTree1.isLeaf) {
-    if (quadTree1.val) {
-      return new _Node(true, true);
-    } else {
-      return quadTree2;
-    }
+  return importance;
+}
+
+function getImportance(employees: Employee[], id: number): number {
+  const employeeMap = new Map<number, Employee>();
+  for (const employee of employees) {
+    employeeMap.set(employee.id, employee);
   }
 
-  if (quadTree2.isLeaf) {
-    if (quadTree2.val) {
-      return new _Node(true, true);
-    } else {
-      return quadTree1;
-    }
-  }
-
-  const topLeft = intersect(quadTree1.topLeft, quadTree2.topLeft);
-  const topRight = intersect(quadTree1.topRight, quadTree2.topRight);
-  const bottomLeft = intersect(quadTree1.bottomLeft, quadTree2.bottomLeft);
-  const bottomRight = intersect(quadTree1.bottomRight, quadTree2.bottomRight);
-
-  if (
-    topLeft?.isLeaf === true &&
-    topRight?.isLeaf === true &&
-    bottomLeft?.isLeaf === true &&
-    bottomRight?.isLeaf === true &&
-    topLeft.val == topRight.val &&
-    topRight.val == bottomLeft.val &&
-    bottomLeft.val == bottomRight.val
-  ) {
-    return new _Node(topLeft.val, true);
-  }
-
-  return new _Node(
-    false,
-    false,
-    topLeft ?? undefined,
-    topRight ?? undefined,
-    bottomLeft ?? undefined,
-    bottomRight ?? undefined,
-  );
+  return dfs(id, employeeMap);
 }
 
 interface Input {
