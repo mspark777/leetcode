@@ -1,58 +1,54 @@
 struct Solution;
 
 impl Solution {
-    pub fn knight_probability(n: i32, k: i32, row: i32, column: i32) -> f64 {
-        let n = n as usize;
-        let k = k as usize;
-
-        let mut f = vec![vec![vec![0.0; n]; n]; k + 1];
-
-        for row in &mut f[0] {
-            for cell in row.iter_mut() {
-                *cell = 1.0;
-            }
+    pub fn can_partition_k_subsets(nums: Vec<i32>, k: i32) -> bool {
+        if k == 1 {
+            return true;
         }
 
-        let dirs: [i32; 9] = [-2, -1, 2, 1, -2, 1, 2, -1, -2];
+        let target = nums.iter().sum::<i32>();
+        match target % k {
+            0 => Self::dfs(0, target / k, k as usize, &nums, &mut [0; 16]),
+            _ => false,
+        }
+    }
 
-        for h in 1..=k {
-            for i in 0..n {
-                for j in 0..n {
-                    for p in 0..8 {
-                        let x = (i as i32) + dirs[p];
-                        let y = (j as i32) + dirs[p + 1];
+    fn dfs(i: usize, target: i32, k: usize, nums: &[i32], sums: &mut [i32]) -> bool {
+        if i == nums.len() {
+            return true;
+        }
 
-                        if x >= 0 && x < (n as i32) && y >= 0 && y < (n as i32) {
-                            let x = x as usize;
-                            let y = y as usize;
-                            f[h][i][j] += f[h - 1][x][y] / 8.0;
-                        }
-                    }
+        for j in 0..k {
+            if nums[i] + sums[j] <= target {
+                sums[j] += nums[i];
+                if Self::dfs(i + 1, target, k, nums, sums) {
+                    return true;
                 }
+                sums[j] -= nums[i];
+            }
+
+            if sums[j] == 0 {
+                break;
             }
         }
 
-        f[k][row as usize][column as usize]
+        false
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
     k: i32,
-    row: i32,
-    column: i32,
 }
 
 fn main() {
     let inputs = [Input {
-        n: 3,
-        k: 2,
-        row: 0,
-        column: 0,
+        nums: [4, 3, 2, 3, 5, 2, 1].to_vec(),
+        k: 4,
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::knight_probability(input.n, input.k, input.row, input.column);
+        let result = Solution::can_partition_k_subsets(input.nums, input.k);
         println!("{:?}", result);
     }
 }
