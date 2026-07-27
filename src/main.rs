@@ -1,38 +1,43 @@
 struct Solution;
 
-impl Solution {
-    pub fn can_partition_k_subsets(nums: Vec<i32>, k: i32) -> bool {
-        if k == 1 {
-            return true;
-        }
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
-        let target = nums.iter().sum::<i32>();
-        match target % k {
-            0 => Self::dfs(0, target / k, k as usize, &nums, &mut [0; 16]),
-            _ => false,
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
         }
     }
+}
+use std::cell::RefCell;
+use std::rc::Rc;
 
-    fn dfs(i: usize, target: i32, k: usize, nums: &[i32], sums: &mut [i32]) -> bool {
-        if i == nums.len() {
-            return true;
-        }
-
-        for j in 0..k {
-            if nums[i] + sums[j] <= target {
-                sums[j] += nums[i];
-                if Self::dfs(i + 1, target, k, nums, sums) {
-                    return true;
+impl Solution {
+    pub fn insert_into_bst(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        val: i32,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        Some(match root {
+            None => Rc::new(RefCell::new(TreeNode::new(val))),
+            Some(r) => {
+                if r.borrow().val > val {
+                    let node = Solution::insert_into_bst(r.borrow().left.clone(), val);
+                    r.borrow_mut().left = node;
+                } else {
+                    let node = Solution::insert_into_bst(r.borrow().right.clone(), val);
+                    r.borrow_mut().right = node
                 }
-                sums[j] -= nums[i];
+                r
             }
-
-            if sums[j] == 0 {
-                break;
-            }
-        }
-
-        false
+        })
     }
 }
 
