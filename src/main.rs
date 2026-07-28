@@ -1,15 +1,52 @@
 struct Solution;
 
-impl Solution {
-    pub fn max_profit(prices: Vec<i32>, fee: i32) -> i32 {
-        let mut s0 = -prices[0];
-        let mut s1 = 0;
-        for price in prices.into_iter().skip(1) {
-            let old_s0 = s0;
-            s0 = s0.max(s1 - price);
-            s1 = s1.max(old_s0 + price - fee);
+use std::collections::HashMap;
+
+#[derive(Default)]
+struct Node {
+    children: HashMap<char, Node>,
+    flag: bool,
+}
+
+impl Node {
+    fn insert(&mut self, word: String, best: &mut String) {
+        let mut node = self;
+        let mut valid = true;
+
+        for (i, c) in word.chars().enumerate() {
+            node = node.children.entry(c).or_default();
+            if i == word.len() - 1 {
+                node.flag = true;
+            }
+
+            if !node.flag {
+                valid = false;
+            }
         }
-        s0.max(s1)
+
+        if !valid {
+            return;
+        }
+
+        if best.len() < word.len() || (best.len() == word.len() && word.as_str() < best.as_str()) {
+            best.clear();
+            best.extend(word.chars());
+        }
+    }
+}
+
+impl Solution {
+    pub fn longest_word(words: Vec<String>) -> String {
+        let mut words = words;
+        let mut trie = Node::default();
+        let mut best = String::new();
+
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        for word in words {
+            trie.insert(word, &mut best);
+        }
+
+        best
     }
 }
 
