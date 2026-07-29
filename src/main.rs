@@ -1,75 +1,78 @@
 struct Solution;
 
-use std::collections::HashMap;
-
 impl Solution {
-    pub fn find<'a>(fa: &mut HashMap<&'a String, &'a String>, x: &'a String) -> &'a String {
-        if x == fa[x] {
-            return x;
-        }
-        let fd = Solution::find(fa, fa[x]);
-        fa.insert(x, fd);
-        fa[x]
-    }
+    pub fn remove_comments(source: Vec<String>) -> Vec<String> {
+        let mut in_block = false;
+        let mut new_line = String::new();
+        let mut result = Vec::<String>::new();
 
-    pub fn union<'a>(fa: &mut HashMap<&'a String, &'a String>, x: &'a String, y: &'a String) {
-        let a = Solution::find(fa, x);
-        let b = Solution::find(fa, y);
-        fa.insert(b, a);
-    }
+        for line in source {
+            let mut i = 0usize;
+            let line = line.as_str();
+            let n = line.len();
+            let last = n - 1;
 
-    pub fn accounts_merge(accounts: Vec<Vec<String>>) -> Vec<Vec<String>> {
-        let mut fa = HashMap::new();
-        let mut email_name = HashMap::new();
-        for acc in accounts.iter() {
-            let name = &acc[0];
-            for i in 1..acc.len() {
-                fa.insert(&acc[i], &acc[i]);
-                email_name.entry(&acc[i]).or_insert(name);
+            while i < n {
+                if in_block {
+                    if i < last && &line[i..(i + 2)] == "*/" {
+                        in_block = false;
+                        i += 1;
+                    }
+                } else {
+                    if i < last && &line[i..(i + 2)] == "//" {
+                        break;
+                    } else if i < last && &line[i..(i + 2)] == "/*" {
+                        in_block = true;
+                        i += 1;
+                    } else {
+                        new_line.push_str(&line[i..(i + 1)]);
+                    }
+                }
+                i += 1;
+            }
+
+            if !in_block && !new_line.is_empty() {
+                result.push(new_line);
+                new_line = String::new();
             }
         }
-        for acc in &accounts {
-            for i in 2..acc.len() {
-                Solution::union(&mut fa, &acc[1], &acc[i]);
-            }
-        }
-        let mut name_emails = HashMap::new();
-        for em in email_name.keys() {
-            name_emails
-                .entry(Solution::find(&mut fa, *em))
-                .or_insert(Vec::new())
-                .push(*em);
-        }
-        for v in name_emails.values_mut() {
-            v.sort();
-        }
 
-        let mut res = Vec::new();
-        for fa_email in name_emails.keys() {
-            let mut data = Vec::new();
-            data.push(email_name[*fa_email].to_string());
-            for t in name_emails.get(fa_email).unwrap().iter() {
-                data.push(t.to_string());
-            }
-            res.push(data);
-        }
-        res
+        result
     }
 }
 
 struct Input {
-    prices: Vec<i32>,
-    fee: i32,
+    source: Vec<String>,
 }
 
 fn main() {
-    let inputs = [Input {
-        prices: [1, 3, 2, 8, 4, 9].to_vec(),
-        fee: 2,
-    }];
+    let inputs = [
+        Input {
+            source: [
+                "/*Test program */",
+                "int main()",
+                "{ ",
+                "  // variable declaration ",
+                "int a, b, c;",
+                "/* This is a test",
+                "   multiline  ",
+                "   comment for ",
+                "   testing */",
+                "a = b + c;",
+                "}",
+            ]
+            .map(|s| s.to_string())
+            .to_vec(),
+        },
+        Input {
+            source: ["a/*comment", "line", "more_comment*/b"]
+                .map(|s| s.to_string())
+                .to_vec(),
+        },
+    ];
 
     for input in inputs.into_iter() {
-        let result = Solution::max_profit(input.prices, input.fee);
+        let result = Solution::remove_comments(input.source);
         println!("{:?}", result);
     }
 }
