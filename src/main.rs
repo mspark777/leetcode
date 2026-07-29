@@ -1,40 +1,33 @@
 struct Solution;
 
 impl Solution {
-    pub fn remove_comments(source: Vec<String>) -> Vec<String> {
-        let mut in_block = false;
-        let mut new_line = String::new();
-        let mut result = Vec::<String>::new();
+    pub fn asteroid_collision(asteroids: Vec<i32>) -> Vec<i32> {
+        let mut result = Vec::<i32>::new();
 
-        for line in source {
-            let mut i = 0usize;
-            let line = line.as_str();
-            let n = line.len();
-            let last = n - 1;
+        for asteroid in asteroids {
+            if asteroid > 0 {
+                result.push(asteroid);
+                continue;
+            }
 
-            while i < n {
-                if in_block {
-                    if i < last && &line[i..(i + 2)] == "*/" {
-                        in_block = false;
-                        i += 1;
-                    }
-                } else {
-                    if i < last && &line[i..(i + 2)] == "//" {
-                        break;
-                    } else if i < last && &line[i..(i + 2)] == "/*" {
-                        in_block = true;
-                        i += 1;
-                    } else {
-                        new_line.push_str(&line[i..(i + 1)]);
-                    }
+            while let Some(&val) = result.last()
+                && val > 0
+                && val < (-asteroid)
+            {
+                result.pop();
+            }
+
+            if let Some(&val) = result.last()
+                && val > 0
+            {
+                if val == (-asteroid) {
+                    result.pop();
                 }
-                i += 1;
+
+                continue;
             }
 
-            if !in_block && !new_line.is_empty() {
-                result.push(new_line);
-                new_line = String::new();
-            }
+            result.push(asteroid);
         }
 
         result
@@ -42,37 +35,24 @@ impl Solution {
 }
 
 struct Input {
-    source: Vec<String>,
+    asteroids: Vec<i32>,
 }
 
 fn main() {
     let inputs = [
         Input {
-            source: [
-                "/*Test program */",
-                "int main()",
-                "{ ",
-                "  // variable declaration ",
-                "int a, b, c;",
-                "/* This is a test",
-                "   multiline  ",
-                "   comment for ",
-                "   testing */",
-                "a = b + c;",
-                "}",
-            ]
-            .map(|s| s.to_string())
-            .to_vec(),
+            asteroids: [5, 10, -5].to_vec(),
         },
         Input {
-            source: ["a/*comment", "line", "more_comment*/b"]
-                .map(|s| s.to_string())
-                .to_vec(),
+            asteroids: [8, -8].to_vec(),
+        },
+        Input {
+            asteroids: [10, 2, -5].to_vec(),
         },
     ];
 
     for input in inputs.into_iter() {
-        let result = Solution::remove_comments(input.source);
+        let result = Solution::asteroid_collision(input.asteroids);
         println!("{:?}", result);
     }
 }
