@@ -1,46 +1,40 @@
 struct Solution;
 
 impl Solution {
-    pub fn monotone_increasing_digits(n: i32) -> i32 {
-        let mut n = n;
-        let mut digits = Vec::<i32>::new();
+    pub fn delete_and_earn(nums: Vec<i32>) -> i32 {
+        let mut sum = vec![0; 10001];
+        let mut dp = vec![0; 10001];
 
-        while n > 0 {
-            digits.push(n % 10);
-            n /= 10;
+        for num in nums {
+            sum[num as usize] += num;
         }
 
-        for i in 1..digits.len() {
-            if digits[i - 1] < digits[i] {
-                digits[i] -= 1;
+        dp[1] = sum[1];
 
-                for d in digits.iter_mut().take(i) {
-                    *d = 9;
-                }
-            }
+        for i in 2..10001 {
+            dp[i] = i32::max(sum[i] + dp[i - 2], dp[i - 1])
         }
 
-        let mut result = 0;
-        let mut p = 1;
-
-        for digit in digits {
-            result += digit * p;
-            p *= 10;
-        }
-
-        result
+        dp[10001 - 1]
     }
 }
 
 struct Input {
-    n: i32,
+    nums: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 10 }, Input { n: 1234 }, Input { n: 332 }];
+    let inputs = [
+        Input {
+            nums: vec![3, 4, 2],
+        },
+        Input {
+            nums: vec![2, 2, 3, 3, 3, 4],
+        },
+    ];
 
     for input in inputs.into_iter() {
-        let result = Solution::monotone_increasing_digits(input.n);
+        let result = Solution::delete_and_earn(input.nums);
         println!("{:?}", result);
     }
 }
