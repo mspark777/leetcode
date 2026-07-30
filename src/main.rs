@@ -1,33 +1,31 @@
 struct Solution;
 
 impl Solution {
-    pub fn asteroid_collision(asteroids: Vec<i32>) -> Vec<i32> {
-        let mut result = Vec::<i32>::new();
+    pub fn monotone_increasing_digits(n: i32) -> i32 {
+        let mut n = n;
+        let mut digits = Vec::<i32>::new();
 
-        for asteroid in asteroids {
-            if asteroid > 0 {
-                result.push(asteroid);
-                continue;
-            }
+        while n > 0 {
+            digits.push(n % 10);
+            n /= 10;
+        }
 
-            while let Some(&val) = result.last()
-                && val > 0
-                && val < (-asteroid)
-            {
-                result.pop();
-            }
+        for i in 1..digits.len() {
+            if digits[i - 1] < digits[i] {
+                digits[i] -= 1;
 
-            if let Some(&val) = result.last()
-                && val > 0
-            {
-                if val == (-asteroid) {
-                    result.pop();
+                for d in digits.iter_mut().take(i) {
+                    *d = 9;
                 }
-
-                continue;
             }
+        }
 
-            result.push(asteroid);
+        let mut result = 0;
+        let mut p = 1;
+
+        for digit in digits {
+            result += digit * p;
+            p *= 10;
         }
 
         result
@@ -35,24 +33,14 @@ impl Solution {
 }
 
 struct Input {
-    asteroids: Vec<i32>,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [
-        Input {
-            asteroids: [5, 10, -5].to_vec(),
-        },
-        Input {
-            asteroids: [8, -8].to_vec(),
-        },
-        Input {
-            asteroids: [10, 2, -5].to_vec(),
-        },
-    ];
+    let inputs = [Input { n: 10 }, Input { n: 1234 }, Input { n: 332 }];
 
     for input in inputs.into_iter() {
-        let result = Solution::asteroid_collision(input.asteroids);
+        let result = Solution::monotone_increasing_digits(input.n);
         println!("{:?}", result);
     }
 }
