@@ -1,87 +1,73 @@
 struct Solution;
 
-const VAL_BASE: usize = (b'F' - b'A' + 1) as usize;
-const VAL_MAX: usize = (VAL_BASE + 1).pow(ROW_MAX_LEN as u32 - 1);
-const ROW_MAX_LEN: usize = 6;
-const A: u8 = b'A';
-
 impl Solution {
-    pub fn pyramid_transition(bottom: String, allowed: Vec<String>) -> bool {
-        let m = bottom.len();
+    pub fn order_of_largest_plus_sign(n: i32, mines: Vec<Vec<i32>>) -> i32 {
+        use std::collections::HashSet;
 
-        let mut allowed_map = [[0_u8; VAL_BASE]; VAL_BASE];
-        let mut seen = [false; VAL_MAX];
-        let mut rows = [[0; ROW_MAX_LEN]; ROW_MAX_LEN];
+        let n = n as usize;
+        let mines_set = mines
+            .into_iter()
+            .map(|v| (v[0] as usize, v[1] as usize))
+            .collect::<HashSet<(usize, usize)>>();
 
-        for a in allowed {
-            let b = a.as_bytes();
+        let mut dp = vec![vec![n; n]; n];
 
-            allowed_map[(b[0] - A) as usize][(b[1] - A) as usize] |= 1 << (b[2] - A);
-        }
-
-        for (i, b) in bottom.bytes().enumerate() {
-            rows[m - 1][i] = b - A;
-        }
-
-        Self::recurse(&mut rows, 0, m - 1, 0, &allowed_map, &mut seen)
-    }
-
-    fn recurse(
-        rows: &mut [[u8; ROW_MAX_LEN]],
-        pattern: usize,
-        row_i: usize,
-        block_i: usize,
-        allowed_map: &[[u8; VAL_BASE]],
-        seen: &mut [bool],
-    ) -> bool {
-        if row_i == 1 && block_i == 1 {
-            true
-        } else if block_i == row_i {
-            if seen[pattern] {
-                false
-            } else {
-                seen[pattern] = true;
-                Self::recurse(rows, 0, row_i - 1, 0, allowed_map, seen)
+        for (r, row) in dp.iter_mut().enumerate() {
+            let mut count = 0;
+            for (c, cell) in row.iter_mut().enumerate() {
+                count = match mines_set.contains(&(r, c)) {
+                    true => 0,
+                    _ => count + 1,
+                };
+                *cell = count;
             }
-        } else {
-            let ll_idx = rows[row_i][block_i] as usize;
-            let lr_idx = rows[row_i][block_i + 1] as usize;
-            let allowed = allowed_map[ll_idx][lr_idx] as usize;
 
-            for b in 0..6 {
-                if allowed & 1 << b != 0 {
-                    rows[row_i - 1][block_i] = b as u8;
-
-                    if Self::recurse(
-                        rows,
-                        pattern * VAL_BASE + b + 1,
-                        row_i,
-                        block_i + 1,
-                        allowed_map,
-                        seen,
-                    ) {
-                        return true;
-                    }
-                }
+            count = 0;
+            for (c, cell) in row.iter_mut().enumerate().rev() {
+                count = match mines_set.contains(&(r, c)) {
+                    true => 0,
+                    _ => count + 1,
+                };
+                *cell = count.min(*cell);
             }
-            false
         }
+
+        for c in 0..n {
+            let mut count = 0;
+            for (r, row) in dp.iter_mut().enumerate() {
+                count = match mines_set.contains(&(r, c)) {
+                    true => 0,
+                    _ => count + 1,
+                };
+                row[c] = row[c].min(count);
+            }
+            count = 0;
+            for (r, row) in dp.iter_mut().enumerate().rev() {
+                count = match mines_set.contains(&(r, c)) {
+                    true => 0,
+                    _ => count + 1,
+                };
+                row[c] = row[c].min(count);
+            }
+        }
+
+        dp.into_iter().flatten().max().unwrap_or_default() as i32
     }
 }
 
 struct Input {
-    bottom: String,
-    allowed: Vec<String>,
+    n: i32,
+    mines: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [Input {
-        bottom: "BCD".to_string(),
-        allowed: ["BCC", "CDE", "CEA", "FFF"].map(|s| s.to_string()).to_vec(),
+        n: 5,
+        mines: [[4, 2]].map(|v| v.to_vec()).to_vec(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::pyramid_transition(input.bottom, input.allowed);
+        let result = Solution::order_of_largest_plus_sign(input.n, input.mines);
         println!("{:?}", result);
     }
 }
