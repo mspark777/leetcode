@@ -1,29 +1,56 @@
 struct Solution;
 
 impl Solution {
-    pub fn is_ideal_permutation(a: Vec<i32>) -> bool {
-        for (i, n) in a.into_iter().enumerate() {
-            let i = i as i32;
-            if !(-1..=1).contains(&(n - i)) {
-                return false;
+    pub fn can_transform(start: String, result: String) -> bool {
+        let mut answer = false;
+        let mut l = 0;
+        let mut r = 0;
+        let mut f = true;
+        for (cur, target) in start.chars().zip(result.chars()) {
+            match cur {
+                'R' if l > 0 => f = false,
+                'R' => r += 1,
+                _ => (),
+            };
+
+            match target {
+                'L' if r > 0 => f = false,
+                'L' => l += 1,
+                'R' if r == 0 => f = false,
+                'R' => r -= 1,
+                _ => (),
+            };
+
+            match cur {
+                'L' if l == 0 => f = false,
+                'L' => l -= 1,
+                _ => (),
+            };
+
+            if f {
+                answer = (l == 0) && (r == 0);
+            } else {
+                answer = false;
             }
         }
 
-        true
+        answer
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
+    start: String,
+    result: String,
 }
 
 fn main() {
     let inputs = [Input {
-        nums: vec![1, 0, 2],
+        start: "RXXLRXRXL".to_string(),
+        result: "XRLXXRRLX".to_string(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::is_ideal_permutation(input.nums);
+        let result = Solution::can_transform(input.start, input.result);
         println!("{:?}", result);
     }
 }
