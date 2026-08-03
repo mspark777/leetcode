@@ -1,30 +1,37 @@
 struct Solution;
 
 impl Solution {
-    pub fn num_rabbits(mut answers: Vec<i32>) -> i32 {
-        answers.sort_unstable();
-
-        answers
-            .chunk_by(|a, b| a == b)
-            .map(|group| {
-                let group_size = group[0] + 1;
-                (group[0] + group.len() as i32) / group_size * group_size
-            })
-            .sum()
+    pub fn letter_case_permutation(s: String) -> Vec<String> {
+        let mut chars = s.chars().collect::<Vec<char>>();
+        let mut answer = Vec::new();
+        Self::dfs(&mut chars, &mut answer, 0);
+        answer
+    }
+    fn dfs(chars: &mut [char], answer: &mut Vec<String>, i: usize) {
+        if i == chars.len() {
+            answer.push(chars.iter().collect());
+        } else {
+            Self::dfs(chars, answer, i + 1);
+            if chars[i].is_alphabetic() {
+                chars[i] = ((chars[i] as u8) ^ (1 << 5)) as char;
+                Self::dfs(chars, answer, i + 1);
+                chars[i] = ((chars[i] as u8) ^ (1 << 5)) as char;
+            }
+        }
     }
 }
 
 struct Input {
-    answers: Vec<i32>,
+    s: String,
 }
 
 fn main() {
     let inputs = [Input {
-        answers: vec![1, 1, 2],
+        s: "a1b2".to_string(),
     }];
 
     for input in inputs.into_iter() {
-        let result = Solution::num_rabbits(input.answers);
+        let result = Solution::letter_case_permutation(input.s);
         println!("{:?}", result);
     }
 }
