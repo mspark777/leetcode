@@ -1,24 +1,30 @@
 struct Solution;
 
 impl Solution {
-    pub fn kth_grammar(_n: i32, k: i32) -> i32 {
-        match (k - 1).count_ones() & 1 {
-            0 => 0,
-            _ => 1,
-        }
+    pub fn num_rabbits(mut answers: Vec<i32>) -> i32 {
+        answers.sort_unstable();
+
+        answers
+            .chunk_by(|a, b| a == b)
+            .map(|group| {
+                let group_size = group[0] + 1;
+                (group[0] + group.len() as i32) / group_size * group_size
+            })
+            .sum()
     }
 }
 
 struct Input {
-    n: i32,
-    k: i32,
+    answers: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 1, k: 1 }];
+    let inputs = [Input {
+        answers: vec![1, 1, 2],
+    }];
 
     for input in inputs.into_iter() {
-        let result = Solution::kth_grammar(input.n, input.k);
+        let result = Solution::num_rabbits(input.answers);
         println!("{:?}", result);
     }
 }
