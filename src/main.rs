@@ -1,34 +1,19 @@
 struct Solution;
 
 impl Solution {
-    pub fn rotated_digits(n: i32) -> i32 {
-        let mut result = 0;
-        for i in 1..n + 1 {
-            let mut num = i;
-            let mut is_valid = true;
-            let mut has_changed = false;
+    pub fn escape_ghosts(ghosts: Vec<Vec<i32>>, target: Vec<i32>) -> bool {
+        let target_x = target[0];
+        let target_y = target[1];
+        let distance = target_x.abs() + target_y.abs();
 
-            while num > 0 {
-                let digit = num % 10;
-
-                if (digit == 3) || (digit == 4) || (digit == 7) {
-                    is_valid = false;
-                    break;
-                }
-
-                if (digit == 2) || (digit == 5) || (digit == 6) || (digit == 9) {
-                    has_changed = true;
-                }
-
-                num /= 10;
-            }
-
-            if is_valid && has_changed {
-                result += 1;
+        for ghost in ghosts {
+            let d = (target_x - ghost[0]).abs() + (target_y - ghost[1]).abs();
+            if distance >= d {
+                return false;
             }
         }
 
-        result
+        true
     }
 }
 
