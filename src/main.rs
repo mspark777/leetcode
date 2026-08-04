@@ -1,37 +1,46 @@
 struct Solution;
 
 impl Solution {
-    pub fn letter_case_permutation(s: String) -> Vec<String> {
-        let mut chars = s.chars().collect::<Vec<char>>();
-        let mut answer = Vec::new();
-        Self::dfs(&mut chars, &mut answer, 0);
-        answer
-    }
-    fn dfs(chars: &mut [char], answer: &mut Vec<String>, i: usize) {
-        if i == chars.len() {
-            answer.push(chars.iter().collect());
-        } else {
-            Self::dfs(chars, answer, i + 1);
-            if chars[i].is_alphabetic() {
-                chars[i] = ((chars[i] as u8) ^ (1 << 5)) as char;
-                Self::dfs(chars, answer, i + 1);
-                chars[i] = ((chars[i] as u8) ^ (1 << 5)) as char;
+    pub fn rotated_digits(n: i32) -> i32 {
+        let mut result = 0;
+        for i in 1..n + 1 {
+            let mut num = i;
+            let mut is_valid = true;
+            let mut has_changed = false;
+
+            while num > 0 {
+                let digit = num % 10;
+
+                if (digit == 3) || (digit == 4) || (digit == 7) {
+                    is_valid = false;
+                    break;
+                }
+
+                if (digit == 2) || (digit == 5) || (digit == 6) || (digit == 9) {
+                    has_changed = true;
+                }
+
+                num /= 10;
+            }
+
+            if is_valid && has_changed {
+                result += 1;
             }
         }
+
+        result
     }
 }
 
 struct Input {
-    s: String,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [Input {
-        s: "a1b2".to_string(),
-    }];
+    let inputs = [Input { n: 10 }, Input { n: 1 }, Input { n: 2 }];
 
-    for input in inputs.into_iter() {
-        let result = Solution::letter_case_permutation(input.s);
+    for input in inputs {
+        let result = Solution::rotated_digits(input.n);
         println!("{:?}", result);
     }
 }
