@@ -1,31 +1,57 @@
 struct Solution;
 
 impl Solution {
-    pub fn escape_ghosts(ghosts: Vec<Vec<i32>>, target: Vec<i32>) -> bool {
-        let target_x = target[0];
-        let target_y = target[1];
-        let distance = target_x.abs() + target_y.abs();
+    pub fn valid_tic_tac_toe(board: Vec<String>) -> bool {
+        let mut count = [0, 0];
+        let mut arr = [[0; 8]; 2];
+        for (i, s) in board.iter().enumerate() {
+            for (j, b) in s.bytes().enumerate() {
+                let idx = match b {
+                    b'X' => 0,
+                    b'O' => 1,
+                    _ => 2,
+                };
 
-        for ghost in ghosts {
-            let d = (target_x - ghost[0]).abs() + (target_y - ghost[1]).abs();
-            if distance >= d {
-                return false;
+                if idx != 2 {
+                    count[idx] += 1;
+                    arr[idx][i] += 1;
+                    arr[idx][j + 3] += 1;
+                    if i == j {
+                        arr[idx][6] += 1;
+                    }
+                    if i == (2 - j) {
+                        arr[idx][7] += 1;
+                    }
+                }
             }
         }
 
-        true
+        let mut win = [false, false];
+        for (i, c) in arr.iter().enumerate() {
+            if c.contains(&3) {
+                win[i] = true;
+            }
+        }
+
+        if win[0] && win[1] {
+            return false;
+        }
+
+        (count[0] == count[1] && !win[0]) || (count[0] == count[1] + 1 && !win[1])
     }
 }
 
 struct Input {
-    n: i32,
+    board: Vec<String>,
 }
 
 fn main() {
-    let inputs = [Input { n: 10 }, Input { n: 1 }, Input { n: 2 }];
+    let inputs = [Input {
+        board: ["O  ", "   ", "   "].map(|v| v.to_string()).to_vec(),
+    }];
 
     for input in inputs {
-        let result = Solution::rotated_digits(input.n);
+        let result = Solution::valid_tic_tac_toe(input.board);
         println!("{:?}", result);
     }
 }
