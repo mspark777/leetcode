@@ -1,57 +1,42 @@
 struct Solution;
 
 impl Solution {
-    pub fn valid_tic_tac_toe(board: Vec<String>) -> bool {
-        let mut count = [0, 0];
-        let mut arr = [[0; 8]; 2];
-        for (i, s) in board.iter().enumerate() {
-            for (j, b) in s.bytes().enumerate() {
-                let idx = match b {
-                    b'X' => 0,
-                    b'O' => 1,
-                    _ => 2,
-                };
+    pub fn num_subarray_bounded_max(nums: Vec<i32>, left: i32, right: i32) -> i32 {
+        Self::count(&nums, right) - Self::count(&nums, left - 1)
+    }
 
-                if idx != 2 {
-                    count[idx] += 1;
-                    arr[idx][i] += 1;
-                    arr[idx][j + 3] += 1;
-                    if i == j {
-                        arr[idx][6] += 1;
-                    }
-                    if i == (2 - j) {
-                        arr[idx][7] += 1;
-                    }
-                }
+    fn count(nums: &[i32], bound: i32) -> i32 {
+        let mut count = 0;
+        let mut length = 0;
+
+        for &num in nums {
+            if num <= bound {
+                length += 1;
+                count += length;
+            } else {
+                length = 0;
             }
         }
 
-        let mut win = [false, false];
-        for (i, c) in arr.iter().enumerate() {
-            if c.contains(&3) {
-                win[i] = true;
-            }
-        }
-
-        if win[0] && win[1] {
-            return false;
-        }
-
-        (count[0] == count[1] && !win[0]) || (count[0] == count[1] + 1 && !win[1])
+        count
     }
 }
 
 struct Input {
-    board: Vec<String>,
+    nums: Vec<i32>,
+    left: i32,
+    right: i32,
 }
 
 fn main() {
     let inputs = [Input {
-        board: ["O  ", "   ", "   "].map(|v| v.to_string()).to_vec(),
+        nums: [2, 1, 4, 3].to_vec(),
+        left: 2,
+        right: 3,
     }];
 
     for input in inputs {
-        let result = Solution::valid_tic_tac_toe(input.board);
+        let result = Solution::num_subarray_bounded_max(input.nums, input.left, input.right);
         println!("{:?}", result);
     }
 }
