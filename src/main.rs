@@ -1,42 +1,44 @@
 struct Solution;
 
 impl Solution {
-    pub fn num_subarray_bounded_max(nums: Vec<i32>, left: i32, right: i32) -> i32 {
-        Self::count(&nums, right) - Self::count(&nums, left - 1)
-    }
+    pub fn max_increase_keeping_skyline(grid: Vec<Vec<i32>>) -> i32 {
+        let n = grid.len();
+        let mut vertical = vec![0; n];
+        let mut horizontal = vec![0; n];
 
-    fn count(nums: &[i32], bound: i32) -> i32 {
-        let mut count = 0;
-        let mut length = 0;
-
-        for &num in nums {
-            if num <= bound {
-                length += 1;
-                count += length;
-            } else {
-                length = 0;
+        for (row, h) in grid.iter().zip(horizontal.iter_mut()) {
+            for (cell, v) in row.iter().copied().zip(vertical.iter_mut()) {
+                *h = cell.max(*h);
+                *v = cell.max(*v);
             }
         }
 
-        count
+        let mut result: i32 = 0;
+        for (row, h) in grid.iter().zip(horizontal) {
+            for (cell, v) in row.iter().copied().zip(vertical.iter().copied()) {
+                if cell < h && cell < v {
+                    result += h.min(v) - cell;
+                }
+            }
+        }
+
+        result
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    left: i32,
-    right: i32,
+    grid: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [Input {
-        nums: [2, 1, 4, 3].to_vec(),
-        left: 2,
-        right: 3,
+        grid: [[3, 0, 8, 4], [2, 4, 5, 7], [9, 2, 6, 3], [0, 3, 1, 0]]
+            .map(|v| v.to_vec())
+            .to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::num_subarray_bounded_max(input.nums, input.left, input.right);
+        let result = Solution::max_increase_keeping_skyline(input.grid);
         println!("{:?}", result);
     }
 }
