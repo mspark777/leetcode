@@ -1,44 +1,57 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_increase_keeping_skyline(grid: Vec<Vec<i32>>) -> i32 {
-        let n = grid.len();
-        let mut vertical = vec![0; n];
-        let mut horizontal = vec![0; n];
-
-        for (row, h) in grid.iter().zip(horizontal.iter_mut()) {
-            for (cell, v) in row.iter().copied().zip(vertical.iter_mut()) {
-                *h = cell.max(*h);
-                *v = cell.max(*v);
+    pub fn expressive_words(s: String, words: Vec<String>) -> i32 {
+        let s = s.chars().collect::<Vec<char>>();
+        let mut result = 0;
+        for w in words {
+            if Self::can_express(&s, w.chars().collect()) {
+                result += 1;
             }
         }
-
-        let mut result: i32 = 0;
-        for (row, h) in grid.iter().zip(horizontal) {
-            for (cell, v) in row.iter().copied().zip(vertical.iter().copied()) {
-                if cell < h && cell < v {
-                    result += h.min(v) - cell;
-                }
-            }
-        }
-
         result
+    }
+
+    fn can_express(s: &[char], w: Vec<char>) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < s.len() && j < w.len() {
+            let mut cnt_s = 1;
+            let mut cnt_w = 1;
+            if s[i] != w[j] {
+                return false;
+            }
+            while i < s.len() - 1 && s[i] == s[i + 1] {
+                cnt_s += 1;
+                i += 1;
+            }
+            while j < w.len() - 1 && w[j] == w[j + 1] {
+                cnt_w += 1;
+                j += 1;
+            }
+            if cnt_s < cnt_w || ((cnt_s - cnt_w) > 0 && cnt_s < 3) {
+                return false;
+            }
+            i += 1;
+            j += 1;
+        }
+        i == s.len() && j == w.len()
     }
 }
 
 struct Input {
-    grid: Vec<Vec<i32>>,
+    s: String,
+    words: Vec<String>,
 }
 
 fn main() {
     let inputs = [Input {
-        grid: [[3, 0, 8, 4], [2, 4, 5, 7], [9, 2, 6, 3], [0, 3, 1, 0]]
-            .map(|v| v.to_vec())
-            .to_vec(),
+        s: "heeellooo".to_string(),
+        words: ["hello", "hi", "helo"].map(|v| v.to_string()).to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::max_increase_keeping_skyline(input.grid);
+        let result = Solution::expressive_words(input.s, input.words);
         println!("{:?}", result);
     }
 }
