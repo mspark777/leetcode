@@ -1,57 +1,53 @@
 struct Solution;
 
-impl Solution {
-    pub fn expressive_words(s: String, words: Vec<String>) -> i32 {
-        let s = s.chars().collect::<Vec<char>>();
-        let mut result = 0;
-        for w in words {
-            if Self::can_express(&s, w.chars().collect()) {
-                result += 1;
-            }
-        }
-        result
-    }
+use std::collections::HashMap;
 
-    fn can_express(s: &[char], w: Vec<char>) -> bool {
-        let mut i = 0;
-        let mut j = 0;
-        while i < s.len() && j < w.len() {
-            let mut cnt_s = 1;
-            let mut cnt_w = 1;
-            if s[i] != w[j] {
-                return false;
+impl Solution {
+    pub fn subdomain_visits(cpdomains: Vec<String>) -> Vec<String> {
+        let mut sub_domain_visit_counter = HashMap::<&str, usize>::new();
+
+        for cpdomain in cpdomains.iter() {
+            let (rep, sub_domain) = cpdomain.split_once(' ').unwrap();
+            let rep = rep.parse::<usize>().unwrap();
+
+            for (i, ch) in sub_domain.char_indices() {
+                if ch != '.' {
+                    continue;
+                }
+
+                let domain = &sub_domain[(i + 1)..];
+                sub_domain_visit_counter
+                    .entry(domain)
+                    .and_modify(|e| *e += rep)
+                    .or_insert(rep);
             }
-            while i < s.len() - 1 && s[i] == s[i + 1] {
-                cnt_s += 1;
-                i += 1;
-            }
-            while j < w.len() - 1 && w[j] == w[j + 1] {
-                cnt_w += 1;
-                j += 1;
-            }
-            if cnt_s < cnt_w || ((cnt_s - cnt_w) > 0 && cnt_s < 3) {
-                return false;
-            }
-            i += 1;
-            j += 1;
+
+            sub_domain_visit_counter
+                .entry(sub_domain)
+                .and_modify(|e| *e += rep)
+                .or_insert(rep);
         }
-        i == s.len() && j == w.len()
+
+        sub_domain_visit_counter
+            .into_iter()
+            .map(|(key, value)| format!("{} {}", value, key))
+            .collect()
     }
 }
 
 struct Input {
-    s: String,
-    words: Vec<String>,
+    cpdomains: Vec<String>,
 }
 
 fn main() {
     let inputs = [Input {
-        s: "heeellooo".to_string(),
-        words: ["hello", "hi", "helo"].map(|v| v.to_string()).to_vec(),
+        cpdomains: ["9001 discuss.leetcode.com"]
+            .map(|v| v.to_string())
+            .to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::expressive_words(input.s, input.words);
+        let result = Solution::subdomain_visits(input.cpdomains);
         println!("{:?}", result);
     }
 }
