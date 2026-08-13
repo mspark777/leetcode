@@ -1,53 +1,43 @@
 struct Solution;
 
-use std::collections::HashMap;
-
 impl Solution {
-    pub fn subdomain_visits(cpdomains: Vec<String>) -> Vec<String> {
-        let mut sub_domain_visit_counter = HashMap::<&str, usize>::new();
-
-        for cpdomain in cpdomains.iter() {
-            let (rep, sub_domain) = cpdomain.split_once(' ').unwrap();
-            let rep = rep.parse::<usize>().unwrap();
-
-            for (i, ch) in sub_domain.char_indices() {
-                if ch != '.' {
-                    continue;
-                }
-
-                let domain = &sub_domain[(i + 1)..];
-                sub_domain_visit_counter
-                    .entry(domain)
-                    .and_modify(|e| *e += rep)
-                    .or_insert(rep);
-            }
-
-            sub_domain_visit_counter
-                .entry(sub_domain)
-                .and_modify(|e| *e += rep)
-                .or_insert(rep);
+    pub fn largest_sum_of_averages(nums: Vec<i32>, k: i32) -> f64 {
+        let n = nums.len();
+        let mut p = vec![0; n + 1];
+        for i in 0..n {
+            p[i + 1] = p[i] + nums[i];
         }
 
-        sub_domain_visit_counter
-            .into_iter()
-            .map(|(key, value)| format!("{} {}", value, key))
-            .collect()
+        let mut dp = vec![0.0; n];
+        for i in 0..n {
+            dp[i] = ((p[n] - p[i]) as f64) / ((n - i) as f64);
+        }
+
+        for _ in 1..k {
+            for i in 0..n {
+                for j in (i + 1)..n {
+                    dp[i] = dp[i].max(((p[j] - p[i]) as f64) / ((j - i) as f64) + dp[j])
+                }
+            }
+        }
+
+        dp[0]
     }
 }
 
 struct Input {
-    cpdomains: Vec<String>,
+    nums: Vec<i32>,
+    k: i32,
 }
 
 fn main() {
     let inputs = [Input {
-        cpdomains: ["9001 discuss.leetcode.com"]
-            .map(|v| v.to_string())
-            .to_vec(),
+        nums: [9, 1, 2, 3, 9].to_vec(),
+        k: 3,
     }];
 
     for input in inputs {
-        let result = Solution::subdomain_visits(input.cpdomains);
+        let result = Solution::largest_sum_of_averages(input.nums, input.k);
         println!("{:?}", result);
     }
 }
