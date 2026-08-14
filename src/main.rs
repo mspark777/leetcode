@@ -1,43 +1,54 @@
 struct Solution;
 
 impl Solution {
-    pub fn largest_sum_of_averages(nums: Vec<i32>, k: i32) -> f64 {
-        let n = nums.len();
-        let mut p = vec![0; n + 1];
-        for i in 0..n {
-            p[i + 1] = p[i] + nums[i];
-        }
-
-        let mut dp = vec![0.0; n];
-        for i in 0..n {
-            dp[i] = ((p[n] - p[i]) as f64) / ((n - i) as f64);
-        }
-
-        for _ in 1..k {
-            for i in 0..n {
-                for j in (i + 1)..n {
-                    dp[i] = dp[i].max(((p[j] - p[i]) as f64) / ((j - i) as f64) + dp[j])
+    pub fn ambiguous_coordinates(s: String) -> Vec<String> {
+        let s = s.chars().skip(1).take(s.len() - 2).collect::<Vec<char>>();
+        let mut result = Vec::<String>::new();
+        for i in 1..s.len() {
+            for x in Self::candidates(&s[..i]) {
+                for y in Self::candidates(&s[i..]) {
+                    result.push(format!("({}, {})", x, y));
                 }
             }
         }
+        result
+    }
 
-        dp[0]
+    fn candidates(v: &[char]) -> Vec<String> {
+        let mut candidates = Vec::<String>::new();
+        let n = v.len();
+        for i in 0..n {
+            let s: String = match i {
+                0 => v.iter().collect(),
+                _ => v[..i]
+                    .iter()
+                    .chain(std::iter::once(&'.'))
+                    .chain(v[i..].iter())
+                    .collect(),
+            };
+
+            if !((s != "0" && s.starts_with('0') && !s.starts_with("0."))
+                || (s.contains('.') && s.ends_with('0')))
+            {
+                candidates.push(s);
+            }
+        }
+
+        candidates
     }
 }
 
 struct Input {
-    nums: Vec<i32>,
-    k: i32,
+    s: String,
 }
 
 fn main() {
     let inputs = [Input {
-        nums: [9, 1, 2, 3, 9].to_vec(),
-        k: 3,
+        s: "(123)".to_string(),
     }];
 
     for input in inputs {
-        let result = Solution::largest_sum_of_averages(input.nums, input.k);
+        let result = Solution::ambiguous_coordinates(input.s);
         println!("{:?}", result);
     }
 }
