@@ -1,40 +1,37 @@
 struct Solution;
 
-impl Solution {
-    pub fn ambiguous_coordinates(s: String) -> Vec<String> {
-        let s = s.chars().skip(1).take(s.len() - 2).collect::<Vec<char>>();
-        let mut result = Vec::<String>::new();
-        for i in 1..s.len() {
-            for x in Self::candidates(&s[..i]) {
-                for y in Self::candidates(&s[i..]) {
-                    result.push(format!("({}, {})", x, y));
-                }
-            }
-        }
-        result
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+    pub val: i32,
+    pub next: Option<Box<ListNode>>,
+}
+
+impl ListNode {
+    #[inline]
+    fn new(val: i32) -> Self {
+        ListNode { next: None, val }
     }
+}
 
-    fn candidates(v: &[char]) -> Vec<String> {
-        let mut candidates = Vec::<String>::new();
-        let n = v.len();
-        for i in 0..n {
-            let s: String = match i {
-                0 => v.iter().collect(),
-                _ => v[..i]
-                    .iter()
-                    .chain(std::iter::once(&'.'))
-                    .chain(v[i..].iter())
-                    .collect(),
-            };
+use std::collections::HashSet;
 
-            if !((s != "0" && s.starts_with('0') && !s.starts_with("0."))
-                || (s.contains('.') && s.ends_with('0')))
-            {
-                candidates.push(s);
+impl Solution {
+    pub fn num_components(head: Option<Box<ListNode>>, nums: Vec<i32>) -> i32 {
+        let set = HashSet::<i32>::from_iter(nums);
+        let mut result = 0;
+        let mut current = &head;
+        let mut inprev = false;
+
+        while let Some(node) = current {
+            let x = set.contains(&node.val);
+            if x && !inprev {
+                result += 1;
             }
+            inprev = x;
+            current = &node.next;
         }
 
-        candidates
+        result
     }
 }
 
