@@ -1,42 +1,29 @@
 struct Solution;
 
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub struct ListNode {
-    pub val: i32,
-    pub next: Option<Box<ListNode>>,
-}
-
-impl ListNode {
-    #[inline]
-    fn new(val: i32) -> Self {
-        ListNode { next: None, val }
-    }
-}
-
-use std::collections::HashSet;
-
 impl Solution {
-    pub fn num_components(head: Option<Box<ListNode>>, nums: Vec<i32>) -> i32 {
-        let set = HashSet::<i32>::from_iter(nums);
-        let mut result = 0;
-        let mut current = &head;
-        let mut inprev = false;
+    pub fn flipgame(fronts: Vec<i32>, backs: Vec<i32>) -> i32 {
+        use std::collections::HashSet;
 
-        while let Some(node) = current {
-            let x = set.contains(&node.val);
-            if x && !inprev {
-                result += 1;
-            }
-            inprev = x;
-            current = &node.next;
-        }
+        let blacklist = fronts
+            .iter()
+            .copied()
+            .zip(backs.iter().copied())
+            .filter(|(f, b)| f == b)
+            .map(|v| v.0)
+            .collect::<HashSet<i32>>();
 
-        result
+        fronts
+            .into_iter()
+            .chain(backs)
+            .filter(|v| !blacklist.contains(v))
+            .min()
+            .unwrap_or_default()
     }
 }
 
 struct Input {
-    s: String,
+    fronts: Vec<i32>,
+    backs: Vec<i32>,
 }
 
 fn main() {
