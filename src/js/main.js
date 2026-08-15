@@ -2,7 +2,7 @@
  * @param {Object|Array} obj
  * @return {boolean}
  */
-var isEmpty = function (obj) {
+var isEmpty = function(obj) {
   return Array.isArray(obj) ? obj.length <= 0 : isEmpty(Object.keys(obj));
 };
 
@@ -11,7 +11,7 @@ var isEmpty = function (obj) {
  * @param {number} k
  * @return {number}
  */
-var minimumDifference = function (nums, k) {
+var minimumDifference = function(nums, k) {
   if (nums.length < k) {
     return 0;
   }

@@ -1,58 +1,54 @@
 import "@total-typescript/ts-reset";
 
-class Employee {
-  id: number;
-  importance: number;
-  subordinates: number[];
-  constructor(id: number, importance: number, subordinates: number[]) {
-    this.id = id;
-    this.importance = importance;
-    this.subordinates = subordinates;
-  }
-}
-
-function dfs(id: number, map: Map<number, Employee>): number {
-  const employee = map.get(id);
-  if (employee == null) {
-    throw new Error();
+function numFriendRequests(ages: number[]): number {
+  const counts = new Map<number, number>();
+  for (const age of ages) {
+    const count = counts.get(age) ?? 0;
+    counts.set(age, count + 1);
   }
 
-  let importance = employee.importance;
-  for (const subId of employee.subordinates) {
-    importance += dfs(subId, map);
+  let result = 0;
+  for (let ageA = 0; ageA <= 120; ageA += 1) {
+    const countA = counts.get(ageA);
+    if (countA == null) {
+      continue;
+    }
+
+    for (let ageB = 0; ageB <= 120; ageB += 1) {
+      const countB = counts.get(ageB);
+      if (countB == null) {
+        continue;
+      }
+
+      if (ageA * 0.5 + 7 >= ageB) {
+        continue;
+      }
+      if (ageA < ageB) {
+        continue;
+      }
+      if (ageA < 100 && 100 < ageB) {
+        continue;
+      }
+
+      result += countA * countB;
+      if (ageA == ageB) {
+        result -= countA;
+      }
+    }
   }
 
-  return importance;
-}
-
-function getImportance(employees: Employee[], id: number): number {
-  const employeeMap = new Map<number, Employee>();
-  for (const employee of employees) {
-    employeeMap.set(employee.id, employee);
-  }
-
-  return dfs(id, employeeMap);
+  return result;
 }
 
 interface Input {
-  nums: number[];
+  ages: number[];
 }
 
 function main(): void {
-  const inputs: Input[] = [
-    {
-      nums: [1, 3, 6, 10, 12, 15],
-    },
-    {
-      nums: [1, 2, 4, 7, 10],
-    },
-    {
-      nums: [4, 4, 9, 10],
-    },
-  ];
+  const inputs: Input[] = [{ ages: [16, 16] }, { ages: [16, 17, 18] }];
 
   for (const input of inputs) {
-    const result = averageValue(input.nums);
+    const result = numFriendRequests(input.ages);
     console.log(result);
   }
 }
