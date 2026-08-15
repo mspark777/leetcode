@@ -1,35 +1,29 @@
 /**
- * @param {Object|Array} obj
- * @return {boolean}
+ * @param {string} s
+ * @return {string}
  */
-var isEmpty = function(obj) {
-  return Array.isArray(obj) ? obj.length <= 0 : isEmpty(Object.keys(obj));
-};
+var maskPII = function(s) {
+  const atIndex = s.indexOf("@");
+  if (atIndex >= 0) {
+    return (s.substring(0, 1) + "*****" + s.substring(atIndex - 1)).toLowerCase();
+  } else {
+    const digits = s.replaceAll(/\D+/g, "");
+    const local = "***-***-" + digits.substring(digits.length - 4);
+    if (digits.length === 10) {
+      return local;
+    }
 
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
- */
-var minimumDifference = function(nums, k) {
-  if (nums.length < k) {
-    return 0;
+    let result = "+";
+    for (let i = 0; i < digits.length - 10; ++i) {
+      result += "*";
+    }
+    return result + "-" + local;
   }
-
-  nums.sort((a, b) => a - b);
-  let result = Number.MAX_SAFE_INTEGER;
-
-  for (let i = 0; i < nums.length - k + 1; i += 1) {
-    result = Math.min(result, nums[i + k - 1] - nums[i]);
-  }
-
-  return result;
 };
 
 /**
  * @typedef Input
- * @property {number[]} nums
- * @property {number} k
+ * @property {string} s
  */
 
 /**
@@ -39,17 +33,12 @@ function main() {
   /** @type Input[] */
   const inputs = [
     {
-      nums: [90],
-      k: 1,
-    },
-    {
-      nums: [9, 4, 1, 7],
-      k: 2,
+      s: "1(234)567-890",
     },
   ];
 
   for (const input of inputs) {
-    const result = minimumDifference(input.nums, input.k);
+    const result = maskPII(input.s);
     console.log(result);
   }
 }
