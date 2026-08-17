@@ -1,54 +1,51 @@
 struct Solution;
 
+use std::cmp::Ordering::{Equal, Greater, Less};
+
+enum Slope {
+    Center,
+    Left(i32),
+    Right(i32),
+}
+
 impl Solution {
-    pub fn split_into_fibonacci(num: String) -> Vec<i32> {
-        let mut result = Vec::<i32>::new();
-        Self::fun(&mut result, &num, 0);
-        result
-    }
-
-    fn fun(result: &mut Vec<i32>, num: &str, ind: usize) -> Option<bool> {
-        if ind == num.len() {
-            return Some(result.len() > 2);
-        }
-
-        let mut val = 0i64;
-        for i in ind..num.len() {
-            val = val * 10 + (num.chars().nth(i)? as u8 - b'0') as i64;
-            if val > i32::MAX as i64 {
-                return Some(false);
-            }
-            let y = match result.len() < 2 {
-                true => 0,
-                _ => result[result.len() - 2] + result[result.len() - 1],
-            };
-
-            if result.len() < 2 || y == val as i32 {
-                result.push(val as i32);
-                if Self::fun(result, num, i + 1)? {
-                    return Some(true);
+    pub fn longest_mountain(arr: Vec<i32>) -> i32 {
+        let mut result = 0;
+        let mut slope = Slope::Center;
+        for (left, right) in arr.windows(2).map(|x| (x[0], x[1])) {
+            slope = match (slope, left.cmp(&right)) {
+                (Slope::Left(k), Less) => Slope::Left(k + 1),
+                (Slope::Right(k), Less) => {
+                    result = result.max(k);
+                    Slope::Left(2)
                 }
-                result.pop();
-            }
-            if i == ind && num.chars().nth(i)? == '0' {
-                return Some(false);
-            }
+                (Slope::Center, Less) => Slope::Left(2),
+                (Slope::Right(k), Equal) => {
+                    result = result.max(k);
+                    Slope::Center
+                }
+                (Slope::Left(k) | Slope::Right(k), Greater) => {
+                    result = result.max(k + 1);
+                    Slope::Right(k + 1)
+                }
+                (_, Equal | Greater) => Slope::Center,
+            };
         }
-        Some(false)
+        result
     }
 }
 
 struct Input {
-    num: String,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        num: "1101111".to_string(),
+        arr: [2, 1, 4, 7, 3, 2, 5].to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::split_into_fibonacci(input.num);
+        let result = Solution::longest_mountain(input.arr);
         println!("{:?}", result);
     }
 }
