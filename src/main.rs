@@ -1,51 +1,36 @@
 struct Solution;
 
-use std::cmp::Ordering::{Equal, Greater, Less};
-
-enum Slope {
-    Center,
-    Left(i32),
-    Right(i32),
-}
-
 impl Solution {
-    pub fn longest_mountain(arr: Vec<i32>) -> i32 {
-        let mut result = 0;
-        let mut slope = Slope::Center;
-        for (left, right) in arr.windows(2).map(|x| (x[0], x[1])) {
-            slope = match (slope, left.cmp(&right)) {
-                (Slope::Left(k), Less) => Slope::Left(k + 1),
-                (Slope::Right(k), Less) => {
-                    result = result.max(k);
-                    Slope::Left(2)
-                }
-                (Slope::Center, Less) => Slope::Left(2),
-                (Slope::Right(k), Equal) => {
-                    result = result.max(k);
-                    Slope::Center
-                }
-                (Slope::Left(k) | Slope::Right(k), Greater) => {
-                    result = result.max(k + 1);
-                    Slope::Right(k + 1)
-                }
-                (_, Equal | Greater) => Slope::Center,
-            };
+    pub fn shifting_letters(s: String, shifts: Vec<i32>) -> String {
+        let mut result = String::new();
+        let mut shift = shifts.iter().copied().fold(0, |acc, cur| (acc + cur) % 26);
+
+        for (i, ch) in s.char_indices() {
+            const A: i32 = b'a' as i32;
+            let idx = (ch as i32) - A;
+            let shifted = A + ((idx + shift) % 26);
+
+            result.push(shifted as u8 as char);
+            shift = (shift - shifts[i]).rem_euclid(26);
         }
+
         result
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    s: String,
+    shifts: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        arr: [2, 1, 4, 7, 3, 2, 5].to_vec(),
+        s: "bad".to_string(),
+        shifts: [10, 20, 30].to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::longest_mountain(input.arr);
+        let result = Solution::shifting_letters(input.s, input.shifts);
         println!("{:?}", result);
     }
 }
