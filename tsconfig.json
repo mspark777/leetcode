@@ -3,24 +3,17 @@
     "target": "es2024",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "declaration": false,
     "removeComments": true,
-    "allowSyntheticDefaultImports": false,
-    "allowImportingTsExtensions": false,
-    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
-    "allowJs": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "checkJs": true,
     "isolatedModules": true,
-    "resolveJsonModule": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "lib": ["es2024"],
-    "types": ["@types/node"]
+    "types": ["node"],
+    "lib": ["es2024", "dom", "dom.iterable"]
   },
-  "exclude": ["node_module", "dist", "temp"]
+  "exclude": ["node_module", "dist"]
 }

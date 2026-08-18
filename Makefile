@@ -4,9 +4,6 @@ help:
 ts:
 	@npm run start:ts
 
-js:
-	@npm run start:js
-
 go:
 	@go run src/go/main.go
 
@@ -18,6 +15,3 @@ rs:
 
 py:
 	@python src/py/main.py
-
-pg:
-	@bash src/sql/postgresql.sh
