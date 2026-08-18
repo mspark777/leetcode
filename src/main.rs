@@ -1,3 +1,62 @@
+use std::collections::BTreeSet;
+
+struct ExamRoom {
+    size: i32,
+    seats: BTreeSet<i32>,
+}
+
+impl ExamRoom {
+    fn new(n: i32) -> Self {
+        Self {
+            size: n,
+            seats: BTreeSet::new(),
+        }
+    }
+
+    fn seat(&mut self) -> i32 {
+        if self.seats.is_empty() {
+            self.seats.insert(0);
+            return 0;
+        }
+
+        let mut len = 0;
+        let mut result = 0;
+        if let Some(k) = self.seats.iter().next().copied()
+            && (k > 0)
+        {
+            len = k;
+            result = 0;
+        }
+
+        let mut last = -1;
+        for k in self.seats.iter().copied() {
+            if last == -1 {
+                last = k;
+                continue;
+            }
+
+            if (k - last) / 2 > len {
+                result = last + 1 + ((k - last - 2) / 2);
+                len = (k - last) / 2;
+            }
+            last = k;
+        }
+
+        if let Some(k) = self.seats.iter().next_back().copied()
+            && ((self.size - 1 - k) > len)
+        {
+            result = self.size - 1;
+        }
+
+        self.seats.insert(result);
+        result
+    }
+
+    fn leave(&mut self, p: i32) {
+        self.seats.remove(&p);
+    }
+}
+
 struct Solution;
 
 impl Solution {
