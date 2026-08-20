@@ -1,49 +1,52 @@
 struct Solution;
 
 impl Solution {
-    pub fn prime_palindrome(n: i32) -> i32 {
-        if (8..=11).contains(&n) {
-            return 11;
-        }
+    pub fn advantage_count(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+        let n = a.len();
+        let mut a = a;
 
-        for x in 1..100000 {
-            let s = x.to_string();
-            let y: i32 = format!("{}{}", s, s.chars().rev().skip(1).collect::<String>())
-                .parse()
-                .unwrap();
-            if y >= n && Self::is_prime(y) {
-                return y;
+        a.sort_unstable();
+
+        let mut b = b.into_iter().enumerate().collect::<Vec<(usize, i32)>>();
+        b.sort_by_key(|a| a.1);
+
+        let mut result = vec![0; n];
+        let mut slow = 0;
+        let mut fast = n - 1;
+        while let Some((opponent_idx, opponent)) = b.pop() {
+            result[opponent_idx] = match opponent >= a[fast] {
+                true => {
+                    let v = a[slow];
+                    slow += 1;
+                    v
+                }
+                _ => {
+                    let v = a[fast];
+                    fast -= match fast > 0 {
+                        true => 1,
+                        _ => 0,
+                    };
+                    v
+                }
             }
         }
-
-        -1
-    }
-
-    fn is_prime(n: i32) -> bool {
-        if n < 2 || n % 2 == 0 {
-            return n == 2;
-        }
-
-        let mut x = 3;
-        while x * x <= n {
-            if n % x == 0 {
-                return false;
-            }
-            x += 2;
-        }
-        true
+        result
     }
 }
 
 struct Input {
-    n: i32,
+    nums1: Vec<i32>,
+    nums2: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input { n: 6 }];
+    let inputs = [Input {
+        nums1: [2, 7, 11, 15].to_vec(),
+        nums2: [1, 10, 4, 11].to_vec(),
+    }];
 
     for input in inputs {
-        let result = Solution::prime_palindrome(input.n);
+        let result = Solution::advantage_count(input.nums1, input.nums2);
         println!("{:?}", result);
     }
 }
