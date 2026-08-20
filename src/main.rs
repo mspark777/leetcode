@@ -1,62 +1,49 @@
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
 struct Solution;
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 impl Solution {
-    pub fn subtree_with_all_deepest(
-        root: Option<Rc<RefCell<TreeNode>>>,
-    ) -> Option<Rc<RefCell<TreeNode>>> {
-        Self::dfs(&root).1
-    }
-    pub fn dfs(node: &Option<Rc<RefCell<TreeNode>>>) -> (i32, Option<Rc<RefCell<TreeNode>>>) {
-        match node {
-            None => (0, None),
-            Some(n) => {
-                let n_ref = n.borrow();
-                let (r_deepth, r_ref) = Self::dfs(&n_ref.left);
-                let (l_deepth, l_ref) = Self::dfs(&n_ref.right);
-                if r_deepth > l_deepth {
-                    (r_deepth + 1, r_ref)
-                } else if r_deepth < l_deepth {
-                    (l_deepth + 1, l_ref)
-                } else {
-                    (l_deepth + 1, node.clone())
-                }
+    pub fn prime_palindrome(n: i32) -> i32 {
+        if (8..=11).contains(&n) {
+            return 11;
+        }
+
+        for x in 1..100000 {
+            let s = x.to_string();
+            let y: i32 = format!("{}{}", s, s.chars().rev().skip(1).collect::<String>())
+                .parse()
+                .unwrap();
+            if y >= n && Self::is_prime(y) {
+                return y;
             }
         }
+
+        -1
+    }
+
+    fn is_prime(n: i32) -> bool {
+        if n < 2 || n % 2 == 0 {
+            return n == 2;
+        }
+
+        let mut x = 3;
+        while x * x <= n {
+            if n % x == 0 {
+                return false;
+            }
+            x += 2;
+        }
+        true
     }
 }
 
 struct Input {
-    s: String,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [Input {
-        s: "()".to_string(),
-    }];
+    let inputs = [Input { n: 6 }];
 
     for input in inputs {
-        let result = Solution::score_of_parentheses(input.s);
+        let result = Solution::prime_palindrome(input.n);
         println!("{:?}", result);
     }
 }
