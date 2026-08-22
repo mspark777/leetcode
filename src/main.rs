@@ -1,44 +1,19 @@
-struct RLEIterator {
-    encoding: Vec<i32>,
-    index: usize,
-}
-
-impl RLEIterator {
-    fn new(encoding: Vec<i32>) -> Self {
-        Self { encoding, index: 0 }
-    }
-
-    fn next(&mut self, n: i32) -> i32 {
-        let mut n = n;
-        while self.index < self.encoding.len() {
-            if n <= self.encoding[self.index] {
-                self.encoding[self.index] -= n;
-                return self.encoding[self.index + 1];
-            } else {
-                n -= self.encoding[self.index];
-                self.index += 2;
-            }
-        }
-        -1
-    }
-}
-
 struct Solution;
 
 impl Solution {
-    pub fn subarray_bitwise_o_rs(arr: Vec<i32>) -> i32 {
-        use std::collections::HashSet;
-        use std::iter::once;
+    pub fn smallest_range_ii(mut nums: Vec<i32>, k: i32) -> i32 {
+        nums.sort_unstable();
+        let n = nums.len();
 
-        let mut ans = HashSet::<i32>::new();
-        let mut cur = HashSet::<i32>::from([0]);
+        let a = nums.first().unwrap() + k;
+        let b = nums.last().unwrap() - k;
 
-        for x in arr {
-            cur = cur.into_iter().map(|y| x | y).chain(once(x)).collect();
-            ans.extend(&cur);
+        let mut result = nums[n - 1] - nums[0];
+        for i in 0..(n - 1) {
+            result = result.min(b.max(nums[i] + k) - a.min(nums[i + 1] - k));
         }
 
-        ans.len() as i32
+        result
     }
 }
 
