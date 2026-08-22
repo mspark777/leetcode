@@ -1,81 +1,31 @@
 struct Solution;
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
 impl Solution {
-    pub fn generate(
-        node_cnt: i32,
-        memo: &mut HashMap<i32, Vec<Option<Rc<RefCell<TreeNode>>>>>,
-    ) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
-        if let Some(node) = memo.get(&node_cnt) {
-            return node.clone();
+    pub fn subarray_bitwise_o_rs(arr: Vec<i32>) -> i32 {
+        use std::collections::HashSet;
+        use std::iter::once;
+
+        let mut ans = HashSet::<i32>::new();
+        let mut cur = HashSet::<i32>::from([0]);
+
+        for x in arr {
+            cur = cur.into_iter().map(|y| x | y).chain(once(x)).collect();
+            ans.extend(&cur);
         }
 
-        let mut result = Vec::<Option<Rc<RefCell<TreeNode>>>>::new();
-
-        for left_node_cnt in 0..node_cnt {
-            let right_node_cnt = node_cnt - left_node_cnt - 1;
-
-            let left_tree = Self::generate(left_node_cnt, memo);
-            let right_tree = Self::generate(right_node_cnt, memo);
-
-            for st1 in left_tree.iter() {
-                for st2 in right_tree.iter() {
-                    let curr_node = Some(Rc::new(RefCell::new(TreeNode {
-                        val: 0,
-                        left: st1.clone(),
-                        right: st2.clone(),
-                    })));
-                    result.push(curr_node);
-                }
-            }
-        }
-        memo.insert(node_cnt, result.clone());
-        result
-    }
-
-    pub fn all_possible_fbt(n: i32) -> Vec<Option<Rc<RefCell<TreeNode>>>> {
-        let mut memo = HashMap::new();
-        memo.insert(0, vec![]);
-        memo.insert(1, vec![Some(Rc::new(RefCell::new(TreeNode::new(0))))]);
-
-        Self::generate(n, &mut memo)
+        ans.len() as i32
     }
 }
 
 struct Input {
-    words: Vec<String>,
+    arr: Vec<i32>,
 }
 
 fn main() {
-    let inputs = [Input {
-        words: ["abcd", "cdab", "cbad", "xyzz", "zzxy", "zzyx"]
-            .map(|v| v.to_string())
-            .to_vec(),
-    }];
+    let inputs = [Input { arr: [0].to_vec() }];
 
     for input in inputs {
-        let result = Solution::num_special_equiv_groups(input.words);
+        let result = Solution::subarray_bitwise_o_rs(input.arr);
         println!("{:?}", result);
     }
 }
