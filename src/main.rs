@@ -18,6 +18,62 @@ impl Solution {
         result
     }
 }
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+
+struct CBTInserter {
+    nodes: Vec<Option<Rc<RefCell<TreeNode>>>>,
+}
+
+impl CBTInserter {
+    fn new(root: Option<Rc<RefCell<TreeNode>>>) -> Self {
+        let mut nodes = vec![];
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back(root.clone());
+        while !queue.is_empty() {
+            if let Some(Some(node)) = queue.pop_front() {
+                nodes.push(Some(node.clone()));
+                queue.push_back(node.borrow().left.clone());
+                queue.push_back(node.borrow().right.clone());
+            }
+        }
+        Self { nodes }
+    }
+
+    fn insert(&mut self, v: i32) -> i32 {
+        let n = self.nodes.len();
+        let node = Some(Rc::new(RefCell::new(TreeNode::new(v))));
+        self.nodes.push(node.clone());
+        if n.is_multiple_of(2) {
+            self.nodes[(n - 1) / 2].as_ref().unwrap().borrow_mut().right = node;
+        } else {
+            self.nodes[(n - 1) / 2].as_ref().unwrap().borrow_mut().left = node;
+        }
+        self.nodes[(n - 1) / 2].as_ref().unwrap().borrow().val
+    }
+
+    fn get_root(&self) -> Option<Rc<RefCell<TreeNode>>> {
+        self.nodes[0].clone()
+    }
+}
 
 struct Input {
     nums: Vec<i32>,
