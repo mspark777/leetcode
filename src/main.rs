@@ -1,42 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn three_sum_multi(arr: Vec<i32>, target: i32) -> i32 {
-        use std::collections::HashMap;
-
-        let mut single = HashMap::<i32, i32>::new();
-        let mut pairs = HashMap::<i32, i32>::new();
-        const MOD: i32 = 1_000_000_007;
+    pub fn num_subarrays_with_sum(nums: Vec<i32>, goal: i32) -> i32 {
+        let n = nums.len();
         let mut result = 0;
-
-        for x in arr {
-            result =
-                (result + pairs.get(&(target - x)).copied().unwrap_or_default()).rem_euclid(MOD);
-
-            for (&y, &k) in single.iter() {
-                pairs
-                    .entry(x + y)
-                    .and_modify(|n| *n = (*n + k).rem_euclid(MOD))
-                    .or_insert(k.rem_euclid(MOD));
+        let mut sum = 0;
+        let mut cnt = vec![0; n + 1];
+        cnt[0] = 1;
+        for x in nums {
+            if sum + x - goal >= 0 {
+                result += cnt[(sum + x - goal) as usize];
             }
-
-            single.entry(x).and_modify(|n| *n += 1).or_insert(1);
+            sum += x;
+            cnt[sum as usize] += 1;
         }
         result
     }
 }
 
 struct Input {
-    s: String,
+    nums: Vec<i32>,
+    goal: i32,
 }
 
 fn main() {
     let inputs = [Input {
-        s: "())".to_string(),
+        nums: [1, 0, 1, 0, 1].to_vec(),
+        goal: 2,
     }];
 
     for input in inputs {
-        let result = Solution::min_add_to_make_valid(input.s);
+        let result = Solution::num_subarrays_with_sum(input.nums, input.goal);
         println!("{:?}", result);
     }
 }
