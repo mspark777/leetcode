@@ -1,62 +1,52 @@
 struct Solution;
 
 impl Solution {
-    pub fn reorder_log_files(logs: Vec<String>) -> Vec<String> {
-        use std::cmp::Ordering;
+    pub fn min_area_rect(points: Vec<Vec<i32>>) -> i32 {
+        use std::collections::HashSet;
 
-        let mut logs = logs;
+        let mut set: HashSet<(i32, i32)> = HashSet::new();
+        let mut result = i32::MAX;
 
-        logs.sort_by(|a, b| {
-            let a_split = a.find(' ').unwrap();
-            let b_split = b.find(' ').unwrap();
+        for (i, p1) in points.iter().enumerate() {
+            let x1 = p1[0];
+            let y1 = p1[1];
 
-            let (a_id, a_log) = a.split_at(a_split);
-            let (b_id, b_log) = b.split_at(b_split);
+            for p2 in points.iter().take(i) {
+                let x2 = p2[0];
+                let y2 = p2[1];
+                if (x1 == x2) || (y1 == y2) {
+                    continue;
+                }
 
-            let a_is_digit = Self::is_digit_log(a);
-            let b_is_digit = Self::is_digit_log(b);
-
-            match (a_is_digit, b_is_digit) {
-                (true, true) => Ordering::Equal,
-                (false, false) => a_log.cmp(b_log).then_with(|| a_id.cmp(b_id)),
-                (true, false) => Ordering::Greater,
-                (false, true) => Ordering::Less,
+                let ar = (x1 - x2).abs() * (y1 - y2).abs();
+                if (result > ar) && set.contains(&(x1, y2)) && set.contains(&(x2, y1)) {
+                    result = ar;
+                }
             }
-        });
 
-        logs
-    }
+            set.insert((x1, y1));
+        }
 
-    fn is_digit_log(s: &str) -> bool {
-        s.split_whitespace()
-            .nth(1)
-            .unwrap()
-            .chars()
-            .next()
-            .unwrap()
-            .is_ascii_digit()
+        match result {
+            i32::MAX => 0,
+            _ => result,
+        }
     }
 }
 
 struct Input {
-    logs: Vec<String>,
+    points: Vec<Vec<i32>>,
 }
 
 fn main() {
     let inputs = [Input {
-        logs: [
-            "dig1 8 1 5 1",
-            "let1 art can",
-            "dig2 3 6",
-            "let2 own kit dig",
-            "let3 art zero",
-        ]
-        .map(|v| v.to_string())
-        .to_vec(),
+        points: [[1, 1], [1, 3], [3, 1], [3, 3], [4, 1], [4, 3]]
+            .map(|v| v.to_vec())
+            .to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::reorder_log_files(input.logs);
+        let result = Solution::min_area_rect(input.points);
         println!("{:?}", result);
     }
 }
