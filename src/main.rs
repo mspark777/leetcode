@@ -1,35 +1,38 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_deletion_size(strs: Vec<String>) -> i32 {
-        let m = strs.len();
-        let n = strs.first().map_or(0, |s| s.len());
+    pub fn prison_after_n_days(mut cells: Vec<i32>, mut n: i32) -> Vec<i32> {
+        n = match n % 14 == 0 {
+            true => 14,
+            false => n % 14,
+        };
+        let mut temp = cells.clone();
+        temp[0] = 0;
+        temp[7] = 0;
 
-        let mut inorder = 0u128;
-        let mut count = 0;
-
-        for col in 0..n {
-            let mut new_inorder = 0u128;
-
-            for row in 1..m {
-                if (inorder & (1 << row)) != 0 {
-                    continue;
-                }
-
-                let prev = strs[row - 1].as_bytes();
-                let curr = strs[row].as_bytes();
-
-                if prev[col] < curr[col] {
-                    new_inorder |= 1 << row;
-                } else if prev[col] > curr[col] {
-                    count += 1;
-                    new_inorder = 0;
-                    break;
-                }
-            }
-            inorder |= new_inorder;
+        for i in 1..7 {
+            temp[i] = match cells[i - 1] == cells[i + 1] {
+                true => 1,
+                false => 0,
+            };
         }
-        count
+
+        n -= 1;
+        cells = temp.clone();
+
+        while n > 0 {
+            for i in 1..7 {
+                temp[i] = match cells[i - 1] == cells[i + 1] {
+                    true => 1,
+                    false => 0,
+                };
+            }
+
+            n -= 1;
+            cells = temp.clone();
+        }
+
+        cells
     }
 }
 
