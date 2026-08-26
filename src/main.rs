@@ -1,29 +1,35 @@
 struct Solution;
 
 impl Solution {
-    pub fn can_reorder_doubled(arr: Vec<i32>) -> bool {
-        use std::collections::HashMap;
-        let mut hm = HashMap::new();
-        for &a in &arr {
-            hm.entry(a).and_modify(|n| *n += 1).or_insert(1);
-        }
+    pub fn min_deletion_size(strs: Vec<String>) -> i32 {
+        let m = strs.len();
+        let n = strs.first().map_or(0, |s| s.len());
 
-        let mut v = hm.keys().cloned().collect::<Vec<_>>();
-        v.sort_unstable_by_key(|k| k.abs());
-        for k in v {
-            let n1 = *hm.get(&k).unwrap();
-            if n1 > 0 {
-                if let Some(n2) = hm.get_mut(&(k * 2)) {
-                    *n2 -= n1;
-                    if *n2 < 0 {
-                        return false;
-                    }
-                } else {
-                    return false;
+        let mut inorder = 0u128;
+        let mut count = 0;
+
+        for col in 0..n {
+            let mut new_inorder = 0u128;
+
+            for row in 1..m {
+                if (inorder & (1 << row)) != 0 {
+                    continue;
+                }
+
+                let prev = strs[row - 1].as_bytes();
+                let curr = strs[row].as_bytes();
+
+                if prev[col] < curr[col] {
+                    new_inorder |= 1 << row;
+                } else if prev[col] > curr[col] {
+                    count += 1;
+                    new_inorder = 0;
+                    break;
                 }
             }
+            inorder |= new_inorder;
         }
-        true
+        count
     }
 }
 
