@@ -1,55 +1,29 @@
 struct Solution;
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-use std::cell::RefCell;
-use std::rc::Rc;
-
 impl Solution {
-    pub fn flip_equiv(
-        root1: Option<Rc<RefCell<TreeNode>>>,
-        root2: Option<Rc<RefCell<TreeNode>>>,
-    ) -> bool {
-        Self::_flip_equiv(root1, root2).unwrap_or(false)
-    }
+    pub fn can_reorder_doubled(arr: Vec<i32>) -> bool {
+        use std::collections::HashMap;
+        let mut hm = HashMap::new();
+        for &a in &arr {
+            hm.entry(a).and_modify(|n| *n += 1).or_insert(1);
+        }
 
-    fn _flip_equiv(
-        root1: Option<Rc<RefCell<TreeNode>>>,
-        root2: Option<Rc<RefCell<TreeNode>>>,
-    ) -> Option<bool> {
-        if root1.is_none() && root2.is_none() {
-            return Some(true);
+        let mut v = hm.keys().cloned().collect::<Vec<_>>();
+        v.sort_unstable_by_key(|k| k.abs());
+        for k in v {
+            let n1 = *hm.get(&k).unwrap();
+            if n1 > 0 {
+                if let Some(n2) = hm.get_mut(&(k * 2)) {
+                    *n2 -= n1;
+                    if *n2 < 0 {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
         }
-        if root1.is_none() || root2.is_none() {
-            return Some(false);
-        }
-        if root1.as_ref()?.borrow().val != root2.as_ref()?.borrow().val {
-            return Some(false);
-        }
-        let left1 = root1.as_ref()?.borrow().left.clone();
-        let right1 = root1.as_ref()?.borrow().right.clone();
-        let left2 = root2.as_ref()?.borrow().left.clone();
-        let right2 = root2.as_ref()?.borrow().right.clone();
-        let v = (Self::_flip_equiv(left1.clone(), left2.clone())?
-            && Self::_flip_equiv(right1.clone(), right2.clone())?)
-            || (Self::_flip_equiv(left1, right2)? && Self::_flip_equiv(right1, left2)?);
-        Some(v)
+        true
     }
 }
 
@@ -63,7 +37,7 @@ fn main() {
     }];
 
     for input in inputs {
-        let result = Solution::largest_time_from_digits(input.arr);
+        let result = Solution::can_reorder_doubled(input.arr);
         println!("{:?}", result);
     }
 }
