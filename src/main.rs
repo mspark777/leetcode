@@ -1,31 +1,55 @@
 struct Solution;
 
-impl Solution {
-    pub fn largest_time_from_digits(a: Vec<i32>) -> String {
-        let mut a = a;
-        let mut result: Vec<(i32, i32)> = Vec::new();
-        Solution::helper(&mut a, 0, &mut result);
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
-        result
-            .into_iter()
-            .max()
-            .map(|max| format!("{:02}:{:02}", max.0, max.1))
-            .unwrap_or_default()
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
     }
-    fn helper(a: &mut [i32], i: usize, answers: &mut Vec<(i32, i32)>) {
-        if i == 4 {
-            let (h, m) = (a[0] * 10 + a[1], a[2] * 10 + a[3]);
-            if h < 24 && m < 60 {
-                answers.push((h, m));
-            }
-            return;
-        }
+}
 
-        for j in i..4 {
-            a.swap(i, j);
-            Solution::helper(a, i + 1, answers);
-            a.swap(i, j);
+use std::cell::RefCell;
+use std::rc::Rc;
+
+impl Solution {
+    pub fn flip_equiv(
+        root1: Option<Rc<RefCell<TreeNode>>>,
+        root2: Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        Self::_flip_equiv(root1, root2).unwrap_or(false)
+    }
+
+    fn _flip_equiv(
+        root1: Option<Rc<RefCell<TreeNode>>>,
+        root2: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<bool> {
+        if root1.is_none() && root2.is_none() {
+            return Some(true);
         }
+        if root1.is_none() || root2.is_none() {
+            return Some(false);
+        }
+        if root1.as_ref()?.borrow().val != root2.as_ref()?.borrow().val {
+            return Some(false);
+        }
+        let left1 = root1.as_ref()?.borrow().left.clone();
+        let right1 = root1.as_ref()?.borrow().right.clone();
+        let left2 = root2.as_ref()?.borrow().left.clone();
+        let right2 = root2.as_ref()?.borrow().right.clone();
+        let v = (Self::_flip_equiv(left1.clone(), left2.clone())?
+            && Self::_flip_equiv(right1.clone(), right2.clone())?)
+            || (Self::_flip_equiv(left1, right2)? && Self::_flip_equiv(right1, left2)?);
+        Some(v)
     }
 }
 
