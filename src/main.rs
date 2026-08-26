@@ -1,52 +1,45 @@
 struct Solution;
 
 impl Solution {
-    pub fn min_area_rect(points: Vec<Vec<i32>>) -> i32 {
-        use std::collections::HashSet;
+    pub fn largest_time_from_digits(a: Vec<i32>) -> String {
+        let mut a = a;
+        let mut result: Vec<(i32, i32)> = Vec::new();
+        Solution::helper(&mut a, 0, &mut result);
 
-        let mut set: HashSet<(i32, i32)> = HashSet::new();
-        let mut result = i32::MAX;
-
-        for (i, p1) in points.iter().enumerate() {
-            let x1 = p1[0];
-            let y1 = p1[1];
-
-            for p2 in points.iter().take(i) {
-                let x2 = p2[0];
-                let y2 = p2[1];
-                if (x1 == x2) || (y1 == y2) {
-                    continue;
-                }
-
-                let ar = (x1 - x2).abs() * (y1 - y2).abs();
-                if (result > ar) && set.contains(&(x1, y2)) && set.contains(&(x2, y1)) {
-                    result = ar;
-                }
+        result
+            .into_iter()
+            .max()
+            .map(|max| format!("{:02}:{:02}", max.0, max.1))
+            .unwrap_or_default()
+    }
+    fn helper(a: &mut [i32], i: usize, answers: &mut Vec<(i32, i32)>) {
+        if i == 4 {
+            let (h, m) = (a[0] * 10 + a[1], a[2] * 10 + a[3]);
+            if h < 24 && m < 60 {
+                answers.push((h, m));
             }
-
-            set.insert((x1, y1));
+            return;
         }
 
-        match result {
-            i32::MAX => 0,
-            _ => result,
+        for j in i..4 {
+            a.swap(i, j);
+            Solution::helper(a, i + 1, answers);
+            a.swap(i, j);
         }
     }
 }
 
 struct Input {
-    points: Vec<Vec<i32>>,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        points: [[1, 1], [1, 3], [3, 1], [3, 3], [4, 1], [4, 3]]
-            .map(|v| v.to_vec())
-            .to_vec(),
+        arr: [1, 2, 3, 4].to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::min_area_rect(input.points);
+        let result = Solution::largest_time_from_digits(input.arr);
         println!("{:?}", result);
     }
 }
