@@ -1,60 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn spellchecker(wordlist: Vec<String>, queries: Vec<String>) -> Vec<String> {
-        use std::collections::{HashMap, HashSet};
-
-        let (em, lc, vs) = wordlist.into_iter().rev().fold(
-            (HashSet::new(), HashMap::new(), HashMap::new()),
-            |(mut em, mut lc, mut vs), w| {
-                let l = w.to_lowercase();
-                em.insert(w.clone());
-                vs.insert(Self::rv(&l), w.clone());
-                lc.insert(l, w);
-                (em, lc, vs)
-            },
-        );
-        queries
-            .into_iter()
-            .map(|q| {
-                if em.contains(&q) {
-                    return q;
-                }
-                let ql = q.to_lowercase();
-                if let Some(w) = lc.get(&ql) {
-                    return w.to_owned();
-                }
-                if let Some(w) = vs.get(&Self::rv(&ql)) {
-                    return w.to_owned();
-                }
-                String::new()
-            })
-            .collect()
-    }
-
-    fn rv(s: &String) -> String {
-        s.chars()
-            .map(|c| match "eiou".contains(c) {
-                true => 'a',
-                false => c,
-            })
-            .collect()
+    pub fn pancake_sort(mut arr: Vec<i32>) -> Vec<i32> {
+        let mut j = arr.len();
+        let mut ans = vec![];
+        while j > 0 {
+            let f = arr.iter().position(|&e| e == (j as i32)).unwrap();
+            if f == (j - 1) {
+                j -= 1;
+                continue;
+            }
+            ans.push((f + 1) as i32);
+            ans.push(j as i32);
+            arr[0..(f + 1)].reverse();
+            arr[0..j].reverse();
+            j -= 1;
+        }
+        ans
     }
 }
 
 struct Input {
-    points: Vec<Vec<i32>>,
+    arr: Vec<i32>,
 }
 
 fn main() {
     let inputs = [Input {
-        points: [[1, 2], [2, 1], [1, 0], [0, 1]]
-            .map(|v| v.to_vec())
-            .to_vec(),
+        arr: [3, 2, 4, 1].to_vec(),
     }];
 
     for input in inputs {
-        let result = Solution::min_area_free_rect(input.points);
+        let result = Solution::pancake_sort(input.arr);
         println!("{:?}", result);
     }
 }
