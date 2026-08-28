@@ -1,58 +1,20 @@
 struct Solution;
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-use std::cell::RefCell;
-use std::rc::Rc;
 impl Solution {
-    pub fn flip_match_voyage(root: Option<Rc<RefCell<TreeNode>>>, voyage: Vec<i32>) -> Vec<i32> {
-        let root = match root {
-            Some(a) => a,
-            None => return vec![-1],
-        };
+    pub fn k_closest(points: Vec<Vec<i32>>, k: i32) -> Vec<Vec<i32>> {
+        use std::collections::BinaryHeap;
 
-        let mut res = vec![];
-        let mut stack = vec![root];
-
-        for cur in 0..voyage.len() {
-            let node = stack.pop().unwrap();
-            if node.borrow().val != voyage[cur] {
-                return vec![-1];
+        let k = k as usize;
+        let mut pq = BinaryHeap::with_capacity(k);
+        for p in points {
+            let d = p[0] * p[0] + p[1] * p[1];
+            pq.push((d, vec![p[0], p[1]]));
+            if pq.len() > k {
+                pq.pop();
             }
-            match (&node.borrow().left, &node.borrow().right) {
-                (Some(l), Some(r)) => {
-                    if l.borrow().val == voyage[cur + 1] {
-                        stack.push(r.clone());
-                        stack.push(l.clone());
-                    } else {
-                        stack.push(l.clone());
-                        stack.push(r.clone());
-                        res.push(node.borrow().val);
-                    }
-                }
-                (Some(a), _) | (_, Some(a)) => {
-                    stack.push(a.clone());
-                }
-                _ => (),
-            };
         }
-        res
+
+        pq.into_iter().map(|(_, p)| p).collect()
     }
 }
 
