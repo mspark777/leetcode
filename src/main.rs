@@ -1,25 +1,29 @@
 struct Solution;
 
 impl Solution {
-    pub fn str_without3a3b(mut a: i32, mut b: i32) -> String {
-        let mut r = String::new();
-        while (a + b) > 0 {
-            match (r.ends_with("aa"), r.ends_with("bb"), a > b) {
-                (true, _, _) => {
-                    r.push('b');
-                    b -= 1
-                }
-                (_, true, _) | (_, _, true) => {
-                    r.push('a');
-                    a -= 1
-                }
-                _ => {
-                    r.push('b');
-                    b -= 1
-                }
+    pub fn interval_intersection(
+        first_list: Vec<Vec<i32>>,
+        second_list: Vec<Vec<i32>>,
+    ) -> Vec<Vec<i32>> {
+        let mut ans = Vec::<Vec<i32>>::new();
+        let mut first = 0usize;
+        let mut second = 0usize;
+
+        while (first < first_list.len()) && (second < second_list.len()) {
+            let begin = first_list[first][0].max(second_list[second][0]);
+            let end = first_list[first][1].min(second_list[second][1]);
+
+            if begin <= end {
+                ans.push(vec![begin, end]);
+            }
+
+            if second_list[second][1] > first_list[first][1] {
+                first += 1;
+            } else {
+                second += 1;
             }
         }
-        r
+        ans
     }
 }
 
