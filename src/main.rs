@@ -1,36 +1,47 @@
 struct Solution;
 
 impl Solution {
-    pub fn pancake_sort(mut arr: Vec<i32>) -> Vec<i32> {
-        let mut j = arr.len();
-        let mut ans = vec![];
-        while j > 0 {
-            let f = arr.iter().position(|&e| e == (j as i32)).unwrap();
-            if f == (j - 1) {
-                j -= 1;
-                continue;
+    pub fn powerful_integers(x: i32, y: i32, bound: i32) -> Vec<i32> {
+        use std::collections::HashSet;
+        let mut ans = HashSet::new();
+        let mut row = 1;
+
+        while row < bound {
+            let mut col = 1;
+
+            while row + col <= bound {
+                ans.insert(row + col);
+                if y == 1 {
+                    break;
+                };
+                col *= y;
             }
-            ans.push((f + 1) as i32);
-            ans.push(j as i32);
-            arr[0..(f + 1)].reverse();
-            arr[0..j].reverse();
-            j -= 1;
+
+            if x == 1 {
+                break;
+            };
+            row *= x;
         }
-        ans
+
+        ans.into_iter().collect()
     }
 }
 
 struct Input {
-    arr: Vec<i32>,
+    x: i32,
+    y: i32,
+    bound: i32,
 }
 
 fn main() {
     let inputs = [Input {
-        arr: [3, 2, 4, 1].to_vec(),
+        x: 2,
+        y: 3,
+        bound: 10,
     }];
 
     for input in inputs {
-        let result = Solution::pancake_sort(input.arr);
+        let result = Solution::powerful_integers(input.x, input.y, input.bound);
         println!("{:?}", result);
     }
 }
