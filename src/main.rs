@@ -1,24 +1,19 @@
 struct Solution;
 
 impl Solution {
-    pub fn longest_ones(nums: Vec<i32>, k: i32) -> i32 {
-        let n = nums.len();
-        let mut k = k;
-        let mut lo = 0usize;
-        let mut hi = 0usize;
-        while hi < n {
-            if nums[hi] == 0 {
-                k -= 1;
-            }
-            if k < 0 {
-                if nums[lo] == 0 {
-                    k += 1;
-                }
-                lo += 1;
-            }
-            hi += 1;
+    pub fn clumsy(n: i32) -> i32 {
+        match n {
+            1 => 1,
+            2 => 2 * 1,
+            3 => 3 * 2 / 1,
+            4 => 4 * 3 / 2 + 1,
+            n => match n % 4 {
+                0 => n + 1,
+                1 | 2 => n + 2,
+                3 => n - 1,
+                _ => unreachable!(),
+            },
         }
-        (hi - lo) as i32
     }
 }
 
