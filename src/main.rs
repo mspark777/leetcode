@@ -1,28 +1,52 @@
 struct Solution;
 
-impl Solution {
-    pub fn oranges_rotting(grid: Vec<Vec<i32>>) -> i32 {
-        let mut fresh: i128 = 0;
-        let mut rotten: i128 = 0;
-        for (y, row) in grid.iter().enumerate() {
-            for (x, cell) in row.iter().copied().enumerate() {
-                let orange: i128 = 1 << (y * 11 + x);
-                match cell {
-                    1 => fresh |= orange,
-                    2 => rotten |= orange,
-                    _ => {}
-                }
-            }
-        }
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
-        let mut minutes = 0;
-        loop {
-            fresh &= !rotten;
-            rotten = fresh & (rotten >> 1 | rotten << 1 | rotten << 11 | rotten >> 11);
-            if rotten == 0 {
-                return if fresh != 0 { -1 } else { minutes };
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
+        }
+    }
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+impl Solution {
+    pub fn insert_into_max_tree(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        val: i32,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        Self::dfs(root, val)
+    }
+
+    fn dfs(root: Option<Rc<RefCell<TreeNode>>>, val: i32) -> Option<Rc<RefCell<TreeNode>>> {
+        if let Some(r) = root.clone() {
+            let mut r = r.borrow_mut();
+            if r.val > val {
+                r.right = Self::dfs(r.right.clone(), val);
+                root
+            } else {
+                Some(Rc::new(RefCell::new(TreeNode {
+                    val,
+                    left: root,
+                    right: None,
+                })))
             }
-            minutes += 1
+        } else {
+            Some(Rc::new(RefCell::new(TreeNode {
+                val,
+                left: None,
+                right: None,
+            })))
         }
     }
 }
