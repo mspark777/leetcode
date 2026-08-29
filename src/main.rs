@@ -1,11 +1,24 @@
 struct Solution;
 
 impl Solution {
-    pub fn is_valid(mut s: String) -> bool {
-        while let Some(i) = s.find("abc") {
-            s.replace_range(i..i + 3, "");
+    pub fn longest_ones(nums: Vec<i32>, k: i32) -> i32 {
+        let n = nums.len();
+        let mut k = k;
+        let mut lo = 0usize;
+        let mut hi = 0usize;
+        while hi < n {
+            if nums[hi] == 0 {
+                k -= 1;
+            }
+            if k < 0 {
+                if nums[lo] == 0 {
+                    k += 1;
+                }
+                lo += 1;
+            }
+            hi += 1;
         }
-        s.is_empty()
+        (hi - lo) as i32
     }
 }
 
