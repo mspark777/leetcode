@@ -1,19 +1,54 @@
 struct Solution;
 
-impl Solution {
-    pub fn clumsy(n: i32) -> i32 {
-        match n {
-            1 => 1,
-            2 => 2 * 1,
-            3 => 3 * 2 / 1,
-            4 => 4 * 3 / 2 + 1,
-            n => match n % 4 {
-                0 => n + 1,
-                1 | 2 => n + 2,
-                3 => n - 1,
-                _ => unreachable!(),
-            },
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
+
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
         }
+    }
+}
+
+use std::cell::RefCell;
+use std::rc::Rc;
+type TypeNode = Option<Rc<RefCell<TreeNode>>>;
+impl Solution {
+    pub fn new_node(val: i32, left: TypeNode, right: TypeNode) -> TypeNode {
+        let mut tnode = TreeNode::new(val);
+        tnode.left = left;
+        tnode.right = right;
+        Some(Rc::new(RefCell::new(tnode)))
+    }
+
+    pub fn bst_from_preorder(preorder: Vec<i32>) -> TypeNode {
+        Self::dfs(&preorder[..])
+    }
+
+    fn dfs(p: &[i32]) -> TypeNode {
+        if p.len() == 0 {
+            return None;
+        }
+
+        if p.len() == 1 {
+            return Self::new_node(p[0], None, None);
+        }
+        let j = match p[1..].binary_search(&p[0]) {
+            Ok(idx) => idx + 1,
+            Err(idx) => idx + 1,
+        };
+
+        let left = Self::dfs(&p[1..j]);
+        let right = Self::dfs(&p[j..]);
+        Self::new_node(p[0], left, right)
     }
 }
 
