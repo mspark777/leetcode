@@ -1,10 +1,29 @@
 struct Solution;
 
 impl Solution {
-    pub fn broken_calc(start_value: i32, target: i32) -> i32 {
-        let m = 32 - ((target - 1) / start_value).leading_zeros() as i32;
-        let diff = (start_value << m) - target;
-        (diff >> m) + (diff & ((1 << m) - 1)).count_ones() as i32 + m
+    pub fn oranges_rotting(grid: Vec<Vec<i32>>) -> i32 {
+        let mut fresh: i128 = 0;
+        let mut rotten: i128 = 0;
+        for (y, row) in grid.iter().enumerate() {
+            for (x, cell) in row.iter().copied().enumerate() {
+                let orange: i128 = 1 << (y * 11 + x);
+                match cell {
+                    1 => fresh |= orange,
+                    2 => rotten |= orange,
+                    _ => {}
+                }
+            }
+        }
+
+        let mut minutes = 0;
+        loop {
+            fresh &= !rotten;
+            rotten = fresh & (rotten >> 1 | rotten << 1 | rotten << 11 | rotten >> 11);
+            if rotten == 0 {
+                return if fresh != 0 { -1 } else { minutes };
+            }
+            minutes += 1
+        }
     }
 }
 
