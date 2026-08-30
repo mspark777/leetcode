@@ -1,16 +1,25 @@
 struct Solution;
 
 impl Solution {
-    pub fn two_city_sched_cost(mut costs: Vec<Vec<i32>>) -> i32 {
-        costs.sort_unstable_by(|a, b| (b[1] - b[0]).cmp(&(a[1] - a[0])));
-        let half = costs.len() / 2;
-        costs
-            .into_iter()
-            .enumerate()
-            .fold(0, |acc, (i, pair)| match i < half {
-                true => acc + pair[0],
-                _ => acc + pair[1],
-            })
+    pub fn max_sum_two_no_overlap(mut a: Vec<i32>, l: i32, m: i32) -> i32 {
+        let l = l as usize;
+        let m = m as usize;
+
+        for i in 1..a.len() {
+            a[i] += a[i - 1];
+        }
+
+        let mut res = a[l + m - 1];
+        let mut lmax = a[l - 1];
+        let mut mmax = a[m - 1];
+
+        for i in (l + m)..a.len() {
+            lmax = lmax.max(a[i - m] - a[i - l - m]);
+            mmax = mmax.max(a[i - l] - a[i - l - m]);
+            res = res.max(lmax + a[i] - a[i - m]).max(mmax + a[i] - a[i - l]);
+        }
+
+        return res;
     }
 }
 
