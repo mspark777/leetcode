@@ -1,36 +1,47 @@
 struct Solution;
 
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub struct ListNode {
-    pub val: i32,
-    pub next: Option<Box<ListNode>>,
-}
-
-impl ListNode {
-    #[inline]
-    fn new(val: i32) -> Self {
-        ListNode { next: None, val }
-    }
-}
-
 impl Solution {
-    pub fn next_larger_nodes(head: Option<Box<ListNode>>) -> Vec<i32> {
-        let mut res = vec![];
-        let mut stack = Vec::<[i32; 2]>::new();
-        let mut counter = 0;
-        let mut cur = head.as_ref();
-        while cur.is_some() {
-            let val = cur.as_ref().unwrap().val;
-            while !stack.is_empty() && (stack.last().unwrap()[1] < val) {
-                res[stack.last().unwrap()[0] as usize] = val;
-                stack.pop();
+    pub fn num_enclaves(mut grid: Vec<Vec<i32>>) -> i32 {
+        let m = grid.len();
+        let n = grid[0].len();
+
+        for i in 0..m {
+            if grid[i][0] == 1 {
+                Self::dfs(&mut grid, i, 0);
             }
-            cur = cur.as_ref().unwrap().next.as_ref();
-            stack.push([counter, val]);
-            res.push(0);
-            counter += 1;
+            if grid[i][n - 1] == 1 {
+                Self::dfs(&mut grid, i, n - 1);
+            }
         }
-        return res;
+        for j in 0..n {
+            if grid[0][j] == 1 {
+                Self::dfs(&mut grid, 0, j);
+            }
+            if grid[m - 1][j] == 1 {
+                Self::dfs(&mut grid, m - 1, j);
+            }
+        }
+
+        grid.iter().map(|row| row.iter().sum::<i32>()).sum()
+    }
+
+    fn dfs(grid: &mut Vec<Vec<i32>>, i: usize, j: usize) {
+        if i >= grid.len() || j >= grid[0].len() || grid[i][j] == 0 {
+            return;
+        }
+        grid[i][j] = 0;
+        if i > 0 {
+            Self::dfs(grid, i - 1, j);
+        }
+        if i + 1 < grid.len() {
+            Self::dfs(grid, i + 1, j);
+        }
+        if j > 0 {
+            Self::dfs(grid, i, j - 1);
+        }
+        if j + 1 < grid[0].len() {
+            Self::dfs(grid, i, j + 1);
+        }
     }
 }
 
