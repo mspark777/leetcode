@@ -1,30 +1,16 @@
 struct Solution;
 
 impl Solution {
-    pub fn video_stitching(mut clips: Vec<Vec<i32>>, time: i32) -> i32 {
-        clips.sort();
-
-        let mut count = 0;
-        let mut end = 0;
-        let mut i = 0;
-
-        while end < time {
-            let mut max_reach = end;
-
-            for j in i..clips.len() {
-                if clips[j][0] > end {
-                    break;
-                }
-                max_reach = max_reach.max(clips[j][1]);
-            }
-            if max_reach == end {
-                return -1;
-            }
-            end = max_reach;
-            count += 1;
-            i += 1;
-        }
-        count
+    pub fn two_city_sched_cost(mut costs: Vec<Vec<i32>>) -> i32 {
+        costs.sort_unstable_by(|a, b| (b[1] - b[0]).cmp(&(a[1] - a[0])));
+        let half = costs.len() / 2;
+        costs
+            .into_iter()
+            .enumerate()
+            .fold(0, |acc, (i, pair)| match i < half {
+                true => acc + pair[0],
+                _ => acc + pair[1],
+            })
     }
 }
 
