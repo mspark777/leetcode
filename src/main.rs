@@ -1,24 +1,30 @@
 struct Solution;
 
 impl Solution {
-    pub fn camel_match(queries: Vec<String>, pattern: String) -> Vec<bool> {
-        queries
-            .into_iter()
-            .map(|query| Self::matches(query.as_str(), pattern.as_str()))
-            .collect()
-    }
+    pub fn video_stitching(mut clips: Vec<Vec<i32>>, time: i32) -> i32 {
+        clips.sort();
 
-    fn matches(query: &str, pattern: &str) -> bool {
-        let query = query.chars();
-        let mut pattern = pattern.chars().peekable();
-        for q in query {
-            if Some(&q) == pattern.peek() {
-                pattern.next();
-            } else if q.is_uppercase() {
-                return false;
+        let mut count = 0;
+        let mut end = 0;
+        let mut i = 0;
+
+        while end < time {
+            let mut max_reach = end;
+
+            for j in i..clips.len() {
+                if clips[j][0] > end {
+                    break;
+                }
+                max_reach = max_reach.max(clips[j][1]);
             }
+            if max_reach == end {
+                return -1;
+            }
+            end = max_reach;
+            count += 1;
+            i += 1;
         }
-        pattern.next().is_none()
+        count
     }
 }
 
