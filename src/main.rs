@@ -1,27 +1,28 @@
 struct Solution;
 
 impl Solution {
-    pub fn query_string(s: String, n: i32) -> bool {
-        (1..=n)
-            .into_iter()
-            .map(|n| format!("{:b}", n))
-            .all(|n| s.find(n.as_str()).is_some())
+    pub fn base_neg2(n: i32) -> String {
+        let mut n2 = n as i64;
+        let mut test_number = 2i64;
+        while test_number <= n2 {
+            if (n2 & test_number) != 0 {
+                n2 += test_number << 1;
+            }
+            test_number <<= 2;
+        }
+        format!("{:b}", n2)
     }
 }
 
 struct Input {
-    s: String,
     n: i32,
 }
 
 fn main() {
-    let inputs = [Input {
-        s: "0110".to_string(),
-        n: 3,
-    }];
+    let inputs = [Input { n: 3 }];
 
     for input in inputs {
-        let result = Solution::query_string(input.s, input.n);
+        let result = Solution::base_neg2(input.n);
         println!("{:?}", result);
     }
 }
