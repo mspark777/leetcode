@@ -1,36 +1,27 @@
 struct Solution;
 
 impl Solution {
-    pub fn smallest_repunit_div_by_k(k: i32) -> i32 {
-        if ((k & 1) == 0) || (k % 5 == 0) {
-            return -1;
-        }
-
-        if k == 1 {
-            return 1;
-        }
-
-        let mut r = 1;
-        let mut len0 = 2;
-        loop {
-            r = ((10 * r) + 1) % k;
-            if r == 0 {
-                return len0;
-            }
-            len0 += 1;
-        }
+    pub fn query_string(s: String, n: i32) -> bool {
+        (1..=n)
+            .into_iter()
+            .map(|n| format!("{:b}", n))
+            .all(|n| s.find(n.as_str()).is_some())
     }
 }
 
 struct Input {
-    k: i32,
+    s: String,
+    n: i32,
 }
 
 fn main() {
-    let inputs = [Input { k: 1 }];
+    let inputs = [Input {
+        s: "0110".to_string(),
+        n: 3,
+    }];
 
     for input in inputs {
-        let result = Solution::smallest_repunit_div_by_k(input.k);
+        let result = Solution::query_string(input.s, input.n);
         println!("{:?}", result);
     }
 }
