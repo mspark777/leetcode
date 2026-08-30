@@ -1,25 +1,21 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_sum_two_no_overlap(mut a: Vec<i32>, l: i32, m: i32) -> i32 {
-        let l = l as usize;
-        let m = m as usize;
+    pub fn num_moves_stones(a: i32, b: i32, c: i32) -> Vec<i32> {
+        let mut v = [a, b, c];
+        v.sort_unstable();
 
-        for i in 1..a.len() {
-            a[i] += a[i - 1];
+        let a = v[0];
+        let b = v[1];
+        let c = v[2];
+
+        if (c - a - 2) == 0 {
+            return vec![0, 0];
+        } else if ((b - a) < 3) || ((c - b) < 3) {
+            return vec![1, c - a - 2];
         }
 
-        let mut res = a[l + m - 1];
-        let mut lmax = a[l - 1];
-        let mut mmax = a[m - 1];
-
-        for i in (l + m)..a.len() {
-            lmax = lmax.max(a[i - m] - a[i - l - m]);
-            mmax = mmax.max(a[i - l] - a[i - l - m]);
-            res = res.max(lmax + a[i] - a[i - m]).max(mmax + a[i] - a[i - l]);
-        }
-
-        return res;
+        vec![2, c - a - 2]
     }
 }
 
