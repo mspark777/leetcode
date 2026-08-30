@@ -1,36 +1,36 @@
 struct Solution;
 
 impl Solution {
-    pub fn num_pairs_divisible_by60(time: Vec<i32>) -> i32 {
-        let mut freq = [0; 61];
-        let mut res = 0;
-
-        for tim in time {
-            let mut t = (tim % 60) as usize;
-            res += freq[60 - t];
-            if t == 0 {
-                t = 60;
-            }
-            freq[t] += 1;
+    pub fn smallest_repunit_div_by_k(k: i32) -> i32 {
+        if ((k & 1) == 0) || (k % 5 == 0) {
+            return -1;
         }
 
-        res
+        if k == 1 {
+            return 1;
+        }
+
+        let mut r = 1;
+        let mut len0 = 2;
+        loop {
+            r = ((10 * r) + 1) % k;
+            if r == 0 {
+                return len0;
+            }
+            len0 += 1;
+        }
     }
 }
 
 struct Input {
-    start_value: i32,
-    target: i32,
+    k: i32,
 }
 
 fn main() {
-    let inputs = [Input {
-        start_value: 2,
-        target: 3,
-    }];
+    let inputs = [Input { k: 1 }];
 
     for input in inputs {
-        let result = Solution::broken_calc(input.start_value, input.target);
+        let result = Solution::smallest_repunit_div_by_k(input.k);
         println!("{:?}", result);
     }
 }
