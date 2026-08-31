@@ -1,29 +1,18 @@
 struct Solution;
 
 impl Solution {
-    pub fn garden_no_adj(n: i32, paths: Vec<Vec<i32>>) -> Vec<i32> {
-        let n = n as usize;
-        let mut graph = vec![vec![]; n];
-        for path in paths {
-            let (x, y) = (path[0] as usize - 1, path[1] as usize - 1);
-            graph[x].push(y);
-            graph[y].push(x);
-        }
-
-        let mut colors = vec![0; n];
-        for i in 0..n {
-            let mut used = vec![false; 5];
-            for j in graph[i].iter().copied() {
-                used[colors[j] as usize] = true;
+    pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {
+        use std::collections::HashSet;
+        let mut dp = HashSet::<i32>::from([0]);
+        for x in stones {
+            let mut dp1 = HashSet::<i32>::new();
+            for s in dp.iter().copied() {
+                dp1.insert(s + x);
+                dp1.insert(s - x);
             }
-            for c in 1..=4 {
-                if !used[c] {
-                    colors[i] = c as i32;
-                    break;
-                }
-            }
+            dp = dp1;
         }
-        colors
+        dp.into_iter().filter(|&x| x >= 0).min().unwrap()
     }
 }
 
