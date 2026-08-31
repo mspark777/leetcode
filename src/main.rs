@@ -1,29 +1,18 @@
 struct Solution;
 
 impl Solution {
-    pub fn num_moves_stones_ii(stones: Vec<i32>) -> Vec<i32> {
-        let n = stones.len();
-        let mut stones = stones;
-        stones.sort();
-
-        let mut i = 0;
-        let mut low = n as i32;
-        let high = std::cmp::max(
-            stones[n - 1] - n as i32 + 2 - stones[1],
-            stones[n - 2] - stones[0] - n as i32 + 2,
-        );
-
-        for j in 0..n {
-            while stones[j] - stones[i] >= n as i32 {
-                i += 1;
-            }
-            if ((j + 2 - i) == n) && (stones[j] + 2 - stones[i]) == (n as i32) {
-                low = low.min(2);
-            } else {
-                low = low.min(n as i32 - (j - i + 1) as i32);
+    pub fn is_robot_bounded(instructions: String) -> bool {
+        let mut d = (0, 1);
+        let mut p = (0, 0);
+        for c in instructions.chars() {
+            match c {
+                'G' => p = (p.0 + d.0, p.1 + d.1),
+                'L' => d = (-d.1, d.0),
+                'R' => d = (d.1, -d.0),
+                _ => {}
             }
         }
-        vec![low, high]
+        p == (0, 0) || d != (0, 1)
     }
 }
 
