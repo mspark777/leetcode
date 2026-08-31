@@ -1,18 +1,27 @@
 struct Solution;
 
 impl Solution {
-    pub fn last_stone_weight_ii(stones: Vec<i32>) -> i32 {
-        use std::collections::HashSet;
-        let mut dp = HashSet::<i32>::from([0]);
-        for x in stones {
-            let mut dp1 = HashSet::<i32>::new();
-            for s in dp.iter().copied() {
-                dp1.insert(s + x);
-                dp1.insert(s - x);
+    pub fn prev_perm_opt1(mut arr: Vec<i32>) -> Vec<i32> {
+        let n = arr.len();
+
+        for idx in (0..n - 1).rev() {
+            if arr[idx] > arr[idx + 1] {
+                let mut right = idx + 1;
+                let mut swap_idx = idx + 1;
+
+                while right < n && arr[right] < arr[idx] {
+                    if arr[right] != arr[swap_idx] {
+                        swap_idx = right;
+                    }
+                    right += 1;
+                }
+
+                arr.swap(swap_idx, idx);
+                break;
             }
-            dp = dp1;
         }
-        dp.into_iter().filter(|&x| x >= 0).min().unwrap()
+
+        arr
     }
 }
 
