@@ -1,18 +1,29 @@
 struct Solution;
 
 impl Solution {
-    pub fn is_robot_bounded(instructions: String) -> bool {
-        let mut d = (0, 1);
-        let mut p = (0, 0);
-        for c in instructions.chars() {
-            match c {
-                'G' => p = (p.0 + d.0, p.1 + d.1),
-                'L' => d = (-d.1, d.0),
-                'R' => d = (d.1, -d.0),
-                _ => {}
+    pub fn garden_no_adj(n: i32, paths: Vec<Vec<i32>>) -> Vec<i32> {
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for path in paths {
+            let (x, y) = (path[0] as usize - 1, path[1] as usize - 1);
+            graph[x].push(y);
+            graph[y].push(x);
+        }
+
+        let mut colors = vec![0; n];
+        for i in 0..n {
+            let mut used = vec![false; 5];
+            for j in graph[i].iter().copied() {
+                used[colors[j] as usize] = true;
+            }
+            for c in 1..=4 {
+                if !used[c] {
+                    colors[i] = c as i32;
+                    break;
+                }
             }
         }
-        p == (0, 0) || d != (0, 1)
+        colors
     }
 }
 
