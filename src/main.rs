@@ -1,38 +1,28 @@
 struct Solution;
 
+use std::collections::HashSet;
+
 impl Solution {
-    pub fn add_negabinary(arr1: Vec<i32>, arr2: Vec<i32>) -> Vec<i32> {
-        use std::collections::vec_deque::VecDeque;
-
-        let mut deq1: VecDeque<_> = arr1.into();
-        let mut deq2: VecDeque<_> = arr2.into();
-        let mut result: VecDeque<i32> = VecDeque::new();
-        let mut carry: i32 = 0;
-        while !deq1.is_empty() || !deq2.is_empty() {
-            let i1: i32 = deq1.pop_back().unwrap_or(0);
-            let i2: i32 = deq2.pop_back().unwrap_or(0);
-            let i = i1 + i2 + (carry & 0b1);
-            result.push_front(i & 0b1);
-            carry = Self::new_carry(
-                carry,
-                match i > 1 {
-                    true => 0b11,
-                    _ => 0,
-                },
-            );
-        }
-        result.push_front(carry & 0b1);
-        result.push_front((carry >> 1) & 0b1);
-
-        while result.front() == Some(&0) && result.len() > 1 {
-            result.pop_front();
+    fn r(hs: &mut HashSet<String>, cur: Vec<char>, rem: Vec<char>) {
+        if rem.len() == 0 {
+            return;
         }
 
-        result.into()
+        for i in 0..rem.len() {
+            let mut nxt_cur = cur.clone();
+            nxt_cur.push(rem[i]);
+            let mut nxt_rem = rem.clone();
+            nxt_rem.remove(i);
+            Solution::r(hs, nxt_cur.clone(), nxt_rem);
+            hs.insert(nxt_cur.into_iter().collect());
+        }
     }
 
-    fn new_carry(orig: i32, next: i32) -> i32 {
-        ((orig >> 1) + next) & 0b11
+    pub fn num_tile_possibilities(tiles: String) -> i32 {
+        let mut res = HashSet::<String>::new();
+        let tiles_c: Vec<char> = tiles.chars().collect();
+        Solution::r(&mut res, Vec::new(), tiles_c);
+        res.len() as i32
     }
 }
 
