@@ -1,28 +1,54 @@
 struct Solution;
 
-use std::collections::HashSet;
+#[derive(Debug, PartialEq, Eq)]
+pub struct TreeNode {
+    pub val: i32,
+    pub left: Option<Rc<RefCell<TreeNode>>>,
+    pub right: Option<Rc<RefCell<TreeNode>>>,
+}
 
-impl Solution {
-    fn r(hs: &mut HashSet<String>, cur: Vec<char>, rem: Vec<char>) {
-        if rem.len() == 0 {
-            return;
-        }
-
-        for i in 0..rem.len() {
-            let mut nxt_cur = cur.clone();
-            nxt_cur.push(rem[i]);
-            let mut nxt_rem = rem.clone();
-            nxt_rem.remove(i);
-            Solution::r(hs, nxt_cur.clone(), nxt_rem);
-            hs.insert(nxt_cur.into_iter().collect());
+impl TreeNode {
+    #[inline]
+    pub fn new(val: i32) -> Self {
+        TreeNode {
+            val,
+            left: None,
+            right: None,
         }
     }
+}
 
-    pub fn num_tile_possibilities(tiles: String) -> i32 {
-        let mut res = HashSet::<String>::new();
-        let tiles_c: Vec<char> = tiles.chars().collect();
-        Solution::r(&mut res, Vec::new(), tiles_c);
-        res.len() as i32
+use std::cell::RefCell;
+use std::rc::Rc;
+type OptNode = Option<Rc<RefCell<TreeNode>>>;
+impl Solution {
+    pub fn sufficient_subset(
+        node: Option<Rc<RefCell<TreeNode>>>,
+        limit: i32,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        node.as_ref()?;
+        let val = node.as_ref()?.borrow().val;
+        let mut left = node.as_ref()?.borrow_mut().left.take();
+        let mut right = node.as_ref()?.borrow_mut().right.take();
+        if left.is_none() && right.is_none() {
+            if val < limit {
+                return None;
+            } else {
+                return node;
+            }
+        }
+        if left.is_some() {
+            left = Self::sufficient_subset(left, limit - val);
+        }
+        if right.is_some() {
+            right = Self::sufficient_subset(right, limit - val);
+        }
+        if left.is_none() && right.is_none() {
+            return None;
+        }
+        node.as_ref()?.borrow_mut().left = left;
+        node.as_ref()?.borrow_mut().right = right;
+        node
     }
 }
 
