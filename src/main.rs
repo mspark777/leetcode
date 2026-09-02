@@ -1,34 +1,32 @@
 struct Solution;
 
 impl Solution {
-    pub fn smallest_subsequence(s: String) -> String {
-        let s = s.as_bytes();
-        let mut last_pos = [usize::MAX; 26];
-        for i in 0..s.len() {
-            last_pos[s[i] as usize - 97] = i;
-        }
+    pub fn largest_vals_from_labels(
+        values: Vec<i32>,
+        labels: Vec<i32>,
+        num_wanted: i32,
+        use_limit: i32,
+    ) -> i32 {
+        use std::collections::HashMap;
+        let mut items: Vec<_> = values.into_iter().zip(labels).collect();
+        items.sort_unstable_by(|a, b| b.0.cmp(&a.0));
 
-        let mut stack = Vec::with_capacity(26);
-        let mut seen = [false; 26];
-        for i in 0..s.len() {
-            let c = s[i] as usize - 97;
-            if seen[c] {
-                continue;
+        let mut count = HashMap::new();
+        let mut sum = 0;
+        let mut x = 0;
+
+        for (v, l) in items {
+            if x == num_wanted {
+                break;
             }
-
-            while !stack.is_empty()
-                && stack[stack.len() - 1] > c
-                && last_pos[stack[stack.len() - 1]] > i
-            {
-                seen[stack[stack.len() - 1]] = false;
-                stack.pop();
+            let c = count.entry(l).or_insert(0);
+            if *c < use_limit {
+                *c += 1;
+                sum += v;
+                x += 1;
             }
-            seen[c] = true;
-            stack.push(c);
         }
-
-        let stack = stack.iter().map(|x| *x as u8 + 97).collect::<Vec<u8>>();
-        return String::from_utf8(stack).unwrap();
+        sum
     }
 }
 
