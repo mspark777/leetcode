@@ -1,54 +1,34 @@
 struct Solution;
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
-
-impl TreeNode {
-    #[inline]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
-
-use std::cell::RefCell;
-use std::rc::Rc;
-type OptNode = Option<Rc<RefCell<TreeNode>>>;
 impl Solution {
-    pub fn sufficient_subset(
-        node: Option<Rc<RefCell<TreeNode>>>,
-        limit: i32,
-    ) -> Option<Rc<RefCell<TreeNode>>> {
-        node.as_ref()?;
-        let val = node.as_ref()?.borrow().val;
-        let mut left = node.as_ref()?.borrow_mut().left.take();
-        let mut right = node.as_ref()?.borrow_mut().right.take();
-        if left.is_none() && right.is_none() {
-            if val < limit {
-                return None;
-            } else {
-                return node;
+    pub fn smallest_subsequence(s: String) -> String {
+        let s = s.as_bytes();
+        let mut last_pos = [usize::MAX; 26];
+        for i in 0..s.len() {
+            last_pos[s[i] as usize - 97] = i;
+        }
+
+        let mut stack = Vec::with_capacity(26);
+        let mut seen = [false; 26];
+        for i in 0..s.len() {
+            let c = s[i] as usize - 97;
+            if seen[c] {
+                continue;
             }
+
+            while !stack.is_empty()
+                && stack[stack.len() - 1] > c
+                && last_pos[stack[stack.len() - 1]] > i
+            {
+                seen[stack[stack.len() - 1]] = false;
+                stack.pop();
+            }
+            seen[c] = true;
+            stack.push(c);
         }
-        if left.is_some() {
-            left = Self::sufficient_subset(left, limit - val);
-        }
-        if right.is_some() {
-            right = Self::sufficient_subset(right, limit - val);
-        }
-        if left.is_none() && right.is_none() {
-            return None;
-        }
-        node.as_ref()?.borrow_mut().left = left;
-        node.as_ref()?.borrow_mut().right = right;
-        node
+
+        let stack = stack.iter().map(|x| *x as u8 + 97).collect::<Vec<u8>>();
+        return String::from_utf8(stack).unwrap();
     }
 }
 
